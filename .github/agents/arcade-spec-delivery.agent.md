@@ -1,7 +1,7 @@
 ---
 name: "Arcade Spec Delivery"
 description: "Use when working in the arcade-spec repository on spec-first feature delivery, React Router + Prisma app changes, or Azure hosting and release work. Triggers: arcade-spec, /doc/spec, /doc/plan.md, spec-driven workflow, React Router architecture, Prisma v7, Fluent UI, Azure Container Apps, Microsoft Entra ID, Azure SQL, App Configuration, Key Vault, GitHub release automation."
-tools: [read, search, edit, execute, todo, agent]
+tools: [read, search, edit, execute, todo, agent, web]
 user-invocable: true
 agents: [Arcade Spec Planner, Arcade App Architect, Arcade Azure Delivery, Explore]
 ---
@@ -52,9 +52,15 @@ You are the project specialist for the arcade-spec repository. Your job is to de
 - Prefer `search` and `read` to gather context before editing.
 - Use `edit` for small, deliberate workspace changes.
 - Use `execute` for verification, builds, scripted checks, and repository commands.
+- Use `web` for URL fetches and browser-capable verification when the host exposes browser tooling to the agent.
 - Use `todo` when the task spans multiple concrete steps.
 - Use the specialist subagents before doing cross-boundary work directly.
 - Use the `Explore` subagent for read-only codebase reconnaissance when the request is broad or ambiguous.
+
+## Browser Verification
+
+- When browser tooling is available from the host, use it for UI-affecting verification before declaring the work ready.
+- If only `web` fetch is available and interactive browser tools are not exposed, report that limitation explicitly instead of claiming a real rendered check.
 
 ## Output Format
 
