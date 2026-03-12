@@ -69,10 +69,11 @@ The repository is not yet production-ready for Azure until these gaps are closed
 ## Suggested Verification Sequence
 
 1. Confirm `npm run typecheck` and `npm run build` pass locally.
-2. Replace the current local-only data and auth assumptions.
-3. Run `azd provision --preview` and review the generated plan.
-4. Provision Azure resources.
-5. Populate App Configuration and Key Vault values.
-6. Publish a release so the GitHub workflow pushes an immutable image.
-7. Verify `https://<container-app-fqdn>/health`.
-8. Smoke-test login, gameplay, result, rankings, and profile flows in the hosted environment.
+2. Run `npm run azure:check:production-data` against the intended hosted settings.
+3. Replace the current local-only data and auth assumptions.
+4. Run `azd provision --preview` and review the generated plan.
+5. Provision Azure resources.
+6. Populate App Configuration and Key Vault values.
+7. Publish a release so the GitHub workflow pushes an immutable image.
+8. Verify `https://<container-app-fqdn>/health`.
+9. Smoke-test login, gameplay, result, rankings, and profile flows in the hosted environment.

@@ -34,7 +34,10 @@ npm run typecheck
 npm run build
 npm run db:generate
 npm run db:migrate
+npm run db:migrate:deploy
+npm run db:migrate:status
 npm run db:seed
+npm run azure:check:production-data
 ```
 
 ## Verified Local Flows
@@ -92,6 +95,7 @@ Before a real hosted deployment, prepare all of the following:
 - A confidential client secret for the Microsoft Entra ID web app registration
 
 See `docs/azure-prerequisites.md` for the detailed checklist and current gaps.
+See `docs/production-data-path.md` for the current database cutover contract.
 
 ## Current Azure Gaps
 
