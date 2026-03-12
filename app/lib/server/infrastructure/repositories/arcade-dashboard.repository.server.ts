@@ -57,3 +57,11 @@ export async function getGameRecord(gameKey: string) {
     where: { key: gameKey.toUpperCase() as "MINESWEEPER" | "SUDOKU" },
   });
 }
+
+export async function listGameRecords() {
+  return prisma.game.findMany({
+    orderBy: {
+      name: "asc",
+    },
+  });
+}

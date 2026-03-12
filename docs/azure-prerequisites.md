@@ -41,8 +41,13 @@ Set the following GitHub Environment secrets:
 
 These values are needed before the app can boot correctly in Azure:
 
+- `ARCADE_AUTH_MODE`
 - `ARCADE_SESSION_SECRET`
 - `DATABASE_URL`
+- `PUBLIC_APP_URL`
+- `AZURE_TENANT_ID`
+- `AZURE_CLIENT_ID`
+- `AZURE_CLIENT_SECRET`
 
 Recommended placement:
 
@@ -56,7 +61,7 @@ The repository is not yet production-ready for Azure until these gaps are closed
 
 1. Replace SQLite with a production relational database supported by Prisma for Azure multi-instance hosting.
 2. Introduce a separate migration path and migration identity for the production database.
-3. Replace seeded login with Microsoft Entra ID web sign-in and callback handling.
+3. Connect the production Entra app registration values and client secret to the deployed Container App.
 4. Teach the server runtime to read Azure App Configuration and Key Vault through managed identity.
 5. Validate the deployed Container App with post-deploy smoke tests against the real production URL.
 

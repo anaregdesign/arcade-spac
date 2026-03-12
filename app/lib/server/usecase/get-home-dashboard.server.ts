@@ -1,4 +1,4 @@
-import { getHomeDashboardRecord, getGameRecord } from "../infrastructure/repositories/arcade-dashboard.repository.server";
+import { getHomeDashboardRecord, getGameRecord, listGameRecords } from "../infrastructure/repositories/arcade-dashboard.repository.server";
 
 function formatDuration(totalSeconds: number) {
   const minutes = Math.floor(totalSeconds / 60);
@@ -7,7 +7,10 @@ function formatDuration(totalSeconds: number) {
 }
 
 export async function getHomeDashboard(userId: string) {
-  const record = await getHomeDashboardRecord(userId);
+  const [record, games] = await Promise.all([
+    getHomeDashboardRecord(userId),
+    listGameRecords(),
+  ]);
 
   if (!record) {
     throw new Response("User not found", { status: 404 });
@@ -15,6 +18,7 @@ export async function getHomeDashboard(userId: string) {
 
   const seasonSummary = record.overallSummaries.find((summary) => summary.periodType === "SEASON");
   const lifetimeSummary = record.overallSummaries.find((summary) => summary.periodType === "LIFETIME");
+  const summaryByGameId = new Map(record.gameSummaries.map((summary) => [summary.gameId, summary]));
 
   return {
     user: {
@@ -31,20 +35,24 @@ export async function getHomeDashboard(userId: string) {
       trendDelta: seasonSummary?.trendDelta ?? 0,
       recentPlaySummary: seasonSummary?.recentPlaySummary ?? "No recent summary available.",
     },
-    games: record.gameSummaries.map((summary) => ({
-      key: summary.game.key.toLowerCase(),
-      name: summary.game.name,
-      shortDescription: summary.game.shortDescription,
-      accentColor: summary.game.accentColor,
-      currentRank: summary.currentRank,
-      bestCompetitivePoints: summary.bestCompetitivePoints,
-      personalBestMetric: summary.personalBestMetric,
-      playCount: summary.playCount,
-      completedCount: summary.completedCount,
-      recommendationText: summary.recommendationText,
-      metricLabel: summary.game.key === "MINESWEEPER" ? "Best clear time" : "Best solve time",
-      metricValue: summary.personalBestMetric ? formatDuration(summary.personalBestMetric) : "No record yet",
-    })),
+    games: games.map((game) => {
+      const summary = summaryByGameId.get(game.id);
+
+      return {
+        key: game.key.toLowerCase(),
+        name: game.name,
+        shortDescription: game.shortDescription,
+        accentColor: game.accentColor,
+        currentRank: summary?.currentRank ?? null,
+        bestCompetitivePoints: summary?.bestCompetitivePoints ?? 0,
+        personalBestMetric: summary?.personalBestMetric ?? null,
+        playCount: summary?.playCount ?? 0,
+        completedCount: summary?.completedCount ?? 0,
+        recommendationText: summary?.recommendationText ?? null,
+        metricLabel: game.key === "MINESWEEPER" ? "Best clear time" : "Best solve time",
+        metricValue: summary?.personalBestMetric ? formatDuration(summary.personalBestMetric) : "No record yet",
+      };
+    }),
     recentResults: record.playResults.map((result) => ({
       id: result.id,
       gameName: result.game.name,

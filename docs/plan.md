@@ -12,7 +12,7 @@
 - [x] Bootstrap the application runtime, baseline dependencies, and architecture-aligned project structure.
 - [x] Implement domain models, persistence, seeded data, and ranking or scoring calculations for local development.
 - [x] Implement authenticated application flows, shared layout, and navigation across the required core screens.
-- [ ] Implement Minesweeper and Sudoku gameplay flows, result handling, interruption handling, and pending-save recovery.
+- [x] Implement Minesweeper and Sudoku gameplay flows, result handling, interruption handling, and pending-save recovery.
 - [x] Implement leaderboard, profile, charting, Microsoft Teams sharing flow, and developer-facing verification notes.
 
 #### SubSubSection 1.1.1. Runtime and persistence foundation
@@ -42,7 +42,7 @@
 
 #### SubSubSection 1.2.2. Infrastructure and identity wiring
 - [ ] Define Azure hosting, configuration, secrets, telemetry, and production data resources.
-- [ ] Wire Microsoft Entra ID, managed identity, and deployment-time configuration without introducing local-only assumptions.
+- [x] Wire Microsoft Entra ID, managed identity, and deployment-time configuration without introducing local-only assumptions.
 
 #### SubSubSection 1.2.3. Delivery and hosted verification
 - [ ] Configure deployment workflow and hosted smoke verification for the MVP user journeys.

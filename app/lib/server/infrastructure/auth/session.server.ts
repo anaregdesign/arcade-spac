@@ -16,6 +16,25 @@ const sessionStorage = createCookieSessionStorage({
 });
 
 const USER_ID_KEY = "userId";
+const AUTH_STATE_KEY = "authState";
+const AUTH_NONCE_KEY = "authNonce";
+const AUTH_CODE_VERIFIER_KEY = "authCodeVerifier";
+const AUTH_RETURN_TO_KEY = "authReturnTo";
+
+export function sanitizeReturnToPath(returnTo: string | null | undefined) {
+  if (!returnTo || !returnTo.startsWith("/") || returnTo.startsWith("//")) {
+    return null;
+  }
+
+  return returnTo;
+}
+
+export type PendingAuthFlow = {
+  state: string;
+  nonce: string;
+  codeVerifier: string;
+  returnTo: string;
+};
 
 export async function getSession(request: Request) {
   const cookieHeader = request.headers.get("Cookie");
@@ -31,19 +50,61 @@ export async function requireCurrentUserId(request: Request) {
   const userId = await getCurrentUserId(request);
 
   if (!userId) {
-    throw redirect("/login");
+    const requestUrl = new URL(request.url);
+    const returnTo = sanitizeReturnToPath(`${requestUrl.pathname}${requestUrl.search}`) ?? "/home";
+    throw redirect(`/login?returnTo=${encodeURIComponent(returnTo)}`);
   }
 
   return userId;
 }
 
+export async function commitSession(session: Awaited<ReturnType<typeof getSession>>) {
+  return sessionStorage.commitSession(session);
+}
+
+export function setCurrentUserId(session: Awaited<ReturnType<typeof getSession>>, userId: string) {
+  session.set(USER_ID_KEY, userId);
+}
+
+export function setPendingAuthFlow(session: Awaited<ReturnType<typeof getSession>>, pendingAuthFlow: PendingAuthFlow) {
+  session.set(AUTH_STATE_KEY, pendingAuthFlow.state);
+  session.set(AUTH_NONCE_KEY, pendingAuthFlow.nonce);
+  session.set(AUTH_CODE_VERIFIER_KEY, pendingAuthFlow.codeVerifier);
+  session.set(AUTH_RETURN_TO_KEY, pendingAuthFlow.returnTo);
+}
+
+export function getPendingAuthFlow(session: Awaited<ReturnType<typeof getSession>>): PendingAuthFlow | null {
+  const state = session.get(AUTH_STATE_KEY);
+  const nonce = session.get(AUTH_NONCE_KEY);
+  const codeVerifier = session.get(AUTH_CODE_VERIFIER_KEY);
+  const returnTo = session.get(AUTH_RETURN_TO_KEY);
+
+  if (
+    typeof state !== "string"
+    || typeof nonce !== "string"
+    || typeof codeVerifier !== "string"
+    || typeof returnTo !== "string"
+  ) {
+    return null;
+  }
+
+  return { state, nonce, codeVerifier, returnTo };
+}
+
+export function clearPendingAuthFlow(session: Awaited<ReturnType<typeof getSession>>) {
+  session.unset(AUTH_STATE_KEY);
+  session.unset(AUTH_NONCE_KEY);
+  session.unset(AUTH_CODE_VERIFIER_KEY);
+  session.unset(AUTH_RETURN_TO_KEY);
+}
+
 export async function createUserSession(userId: string, redirectTo = "/home") {
   const session = await sessionStorage.getSession();
-  session.set(USER_ID_KEY, userId);
+  setCurrentUserId(session, userId);
 
   return redirect(redirectTo, {
     headers: {
-      "Set-Cookie": await sessionStorage.commitSession(session),
+      "Set-Cookie": await commitSession(session),
     },
   });
 }

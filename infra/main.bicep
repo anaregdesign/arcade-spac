@@ -1,6 +1,20 @@
 param appName string = 'arcade'
 param location string = resourceGroup().location
 param containerImage string
+param publicAppUrl string
+@allowed([
+  'local'
+  'entra'
+])
+param authMode string = 'entra'
+param entraClientId string = ''
+param entraTenantId string = tenant().tenantId
+@secure()
+param entraClientSecret string = ''
+@secure()
+param databaseUrl string
+@secure()
+param sessionSecret string
 param containerPort int = 3000
 param cpu int = 1
 param memory string = '2Gi'
@@ -110,6 +124,26 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
         targetPort: containerPort
         transport: 'auto'
       }
+      secrets: concat(
+        [
+          {
+            name: 'arcade-session-secret'
+            value: sessionSecret
+          }
+          {
+            name: 'database-url'
+            value: databaseUrl
+          }
+        ],
+        authMode == 'entra'
+          ? [
+              {
+                name: 'azure-client-secret'
+                value: entraClientSecret
+              }
+            ]
+          : []
+      )
     }
     template: {
       containers: [
@@ -130,7 +164,39 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
                 name: 'AZURE_KEY_VAULT_URI'
                 value: keyVault.properties.vaultUri
               }
+              {
+                name: 'ARCADE_AUTH_MODE'
+                value: authMode
+              }
+              {
+                name: 'PUBLIC_APP_URL'
+                value: publicAppUrl
+              }
+              {
+                name: 'AZURE_CLIENT_ID'
+                value: entraClientId
+              }
+              {
+                name: 'AZURE_TENANT_ID'
+                value: entraTenantId
+              }
+              {
+                name: 'ARCADE_SESSION_SECRET'
+                secretRef: 'arcade-session-secret'
+              }
+              {
+                name: 'DATABASE_URL'
+                secretRef: 'database-url'
+              }
             ],
+            authMode == 'entra'
+              ? [
+                  {
+                    name: 'AZURE_CLIENT_SECRET'
+                    secretRef: 'azure-client-secret'
+                  }
+                ]
+              : [],
             environmentVariables
           )
           resources: {

@@ -50,9 +50,14 @@ npm run db:seed
 
 The current runtime reads these environment variables:
 
+- `ARCADE_AUTH_MODE`
 - `DATABASE_URL`
 - `ARCADE_SESSION_SECRET`
 - `NODE_ENV`
+- `PUBLIC_APP_URL`
+- `AZURE_TENANT_ID`
+- `AZURE_CLIENT_ID`
+- `AZURE_CLIENT_SECRET`
 
 For local development, the app falls back to SQLite and a local session secret. For Azure hosting, move these values to managed configuration instead of storing them in repo files.
 
@@ -83,6 +88,7 @@ Before a real hosted deployment, prepare all of the following:
 	- `GHCR_PULL_TOKEN`
 - Azure App Configuration values for non-secret runtime settings
 - Azure Key Vault secrets for secret runtime values such as `ARCADE_SESSION_SECRET`
+- A confidential client secret for the Microsoft Entra ID web app registration
 
 See `docs/azure-prerequisites.md` for the detailed checklist and current gaps.
 
@@ -92,7 +98,7 @@ The app is not yet ready for a production Azure rollout without further work.
 
 - The Prisma datasource still targets SQLite, which is suitable for local development but not for Azure Container Apps production hosting.
 - Real Microsoft Entra ID callback handling has not replaced the seeded local sign-in path yet.
-- The Bicep template does not yet provision a production relational database or migration identity.
+- The Bicep template wires auth and runtime settings, but does not yet provision a production relational database or migration identity.
 - Secretless runtime configuration is scaffolded at the infrastructure layer, but the application runtime does not yet consume Azure App Configuration or Key Vault directly.
 
 ## Next Steps
