@@ -47,7 +47,7 @@ var normalizedAppName = toLower(replace(appName, '-', ''))
 var keyVaultName = take('kv${normalizedAppName}${uniqueString(subscription().id, resourceGroup().id)}', 24)
 var sqlServerName = take('sql-${appName}-${uniqueString(resourceGroup().id)}', 63)
 var sqlMigrationIdentityName = take('id-sql-migrate-${appName}', 24)
-var sqlManagedIdentityConnectionString = 'sqlserver://${sqlServerName}.database.windows.net;database=${sqlDatabaseName};authentication=ActiveDirectoryManagedIdentity;encrypt=true;trustServerCertificate=false'
+var sqlManagedIdentityConnectionString = 'sqlserver://${sqlServerName}.database.windows.net;database=${sqlDatabaseName};authentication=DefaultAzureCredential;encrypt=true;trustServerCertificate=false'
 var effectiveDatabaseUrl = deploySql ? sqlManagedIdentityConnectionString : databaseUrl
 var appConfigDataReaderRoleDefinitionId = subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '516239f1-63e1-4d78-a4de-a74fb236a071')
 var keyVaultSecretsUserRoleDefinitionId = subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '4633458b-17de-408a-b874-0445c86b69e6')
@@ -239,10 +239,6 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
                 value: publicAppUrl
               }
               {
-                name: 'AZURE_CLIENT_ID'
-                value: entraClientId
-              }
-              {
                 name: 'AZURE_TENANT_ID'
                 value: entraTenantId
               }
@@ -257,6 +253,10 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
             ],
             authMode == 'entra' && hasEntraClientSecret
               ? [
+                  {
+                    name: 'AZURE_CLIENT_ID'
+                    value: entraClientId
+                  }
                   {
                     name: 'AZURE_CLIENT_SECRET'
                     secretRef: 'azure-client-secret'
