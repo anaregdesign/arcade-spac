@@ -10,7 +10,7 @@ Use them deliberately and by concern.
 
 ## Skill Selection
 
-- Call `spec-driven-workflow` when the task needs `/doc/spec/`, `/doc/plan.md`, planning horizons (`Long-Term`, `Mid-Term`, `Short-Term`), checkbox tracking, or deliberate commit-unit planning.
+- Call `spec-driven-workflow` when the task needs `/doc/spec/`, `/doc/plan.md`, ordered `Section`/`Subsection` planning, or deliberate commit-unit planning.
 - Call `enforce-react-spa-architecture` when the task changes React Router + Prisma app-code architecture, route/module placement, UI boundaries, client/server/domain boundaries, or verification expectations for the app itself.
 - Call `azure-spa-clean-architecture-bootstrap` when the task changes Azure hosting, Microsoft Entra ID or other identity wiring, secretless configuration, Azure infrastructure as code, deployment topology, or release automation.
 
