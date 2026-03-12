@@ -61,6 +61,35 @@ function formatMetric(seconds: number) {
   return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
 }
 
+function buildResultSummary(input: {
+  difficulty: "EASY" | "NORMAL" | "HARD" | "EXPERT";
+  gameName: string;
+  gameKey: string;
+  hintCount: number | null;
+  mistakeCount: number | null;
+  outcome: "clean" | "steady" | "pending";
+  primaryMetric: number;
+}) {
+  const detailParts = [
+    `${input.gameName} ${input.difficulty.toLowerCase()} cleared in ${formatMetric(input.primaryMetric)}`,
+  ];
+
+  if (input.gameKey === "minesweeper") {
+    detailParts.push(input.mistakeCount === 0 ? "no mistakes" : `${input.mistakeCount} mistake${input.mistakeCount === 1 ? "" : "s"}`);
+  }
+
+  if (input.gameKey === "sudoku") {
+    detailParts.push(input.hintCount === 0 ? "no hints" : `${input.hintCount} hint${input.hintCount === 1 ? "" : "s"}`);
+
+    if ((input.mistakeCount ?? 0) > 0) {
+      detailParts.push(`${input.mistakeCount} mistake${input.mistakeCount === 1 ? "" : "s"}`);
+    }
+  }
+
+  const sentence = `${detailParts.join(" with ")}`;
+  return input.outcome === "pending" ? `${sentence}, save pending.` : `${sentence}.`;
+}
+
 export async function recordGameplayResult(input: {
   actualMetrics?: {
     hintCount?: number;
@@ -107,7 +136,15 @@ export async function recordGameplayResult(input: {
     totalPointsDelta: leaderboardEligible ? metrics.competitivePoints : 0,
     rankDelta: leaderboardEligible ? 1 : null,
     isPersonalBest: input.outcome === "clean",
-    summaryText: `${game.name} ${input.difficulty.toLowerCase()} cleared in ${formatMetric(metrics.primaryMetric)}${input.outcome === "pending" ? ", save pending." : "."}`,
+    summaryText: buildResultSummary({
+      difficulty: input.difficulty,
+      gameKey: input.gameKey,
+      gameName: game.name,
+      hintCount: metrics.hintCount,
+      mistakeCount: metrics.mistakeCount,
+      outcome: input.outcome,
+      primaryMetric: metrics.primaryMetric,
+    }),
     sharePath: `/results/${resultId}`,
   });
 

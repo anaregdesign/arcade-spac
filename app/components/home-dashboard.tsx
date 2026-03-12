@@ -34,6 +34,7 @@ type HomeDashboardProps = {
     gameName: string;
     status: string;
     summaryText: string;
+    resultPath: string;
     totalPointsDelta: number;
     startedAt: string;
   }>;
@@ -114,6 +115,9 @@ export function HomeDashboard({ user, summaries, games, recentResults }: HomeDas
                 <div>
                   <strong>{result.gameName}</strong>
                   <p>{result.summaryText}</p>
+                  <Link className="inline-link" to={result.resultPath}>
+                    Open result
+                  </Link>
                 </div>
                 <div className="recent-result-meta">
                   <span className={result.status === "PENDING_SAVE" ? "status-badge status-badge-pending" : "status-badge status-badge-neutral"}>{result.status}</span>

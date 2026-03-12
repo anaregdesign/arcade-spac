@@ -79,6 +79,7 @@ Current production baseline:
 - [ ] Record concrete UI friction points that make the app feel slow, unclear, noisy, or awkward during play.
 - [ ] Implement and verify the highest-impact UX fixes before wider rollout.
 - [ ] Remove broken or misleading navigation targets, trim developer-facing copy, and keep only icons that improve clarity.
+- [ ] Restore local Azure SQL access for the developer runtime or document an approved local fallback so the Section 2 walkthrough can run end to end again.
 
 #### SubSubSection 2.1.0. Actual gameplay implementation
 - [x] Make `Minesweeper` playable in the shipped game screen, with real board interaction and result capture.
@@ -89,6 +90,11 @@ Current production baseline:
 
 #### SubSubSection 2.1.2. Friction inventory
 - [ ] Capture specific UI problems, affected screens, and why they feel bad in a game context.
+
+Current friction inventory:
+- `Result discoverability`: home `Recent results` items show status and points, but they need an explicit link back to the saved result screen.
+- `Cross-game navigation`: the game workspace and result screens need a direct way to jump to the other shipped game, matching the screen-flow spec.
+- `Local walkthrough blocker`: the local runtime currently fails against Azure SQL because the current Entra principal cannot modify the SQL server firewall or public network access.
 
 #### SubSubSection 2.1.3. UX polish fixes
 - [ ] Fix the highest-priority UX issues and re-verify the affected flows locally.

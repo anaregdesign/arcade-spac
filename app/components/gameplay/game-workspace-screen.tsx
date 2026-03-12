@@ -42,6 +42,11 @@ export function GameWorkspaceScreen({ game }: GameWorkspaceScreenProps) {
       : null;
   const hintCount = isSudoku ? String(sudoku.hintCount) : null;
   const canSaveResult = isMinesweeper || isSudoku ? isRunCleared : workspace.isPlaying;
+  const alternateGame = game.key === "minesweeper"
+    ? { href: "/games/sudoku", label: "Play Sudoku" }
+    : game.key === "sudoku"
+      ? { href: "/games/minesweeper", label: "Play Minesweeper" }
+      : null;
 
   useEffect(() => {
     workspace.setPlaying(sessionState === "playing");
@@ -178,6 +183,19 @@ export function GameWorkspaceScreen({ game }: GameWorkspaceScreenProps) {
               View rankings
             </Link>
           )}
+          {alternateGame
+            ? isLiveRun
+              ? (
+                <button className="action-link action-link-secondary" type="button" onClick={() => workspace.openLeaveConfirm(alternateGame.href)}>
+                  {alternateGame.label}
+                </button>
+              )
+              : (
+                <Link className="action-link action-link-secondary" to={alternateGame.href}>
+                  {alternateGame.label}
+                </Link>
+              )
+            : null}
         </div>
       </section>
 
@@ -372,7 +390,7 @@ export function GameWorkspaceScreen({ game }: GameWorkspaceScreenProps) {
             <Form method="post" onSubmit={() => workspace.finishRun()}>
               <input type="hidden" name="intent" value="abandon" />
               <input type="hidden" name="difficulty" value={workspace.difficulty} />
-              <input type="hidden" name="redirectTo" value={workspace.targetDestination === "rankings" ? "/rankings" : "/home"} />
+              <input type="hidden" name="redirectTo" value={workspace.targetDestination ?? "/home"} />
               <button className="action-link action-link-primary" type="submit">
                 Confirm leave
               </button>
@@ -388,6 +406,11 @@ export function GameWorkspaceScreen({ game }: GameWorkspaceScreenProps) {
         <Link className="action-link action-link-secondary" to="/rankings">
           Open rankings
         </Link>
+        {alternateGame ? (
+          <Link className="action-link action-link-secondary" to={alternateGame.href}>
+            {alternateGame.label}
+          </Link>
+        ) : null}
       </div>
     </div>
   );

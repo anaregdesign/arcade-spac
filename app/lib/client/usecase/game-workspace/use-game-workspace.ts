@@ -4,7 +4,7 @@ export function useGameWorkspace(initialDifficulty: "EASY" | "NORMAL" | "HARD" |
   const [difficulty, setDifficulty] = useState(initialDifficulty);
   const [isPlaying, setIsPlaying] = useState(false);
   const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
-  const [targetDestination, setTargetDestination] = useState<"home" | "rankings" | null>(null);
+  const [targetDestination, setTargetDestination] = useState<string | null>(null);
 
   return {
     difficulty,
@@ -17,7 +17,7 @@ export function useGameWorkspace(initialDifficulty: "EASY" | "NORMAL" | "HARD" |
     changeDifficulty(nextDifficulty: "EASY" | "NORMAL" | "HARD" | "EXPERT") {
       setDifficulty(nextDifficulty);
     },
-    openLeaveConfirm(destination: "home" | "rankings") {
+    openLeaveConfirm(destination: string) {
       setTargetDestination(destination);
       setShowLeaveConfirm(true);
     },

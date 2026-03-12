@@ -58,6 +58,7 @@ export async function getHomeDashboard(userId: string) {
       gameName: result.game.name,
       status: result.status,
       summaryText: result.summaryText,
+      resultPath: `/results/${result.id}`,
       totalPointsDelta: result.totalPointsDelta,
       startedAt: result.startedAt.toISOString(),
     })),

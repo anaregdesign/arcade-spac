@@ -28,6 +28,11 @@ function formatDuration(totalSeconds: number) {
 export function ResultScreen({ result }: ResultScreenProps) {
   const teamsShareHref = `https://teams.microsoft.com/share?href=${encodeURIComponent(result.shareUrl)}&msgText=${encodeURIComponent(result.shareText)}`;
   const canShare = result.status === "COMPLETED";
+  const alternateGame = result.gameKey === "minesweeper"
+    ? { href: "/games/sudoku", label: "Play Sudoku" }
+    : result.gameKey === "sudoku"
+      ? { href: "/games/minesweeper", label: "Play Minesweeper" }
+      : null;
 
   return (
     <div className="dashboard-stack">
@@ -90,14 +95,19 @@ export function ResultScreen({ result }: ResultScreenProps) {
         <p className="eyebrow">Actions</p>
         <h2 className="section-title">What next</h2>
         <div className="hero-actions">
+          <Link className="action-link action-link-primary" to={`/games/${result.gameKey}`}>
+            Replay {result.gameName}
+          </Link>
+          {alternateGame ? (
+            <Link className="action-link action-link-secondary" to={alternateGame.href}>
+              {alternateGame.label}
+            </Link>
+          ) : null}
           <Link className="action-link action-link-primary" to="/home">
             Back to home
           </Link>
           <Link className="action-link action-link-secondary" to="/rankings">
             Open rankings
-          </Link>
-          <Link className="action-link action-link-secondary" to={`/games/${result.gameKey}`}>
-            Replay {result.gameName}
           </Link>
           {canShare ? (
             <a className="action-link action-link-secondary" href={teamsShareHref} target="_blank" rel="noreferrer">
