@@ -4,15 +4,16 @@
 - Spec: /docs/spec/product-requirements.md
 - Flow: /docs/spec/screen-flow.md
 
-## Section 1. Highest Priority: Unblock Azure Production Readiness
-- [ ] Prepare the production data path so the hosted runtime can use a real relational store instead of the local SQLite path.
-- [ ] Validate the hosted runtime after production data and app registration values are available.
+## Section 1. Highest Priority: Reach Azure Production Go-Live
+- [x] Prepare the production data path so the hosted runtime can use a real relational store instead of the local SQLite path.
+- [ ] Roll out the SQL Server-compatible application image and revision to the hosted Container App.
+- [ ] Validate the hosted runtime and final release guardrails needed for production go-live.
 
 ### Subsection 1.1. Prepare the production data path
 - [x] Define the production database contract, migration commands, and deployment-time checks.
 - [x] Record the remaining blocker between the current SQLite implementation and the final hosted relational store.
-- [ ] Replace the remaining SQLite-only Prisma runtime with an Azure SQL Database-compatible Prisma path.
-- [ ] Provision and seed the actual Azure SQL Database resources used by the hosted app.
+- [x] Replace the remaining SQLite-only Prisma runtime with an Azure SQL Database-compatible Prisma path.
+- [x] Provision and seed the actual Azure SQL Database resources used by the hosted app.
 
 #### SubSubSection 1.1.1. Data contract and commands
 - [x] Add explicit production migration and status commands alongside a production-readiness data check.
@@ -28,19 +29,30 @@
 - [x] Regenerate the initial migration and seed path for Azure SQL Database.
 
 #### SubSubSection 1.1.5. Azure SQL rollout
-- [ ] Provision the Azure SQL logical server and database from the repo-managed infrastructure path.
-- [ ] Apply migrations and seed data to Azure SQL Database.
-- [ ] Point the hosted Container App at the Azure SQL Database connection string instead of any SQLite path.
+- [x] Provision the Azure SQL logical server and database from the repo-managed infrastructure path.
+- [x] Apply migrations and seed data to Azure SQL Database.
+- [x] Point the hosted Container App at the Azure SQL Database connection string instead of any SQLite path.
+
+#### SubSubSection 1.1.6. Hosted image cutover
+- [ ] Publish a GHCR image built from the SQL Server-compatible runtime and infrastructure commits.
+- [ ] Update the Azure Container App revision to run the new image instead of the SQLite-only preview image.
+- [ ] Confirm the new revision starts cleanly with Azure SQL and local auth enabled.
 
 ### Subsection 1.2. Validate the hosted runtime
 - [x] Configure deployment workflow and hosted smoke verification for the MVP user journeys.
 - [ ] Validate the Azure-hosted login, gameplay, rankings, profile, and result-sharing flows.
+- [ ] Close the remaining production go-live checks for runtime safety, monitoring, and rollback.
 
 #### SubSubSection 1.2.1. Hosted smoke and health checks
 - [x] Verify health checks, container packaging, and startup behavior for the deployed web runtime configuration path.
 
 #### SubSubSection 1.2.2. Hosted end-to-end verification
 - [ ] Validate the Azure-hosted login, gameplay, rankings, profile, and result-sharing flows with real deployment values.
+
+#### SubSubSection 1.2.3. Production go-live guardrails
+- [ ] Verify the production revision exposes `/health` successfully and stays healthy after rollout.
+- [ ] Capture the exact rollback target, SQL firewall state, and managed identity configuration needed for emergency recovery.
+- [ ] Confirm release-time observability inputs are in place: Application Insights visibility, error inspection path, and post-release smoke procedure.
 
 ## Section 2. Secondary Priority: Keep Azure Runtime Wiring Ready
 - [x] Complete Azure-aligned hosting, configuration, secrets, telemetry, and identity setup without restructuring the application later.
