@@ -53,7 +53,6 @@ export default function Profile() {
       titleEmoji="🪪"
       sectionLabel="Player card"
       title="Profile"
-      subtitle="Identity up top. Detail when needed."
       user={dashboard.user}
     >
       <ProfileScreen {...profile} />

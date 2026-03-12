@@ -16,23 +16,21 @@ type LoginScreenProps = {
 };
 
 export function LoginScreen({ authMode, entraSignInHref, returnTo, users }: LoginScreenProps) {
-  const eyebrow = authMode === "entra" ? "Microsoft Entra ID" : "Local development access";
+  const eyebrow = authMode === "entra" ? "🔐 Microsoft Entra ID" : "🧪 Local access";
 
   return (
     <main className="login-shell">
       <section className="login-hero">
         <p className="eyebrow">{eyebrow}</p>
         <h1>{authMode === "entra" ? "Sign in to Arcade" : "Choose a development identity"}</h1>
-        <p className="hero-copy">
-          {authMode === "entra"
-            ? "Use your Microsoft Entra ID account to continue into the tenant-scoped Arcade experience."
-            : "Use a seeded player profile to test the app locally without going through the hosted Microsoft Entra sign-in flow."}
-        </p>
-        {returnTo ? <p className="hero-copy">After sign-in, you will return to {returnTo}.</p> : null}
+        <div className="login-meta-row">
+          {returnTo ? <span className="status-badge status-badge-neutral">Return {returnTo}</span> : null}
+          {authMode === "entra" ? <span className="status-badge status-badge-neutral">Tenant sign-in</span> : <span className="status-badge status-badge-neutral">Seeded players</span>}
+        </div>
         {authMode === "entra" && entraSignInHref ? (
           <div className="hero-actions">
             <a className="action-link action-link-primary" href={entraSignInHref}>
-              Sign in with Microsoft Entra ID
+              Continue
             </a>
           </div>
         ) : null}
@@ -70,7 +68,7 @@ export function LoginScreen({ authMode, entraSignInHref, returnTo, users }: Logi
                 <input type="hidden" name="userId" value={user.id} />
                 <input type="hidden" name="redirectTo" value={returnTo ?? "/home"} />
                 <button className="action-link action-link-primary" type="submit">
-                  Sign in as {user.displayName}
+                  Continue as {user.displayName}
                 </button>
               </form>
             </article>

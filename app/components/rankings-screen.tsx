@@ -50,7 +50,7 @@ export function RankingsScreen({ filter, games, currentUserEntry, entries }: Ran
         <div className="section-heading">
           <div>
             <p className="eyebrow">🎛️ Board switch</p>
-            <h2 className="section-title">Track your current standing</h2>
+            <h2 className="section-title">Standings</h2>
           </div>
           <Link className="action-link action-link-secondary" to="/home">
             Back to home
@@ -86,7 +86,7 @@ export function RankingsScreen({ filter, games, currentUserEntry, entries }: Ran
         <article className="summary-card warm-card">
           <p className="eyebrow">🏁 You</p>
           <h2 className="section-title">{currentUserEntry ? `#${currentUserEntry.rank}` : "Unranked"}</h2>
-          <p>{currentUserEntry ? `${currentUserEntry.points} competitive points` : "Play ranked runs to enter the board."}</p>
+          <p>{currentUserEntry ? `${currentUserEntry.points} pts` : "No rank yet"}</p>
         </article>
         <article className="summary-card cool-card">
           <p className="eyebrow">👑 Leader gap</p>
@@ -96,7 +96,7 @@ export function RankingsScreen({ filter, games, currentUserEntry, entries }: Ran
         <article className="summary-card neutral-card">
           <p className="eyebrow">⚡ Next gap</p>
           <h2 className="section-title">{currentUserEntry?.deltaToNext ?? 0}</h2>
-          <p>{currentUserEntry ? "Use this to choose your next run." : "No adjacent rival yet."}</p>
+          <p>{currentUserEntry ? "Closest rival" : "No rival yet"}</p>
         </article>
       </section>
 
@@ -108,7 +108,7 @@ export function RankingsScreen({ filter, games, currentUserEntry, entries }: Ran
           </div>
         </div>
         <details className="disclosure-card">
-          <summary>Quick play links</summary>
+          <summary>Play</summary>
           <div className="hero-actions disclosure-body compact-actions">
             {games.map((game) => (
               <Link key={game.key} className="action-link action-link-secondary" to={`/games/${game.key}`}>

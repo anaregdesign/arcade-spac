@@ -67,17 +67,17 @@ export function GameWorkspaceScreen({ game }: GameWorkspaceScreenProps) {
           <span className="status-badge" style={{ backgroundColor: `${game.accentColor}22`, color: game.accentColor }}>
             {isMinesweeper
               ? isRunCleared
-                ? "Board cleared"
+                ? "Cleared"
                 : isLiveRun
-                  ? "Board live"
+                  ? "Running"
                   : "Ready"
               : isSudoku
                 ? isRunCleared
-                  ? "Puzzle solved"
+                  ? "Solved"
                   : isLiveRun
-                    ? "Puzzle live"
+                    ? "Running"
                     : "Ready"
-                : workspace.isPlaying ? "Active run" : "Ready"}
+                : workspace.isPlaying ? "Running" : "Ready"}
           </span>
         </div>
         <div className="workspace-toolbar">
@@ -160,17 +160,17 @@ export function GameWorkspaceScreen({ game }: GameWorkspaceScreenProps) {
           >
             {isMinesweeper
               ? isLiveRun
-                ? "Board live"
+                ? "Running"
                 : isRunCleared
                   ? "Start another board"
                   : "Start run"
               : isSudoku
                 ? isLiveRun
-                  ? "Puzzle live"
+                  ? "Running"
                   : isRunCleared
                     ? "Start another puzzle"
                     : "Start run"
-                : workspace.isPlaying ? "Run in progress" : "Start run"}
+                : workspace.isPlaying ? "Running" : "Start run"}
           </button>
           {isLiveRun ? (
             <button className="action-link action-link-secondary" type="button" onClick={() => workspace.openLeaveConfirm("home")}>
@@ -205,14 +205,14 @@ export function GameWorkspaceScreen({ game }: GameWorkspaceScreenProps) {
             : null}
         </div>
         <details className="disclosure-card workspace-disclosure">
-          <summary>How this run works</summary>
+          <summary>Rules</summary>
           <div className="disclosure-body compact-copy">
             <p>{game.rulesSummary}</p>
             <ul className="detail-list compact-detail-list">
-              <li>Leaving a live run asks for confirmation before it is marked abandoned.</li>
-              <li>Saved-later results stay visible, but rankings wait until retry succeeds.</li>
-              <li>After a clear, the result screen is where you replay, share, or switch games.</li>
-              {isSudoku ? <li>Number keys work on the selected cell, and H uses a hint.</li> : null}
+              <li>Leaving mid-run asks for confirmation.</li>
+              <li>Pending saves do not rank yet.</li>
+              <li>Clear first, then save.</li>
+              {isSudoku ? <li>Number keys work. `H` uses a hint.</li> : null}
             </ul>
           </div>
         </details>
@@ -226,7 +226,7 @@ export function GameWorkspaceScreen({ game }: GameWorkspaceScreenProps) {
               <h2 className="section-title">Clear every safe tile</h2>
             </div>
             <span className="status-badge status-badge-neutral">
-              {isRunCleared ? "Ready to save" : isLiveRun ? "Left click to reveal, right click to flag" : "Start a run to begin"}
+              {isRunCleared ? "Ready to save" : isLiveRun ? "Reveal / flag" : "Start to begin"}
             </span>
           </div>
           <div className="minesweeper-shell">
@@ -276,7 +276,7 @@ export function GameWorkspaceScreen({ game }: GameWorkspaceScreenProps) {
               <h2 className="section-title">Fill every row, column, and box</h2>
             </div>
             <span className="status-badge status-badge-neutral">
-              {isRunCleared ? "Ready to save" : isLiveRun ? "Select a cell, then use the keypad or number keys" : "Start a run to begin"}
+              {isRunCleared ? "Ready to save" : isLiveRun ? "Pick a cell / enter a number" : "Start to begin"}
             </span>
           </div>
           <div className="sudoku-shell">
@@ -335,7 +335,7 @@ export function GameWorkspaceScreen({ game }: GameWorkspaceScreenProps) {
         <div className="section-heading">
           <div>
             <p className="eyebrow">✨ Finish</p>
-            <h2 className="section-title">{isMinesweeper || isSudoku ? "Save the clear you just played" : "Choose how this run ended"}</h2>
+            <h2 className="section-title">{isMinesweeper || isSudoku ? "Save this clear" : "Finish run"}</h2>
           </div>
           <span className="status-badge status-badge-neutral">
             {navigation.state === "submitting"
@@ -344,9 +344,9 @@ export function GameWorkspaceScreen({ game }: GameWorkspaceScreenProps) {
                 ? isRunCleared
                   ? "Clear ready to save"
                   : isSudoku
-                    ? "Solve the puzzle to unlock result actions"
-                    : "Clear the board to unlock result actions"
-                : workspace.isPlaying ? "Ready to record" : "Start a run to unlock results"}
+                    ? "Solve to save"
+                    : "Clear to save"
+                : workspace.isPlaying ? "Ready" : "Start to unlock"}
           </span>
         </div>
         <div className="hero-actions compact-action-strip">

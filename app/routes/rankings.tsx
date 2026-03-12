@@ -29,7 +29,6 @@ export default function Rankings() {
       titleEmoji="🏆"
       sectionLabel="Leaderboard"
       title="Rankings"
-      subtitle="See your place at a glance."
       user={dashboard.user}
     >
       <RankingsScreen {...rankings} />

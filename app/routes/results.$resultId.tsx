@@ -65,7 +65,6 @@ export default function ResultRoute() {
       titleEmoji="✨"
       sectionLabel="Run result"
       title={`${result.gameName} result`}
-      subtitle="Impact first. Actions next."
       user={dashboard.user}
     >
       <ResultScreen result={result} />

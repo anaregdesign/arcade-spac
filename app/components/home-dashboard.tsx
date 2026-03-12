@@ -67,7 +67,7 @@ export function HomeDashboard({ user, summaries, games, recentResults }: HomeDas
         <article className="summary-card cool-card">
           <p className="eyebrow">📈 Momentum</p>
           <h2 className="section-title">{summaries.trendDelta >= 0 ? `+${summaries.trendDelta}` : summaries.trendDelta}</h2>
-          <p>{summaries.recentPlaySummary}</p>
+          <p>Recent trend</p>
         </article>
         <article className="summary-card neutral-card">
           <p className="eyebrow">🔥 Activity</p>
@@ -124,7 +124,7 @@ export function HomeDashboard({ user, summaries, games, recentResults }: HomeDas
                   </div>
                 </dl>
                 <div className="game-card-footer">
-                  <p className="recommendation-copy">{game.recommendationText ?? "Play again to improve your total score."}</p>
+                  <p className="recommendation-copy">{game.recommendationText ?? "Next run"}</p>
                   <Link className="action-link action-link-primary" to={`/games/${game.key}`}>
                     Open {game.name}
                   </Link>
@@ -138,7 +138,7 @@ export function HomeDashboard({ user, summaries, games, recentResults }: HomeDas
           <div className="section-heading">
             <div>
               <p className="eyebrow">🧭 Right now</p>
-              <h2 className="section-title">Keep context light</h2>
+              <h2 className="section-title">Now</h2>
             </div>
           </div>
           {latestResult ? (
@@ -158,12 +158,12 @@ export function HomeDashboard({ user, summaries, games, recentResults }: HomeDas
           ) : (
             <article className="latest-result-card">
               <strong>No runs yet</strong>
-              <p className="compact-copy">Start with either board and the latest result will appear here.</p>
+              <p className="compact-copy">Start a board.</p>
             </article>
           )}
           {remainingResults.length > 0 ? (
             <details className="disclosure-card">
-              <summary>More recent activity</summary>
+              <summary>More</summary>
               <div className="recent-results-list disclosure-body">
                 {remainingResults.map((result) => (
                   <article key={result.id} className="recent-result-item">

@@ -27,7 +27,6 @@ export default function Home() {
       titleEmoji="🎮"
       sectionLabel="Play hub"
       title={`Hi, ${dashboard.user.displayName}`}
-      subtitle="Pick fast. Play fast."
       user={dashboard.user}
     >
       <HomeDashboard {...dashboard} />

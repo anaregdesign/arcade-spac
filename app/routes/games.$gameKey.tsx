@@ -74,7 +74,6 @@ export default function GameWorkspace() {
       titleEmoji="🕹️"
       sectionLabel="Game room"
       title={`${game.name}`}
-      subtitle="Board first. Extras second."
       user={dashboard.user}
     >
       <GameWorkspaceScreen game={game} />

@@ -88,7 +88,7 @@ export function ProfileScreen({ profile, activity, overall, games, trend }: Prof
           </article>
         </div>
         <details className="disclosure-card profile-edit-disclosure">
-          <summary>Edit profile settings</summary>
+          <summary>Edit</summary>
           <div className="disclosure-body">
             <Form method="post" className="profile-form-grid">
               <label className="field-block">
@@ -194,7 +194,7 @@ export function ProfileScreen({ profile, activity, overall, games, trend }: Prof
               </svg>
             </div>
           ) : (
-            <p>No trend data yet.</p>
+            <p className="compact-copy">No runs yet.</p>
           )}
           <div className="trend-list">
             {recentTrend.map((item) => (
@@ -212,7 +212,7 @@ export function ProfileScreen({ profile, activity, overall, games, trend }: Prof
           </div>
           {trend.length > 3 ? (
             <details className="disclosure-card">
-              <summary>More score movement</summary>
+              <summary>More</summary>
               <div className="trend-list disclosure-body">
                 {trend.slice(0, -3).reverse().map((item) => (
                   <article key={`${item.label}-${item.index}`} className="recent-result-item">

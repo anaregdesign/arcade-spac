@@ -117,8 +117,8 @@ export function ResultScreen({ result }: ResultScreenProps) {
       {result.status === "PENDING_SAVE" ? (
         <section className="feature-card workspace-card">
           <p className="eyebrow">⏳ Pending save</p>
-          <h2 className="section-title">Retry result persistence</h2>
-          <p className="compact-copy">Visible now. Ranked after retry succeeds.</p>
+          <h2 className="section-title">Retry save</h2>
+          <p className="compact-copy">Not ranked yet.</p>
           <Form method="post" className="hero-actions">
             <input type="hidden" name="intent" value="retryPending" />
             <button className="action-link action-link-primary" type="submit">
@@ -130,13 +130,13 @@ export function ResultScreen({ result }: ResultScreenProps) {
 
       <section className="feature-card workspace-card">
         <p className="eyebrow">🏠 Return</p>
-        <h2 className="section-title">Leave this result</h2>
+        <h2 className="section-title">Back</h2>
         <div className="hero-actions compact-action-strip">
           <Link className="action-link action-link-primary" to="/home">
             Back to home
           </Link>
         </div>
-        {!canShare ? <p className="compact-copy">Pending or interrupted results stay private until finalized.</p> : null}
+        {!canShare ? <p className="compact-copy">Share unlocks after save.</p> : null}
       </section>
     </div>
   );
