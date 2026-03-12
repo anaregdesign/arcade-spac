@@ -1,28 +1,34 @@
+import { useLoaderData } from "react-router";
+
 import type { Route } from "./+types/home";
-import { Button } from "@fluentui/react-components";
+import { AppShell } from "../components/app-shell";
+import { HomeDashboard } from "../components/home-dashboard";
+import { requireCurrentUserId } from "../lib/server/infrastructure/auth/session.server";
+import { getHomeDashboard } from "../lib/server/usecase/get-home-dashboard.server";
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "Arcade" },
-    { name: "description", content: "Arcade application bootstrap." },
+    { title: "Arcade Home" },
+    { name: "description", content: "Arcade dashboard and game selection." },
   ];
 }
 
+export async function loader({ request }: Route.LoaderArgs) {
+  const userId = await requireCurrentUserId(request);
+  return getHomeDashboard(userId);
+}
+
 export default function Home() {
+  const dashboard = useLoaderData<typeof loader>();
+
   return (
-    <main className="landing-shell">
-      <section className="landing-hero">
-        <p className="eyebrow">Arcade</p>
-        <h1>Azure deployment-ready arcade app bootstrap</h1>
-        <p className="hero-copy">
-          The app runtime is in place. The next slices add persistence, gameplay,
-          rankings, profile views, and Azure-backed identity plus deployment.
-        </p>
-        <div className="hero-actions">
-          <Button appearance="primary">Continue implementation</Button>
-          <Button appearance="secondary">Review plan</Button>
-        </div>
-      </section>
-    </main>
+    <AppShell
+      currentPath="home"
+      title={`Welcome back, ${dashboard.user.displayName}`}
+      subtitle="Choose your next game and track where to push your score next."
+      user={dashboard.user}
+    >
+      <HomeDashboard {...dashboard} />
+    </AppShell>
   );
 }

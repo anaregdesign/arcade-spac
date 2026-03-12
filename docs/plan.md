@@ -21,7 +21,9 @@
 ## Short-Term
 - [x] Scaffold the React Router framework app in this repository and install the baseline dependencies needed for the MVP
 - [x] Create the initial domain and persistence model for users, games, play results, rankings, and onboarding state with local development seeds
-- [ ] Implement the shared application shell, login entry, home dashboard, and core navigation so the main user journey is executable
+- [x] Implement the shared application shell, login entry, home dashboard, and core navigation so the main user journey is executable
+- [ ] Implement game workspace interactions, result screen flow, interruption confirmation, and pending-save handling for both games
+- [ ] Implement leaderboard and profile screens with the seeded aggregates, trend views, and Teams-share-ready result summaries
 
 ## External Prerequisites
 - [ ] Document the Azure subscription, tenant, app registration, callback URLs, App Configuration endpoint, Key Vault values, and deployment identities required to perform a real hosted deployment
