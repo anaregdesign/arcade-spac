@@ -47,6 +47,8 @@ var normalizedAppName = toLower(replace(appName, '-', ''))
 var keyVaultName = take('kv${normalizedAppName}${uniqueString(subscription().id, resourceGroup().id)}', 24)
 var sqlServerName = take('sql-${appName}-${uniqueString(resourceGroup().id)}', 63)
 var sqlMigrationIdentityName = take('id-sql-migrate-${appName}', 24)
+var sqlManagedIdentityConnectionString = 'sqlserver://${sqlServerName}.database.windows.net;database=${sqlDatabaseName};authentication=ActiveDirectoryManagedIdentity;encrypt=true;trustServerCertificate=false'
+var effectiveDatabaseUrl = deploySql ? sqlManagedIdentityConnectionString : databaseUrl
 var appConfigDataReaderRoleDefinitionId = subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '516239f1-63e1-4d78-a4de-a74fb236a071')
 var keyVaultSecretsUserRoleDefinitionId = subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '4633458b-17de-408a-b874-0445c86b69e6')
 
@@ -115,35 +117,18 @@ resource sqlServer 'Microsoft.Sql/servers@2024-11-01-preview' = if (deploySql) {
   location: location
   tags: tags
   properties: {
-    administratorLogin: sqlAdministratorLogin
-    administratorLoginPassword: sqlAdministratorPassword
+    administrators: {
+      administratorType: 'ActiveDirectory'
+      azureADOnlyAuthentication: true
+      login: sqlEntraAdminLogin
+      sid: sqlEntraAdminObjectId
+      tenantId: tenant().tenantId
+    }
     minimalTlsVersion: '1.2'
     publicNetworkAccess: 'Enabled'
     restrictOutboundNetworkAccess: 'Disabled'
     version: '12.0'
   }
-}
-
-resource sqlServerEntraAdministrator 'Microsoft.Sql/servers/administrators@2024-11-01-preview' = if (deploySql) {
-  parent: sqlServer
-  name: 'ActiveDirectory'
-  properties: {
-    administratorType: 'ActiveDirectory'
-    login: sqlEntraAdminLogin
-    sid: sqlEntraAdminObjectId
-    tenantId: tenant().tenantId
-  }
-}
-
-resource sqlServerAdOnlyAuthentication 'Microsoft.Sql/servers/azureADOnlyAuthentications@2024-11-01-preview' = if (deploySql) {
-  parent: sqlServer
-  name: 'Default'
-  properties: {
-    azureADOnlyAuthentication: true
-  }
-  dependsOn: [
-    sqlServerEntraAdministrator
-  ]
 }
 
 resource sqlDatabase 'Microsoft.Sql/servers/databases@2024-11-01-preview' = if (deploySql) {
@@ -160,10 +145,18 @@ resource sqlDatabase 'Microsoft.Sql/servers/databases@2024-11-01-preview' = if (
   properties: {
     autoPauseDelay: 60
     minCapacity: 1
-    maintenanceConfigurationId: resourceId('Microsoft.Maintenance/publicMaintenanceConfigurations', 'SQL_Default')
     readScale: 'Disabled'
     requestedBackupStorageRedundancy: 'Local'
     zoneRedundant: false
+  }
+}
+
+resource sqlAzureServicesFirewallRule 'Microsoft.Sql/servers/firewallRules@2024-11-01-preview' = if (deploySql) {
+  parent: sqlServer
+  name: 'AllowAzureServices'
+  properties: {
+    startIpAddress: '0.0.0.0'
+    endIpAddress: '0.0.0.0'
   }
 }
 
@@ -205,7 +198,7 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
           }
           {
             name: 'database-url'
-            value: databaseUrl
+            value: effectiveDatabaseUrl
           }
         ],
         authMode == 'entra' && hasEntraClientSecret
