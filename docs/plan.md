@@ -13,7 +13,7 @@
 - [x] Implement domain models, persistence, seeded data, and ranking or scoring calculations for local development.
 - [x] Implement authenticated application flows, shared layout, and navigation across the required core screens.
 - [ ] Implement Minesweeper and Sudoku gameplay flows, result handling, interruption handling, and pending-save recovery.
-- [ ] Implement leaderboard, profile, charting, Microsoft Teams sharing flow, and developer-facing verification notes.
+- [x] Implement leaderboard, profile, charting, Microsoft Teams sharing flow, and developer-facing verification notes.
 
 #### SubSubSection 1.1.1. Runtime and persistence foundation
 - [x] Scaffold the React Router framework app in this repository and install the baseline dependencies needed for the MVP.
@@ -27,8 +27,8 @@
 - [x] Implement game workspace interactions, result screen flow, interruption confirmation, and pending-save handling for both games.
 
 #### SubSubSection 1.1.4. Rankings, profile, and sharing workflow
-- [ ] Implement leaderboard and profile screens with the seeded aggregates, trend views, and Teams-share-ready result summaries.
-- [ ] Ensure the result flow exposes Teams-share-ready messaging and return navigation consistent with the screen flow.
+- [x] Implement leaderboard and profile screens with the seeded aggregates, trend views, and Teams-share-ready result summaries.
+- [x] Ensure the result flow exposes Teams-share-ready messaging and return navigation consistent with the screen flow.
 
 ### Subsection 1.2. Prepare the application runtime for Azure hosting
 - [ ] Add Azure-ready server configuration, health checks, container packaging, and deployment assets for the web runtime.

@@ -195,6 +195,10 @@ a {
   cursor: not-allowed;
 }
 
+.compact-actions {
+  margin-top: 0;
+}
+
 .dashboard-stack {
   display: grid;
   gap: 24px;
@@ -313,6 +317,16 @@ a {
   color: #173043;
 }
 
+.field-input {
+  min-height: 44px;
+  padding: 0 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(23, 48, 67, 0.16);
+  background: rgba(255, 255, 255, 0.9);
+  font: inherit;
+  color: #173043;
+}
+
 .detail-list {
   margin: 16px 0 0;
   padding-left: 20px;
@@ -329,6 +343,110 @@ a {
 .recent-results-list {
   display: grid;
   gap: 14px;
+}
+
+.filter-stack {
+  display: grid;
+  gap: 12px;
+}
+
+.pill-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.filter-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 16px;
+  border-radius: 999px;
+  background: rgba(23, 48, 67, 0.08);
+  font-weight: 700;
+}
+
+.filter-pill-active {
+  background: #173043;
+  color: #f8fafc;
+}
+
+.rankings-shell-card,
+.profile-shell-card {
+  max-width: 960px;
+}
+
+.rankings-list,
+.trend-list {
+  display: grid;
+  gap: 14px;
+}
+
+.ranking-row {
+  padding: 18px;
+  border-radius: 22px;
+  background: rgba(248, 250, 251, 0.86);
+  border: 1px solid rgba(23, 48, 67, 0.08);
+}
+
+.ranking-row-active {
+  border-color: rgba(152, 107, 22, 0.3);
+  background: linear-gradient(180deg, rgba(255, 247, 223, 0.95), rgba(255, 255, 255, 0.9));
+}
+
+.ranking-main {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.ranking-rank {
+  margin: 0 0 6px;
+  font-size: 0.88rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #986b16;
+}
+
+.ranking-points {
+  display: grid;
+  justify-items: end;
+  gap: 4px;
+}
+
+.profile-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.profile-form-wide {
+  grid-column: 1 / -1;
+}
+
+.profile-preview-card {
+  padding: 20px;
+}
+
+.profile-form-actions {
+  align-items: center;
+}
+
+.trend-chart-shell {
+  margin-top: 8px;
+  border-radius: 20px;
+  background: rgba(248, 250, 251, 0.86);
+  border: 1px solid rgba(23, 48, 67, 0.08);
+  padding: 12px;
+}
+
+.trend-chart {
+  display: block;
+  width: 100%;
+  height: 160px;
 }
 
 .login-card-header {
@@ -417,7 +535,8 @@ a {
   .game-grid,
   .login-grid,
   .stat-grid,
-  .compact-stat-grid {
+  .compact-stat-grid,
+  .profile-form-grid {
     grid-template-columns: 1fr;
   }
 

@@ -1,29 +1,36 @@
 import { useLoaderData } from "react-router";
 
 import { AppShell } from "../components/app-shell";
+import { RankingsScreen } from "../components/rankings-screen";
 import { requireCurrentUserId } from "../lib/server/infrastructure/auth/session.server";
 import { getHomeDashboard } from "../lib/server/usecase/get-home-dashboard.server";
+import { getRankingsView } from "../lib/server/usecase/get-rankings-view.server";
 
 export async function loader({ request }: { request: Request }) {
   const userId = await requireCurrentUserId(request);
-  return getHomeDashboard(userId);
+  const url = new URL(request.url);
+  const period = url.searchParams.get("period") === "lifetime" ? "LIFETIME" : "SEASON";
+  const scopeParam = url.searchParams.get("scope");
+  const scope = scopeParam === "minesweeper" || scopeParam === "sudoku" ? scopeParam : "overall";
+  const [dashboard, rankings] = await Promise.all([
+    getHomeDashboard(userId),
+    getRankingsView(userId, { period, scope }),
+  ]);
+
+  return { dashboard, rankings };
 }
 
 export default function Rankings() {
-  const dashboard = useLoaderData<typeof loader>();
+  const { dashboard, rankings } = useLoaderData<typeof loader>();
 
   return (
     <AppShell
       currentPath="rankings"
       title="Rankings"
-      subtitle="Leaderboard details arrive in the next slice. The route and navigation contract are already in place."
+      subtitle="Switch overall versus game boards and keep your own standing in view while choosing the next game to push."
       user={dashboard.user}
     >
-      <section className="feature-card workspace-card">
-        <p className="eyebrow">Season preview</p>
-        <h2 className="section-title">Your current rank is {dashboard.summaries.seasonRank ? `#${dashboard.summaries.seasonRank}` : "unranked"}</h2>
-        <p>{dashboard.summaries.recentPlaySummary}</p>
-      </section>
+      <RankingsScreen {...rankings} />
     </AppShell>
   );
 }
