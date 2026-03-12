@@ -62,12 +62,20 @@
 - [ ] Confirm release-time observability inputs are in place: Application Insights visibility, error inspection path, and post-release smoke procedure.
 
 ## Section 2. Secondary Priority: Close Local UX Gaps Before Wider Rollout
+- [ ] Make the game screens actually playable instead of result simulation only.
 - [ ] Run the app locally as a player, identify any UI that feels unpleasant for a game flow, and fix the highest-impact issues.
+- [ ] Clean up broken links, unnecessary copy, and unnecessary icons so the product feels intentional.
 
 ### Subsection 2.1. Local gameplay and UX audit
+- [ ] Replace placeholder gameplay flows with real game interaction for the shipped game screens.
 - [ ] Exercise the local login, home, gameplay, results, rankings, and profile flows with a game-player mindset.
 - [ ] Record concrete UI friction points that make the app feel slow, unclear, noisy, or awkward during play.
 - [ ] Implement and verify the highest-impact UX fixes before wider rollout.
+- [ ] Remove broken or misleading navigation targets, trim developer-facing copy, and keep only icons that improve clarity.
+
+#### SubSubSection 2.1.0. Actual gameplay implementation
+- [ ] Make `Minesweeper` playable in the shipped game screen, with real board interaction and result capture.
+- [ ] Make `Sudoku` playable in the shipped game screen, with real puzzle interaction and result capture.
 
 #### SubSubSection 2.1.1. Local player walkthrough
 - [ ] Run the app locally and walk the primary user journeys end to end.
@@ -77,6 +85,10 @@
 
 #### SubSubSection 2.1.3. UX polish fixes
 - [ ] Fix the highest-priority UX issues and re-verify the affected flows locally.
+
+#### SubSubSection 2.1.4. Link and chrome cleanup
+- [ ] Remove or repair broken links and any navigation that does not work as presented.
+- [ ] Remove unnecessary explanatory text, placeholder labels, and any icons that do not improve comprehension.
 
 ## Section 3. Secondary Priority: Keep Azure Runtime Wiring Ready
 - [x] Complete Azure-aligned hosting, configuration, secrets, telemetry, and identity setup without restructuring the application later.

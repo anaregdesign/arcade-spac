@@ -20,17 +20,31 @@ export async function action({ request, params }: Route.ActionArgs) {
   const formData = await request.formData();
   const intent = formData.get("intent");
   const difficulty = formData.get("difficulty");
+  const primaryMetricInput = formData.get("primaryMetric");
+  const mistakeCountInput = formData.get("mistakeCount");
+  const hintCountInput = formData.get("hintCount");
 
   if (typeof difficulty !== "string" || !["EASY", "NORMAL", "HARD", "EXPERT"].includes(difficulty)) {
     throw new Response("Difficulty is required", { status: 400 });
   }
 
   if (intent === "completeClean" || intent === "completeSteady" || intent === "completePending") {
+    const primaryMetric = typeof primaryMetricInput === "string" && primaryMetricInput ? Number(primaryMetricInput) : undefined;
+    const mistakeCount = typeof mistakeCountInput === "string" && mistakeCountInput ? Number(mistakeCountInput) : undefined;
+    const hintCount = typeof hintCountInput === "string" && hintCountInput ? Number(hintCountInput) : undefined;
+
     const resultId = await recordGameplayResult({
       userId,
       gameKey: params.gameKey,
       difficulty: difficulty as "EASY" | "NORMAL" | "HARD" | "EXPERT",
       outcome: intent === "completeClean" ? "clean" : intent === "completeSteady" ? "steady" : "pending",
+      actualMetrics: primaryMetric && Number.isFinite(primaryMetric)
+        ? {
+            primaryMetric,
+            mistakeCount: mistakeCount !== undefined && Number.isFinite(mistakeCount) ? mistakeCount : undefined,
+            hintCount: hintCount !== undefined && Number.isFinite(hintCount) ? hintCount : undefined,
+          }
+        : undefined,
     });
 
     return redirect(`/results/${resultId}`);
@@ -57,8 +71,8 @@ export default function GameWorkspace() {
   return (
     <AppShell
       currentPath="games"
-      title={`${game.name} workspace`}
-      subtitle="Gameplay implementation lands in the next slice. Navigation and context are ready now."
+      title={`${game.name} play`}
+      subtitle="Warm up, choose a difficulty, and log the outcome you want to review on the result screen."
       user={dashboard.user}
     >
       <GameWorkspaceScreen game={game} />

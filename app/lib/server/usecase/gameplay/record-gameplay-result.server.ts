@@ -30,6 +30,31 @@ function computeMetrics(gameKey: string, difficulty: keyof typeof difficultyBase
   };
 }
 
+function computeActualMetrics(input: {
+  difficulty: keyof typeof difficultyBasePoints;
+  gameKey: string;
+  hintCount?: number;
+  mistakeCount?: number;
+  outcome: "clean" | "steady" | "pending";
+  primaryMetric: number;
+}) {
+  const base = difficultyBasePoints[input.difficulty];
+  const primaryMetric = Math.max(1, Math.round(input.primaryMetric));
+  const hintCount = input.gameKey === "sudoku" ? Math.max(0, Math.round(input.hintCount ?? 0)) : null;
+  const mistakeCount = input.gameKey === "minesweeper" ? Math.max(0, Math.round(input.mistakeCount ?? 0)) : null;
+  const penalty = input.gameKey === "minesweeper"
+    ? Math.round(primaryMetric * 1.35) + (mistakeCount ?? 0) * 120
+    : Math.round(primaryMetric * 0.9) + (hintCount ?? 0) * 90;
+  const pendingModifier = input.outcome === "pending" ? 0.72 : 1;
+
+  return {
+    primaryMetric,
+    competitivePoints: Math.max(Math.round(base * 0.25), Math.round((base - penalty) * pendingModifier)),
+    hintCount,
+    mistakeCount,
+  };
+}
+
 function formatMetric(seconds: number) {
   const minutes = Math.floor(seconds / 60);
   const remainingSeconds = seconds % 60;
@@ -37,6 +62,11 @@ function formatMetric(seconds: number) {
 }
 
 export async function recordGameplayResult(input: {
+  actualMetrics?: {
+    hintCount?: number;
+    mistakeCount?: number;
+    primaryMetric: number;
+  };
   userId: string;
   gameKey: string;
   difficulty: "EASY" | "NORMAL" | "HARD" | "EXPERT";
@@ -48,7 +78,16 @@ export async function recordGameplayResult(input: {
     throw new Response("Game not found", { status: 404 });
   }
 
-  const metrics = computeMetrics(input.gameKey, input.difficulty, input.outcome);
+  const metrics = input.actualMetrics
+    ? computeActualMetrics({
+        difficulty: input.difficulty,
+        gameKey: input.gameKey,
+        hintCount: input.actualMetrics.hintCount,
+        mistakeCount: input.actualMetrics.mistakeCount,
+        outcome: input.outcome,
+        primaryMetric: input.actualMetrics.primaryMetric,
+      })
+    : computeMetrics(input.gameKey, input.difficulty, input.outcome);
   const status = input.outcome === "pending" ? "PENDING_SAVE" : "COMPLETED";
   const leaderboardEligible = status === "COMPLETED";
   const resultId = `play-${randomUUID()}`;

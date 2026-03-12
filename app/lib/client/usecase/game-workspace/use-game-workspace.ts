@@ -30,5 +30,13 @@ export function useGameWorkspace(initialDifficulty: "EASY" | "NORMAL" | "HARD" |
       setShowLeaveConfirm(false);
       setTargetDestination(null);
     },
+    setPlaying(nextValue: boolean) {
+      setIsPlaying(nextValue);
+
+      if (!nextValue) {
+        setShowLeaveConfirm(false);
+        setTargetDestination(null);
+      }
+    },
   };
 }
