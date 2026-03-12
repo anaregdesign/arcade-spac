@@ -6,8 +6,8 @@
 
 ## Section 1. Highest Priority: Reach Azure Production Go-Live
 - [x] Prepare the production data path so the hosted runtime can use a real relational store instead of the local SQLite path.
-- [ ] Roll out the SQL Server-compatible application image and revision to the hosted Container App.
-- [ ] Validate the hosted runtime and final release guardrails needed for production go-live.
+- [ ] Roll out the production release image through the GitHub release path and land it on the hosted Container App.
+- [ ] Validate the hosted runtime, Microsoft Entra ID login path, and final go-live guardrails needed for production release.
 
 ### Subsection 1.1. Prepare the production data path
 - [x] Define the production database contract, migration commands, and deployment-time checks.
@@ -34,10 +34,11 @@
 - [x] Point the hosted Container App at the Azure SQL Database connection string instead of any SQLite path.
 
 #### SubSubSection 1.1.6. Hosted image cutover
-- [ ] Push the release-ready SQL Server-compatible commits to the default GitHub branch.
-- [ ] Publish a non-prerelease GitHub release so the repository workflow builds and publishes the immutable GHCR image.
-- [ ] Update the Azure Container App revision to run the release image instead of the SQLite-only preview image.
-- [ ] Confirm the new revision starts cleanly with Azure SQL and local auth enabled.
+- [x] Push the release-ready SQL Server-compatible commits to the default GitHub branch.
+- [x] Publish a non-prerelease GitHub release so the repository workflow builds and publishes the immutable GHCR image.
+- [ ] Ensure a GitHub release automatically drives Azure CD for production by providing the required `production` environment values and OIDC wiring.
+- [x] Update the Azure Container App revision to run the latest release image instead of the preview image when workflow CD is blocked.
+- [x] Confirm the new revision starts cleanly with Azure SQL and the intended hosted auth mode enabled.
 
 ### Subsection 1.2. Validate the hosted runtime
 - [x] Configure deployment workflow and hosted smoke verification for the MVP user journeys.
@@ -48,63 +49,84 @@
 - [x] Verify health checks, container packaging, and startup behavior for the deployed web runtime configuration path.
 
 #### SubSubSection 1.2.2. Hosted end-to-end verification
-- [ ] Validate the Azure-hosted login, gameplay, rankings, profile, and result-sharing flows with real deployment values.
+- [x] Validate the Azure-hosted local-auth login, gameplay, rankings, profile, and result-sharing flows with real deployment values.
 
-#### SubSubSection 1.2.3. Production go-live guardrails
-- [ ] Verify the production revision exposes `/health` successfully and stays healthy after rollout.
+#### SubSubSection 1.2.3. Hosted Entra ID verification
+- [ ] Complete the production Microsoft Entra ID runtime configuration, callback URLs, and secret wiring.
+- [ ] Verify Microsoft Entra ID sign-in, callback, session establishment, and sign-out on the hosted app.
+
+#### SubSubSection 1.2.4. Production go-live guardrails
+- [x] Verify the production revision exposes `/health` successfully and stays healthy after rollout.
 - [ ] Record the exact release tag, image reference, and deployed Container App revision used for production.
 - [ ] Capture the exact rollback target, SQL firewall state, and managed identity configuration needed for emergency recovery.
 - [ ] Confirm release-time observability inputs are in place: Application Insights visibility, error inspection path, and post-release smoke procedure.
 
-## Section 2. Secondary Priority: Keep Azure Runtime Wiring Ready
+## Section 2. Secondary Priority: Close Local UX Gaps Before Wider Rollout
+- [ ] Run the app locally as a player, identify any UI that feels unpleasant for a game flow, and fix the highest-impact issues.
+
+### Subsection 2.1. Local gameplay and UX audit
+- [ ] Exercise the local login, home, gameplay, results, rankings, and profile flows with a game-player mindset.
+- [ ] Record concrete UI friction points that make the app feel slow, unclear, noisy, or awkward during play.
+- [ ] Implement and verify the highest-impact UX fixes before wider rollout.
+
+#### SubSubSection 2.1.1. Local player walkthrough
+- [ ] Run the app locally and walk the primary user journeys end to end.
+
+#### SubSubSection 2.1.2. Friction inventory
+- [ ] Capture specific UI problems, affected screens, and why they feel bad in a game context.
+
+#### SubSubSection 2.1.3. UX polish fixes
+- [ ] Fix the highest-priority UX issues and re-verify the affected flows locally.
+
+## Section 3. Secondary Priority: Keep Azure Runtime Wiring Ready
 - [x] Complete Azure-aligned hosting, configuration, secrets, telemetry, and identity setup without restructuring the application later.
 
-### Subsection 2.1. Application packaging and runtime configuration
+### Subsection 3.1. Application packaging and runtime configuration
 - [x] Scaffold Azure Container Apps deployment assets, release workflow, and deployment prerequisite documentation.
 - [x] Finalize runtime configuration boundaries for local and Azure execution.
 
-#### SubSubSection 2.1.1. Container runtime assets
+#### SubSubSection 3.1.1. Container runtime assets
 - [x] Add Azure-ready server configuration, health checks, container packaging, and deployment assets for the web runtime.
 
-#### SubSubSection 2.1.2. Runtime configuration boundaries
+#### SubSubSection 3.1.2. Runtime configuration boundaries
 - [x] Keep Azure runtime settings explicit and fail fast when hosted configuration is incomplete.
 
-### Subsection 2.2. Infrastructure and identity wiring
+### Subsection 3.2. Infrastructure and identity wiring
 - [x] Define Azure hosting, configuration, secrets, telemetry, identity, and production data resources.
 - [x] Wire Microsoft Entra ID, managed identity, and deployment-time configuration without introducing local-only assumptions.
 
-#### SubSubSection 2.2.1. Identity wiring
+#### SubSubSection 3.2.1. Identity wiring
 - [x] Add Microsoft Entra ID sign-in and callback scaffolding with deployment-time configuration hooks.
 
-#### SubSubSection 2.2.2. Data resource wiring
+#### SubSubSection 3.2.2. Data resource wiring
 - [x] Define the production relational resource and migration identity path for Azure.
 
-## Section 3. Completed Application Foundation
+## Section 4. Completed Application Foundation
 - [x] Stabilize the local MVP application surface.
 
-### Subsection 3.1. Runtime and persistence foundation
+### Subsection 4.1. Runtime and persistence foundation
 - [x] Bootstrap the application runtime, baseline dependencies, and architecture-aligned project structure.
 - [x] Implement domain models, persistence, seeded data, and ranking or scoring calculations for local development.
 
-#### SubSubSection 3.1.1. Bootstrap
+#### SubSubSection 4.1.1. Bootstrap
 - [x] Scaffold the React Router framework app in this repository and install the baseline dependencies needed for the MVP.
 
-#### SubSubSection 3.1.2. Local persistence
+#### SubSubSection 4.1.2. Local persistence
 - [x] Create the initial domain and persistence model for users, games, play results, rankings, and onboarding state with local development seeds.
 
-### Subsection 3.2. Core product flows
+### Subsection 4.2. Core product flows
 - [x] Implement authenticated application flows, shared layout, and navigation across the required core screens.
 - [x] Implement Minesweeper and Sudoku gameplay flows, result handling, interruption handling, and pending-save recovery.
 - [x] Implement leaderboard, profile, charting, Microsoft Teams sharing flow, and developer-facing verification notes.
 
-#### SubSubSection 3.2.1. Shell and dashboard
+#### SubSubSection 4.2.1. Shell and dashboard
 - [x] Implement the shared application shell, login entry, home dashboard, and core navigation so the main user journey is executable.
 
-#### SubSubSection 3.2.2. Gameplay and results
+#### SubSubSection 4.2.2. Gameplay and results
 - [x] Remove the remaining SSR runtime error on the game workspace and result routes.
 - [x] Implement game workspace interactions, result screen flow, interruption confirmation, and pending-save handling for both games.
 
-#### SubSubSection 3.2.3. Rankings, profile, and sharing
+#### SubSubSection 4.2.3. Rankings, profile, and sharing
 - [x] Implement leaderboard and profile screens with the seeded aggregates, trend views, and Teams-share-ready result summaries.
 - [x] Ensure the result flow exposes Teams-share-ready messaging and return navigation consistent with the screen flow.
 
