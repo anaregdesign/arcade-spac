@@ -49,9 +49,9 @@ These values are needed before the app can boot correctly in Azure:
 - `ARCADE_SESSION_SECRET`
 - `DATABASE_URL`
 - `PUBLIC_APP_URL`
-- `AZURE_TENANT_ID`
-- `AZURE_CLIENT_ID`
-- `AZURE_CLIENT_SECRET`
+- `ENTRA_TENANT_ID`
+- `ENTRA_CLIENT_ID`
+- `ENTRA_CLIENT_SECRET`
 
 Recommended placement:
 

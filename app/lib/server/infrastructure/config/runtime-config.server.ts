@@ -39,15 +39,15 @@ export function getRuntimeConfig(): RuntimeConfig {
     ? requireAzureSetting("DATABASE_URL", process.env.DATABASE_URL)
     : process.env.DATABASE_URL ?? DEFAULT_DEV_DATABASE_URL;
   const publicAppUrl = process.env.PUBLIC_APP_URL ?? null;
-  const entraTenantId = process.env.AZURE_TENANT_ID ?? null;
-  const entraClientId = process.env.AZURE_CLIENT_ID ?? null;
-  const entraClientSecret = process.env.AZURE_CLIENT_SECRET ?? null;
+  const entraTenantId = process.env.ENTRA_TENANT_ID ?? process.env.AZURE_TENANT_ID ?? null;
+  const entraClientId = process.env.ENTRA_CLIENT_ID ?? null;
+  const entraClientSecret = process.env.ENTRA_CLIENT_SECRET ?? null;
 
   if (requestedAuthMode === "entra") {
     requireAzureSetting("PUBLIC_APP_URL", publicAppUrl ?? undefined);
-    requireAzureSetting("AZURE_TENANT_ID", entraTenantId ?? undefined);
-    requireAzureSetting("AZURE_CLIENT_ID", entraClientId ?? undefined);
-    requireAzureSetting("AZURE_CLIENT_SECRET", entraClientSecret ?? undefined);
+    requireAzureSetting("ENTRA_TENANT_ID", entraTenantId ?? undefined);
+    requireAzureSetting("ENTRA_CLIENT_ID", entraClientId ?? undefined);
+    requireAzureSetting("ENTRA_CLIENT_SECRET", entraClientSecret ?? undefined);
   }
 
   return {

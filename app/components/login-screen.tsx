@@ -16,15 +16,17 @@ type LoginScreenProps = {
 };
 
 export function LoginScreen({ authMode, entraSignInHref, returnTo, users }: LoginScreenProps) {
+  const eyebrow = authMode === "entra" ? "Microsoft Entra ID" : "Local development access";
+
   return (
     <main className="login-shell">
       <section className="login-hero">
-        <p className="eyebrow">Microsoft Entra ID</p>
+        <p className="eyebrow">{eyebrow}</p>
         <h1>{authMode === "entra" ? "Sign in to Arcade" : "Choose a development identity"}</h1>
         <p className="hero-copy">
           {authMode === "entra"
             ? "Use your Microsoft Entra ID account to continue into the tenant-scoped Arcade experience."
-            : "This local slice uses seeded tenant members so the authenticated flow can be built before Azure app registration values are wired."}
+            : "Use a seeded player profile to test the app locally without going through the hosted Microsoft Entra sign-in flow."}
         </p>
         {returnTo ? <p className="hero-copy">After sign-in, you will return to {returnTo}.</p> : null}
         {authMode === "entra" && entraSignInHref ? (

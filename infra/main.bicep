@@ -239,7 +239,7 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
                 value: publicAppUrl
               }
               {
-                name: 'AZURE_TENANT_ID'
+                name: 'ENTRA_TENANT_ID'
                 value: entraTenantId
               }
               {
@@ -254,11 +254,11 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
             authMode == 'entra' && hasEntraClientSecret
               ? [
                   {
-                    name: 'AZURE_CLIENT_ID'
+                    name: 'ENTRA_CLIENT_ID'
                     value: entraClientId
                   }
                   {
-                    name: 'AZURE_CLIENT_SECRET'
+                    name: 'ENTRA_CLIENT_SECRET'
                     secretRef: 'azure-client-secret'
                   }
                 ]

@@ -59,9 +59,9 @@ The current runtime reads these environment variables:
 - `ARCADE_SESSION_SECRET`
 - `NODE_ENV`
 - `PUBLIC_APP_URL`
-- `AZURE_TENANT_ID`
-- `AZURE_CLIENT_ID`
-- `AZURE_CLIENT_SECRET`
+- `ENTRA_TENANT_ID`
+- `ENTRA_CLIENT_ID`
+- `ENTRA_CLIENT_SECRET`
 
 For local development, the app falls back to SQLite and a local session secret. For Azure hosting, move these values to managed configuration instead of storing them in repo files.
 
