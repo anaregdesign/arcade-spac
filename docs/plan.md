@@ -37,7 +37,7 @@
 
 #### SubSubSection 1.2.1. Application packaging and runtime configuration
 - [x] Scaffold Azure Container Apps deployment assets, release workflow, and deployment prerequisite documentation.
-- [ ] Finalize runtime configuration boundaries for local and Azure execution.
+- [x] Finalize runtime configuration boundaries for local and Azure execution.
 - [ ] Verify health checks, container packaging, and startup behavior for the deployed web runtime.
 
 #### SubSubSection 1.2.2. Infrastructure and identity wiring
