@@ -3,8 +3,10 @@ import { Link } from "react-router";
 type AppShellProps = {
   children: React.ReactNode;
   currentPath: "home" | "rankings" | "profile" | "games";
+  titleEmoji: string;
+  sectionLabel: string;
   title: string;
-  subtitle: string;
+  subtitle?: string;
   user: {
     displayName: string;
     avatarUrl?: string | null;
@@ -12,19 +14,24 @@ type AppShellProps = {
 };
 
 const navItems = [
-  { key: "home", label: "Home", to: "/home" },
-  { key: "rankings", label: "Rankings", to: "/rankings" },
-  { key: "profile", label: "Profile", to: "/profile" },
+  { key: "home", label: "Home", emoji: "🎮", to: "/home" },
+  { key: "rankings", label: "Rankings", emoji: "🏆", to: "/rankings" },
+  { key: "profile", label: "Profile", emoji: "🪪", to: "/profile" },
 ] as const;
 
-export function AppShell({ children, currentPath, title, subtitle, user }: AppShellProps) {
+export function AppShell({ children, currentPath, titleEmoji, sectionLabel, title, subtitle, user }: AppShellProps) {
   return (
     <div className="page-shell">
       <header className="app-shell-header">
-        <div>
-          <p className="eyebrow">Arcade</p>
-          <h1 className="page-title">{title}</h1>
-          <p className="page-subtitle">{subtitle}</p>
+        <div className="app-shell-title-block">
+          <p className="eyebrow shell-kicker">
+            <span className="shell-kicker-emoji" aria-hidden="true">{titleEmoji}</span>
+            <span>{sectionLabel}</span>
+          </p>
+          <div className="page-title-row">
+            <h1 className="page-title">{title}</h1>
+          </div>
+          {subtitle ? <p className="page-subtitle">{subtitle}</p> : null}
         </div>
         <div className="app-shell-user">
           <nav className="app-shell-nav" aria-label="Primary">
@@ -34,7 +41,8 @@ export function AppShell({ children, currentPath, title, subtitle, user }: AppSh
                 className={item.key === currentPath ? "nav-pill nav-pill-active" : "nav-pill"}
                 to={item.to}
               >
-                {item.label}
+                <span aria-hidden="true">{item.emoji}</span>
+                <span>{item.label}</span>
               </Link>
             ))}
           </nav>

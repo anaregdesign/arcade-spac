@@ -50,6 +50,10 @@ a {
   margin: 0 auto;
 }
 
+.app-shell-title-block {
+  min-width: 0;
+}
+
 .app-shell-header {
   max-width: 1200px;
   margin: 0 auto 24px;
@@ -62,6 +66,22 @@ a {
   gap: 20px;
   align-items: flex-start;
   box-shadow: 0 24px 80px rgba(23, 48, 67, 0.12);
+}
+
+.shell-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.shell-kicker-emoji {
+  font-size: 1rem;
+}
+
+.page-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .app-shell-user {
@@ -80,10 +100,10 @@ a {
 }
 
 .page-subtitle {
-  margin: 10px 0 0;
-  max-width: 52ch;
+  margin: 8px 0 0;
+  max-width: 40ch;
   color: #4b6576;
-  line-height: 1.6;
+  line-height: 1.45;
 }
 
 .app-shell-nav {
@@ -93,6 +113,9 @@ a {
 }
 
 .nav-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   padding: 10px 14px;
   border-radius: 999px;
   background: rgba(23, 48, 67, 0.06);
@@ -291,15 +314,36 @@ a {
   font-weight: 800;
 }
 
+.game-icon-chip {
+  display: inline-grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  background: rgba(23, 48, 67, 0.06);
+  font-size: 1.05rem;
+}
+
 .card-title {
   margin: 0;
   font-size: 1.3rem;
   line-height: 1.2;
 }
 
+.compact-copy {
+  margin: 6px 0 0;
+  color: #476175;
+  line-height: 1.45;
+}
+
 .recommendation-copy {
   margin: 0;
   color: #476175;
+}
+
+.game-card-footer {
+  display: grid;
+  gap: 12px;
 }
 
 .field-block {
@@ -352,6 +396,45 @@ a {
 .recent-results-list {
   display: grid;
   gap: 14px;
+}
+
+.latest-result-card {
+  display: grid;
+  gap: 12px;
+  padding: 18px;
+  border-radius: 22px;
+  background: rgba(248, 250, 251, 0.86);
+  border: 1px solid rgba(23, 48, 67, 0.08);
+}
+
+.latest-result-head,
+.inline-stat-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.disclosure-card {
+  margin-top: 14px;
+  border-radius: 20px;
+  background: rgba(248, 250, 251, 0.7);
+  border: 1px solid rgba(23, 48, 67, 0.08);
+}
+
+.disclosure-card summary {
+  cursor: pointer;
+  padding: 14px 16px;
+  font-weight: 700;
+}
+
+.disclosure-body {
+  padding: 0 16px 16px;
+}
+
+.home-game-grid {
+  align-items: start;
 }
 
 .filter-stack {
@@ -723,7 +806,9 @@ a {
 
   .app-shell-header,
   .section-heading,
-  .recent-result-item {
+  .recent-result-item,
+  .latest-result-head,
+  .inline-stat-row {
     flex-direction: column;
     align-items: stretch;
   }

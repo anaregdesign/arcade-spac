@@ -71,8 +71,10 @@ export default function GameWorkspace() {
   return (
     <AppShell
       currentPath="games"
-      title={`${game.name} play`}
-      subtitle="Warm up, choose a difficulty, and log the outcome you want to review on the result screen."
+      titleEmoji="🕹️"
+      sectionLabel="Game room"
+      title={`${game.name}`}
+      subtitle="Board first. Extras second."
       user={dashboard.user}
     >
       <GameWorkspaceScreen game={game} />

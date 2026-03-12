@@ -50,8 +50,10 @@ export default function Profile() {
   return (
     <AppShell
       currentPath="profile"
+      titleEmoji="🪪"
+      sectionLabel="Player card"
       title="Profile"
-      subtitle="Review your growth, tune your public display, and decide which game should drive your next score jump."
+      subtitle="Identity up top. Detail when needed."
       user={dashboard.user}
     >
       <ProfileScreen {...profile} />

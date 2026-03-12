@@ -62,8 +62,10 @@ export default function ResultRoute() {
   return (
     <AppShell
       currentPath="games"
+      titleEmoji="✨"
+      sectionLabel="Run result"
       title={`${result.gameName} result`}
-      subtitle="Review the run impact, retry pending saves, and choose your next move."
+      subtitle="Impact first. Actions next."
       user={dashboard.user}
     >
       <ResultScreen result={result} />

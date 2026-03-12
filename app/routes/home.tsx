@@ -24,8 +24,10 @@ export default function Home() {
   return (
     <AppShell
       currentPath="home"
-      title={`Welcome back, ${dashboard.user.displayName}`}
-      subtitle="Choose your next game and track where to push your score next."
+      titleEmoji="🎮"
+      sectionLabel="Play hub"
+      title={`Hi, ${dashboard.user.displayName}`}
+      subtitle="Pick fast. Play fast."
       user={dashboard.user}
     >
       <HomeDashboard {...dashboard} />

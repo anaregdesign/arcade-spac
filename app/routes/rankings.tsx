@@ -26,8 +26,10 @@ export default function Rankings() {
   return (
     <AppShell
       currentPath="rankings"
+      titleEmoji="🏆"
+      sectionLabel="Leaderboard"
       title="Rankings"
-      subtitle="Switch overall versus game boards and keep your own standing in view while choosing the next game to push."
+      subtitle="See your place at a glance."
       user={dashboard.user}
     >
       <RankingsScreen {...rankings} />
