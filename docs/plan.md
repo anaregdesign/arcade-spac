@@ -19,7 +19,7 @@
 - [ ] Configure Microsoft Entra ID runtime settings, deployment workflow, and post-deploy smoke verification for the hosted app
 
 ## Short-Term
-- [ ] Scaffold the React Router framework app in this repository and install the baseline dependencies needed for the MVP
+- [x] Scaffold the React Router framework app in this repository and install the baseline dependencies needed for the MVP
 - [ ] Create the initial domain and persistence model for users, games, play results, rankings, and onboarding state with local development seeds
 - [ ] Implement the shared application shell, login entry, home dashboard, and core navigation so the main user journey is executable
 

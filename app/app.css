@@ -1,0 +1,99 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  color: #173043;
+  background:
+    radial-gradient(circle at top, rgba(252, 214, 137, 0.65), transparent 28%),
+    linear-gradient(180deg, #f8f1de 0%, #f2f6f8 52%, #e7eef0 100%);
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  min-height: 100vh;
+}
+
+a {
+  color: inherit;
+}
+
+.landing-shell,
+.error-boundary {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.landing-hero,
+.error-card {
+  width: min(720px, 100%);
+  padding: 32px;
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(23, 48, 67, 0.08);
+  box-shadow: 0 24px 80px rgba(23, 48, 67, 0.14);
+  backdrop-filter: blur(12px);
+}
+
+.landing-hero h1,
+.error-card h1 {
+  margin: 0;
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  line-height: 0.95;
+  letter-spacing: -0.05em;
+}
+
+.eyebrow {
+  margin: 0 0 12px;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #986b16;
+}
+
+.hero-copy,
+.error-card p {
+  margin: 20px 0 0;
+  font-size: 1rem;
+  line-height: 1.7;
+  max-width: 54ch;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+  flex-wrap: wrap;
+}
+
+.error-stack {
+  margin-top: 20px;
+  padding: 16px;
+  overflow: auto;
+  border-radius: 16px;
+  background: #13232f;
+  color: #f7fafc;
+}
+
+@media (max-width: 640px) {
+  .landing-hero,
+  .error-card {
+    padding: 24px;
+    border-radius: 22px;
+  }
+}
