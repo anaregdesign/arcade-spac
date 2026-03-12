@@ -484,6 +484,23 @@ a {
   gap: 14px;
 }
 
+.ranking-name-block {
+  display: grid;
+  gap: 6px;
+}
+
+.ranking-inline-meta {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.ranking-meta-copy {
+  color: #4b6576;
+  font-size: 0.92rem;
+}
+
 .ranking-row {
   padding: 18px;
   border-radius: 22px;
@@ -531,6 +548,16 @@ a {
 
 .profile-preview-card {
   padding: 20px;
+}
+
+.profile-overview-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.profile-edit-disclosure {
+  margin-top: 16px;
 }
 
 .profile-form-actions {
@@ -830,7 +857,8 @@ a {
   .login-grid,
   .stat-grid,
   .compact-stat-grid,
-  .profile-form-grid {
+  .profile-form-grid,
+  .profile-overview-grid {
     grid-template-columns: 1fr;
   }
 

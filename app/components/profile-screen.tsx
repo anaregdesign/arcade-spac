@@ -61,71 +61,84 @@ function buildTrendPath(points: ProfileScreenProps["trend"]) {
 
 export function ProfileScreen({ profile, activity, overall, games, trend }: ProfileScreenProps) {
   const trendPath = buildTrendPath(trend);
+  const recentTrend = trend.slice(-3).reverse();
 
   return (
     <div className="dashboard-stack">
       <section className="feature-card profile-shell-card">
         <div className="section-heading">
           <div>
-            <p className="eyebrow">Profile</p>
+            <p className="eyebrow">🪪 Identity</p>
             <h2 className="section-title">Identity and visibility</h2>
           </div>
           <Link className="action-link action-link-secondary" to="/rankings">
             Open rankings
           </Link>
         </div>
-        <Form method="post" className="profile-form-grid">
-          <label className="field-block">
-            <span className="field-label">Display name</span>
-            <input className="field-input" name="displayName" defaultValue={profile.displayName} maxLength={40} required />
-          </label>
-          <label className="field-block">
-            <span className="field-label">Visibility scope</span>
-            <select className="field-select" name="visibilityScope" defaultValue={profile.visibilityScope}>
-              <option value="TENANT_ONLY">Tenant only</option>
-              <option value="PRIVATE">Private</option>
-            </select>
-          </label>
-          <label className="field-block profile-form-wide">
-            <span className="field-label">Tagline</span>
-            <input className="field-input" name="tagline" defaultValue={profile.tagline} maxLength={120} />
-          </label>
-          <label className="field-block">
-            <span className="field-label">Favorite game</span>
-            <select className="field-select" name="favoriteGame" defaultValue={profile.favoriteGame || ""}>
-              <option value="">No preference yet</option>
-              {games.map((game) => (
-                <option key={game.key} value={game.key.toUpperCase()}>
-                  {game.name}
-                </option>
-              ))}
-            </select>
-          </label>
-          <div className="feature-card profile-preview-card">
-            <p className="eyebrow">Share preview</p>
+        <div className="profile-overview-grid">
+          <article className="profile-preview-card feature-card">
+            <p className="eyebrow">🏷️ Public name</p>
             <h3 className="card-title">{profile.sharePreviewName}</h3>
-            <p>This is the name shown in rankings and shared result links.</p>
+            <p className="compact-copy">{profile.visibilityScope === "TENANT_ONLY" ? "Visible inside the tenant" : "Private"}</p>
+          </article>
+          <article className="profile-preview-card feature-card">
+            <p className="eyebrow">💬 Tagline</p>
+            <h3 className="card-title">{profile.tagline || "No tagline yet"}</h3>
+            <p className="compact-copy">Favorite: {profile.favoriteGame || "No preference yet"}</p>
+          </article>
+        </div>
+        <details className="disclosure-card profile-edit-disclosure">
+          <summary>Edit profile settings</summary>
+          <div className="disclosure-body">
+            <Form method="post" className="profile-form-grid">
+              <label className="field-block">
+                <span className="field-label">Display name</span>
+                <input className="field-input" name="displayName" defaultValue={profile.displayName} maxLength={40} required />
+              </label>
+              <label className="field-block">
+                <span className="field-label">Visibility scope</span>
+                <select className="field-select" name="visibilityScope" defaultValue={profile.visibilityScope}>
+                  <option value="TENANT_ONLY">Tenant only</option>
+                  <option value="PRIVATE">Private</option>
+                </select>
+              </label>
+              <label className="field-block profile-form-wide">
+                <span className="field-label">Tagline</span>
+                <input className="field-input" name="tagline" defaultValue={profile.tagline} maxLength={120} />
+              </label>
+              <label className="field-block">
+                <span className="field-label">Favorite game</span>
+                <select className="field-select" name="favoriteGame" defaultValue={profile.favoriteGame || ""}>
+                  <option value="">No preference yet</option>
+                  {games.map((game) => (
+                    <option key={game.key} value={game.key.toUpperCase()}>
+                      {game.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <div className="hero-actions profile-form-actions profile-form-wide">
+                <button className="action-link action-link-primary" type="submit">
+                  Save profile
+                </button>
+                <Link className="action-link action-link-secondary" to="/home">
+                  Back to home
+                </Link>
+              </div>
+            </Form>
           </div>
-          <div className="hero-actions profile-form-actions profile-form-wide">
-            <button className="action-link action-link-primary" type="submit">
-              Save profile
-            </button>
-            <Link className="action-link action-link-secondary" to="/home">
-              Back to home
-            </Link>
-          </div>
-        </Form>
+        </details>
       </section>
 
       <section className="summary-grid">
         <article className="summary-card warm-card">
-          <p className="eyebrow">Activity</p>
+          <p className="eyebrow">🔥 Activity</p>
           <h2 className="section-title">{activity.streakDays} day streak</h2>
           <p>{activity.totalPlayCount} recorded plays</p>
         </article>
         {overall.map((summary) => (
           <article key={summary.period} className="summary-card cool-card">
-            <p className="eyebrow">{summary.period === "SEASON" ? "Season" : "Lifetime"}</p>
+            <p className="eyebrow">{summary.period === "SEASON" ? "🏆 Season" : "📚 Lifetime"}</p>
             <h2 className="section-title">{summary.totalPoints} pts</h2>
             <p>{summary.currentRank ? `Rank #${summary.currentRank}` : "Unranked"} · {summary.recentPlaySummary}</p>
           </article>
@@ -136,7 +149,7 @@ export function ProfileScreen({ profile, activity, overall, games, trend }: Prof
         <article className="feature-card span-two">
           <div className="section-heading">
             <div>
-              <p className="eyebrow">Best records</p>
+              <p className="eyebrow">🎯 Best records</p>
               <h2 className="section-title">Per-game performance</h2>
             </div>
           </div>
@@ -170,7 +183,7 @@ export function ProfileScreen({ profile, activity, overall, games, trend }: Prof
         <article className="feature-card">
           <div className="section-heading">
             <div>
-              <p className="eyebrow">Growth trend</p>
+              <p className="eyebrow">📈 Growth trend</p>
               <h2 className="section-title">Recent score movement</h2>
             </div>
           </div>
@@ -184,11 +197,11 @@ export function ProfileScreen({ profile, activity, overall, games, trend }: Prof
             <p>No trend data yet.</p>
           )}
           <div className="trend-list">
-            {trend.slice(-6).reverse().map((item) => (
+            {recentTrend.map((item) => (
               <article key={`${item.label}-${item.index}`} className="recent-result-item">
                 <div>
                   <strong>{item.gameName}</strong>
-                  <p>{item.label} · {item.status}</p>
+                  <p className="compact-copy">{item.label} · {item.status}</p>
                 </div>
                 <div className="recent-result-meta">
                   <span className="status-badge status-badge-neutral">{item.competitivePoints} pts</span>
@@ -197,6 +210,25 @@ export function ProfileScreen({ profile, activity, overall, games, trend }: Prof
               </article>
             ))}
           </div>
+          {trend.length > 3 ? (
+            <details className="disclosure-card">
+              <summary>More score movement</summary>
+              <div className="trend-list disclosure-body">
+                {trend.slice(0, -3).reverse().map((item) => (
+                  <article key={`${item.label}-${item.index}`} className="recent-result-item">
+                    <div>
+                      <strong>{item.gameName}</strong>
+                      <p className="compact-copy">{item.label} · {item.status}</p>
+                    </div>
+                    <div className="recent-result-meta">
+                      <span className="status-badge status-badge-neutral">{item.competitivePoints} pts</span>
+                      <span>{item.totalPointsDelta >= 0 ? `+${item.totalPointsDelta}` : item.totalPointsDelta}</span>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </details>
+          ) : null}
         </article>
       </section>
     </div>
