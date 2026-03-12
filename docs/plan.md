@@ -45,7 +45,7 @@
 - [x] Wire Microsoft Entra ID, managed identity, and deployment-time configuration without introducing local-only assumptions.
 
 #### SubSubSection 1.2.3. Delivery and hosted verification
-- [ ] Configure deployment workflow and hosted smoke verification for the MVP user journeys.
+- [x] Configure deployment workflow and hosted smoke verification for the MVP user journeys.
 - [ ] Validate the Azure-hosted login, gameplay, rankings, profile, and result-sharing flows.
 
 ## External Prerequisites

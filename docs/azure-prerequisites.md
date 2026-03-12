@@ -8,6 +8,7 @@ This checklist captures what is already scaffolded in the repository and what st
 - `infra/main.bicep` provisions Container Apps hosting, App Configuration, Key Vault, Application Insights, and Log Analytics.
 - `.github/workflows/release-container-image.yml` publishes immutable release images to GHCR and updates the Azure Container App through GitHub Actions OIDC.
 - `scripts/azure/postprovision.sh` can attach a private container registry to the provisioned Container App.
+- `scripts/azure/smoke-test.sh` verifies the deployed `health` and `login` routes.
 - `app/routes/health.ts` is available for smoke tests and health probes.
 
 ## Azure Subscription And Tenant Requirements

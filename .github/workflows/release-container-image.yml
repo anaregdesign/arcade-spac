@@ -130,4 +130,5 @@ jobs:
               --query properties.configuration.ingress.fqdn \
               -o tsv)"
 
-            curl --fail --silent --show-error --max-time 30 "https://${FQDN}/health"
+            chmod +x ./scripts/azure/smoke-test.sh
+            APP_URL="https://${FQDN}" ./scripts/azure/smoke-test.sh

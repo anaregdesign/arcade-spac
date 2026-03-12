@@ -69,6 +69,7 @@ The repository now includes these Azure-oriented assets:
 - `infra/main.bicep` for Azure Container Apps, App Configuration, Key Vault, Log Analytics, and Application Insights
 - `.github/workflows/release-container-image.yml` for GitHub Releases to GHCR and Azure deployment
 - `scripts/azure/postprovision.sh` for post-provision registry wiring
+- `scripts/azure/smoke-test.sh` for post-deploy smoke checks
 - `app/routes/health.ts` for smoke checks
 
 ## Azure Prerequisites
