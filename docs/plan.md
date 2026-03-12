@@ -34,8 +34,9 @@
 - [x] Point the hosted Container App at the Azure SQL Database connection string instead of any SQLite path.
 
 #### SubSubSection 1.1.6. Hosted image cutover
-- [ ] Publish a GHCR image built from the SQL Server-compatible runtime and infrastructure commits.
-- [ ] Update the Azure Container App revision to run the new image instead of the SQLite-only preview image.
+- [ ] Push the release-ready SQL Server-compatible commits to the default GitHub branch.
+- [ ] Publish a non-prerelease GitHub release so the repository workflow builds and publishes the immutable GHCR image.
+- [ ] Update the Azure Container App revision to run the release image instead of the SQLite-only preview image.
 - [ ] Confirm the new revision starts cleanly with Azure SQL and local auth enabled.
 
 ### Subsection 1.2. Validate the hosted runtime
@@ -51,6 +52,7 @@
 
 #### SubSubSection 1.2.3. Production go-live guardrails
 - [ ] Verify the production revision exposes `/health` successfully and stays healthy after rollout.
+- [ ] Record the exact release tag, image reference, and deployed Container App revision used for production.
 - [ ] Capture the exact rollback target, SQL firewall state, and managed identity configuration needed for emergency recovery.
 - [ ] Confirm release-time observability inputs are in place: Application Insights visibility, error inspection path, and post-release smoke procedure.
 
