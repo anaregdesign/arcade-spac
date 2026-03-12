@@ -36,6 +36,7 @@
 - [ ] Configure Microsoft Entra ID runtime settings, deployment workflow, and post-deploy smoke verification for the hosted app.
 
 #### SubSubSection 1.2.1. Application packaging and runtime configuration
+- [x] Scaffold Azure Container Apps deployment assets, release workflow, and deployment prerequisite documentation.
 - [ ] Finalize runtime configuration boundaries for local and Azure execution.
 - [ ] Verify health checks, container packaging, and startup behavior for the deployed web runtime.
 
@@ -48,4 +49,4 @@
 - [ ] Validate the Azure-hosted login, gameplay, rankings, profile, and result-sharing flows.
 
 ## External Prerequisites
-- [ ] Document the Azure subscription, tenant, app registration, callback URLs, App Configuration endpoint, Key Vault values, and deployment identities required to perform a real hosted deployment
+- [x] Document the Azure subscription, tenant, app registration, callback URLs, App Configuration endpoint, Key Vault values, and deployment identities required to perform a real hosted deployment

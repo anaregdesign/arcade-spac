@@ -1,87 +1,103 @@
-# Welcome to React Router!
+# Arcade
 
-A modern, production-ready template for building full-stack React applications using React Router.
+Arcade is a React Router server-rendered web app for two competitive puzzle games: Minesweeper and Sudoku. It keeps a shared home dashboard, per-game play history, result summaries, rankings, and a profile surface in one tenant-scoped experience.
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/remix-run/react-router-templates/tree/main/default)
+## Current State
 
-## Features
+- Local development runtime is working with SSR, cookie session auth, seeded users, seeded rankings, gameplay result flows, rankings, and profile editing.
+- Production deployment scaffolding now exists for Azure Container Apps, GitHub release-based container publishing, App Configuration, Key Vault, and Application Insights.
+- Real Microsoft Entra ID sign-in and production relational persistence are still pending. Local development still uses seeded identities and SQLite.
 
-- 🚀 Server-side rendering
-- ⚡️ Hot Module Replacement (HMR)
-- 📦 Asset bundling and optimization
-- 🔄 Data loading and mutations
-- 🔒 TypeScript by default
-- 🎉 TailwindCSS for styling
-- 📖 [React Router docs](https://reactrouter.com/)
+## Local Development
 
-## Getting Started
+### Prerequisites
 
-### Installation
+- Node.js 20+
+- npm 10+
 
-Install the dependencies:
+### Install
 
 ```bash
 npm install
 ```
 
-### Development
-
-Start the development server with HMR:
+### Run
 
 ```bash
 npm run dev
 ```
 
-Your application will be available at `http://localhost:5173`.
-
-## Building for Production
-
-Create a production build:
+### Useful Commands
 
 ```bash
+npm run typecheck
 npm run build
+npm run db:generate
+npm run db:migrate
+npm run db:seed
 ```
 
-## Deployment
+## Verified Local Flows
 
-### Docker Deployment
+- Sign in with seeded users on `/login`
+- Navigate across `/home`, `/games/:gameKey`, `/results/:resultId`, `/rankings`, and `/profile`
+- Create completed, pending-save, and abandoned gameplay results
+- Retry pending-save results from the result screen
+- Edit profile display name, tagline, visibility scope, and favorite game
+- Switch ranking scope between overall and game-specific views
 
-To build and run using Docker:
+## Runtime Configuration
 
-```bash
-docker build -t my-app .
+The current runtime reads these environment variables:
 
-# Run the container
-docker run -p 3000:3000 my-app
-```
+- `DATABASE_URL`
+- `ARCADE_SESSION_SECRET`
+- `NODE_ENV`
 
-The containerized application can be deployed to any platform that supports Docker, including:
+For local development, the app falls back to SQLite and a local session secret. For Azure hosting, move these values to managed configuration instead of storing them in repo files.
 
-- AWS ECS
-- Google Cloud Run
-- Azure Container Apps
-- Digital Ocean App Platform
-- Fly.io
-- Railway
+## Azure Deployment Assets
 
-### DIY Deployment
+The repository now includes these Azure-oriented assets:
 
-If you're familiar with deploying Node applications, the built-in app server is production-ready.
+- `azure.yaml` for `azd` service wiring
+- `infra/main.bicep` for Azure Container Apps, App Configuration, Key Vault, Log Analytics, and Application Insights
+- `.github/workflows/release-container-image.yml` for GitHub Releases to GHCR and Azure deployment
+- `scripts/azure/postprovision.sh` for post-provision registry wiring
+- `app/routes/health.ts` for smoke checks
 
-Make sure to deploy the output of `npm run build`
+## Azure Prerequisites
 
-```
-├── package.json
-├── package-lock.json (or pnpm-lock.yaml, or bun.lockb)
-├── build/
-│   ├── client/    # Static assets
-│   └── server/    # Server-side code
-```
+Before a real hosted deployment, prepare all of the following:
 
-## Styling
+- An Azure subscription, resource group, and deployment region that support Azure Container Apps
+- A Microsoft Entra ID tenant and app registration for the production sign-in flow
+- GitHub Environment variables for Azure OIDC deployment:
+	- `AZURE_CLIENT_ID`
+	- `AZURE_TENANT_ID`
+	- `AZURE_SUBSCRIPTION_ID`
+	- `AZURE_RESOURCE_GROUP`
+	- `AZURE_CONTAINER_APP_NAME`
+	- `GHCR_PULL_USERNAME`
+- GitHub Environment secret:
+	- `GHCR_PULL_TOKEN`
+- Azure App Configuration values for non-secret runtime settings
+- Azure Key Vault secrets for secret runtime values such as `ARCADE_SESSION_SECRET`
 
-This template comes with [Tailwind CSS](https://tailwindcss.com/) already configured for a simple default starting experience. You can use whatever CSS framework you prefer.
+See `docs/azure-prerequisites.md` for the detailed checklist and current gaps.
 
----
+## Current Azure Gaps
 
-Built with ❤️ using React Router.
+The app is not yet ready for a production Azure rollout without further work.
+
+- The Prisma datasource still targets SQLite, which is suitable for local development but not for Azure Container Apps production hosting.
+- Real Microsoft Entra ID callback handling has not replaced the seeded local sign-in path yet.
+- The Bicep template does not yet provision a production relational database or migration identity.
+- Secretless runtime configuration is scaffolded at the infrastructure layer, but the application runtime does not yet consume Azure App Configuration or Key Vault directly.
+
+## Next Steps
+
+- Move production persistence to an Azure-hosted relational database supported by Prisma for multi-instance hosting.
+- Replace seeded sign-in with Microsoft Entra ID web auth and route callback handling.
+- Wire the app runtime to Azure App Configuration, Key Vault, and managed identity.
+- Run `azd provision --preview` and `azd up` only after the production data and auth path are in place.
