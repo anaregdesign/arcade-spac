@@ -6,7 +6,7 @@
 
 ## Section 1. Highest Priority: Reach Azure Production Go-Live
 - [x] Prepare the production data path so the hosted runtime can use a real relational store instead of the local SQLite path.
-- [ ] Roll out the production release image through the GitHub release path and land it on the hosted Container App.
+- [x] Roll out the production release image through the GitHub release path and land it on the hosted Container App.
 - [ ] Validate the hosted runtime, Microsoft Entra ID login path, and final go-live guardrails needed for production release.
 
 ### Subsection 1.1. Prepare the production data path
@@ -36,7 +36,7 @@
 #### SubSubSection 1.1.6. Hosted image cutover
 - [x] Push the release-ready SQL Server-compatible commits to the default GitHub branch.
 - [x] Publish a non-prerelease GitHub release so the repository workflow builds and publishes the immutable GHCR image.
-- [ ] Ensure a GitHub release automatically drives Azure CD for production by providing the required `production` environment values and OIDC wiring.
+- [x] Ensure a GitHub release automatically drives Azure CD for production by providing the required `production` environment values and OIDC wiring.
 - [x] Update the Azure Container App revision to run the latest release image instead of the preview image when workflow CD is blocked.
 - [x] Confirm the new revision starts cleanly with Azure SQL and the intended hosted auth mode enabled.
 
@@ -52,14 +52,21 @@
 - [x] Validate the Azure-hosted local-auth login, gameplay, rankings, profile, and result-sharing flows with real deployment values.
 
 #### SubSubSection 1.2.3. Hosted Entra ID verification
-- [ ] Complete the production Microsoft Entra ID runtime configuration, callback URLs, and secret wiring.
-- [ ] Verify Microsoft Entra ID sign-in, callback, session establishment, and sign-out on the hosted app.
+- [x] Complete the production Microsoft Entra ID runtime configuration, callback URLs, and secret wiring.
+- [x] Verify Microsoft Entra ID sign-in, callback, session establishment, and sign-out on the hosted app.
 
 #### SubSubSection 1.2.4. Production go-live guardrails
 - [x] Verify the production revision exposes `/health` successfully and stays healthy after rollout.
-- [ ] Record the exact release tag, image reference, and deployed Container App revision used for production.
+- [x] Record the exact release tag, image reference, and deployed Container App revision used for production.
 - [ ] Capture the exact rollback target, SQL firewall state, and managed identity configuration needed for emergency recovery.
 - [ ] Confirm release-time observability inputs are in place: Application Insights visibility, error inspection path, and post-release smoke procedure.
+
+Current production baseline:
+- `Release tag`: `v2026.03.12.4`
+- `Image`: `ghcr.io/anaregdesign/arcade-spac:v2026.03.12.4`
+- `Container App revision`: `ca-arcade--0000010`
+- `Managed identity`: `SystemAssigned` principal `ed42b2bc-ba63-4860-a3be-605e14bfae93`
+- `Rollback target`: `ca-arcade--0000009` on image `ghcr.io/anaregdesign/arcade-spac:v2026.03.12.3`
 
 ## Section 2. Secondary Priority: Close Local UX Gaps Before Wider Rollout
 - [x] Make the game screens actually playable instead of result simulation only.
