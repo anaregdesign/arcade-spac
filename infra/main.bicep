@@ -36,6 +36,7 @@ param environmentVariables array = [
   }
 ]
 param tags object = {}
+var hasEntraClientSecret = !empty(entraClientSecret)
 
 var logAnalyticsWorkspaceName = 'law-${appName}'
 var applicationInsightsName = 'appi-${appName}'
@@ -207,7 +208,7 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
             value: databaseUrl
           }
         ],
-        authMode == 'entra'
+        authMode == 'entra' && hasEntraClientSecret
           ? [
               {
                 name: 'azure-client-secret'
@@ -261,7 +262,7 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
                 secretRef: 'database-url'
               }
             ],
-            authMode == 'entra'
+            authMode == 'entra' && hasEntraClientSecret
               ? [
                   {
                     name: 'AZURE_CLIENT_SECRET'
