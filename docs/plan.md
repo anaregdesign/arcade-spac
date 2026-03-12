@@ -32,7 +32,7 @@
 - [ ] Validate the Azure-hosted login, gameplay, rankings, profile, and result-sharing flows with real deployment values.
 
 ## Section 2. Secondary Priority: Keep Azure Runtime Wiring Ready
-- [ ] Complete Azure-aligned hosting, configuration, secrets, telemetry, and identity setup without restructuring the application later.
+- [x] Complete Azure-aligned hosting, configuration, secrets, telemetry, and identity setup without restructuring the application later.
 
 ### Subsection 2.1. Application packaging and runtime configuration
 - [x] Scaffold Azure Container Apps deployment assets, release workflow, and deployment prerequisite documentation.
@@ -45,14 +45,14 @@
 - [x] Keep Azure runtime settings explicit and fail fast when hosted configuration is incomplete.
 
 ### Subsection 2.2. Infrastructure and identity wiring
-- [ ] Define Azure hosting, configuration, secrets, telemetry, identity, and production data resources.
+- [x] Define Azure hosting, configuration, secrets, telemetry, identity, and production data resources.
 - [x] Wire Microsoft Entra ID, managed identity, and deployment-time configuration without introducing local-only assumptions.
 
 #### SubSubSection 2.2.1. Identity wiring
 - [x] Add Microsoft Entra ID sign-in and callback scaffolding with deployment-time configuration hooks.
 
 #### SubSubSection 2.2.2. Data resource wiring
-- [ ] Define the production relational resource and migration identity path for Azure.
+- [x] Define the production relational resource and migration identity path for Azure.
 
 ## Section 3. Completed Application Foundation
 - [x] Stabilize the local MVP application surface.

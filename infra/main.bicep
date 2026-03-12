@@ -7,6 +7,13 @@ param publicAppUrl string
   'entra'
 ])
 param authMode string = 'entra'
+param deploySql bool = false
+param sqlDatabaseName string = 'arcade'
+param sqlAdministratorLogin string = 'arcadeadmin'
+@secure()
+param sqlAdministratorPassword string = ''
+param sqlEntraAdminLogin string = ''
+param sqlEntraAdminObjectId string = ''
 param entraClientId string = ''
 param entraTenantId string = tenant().tenantId
 @secure()
@@ -37,6 +44,8 @@ var containerAppName = 'ca-${appName}'
 var appConfigurationName = take('appcs-${appName}-${uniqueString(resourceGroup().id)}', 50)
 var normalizedAppName = toLower(replace(appName, '-', ''))
 var keyVaultName = take('kv${normalizedAppName}${uniqueString(subscription().id, resourceGroup().id)}', 24)
+var sqlServerName = take('sql-${appName}-${uniqueString(resourceGroup().id)}', 63)
+var sqlMigrationIdentityName = take('id-sql-migrate-${appName}', 24)
 var appConfigDataReaderRoleDefinitionId = subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '516239f1-63e1-4d78-a4de-a74fb236a071')
 var keyVaultSecretsUserRoleDefinitionId = subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '4633458b-17de-408a-b874-0445c86b69e6')
 
@@ -91,6 +100,69 @@ resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
     enablePurgeProtection: true
     publicNetworkAccess: 'Enabled'
     softDeleteRetentionInDays: 90
+  }
+}
+
+resource sqlMigrationIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = if (deploySql) {
+  name: sqlMigrationIdentityName
+  location: location
+  tags: tags
+}
+
+resource sqlServer 'Microsoft.Sql/servers@2024-11-01-preview' = if (deploySql) {
+  name: sqlServerName
+  location: location
+  tags: tags
+  properties: {
+    administratorLogin: sqlAdministratorLogin
+    administratorLoginPassword: sqlAdministratorPassword
+    minimalTlsVersion: '1.2'
+    publicNetworkAccess: 'Enabled'
+    restrictOutboundNetworkAccess: 'Disabled'
+    version: '12.0'
+  }
+}
+
+resource sqlServerEntraAdministrator 'Microsoft.Sql/servers/administrators@2024-11-01-preview' = if (deploySql) {
+  parent: sqlServer
+  name: 'ActiveDirectory'
+  properties: {
+    administratorType: 'ActiveDirectory'
+    login: sqlEntraAdminLogin
+    sid: sqlEntraAdminObjectId
+    tenantId: tenant().tenantId
+  }
+}
+
+resource sqlServerAdOnlyAuthentication 'Microsoft.Sql/servers/azureADOnlyAuthentications@2024-11-01-preview' = if (deploySql) {
+  parent: sqlServer
+  name: 'Default'
+  properties: {
+    azureADOnlyAuthentication: true
+  }
+  dependsOn: [
+    sqlServerEntraAdministrator
+  ]
+}
+
+resource sqlDatabase 'Microsoft.Sql/servers/databases@2024-11-01-preview' = if (deploySql) {
+  parent: sqlServer
+  name: sqlDatabaseName
+  location: location
+  tags: tags
+  sku: {
+    name: 'GP_S_Gen5_2'
+    tier: 'GeneralPurpose'
+    family: 'Gen5'
+    capacity: 2
+  }
+  properties: {
+    autoPauseDelay: 60
+    minCapacity: 1
+    maintenanceConfigurationId: resourceId('Microsoft.Maintenance/publicMaintenanceConfigurations', 'SQL_Default')
+    readScale: 'Disabled'
+    requestedBackupStorageRedundancy: 'Local'
+    zoneRedundant: false
   }
 }
 
@@ -238,3 +310,9 @@ output containerAppFqdn string = containerApp.properties.configuration.ingress.f
 output managedIdentityPrincipalId string = containerApp.identity.principalId
 output appConfigurationEndpoint string = appConfiguration.properties.endpoint
 output keyVaultUri string = keyVault.properties.vaultUri
+output sqlServerName string = deploySql ? sqlServer!.name : ''
+output sqlServerFullyQualifiedDomainName string = deploySql ? sqlServer!.properties.fullyQualifiedDomainName : ''
+output sqlDatabaseName string = deploySql ? sqlDatabase!.name : ''
+output sqlRuntimeIdentityPrincipalId string = deploySql ? containerApp.identity.principalId : ''
+output sqlMigrationIdentityPrincipalId string = deploySql ? sqlMigrationIdentity!.properties.principalId : ''
+output sqlMigrationIdentityClientId string = deploySql ? sqlMigrationIdentity!.properties.clientId : ''

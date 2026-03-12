@@ -16,6 +16,7 @@ Before Azure deployment is treated as production-ready, all of the following mus
 2. Database migrations can be applied through a production-safe command path.
 3. The hosted runtime receives `ARCADE_SESSION_SECRET`, `PUBLIC_APP_URL`, and Entra auth values together with the database connection.
 4. Deployment validation rejects SQLite-based settings before rollout.
+5. Runtime database permissions stay separate from migration permissions.
 
 ## Repo Support Added
 
@@ -25,6 +26,8 @@ Before Azure deployment is treated as production-ready, all of the following mus
 - `scripts/azure/check-production-data-path.sh`
 
 These commands do not complete the production database migration by themselves. They establish the command surface and preflight checks that the final Azure data cutover will use.
+
+The Azure infrastructure template now also defines an optional Azure SQL serverless path plus a separate user-assigned migration identity. That infrastructure does not complete the Prisma cutover by itself, but it makes the target Azure resource and identity split explicit.
 
 ## Current Limitation
 
@@ -36,12 +39,13 @@ The repository still uses a Prisma schema whose datasource provider is `sqlite`.
 
 ## Recommended Cutover Sequence
 
-1. Choose the hosted relational database for Azure deployment.
-2. Update the Prisma datasource provider and migration path for that database.
-3. Run `npm run db:migrate:status` against the target environment.
-4. Apply `npm run db:migrate:deploy` with the production connection.
-5. Run `npm run azure:check:production-data` before rollout.
-6. Deploy the app and run the hosted smoke test.
+1. Enable the Azure SQL path in `infra/main.bicep` and provision the serverless database together with the migration identity.
+2. Set the Azure SQL Entra administrator, then grant runtime access to the Container App identity and elevated migration access only to the migration identity.
+3. Update the Prisma datasource provider and migration path for that database.
+4. Run `npm run db:migrate:status` against the target environment.
+5. Apply `npm run db:migrate:deploy` with the production connection.
+6. Run `npm run azure:check:production-data` before rollout.
+7. Deploy the app and run the hosted smoke test.
 
 ## Why This Remains In Progress
 

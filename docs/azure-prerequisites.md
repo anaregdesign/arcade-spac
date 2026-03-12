@@ -16,11 +16,14 @@ This checklist captures what is already scaffolded in the repository and what st
 - A target Azure subscription with permission to create:
   - Azure Container Apps Managed Environment
   - Azure Container App
+  - Azure SQL logical server and serverless database
+  - User-assigned managed identity for schema migrations
   - Azure App Configuration
   - Azure Key Vault
   - Application Insights
   - Log Analytics Workspace
 - A Microsoft Entra ID tenant for the production app registration
+- A Microsoft Entra ID user or group that can be set as the Azure SQL Entra administrator
 - Permission to create workload identity federation between GitHub Actions and Azure
 
 ## GitHub Repository Configuration
@@ -56,12 +59,30 @@ Recommended placement:
 - Secrets in Azure Key Vault
 - Container App managed identity with App Configuration Data Reader and Key Vault Secrets User access
 
+## Azure SQL Provisioning Inputs
+
+When enabling the production relational resource path in `infra/main.bicep`, provide all of the following:
+
+- `deploySql=true`
+- `sqlDatabaseName`
+- `sqlAdministratorLogin`
+- `sqlAdministratorPassword`
+- `sqlEntraAdminLogin`
+- `sqlEntraAdminObjectId`
+
+The SQL administrator login and password are a bootstrap requirement of Azure SQL server creation. They should not be reused by the app runtime.
+
+The template now defines two distinct identities for the database path:
+
+- Container App system-assigned managed identity for runtime database access after database roles are granted
+- User-assigned managed identity for migration execution and elevated schema-change operations
+
 ## Production Readiness Gaps Still Open
 
 The repository is not yet production-ready for Azure until these gaps are closed:
 
 1. Replace SQLite with a production relational database supported by Prisma for Azure multi-instance hosting.
-2. Introduce a separate migration path and migration identity for the production database.
+2. Grant the runtime managed identity only the database roles it needs, and keep elevated migration permissions on the separate migration identity.
 3. Connect the production Entra app registration values and client secret to the deployed Container App.
 4. Teach the server runtime to read Azure App Configuration and Key Vault through managed identity.
 5. Validate the deployed Container App with post-deploy smoke tests against the real production URL.
@@ -70,10 +91,11 @@ The repository is not yet production-ready for Azure until these gaps are closed
 
 1. Confirm `npm run typecheck` and `npm run build` pass locally.
 2. Run `npm run azure:check:production-data` against the intended hosted settings.
-3. Replace the current local-only data and auth assumptions.
-4. Run `azd provision --preview` and review the generated plan.
+3. Replace the current local-only Prisma provider and auth assumptions.
+4. Run `azd provision --preview` and review the generated plan, including the optional Azure SQL resources.
 5. Provision Azure resources.
-6. Populate App Configuration and Key Vault values.
-7. Publish a release so the GitHub workflow pushes an immutable image.
-8. Verify `https://<container-app-fqdn>/health`.
-9. Smoke-test login, gameplay, result, rankings, and profile flows in the hosted environment.
+6. Set the Azure SQL Entra administrator and grant database roles separately to the runtime and migration identities.
+7. Populate App Configuration and Key Vault values.
+8. Publish a release so the GitHub workflow pushes an immutable image.
+9. Verify `https://<container-app-fqdn>/health`.
+10. Smoke-test login, gameplay, result, rankings, and profile flows in the hosted environment.
