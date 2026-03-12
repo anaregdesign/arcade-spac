@@ -1,7 +1,4 @@
-import fluentComponents from "@fluentui/react-components";
 import { Link } from "react-router";
-
-const { Badge, Button, Card, Text, Title3 } = fluentComponents;
 
 type HomeDashboardProps = {
   user: {
@@ -46,29 +43,29 @@ export function HomeDashboard({ user, summaries, games, recentResults }: HomeDas
   return (
     <div className="dashboard-stack">
       <section className="summary-grid" aria-label="Summary cards">
-        <Card className="summary-card warm-card">
+        <article className="summary-card warm-card">
           <p className="eyebrow">Season standing</p>
-          <Title3>{summaries.seasonRank ? `#${summaries.seasonRank}` : "Unranked"}</Title3>
-          <Text>{summaries.seasonPoints} total points</Text>
-        </Card>
-        <Card className="summary-card cool-card">
+          <h2 className="section-title">{summaries.seasonRank ? `#${summaries.seasonRank}` : "Unranked"}</h2>
+          <p>{summaries.seasonPoints} total points</p>
+        </article>
+        <article className="summary-card cool-card">
           <p className="eyebrow">Momentum</p>
-          <Title3>{summaries.trendDelta >= 0 ? `+${summaries.trendDelta}` : summaries.trendDelta}</Title3>
-          <Text>{summaries.recentPlaySummary}</Text>
-        </Card>
-        <Card className="summary-card neutral-card">
+          <h2 className="section-title">{summaries.trendDelta >= 0 ? `+${summaries.trendDelta}` : summaries.trendDelta}</h2>
+          <p>{summaries.recentPlaySummary}</p>
+        </article>
+        <article className="summary-card neutral-card">
           <p className="eyebrow">Activity</p>
-          <Title3>{user.streakDays} day streak</Title3>
-          <Text>{user.totalPlayCount} total recorded plays</Text>
-        </Card>
+          <h2 className="section-title">{user.streakDays} day streak</h2>
+          <p>{user.totalPlayCount} total recorded plays</p>
+        </article>
       </section>
 
       <section className="feature-grid">
-        <Card className="feature-card span-two">
+        <article className="feature-card span-two">
           <div className="section-heading">
             <div>
               <p className="eyebrow">Next play</p>
-              <Title3>Choose a game</Title3>
+              <h2 className="section-title">Choose a game</h2>
             </div>
             <Link className="action-link action-link-secondary" to="/rankings">
               View rankings
@@ -78,12 +75,12 @@ export function HomeDashboard({ user, summaries, games, recentResults }: HomeDas
             {games.map((game) => (
               <article key={game.key} className="game-card" style={{ borderColor: `${game.accentColor}33` }}>
                 <div className="game-card-top">
-                  <Badge appearance="tint" style={{ backgroundColor: `${game.accentColor}22`, color: game.accentColor }}>
+                  <span className="status-badge" style={{ backgroundColor: `${game.accentColor}22`, color: game.accentColor }}>
                     {game.currentRank ? `Rank #${game.currentRank}` : "Unranked"}
-                  </Badge>
+                  </span>
                   <p className="game-points">{game.bestCompetitivePoints} pts</p>
                 </div>
-                <Title3>{game.name}</Title3>
+                <h3 className="card-title">{game.name}</h3>
                 <p>{game.shortDescription}</p>
                 <dl className="stat-grid compact-stat-grid">
                   <div>
@@ -102,13 +99,13 @@ export function HomeDashboard({ user, summaries, games, recentResults }: HomeDas
               </article>
             ))}
           </div>
-        </Card>
+        </article>
 
-        <Card className="feature-card">
+        <article className="feature-card">
           <div className="section-heading">
             <div>
               <p className="eyebrow">Recent results</p>
-              <Title3>Latest activity</Title3>
+              <h2 className="section-title">Latest activity</h2>
             </div>
           </div>
           <div className="recent-results-list">
@@ -119,13 +116,13 @@ export function HomeDashboard({ user, summaries, games, recentResults }: HomeDas
                   <p>{result.summaryText}</p>
                 </div>
                 <div className="recent-result-meta">
-                  <Badge appearance={result.status === "PENDING_SAVE" ? "filled" : "outline"}>{result.status}</Badge>
+                  <span className={result.status === "PENDING_SAVE" ? "status-badge status-badge-pending" : "status-badge status-badge-neutral"}>{result.status}</span>
                   <span>{result.totalPointsDelta >= 0 ? `+${result.totalPointsDelta}` : result.totalPointsDelta} pts</span>
                 </div>
               </article>
             ))}
           </div>
-        </Card>
+        </article>
       </section>
     </div>
   );

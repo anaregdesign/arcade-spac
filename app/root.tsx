@@ -6,12 +6,9 @@ import {
   Scripts,
   ScrollRestoration,
 } from "react-router";
-import fluentComponents from "@fluentui/react-components";
 
 import type { Route } from "./+types/root";
 import "./app.css";
-
-const { FluentProvider, webLightTheme } = fluentComponents;
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -36,7 +33,7 @@ function AppDocument({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-        <FluentProvider theme={webLightTheme}>{children}</FluentProvider>
+        {children}
         <ScrollRestoration />
         <Scripts />
       </body>

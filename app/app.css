@@ -63,6 +63,20 @@ a {
   flex-wrap: wrap;
 }
 
+.page-title {
+  margin: 0;
+  font-size: clamp(1.8rem, 3vw, 2.6rem);
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+}
+
+.page-subtitle {
+  margin: 10px 0 0;
+  max-width: 52ch;
+  color: #4b6576;
+  line-height: 1.6;
+}
+
 .app-shell-nav {
   display: flex;
   gap: 10px;
@@ -88,6 +102,18 @@ a {
   padding: 10px 14px;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.8);
+}
+
+.avatar-chip {
+  display: inline-grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  background: #173043;
+  color: #f8fafc;
+  font-size: 0.92rem;
+  font-weight: 800;
 }
 
 .landing-shell,
@@ -162,6 +188,11 @@ a {
 .action-link-secondary {
   background: rgba(23, 48, 67, 0.08);
   color: #173043;
+}
+
+.action-link-disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .dashboard-stack {
@@ -247,14 +278,61 @@ a {
   font-weight: 800;
 }
 
+.card-title {
+  margin: 0;
+  font-size: 1.3rem;
+  line-height: 1.2;
+}
+
 .recommendation-copy {
   margin: 0;
   color: #476175;
 }
 
+.field-block {
+  margin-top: 18px;
+  display: grid;
+  gap: 8px;
+}
+
+.field-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #51687a;
+}
+
+.field-select {
+  min-height: 44px;
+  padding: 0 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(23, 48, 67, 0.16);
+  background: rgba(255, 255, 255, 0.9);
+  font: inherit;
+  color: #173043;
+}
+
+.detail-list {
+  margin: 16px 0 0;
+  padding-left: 20px;
+  display: grid;
+  gap: 10px;
+  line-height: 1.6;
+}
+
+.confirm-card {
+  border-color: rgba(152, 107, 22, 0.2);
+  background: linear-gradient(180deg, rgba(255, 247, 223, 0.95), rgba(255, 255, 255, 0.9));
+}
+
 .recent-results-list {
   display: grid;
   gap: 14px;
+}
+
+.login-card-header {
+  margin-bottom: 16px;
 }
 
 .recent-result-item {

@@ -1,7 +1,4 @@
-import fluentComponents from "@fluentui/react-components";
 import { Link } from "react-router";
-
-const { Avatar, Button, Subtitle2, Title2 } = fluentComponents;
 
 type AppShellProps = {
   children: React.ReactNode;
@@ -26,8 +23,8 @@ export function AppShell({ children, currentPath, title, subtitle, user }: AppSh
       <header className="app-shell-header">
         <div>
           <p className="eyebrow">Arcade</p>
-          <Title2>{title}</Title2>
-          <Subtitle2>{subtitle}</Subtitle2>
+          <h1 className="page-title">{title}</h1>
+          <p className="page-subtitle">{subtitle}</p>
         </div>
         <div className="app-shell-user">
           <nav className="app-shell-nav" aria-label="Primary">
@@ -42,13 +39,15 @@ export function AppShell({ children, currentPath, title, subtitle, user }: AppSh
             ))}
           </nav>
           <div className="user-chip">
-            <Avatar name={user.displayName} image={{ src: user.avatarUrl ?? undefined }} color="colorful" />
+            <span className="avatar-chip" aria-hidden="true">
+              {user.displayName.slice(0, 1).toUpperCase()}
+            </span>
             <span>{user.displayName}</span>
           </div>
           <form method="post" action="/logout">
-            <Button appearance="subtle" type="submit">
+            <button className="action-link action-link-secondary" type="submit">
               Sign out
-            </Button>
+            </button>
           </form>
         </div>
       </header>

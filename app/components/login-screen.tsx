@@ -1,7 +1,3 @@
-import fluentComponents from "@fluentui/react-components";
-
-const { Avatar, Button, Card, CardHeader, Text } = fluentComponents;
-
 type LoginOption = {
   id: string;
   displayName: string;
@@ -24,12 +20,18 @@ export function LoginScreen({ users }: { users: LoginOption[] }) {
       </section>
       <section className="login-grid" aria-label="Available users">
         {users.map((user) => (
-          <Card key={user.id} className="login-card">
-            <CardHeader
-              image={<Avatar name={user.displayName} image={{ src: user.avatarUrl ?? undefined }} color="colorful" />}
-              header={<Text weight="semibold">{user.displayName}</Text>}
-              description={<Text>{user.tagline}</Text>}
-            />
+          <article key={user.id} className="login-card">
+            <div className="login-card-header">
+              <div className="user-chip">
+                <span className="avatar-chip" aria-hidden="true">
+                  {user.displayName.slice(0, 1).toUpperCase()}
+                </span>
+                <div>
+                  <strong>{user.displayName}</strong>
+                  <p>{user.tagline}</p>
+                </div>
+              </div>
+            </div>
             <dl className="stat-grid compact-stat-grid">
               <div>
                 <dt>Season rank</dt>
@@ -46,11 +48,11 @@ export function LoginScreen({ users }: { users: LoginOption[] }) {
             </dl>
             <form method="post" className="login-form">
               <input type="hidden" name="userId" value={user.id} />
-              <Button appearance="primary" type="submit">
+              <button className="action-link action-link-primary" type="submit">
                 Sign in as {user.displayName}
-              </Button>
+              </button>
             </form>
-          </Card>
+          </article>
         ))}
       </section>
     </main>
