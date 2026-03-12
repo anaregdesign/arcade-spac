@@ -4,12 +4,16 @@ import type { Route } from "./+types/results.$resultId";
 import { AppShell } from "../components/app-shell";
 import { ResultScreen } from "../components/gameplay/result-screen";
 import { requireCurrentUserId } from "../lib/server/infrastructure/auth/session.server";
+import { getRuntimeConfig } from "../lib/server/infrastructure/config/runtime-config.server";
 import { getHomeDashboard } from "../lib/server/usecase/get-home-dashboard.server";
 import { retryPendingResult } from "../lib/server/usecase/gameplay/record-gameplay-result.server";
 import { getPlayResultById } from "../lib/server/infrastructure/repositories/gameplay.repository.server";
 
 export async function loader({ request, params }: Route.LoaderArgs) {
   const userId = await requireCurrentUserId(request);
+  const runtimeConfig = getRuntimeConfig();
+  const requestUrl = new URL(request.url);
+  const publicBaseUrl = runtimeConfig.publicAppUrl ?? requestUrl.origin;
   const [dashboard, result] = await Promise.all([
     getHomeDashboard(userId),
     getPlayResultById(params.resultId),
@@ -32,7 +36,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
       competitivePoints: result.competitivePoints,
       gameKey: result.game.key.toLowerCase(),
       gameName: result.game.name,
-      shareUrl: `http://127.0.0.1:4173/results/${result.id}`,
+      shareUrl: `${publicBaseUrl}/results/${result.id}`,
       shareText: `Arcade: ${result.game.name} ${result.difficulty.toLowerCase()} result ${result.summaryText}`,
     },
   };
