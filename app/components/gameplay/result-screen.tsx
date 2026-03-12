@@ -39,49 +39,86 @@ export function ResultScreen({ result }: ResultScreenProps) {
       <section className="feature-card workspace-card">
         <div className="section-heading">
           <div>
-            <p className="eyebrow">Result</p>
+            <p className="eyebrow">✨ Result</p>
             <h2 className="section-title">{result.gameName} {result.difficulty.toLowerCase()}</h2>
           </div>
           <span className={result.status === "PENDING_SAVE" ? "status-badge status-badge-pending" : "status-badge status-badge-success"}>{result.status}</span>
         </div>
-        <p>{result.summaryText}</p>
+        <p className="compact-copy">{result.summaryText}</p>
         <dl className="stat-grid compact-stat-grid">
           <div>
             <dt>Recorded time</dt>
             <dd>{formatDuration(result.primaryMetric)}</dd>
           </div>
-          {result.hintCount !== null ? (
-            <div>
-              <dt>Hints used</dt>
-              <dd>{result.hintCount}</dd>
-            </div>
-          ) : null}
-          {result.mistakeCount !== null ? (
-            <div>
-              <dt>Mistakes</dt>
-              <dd>{result.mistakeCount}</dd>
-            </div>
-          ) : null}
           <div>
-            <dt>Competitive points</dt>
-            <dd>{result.competitivePoints}</dd>
-          </div>
-          <div>
-            <dt>Total points delta</dt>
+            <dt>Total points</dt>
             <dd>{result.totalPointsDelta >= 0 ? `+${result.totalPointsDelta}` : result.totalPointsDelta}</dd>
           </div>
           <div>
-            <dt>Rank delta</dt>
+            <dt>Rank move</dt>
             <dd>{result.rankDelta === null ? "Pending" : `${result.rankDelta >= 0 ? "+" : ""}${result.rankDelta}`}</dd>
           </div>
+          <div>
+            <dt>Board score</dt>
+            <dd>{result.competitivePoints}</dd>
+          </div>
         </dl>
+        <div className="hero-actions compact-action-strip">
+          <Link className="action-link action-link-primary" to={`/games/${result.gameKey}`}>
+            Replay {result.gameName}
+          </Link>
+          {alternateGame ? (
+            <Link className="action-link action-link-secondary" to={alternateGame.href}>
+              {alternateGame.label}
+            </Link>
+          ) : null}
+          <Link className="action-link action-link-secondary" to="/rankings">
+            Open rankings
+          </Link>
+          {canShare ? (
+            <a className="action-link action-link-secondary" href={teamsShareHref} target="_blank" rel="noreferrer">
+              Teams で共有
+            </a>
+          ) : (
+            <span className="action-link action-link-secondary action-link-disabled" aria-disabled="true">
+              Teams で共有
+            </span>
+          )}
+        </div>
+        <details className="disclosure-card workspace-disclosure">
+          <summary>Run detail</summary>
+          <div className="disclosure-body">
+            <dl className="stat-grid compact-stat-grid">
+              {result.hintCount !== null ? (
+                <div>
+                  <dt>Hints used</dt>
+                  <dd>{result.hintCount}</dd>
+                </div>
+              ) : null}
+              {result.mistakeCount !== null ? (
+                <div>
+                  <dt>Mistakes</dt>
+                  <dd>{result.mistakeCount}</dd>
+                </div>
+              ) : null}
+              <div>
+                <dt>Share</dt>
+                <dd>{canShare ? "Ready" : "Locked"}</dd>
+              </div>
+              <div>
+                <dt>Status</dt>
+                <dd>{result.status}</dd>
+              </div>
+            </dl>
+          </div>
+        </details>
       </section>
 
       {result.status === "PENDING_SAVE" ? (
         <section className="feature-card workspace-card">
-          <p className="eyebrow">Pending save</p>
+          <p className="eyebrow">⏳ Pending save</p>
           <h2 className="section-title">Retry result persistence</h2>
-          <p>This run is visible but not ranked yet. Retry to count it toward total points and rankings.</p>
+          <p className="compact-copy">Visible now. Ranked after retry succeeds.</p>
           <Form method="post" className="hero-actions">
             <input type="hidden" name="intent" value="retryPending" />
             <button className="action-link action-link-primary" type="submit">
@@ -92,34 +129,14 @@ export function ResultScreen({ result }: ResultScreenProps) {
       ) : null}
 
       <section className="feature-card workspace-card">
-        <p className="eyebrow">Actions</p>
-        <h2 className="section-title">What next</h2>
-        <div className="hero-actions">
-          <Link className="action-link action-link-primary" to={`/games/${result.gameKey}`}>
-            Replay {result.gameName}
-          </Link>
-          {alternateGame ? (
-            <Link className="action-link action-link-secondary" to={alternateGame.href}>
-              {alternateGame.label}
-            </Link>
-          ) : null}
+        <p className="eyebrow">🏠 Return</p>
+        <h2 className="section-title">Leave this result</h2>
+        <div className="hero-actions compact-action-strip">
           <Link className="action-link action-link-primary" to="/home">
             Back to home
           </Link>
-          <Link className="action-link action-link-secondary" to="/rankings">
-            Open rankings
-          </Link>
-          {canShare ? (
-            <a className="action-link action-link-secondary" href={teamsShareHref} target="_blank" rel="noreferrer">
-              Microsoft Teams で共有
-            </a>
-          ) : (
-            <span className="action-link action-link-secondary action-link-disabled" aria-disabled="true">
-              Microsoft Teams で共有
-            </span>
-          )}
         </div>
-        {!canShare ? <p>Pending-save or interrupted results stay private until the result is finalized.</p> : null}
+        {!canShare ? <p className="compact-copy">Pending or interrupted results stay private until finalized.</p> : null}
       </section>
     </div>
   );

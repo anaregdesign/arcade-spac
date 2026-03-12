@@ -61,7 +61,7 @@ export function GameWorkspaceScreen({ game }: GameWorkspaceScreenProps) {
       <section className="feature-card workspace-card">
         <div className="section-heading">
           <div>
-            <p className="eyebrow">{game.name}</p>
+            <p className="eyebrow">🎮 Live board</p>
             <h2 className="section-title">{game.shortDescription}</h2>
           </div>
           <span className="status-badge" style={{ backgroundColor: `${game.accentColor}22`, color: game.accentColor }}>
@@ -80,21 +80,28 @@ export function GameWorkspaceScreen({ game }: GameWorkspaceScreenProps) {
                 : workspace.isPlaying ? "Active run" : "Ready"}
           </span>
         </div>
-        <p>{game.rulesSummary}</p>
-        <label className="field-block">
-          <span className="field-label">Difficulty</span>
-          <select
-            className="field-select"
-            value={workspace.difficulty}
-            disabled={isLiveRun}
-            onChange={(event) => workspace.changeDifficulty(event.currentTarget.value as "EASY" | "NORMAL" | "HARD" | "EXPERT")}
-          >
-            <option value="EASY">Easy</option>
-            <option value="NORMAL">Normal</option>
-            <option value="HARD">Hard</option>
-            <option value="EXPERT">Expert</option>
-          </select>
-        </label>
+        <div className="workspace-toolbar">
+          <label className="field-block workspace-toolbar-field">
+            <span className="field-label">Difficulty</span>
+            <select
+              className="field-select"
+              value={workspace.difficulty}
+              disabled={isLiveRun}
+              onChange={(event) => workspace.changeDifficulty(event.currentTarget.value as "EASY" | "NORMAL" | "HARD" | "EXPERT")}
+            >
+              <option value="EASY">Easy</option>
+              <option value="NORMAL">Normal</option>
+              <option value="HARD">Hard</option>
+              <option value="EXPERT">Expert</option>
+            </select>
+          </label>
+          <div className="workspace-chip-row" aria-label="Run status">
+            <span className="status-badge status-badge-neutral">{workspace.difficulty}</span>
+            <span className="status-badge status-badge-neutral">{isLiveRun ? "Live" : isRunCleared ? "Clear ready" : "Ready"}</span>
+            {isSudoku ? <span className="status-badge status-badge-neutral">Hints {sudoku.hintCount}</span> : null}
+            <span className="status-badge status-badge-neutral">Mistakes {isMinesweeper ? minesweeper.mistakeCount : isSudoku ? sudoku.mistakeCount : 0}</span>
+          </div>
+        </div>
         {isMinesweeper ? (
           <dl className="stat-grid compact-stat-grid workspace-stat-grid">
             <div>
@@ -197,6 +204,18 @@ export function GameWorkspaceScreen({ game }: GameWorkspaceScreenProps) {
               )
             : null}
         </div>
+        <details className="disclosure-card workspace-disclosure">
+          <summary>How this run works</summary>
+          <div className="disclosure-body compact-copy">
+            <p>{game.rulesSummary}</p>
+            <ul className="detail-list compact-detail-list">
+              <li>Leaving a live run asks for confirmation before it is marked abandoned.</li>
+              <li>Saved-later results stay visible, but rankings wait until retry succeeds.</li>
+              <li>After a clear, the result screen is where you replay, share, or switch games.</li>
+              {isSudoku ? <li>Number keys work on the selected cell, and H uses a hint.</li> : null}
+            </ul>
+          </div>
+        </details>
       </section>
 
       {isMinesweeper ? (
@@ -245,9 +264,7 @@ export function GameWorkspaceScreen({ game }: GameWorkspaceScreenProps) {
               </div>
             ))}
           </div>
-          {minesweeper.mistakeCount > 0 ? (
-            <p className="workspace-note">You can keep clearing after mistakes, but each mistake lowers the saved result quality.</p>
-          ) : null}
+          {minesweeper.mistakeCount > 0 ? <p className="workspace-note">Mistakes lower result quality, but the board stays live.</p> : null}
         </section>
       ) : null}
 
@@ -310,27 +327,14 @@ export function GameWorkspaceScreen({ game }: GameWorkspaceScreenProps) {
               </div>
             </div>
           </div>
-          {sudoku.hintCount > 0 || sudoku.mistakeCount > 0 ? (
-            <p className="workspace-note">Hints and mistakes both lower the saved result quality, but the run stays playable until the grid is complete.</p>
-          ) : null}
+          {sudoku.hintCount > 0 || sudoku.mistakeCount > 0 ? <p className="workspace-note">Hints and mistakes lower result quality, but the puzzle stays live.</p> : null}
         </section>
       ) : null}
 
       <section className="feature-card workspace-card">
-        <p className="eyebrow">Run guide</p>
-        <h2 className="section-title">What happens during this session</h2>
-        <ul className="detail-list">
-          <li>If you leave during a live run, the app asks for confirmation before marking it abandoned.</li>
-          <li>Saved-later results stay visible, but they do not affect rankings until the retry succeeds.</li>
-          <li>After a clear, the result screen is where you replay, share, or switch to another game.</li>
-          {isSudoku ? <li>Number keys work while a cell is selected, and pressing H uses a hint for the active puzzle.</li> : null}
-        </ul>
-      </section>
-
-      <section className="feature-card workspace-card">
         <div className="section-heading">
           <div>
-            <p className="eyebrow">Finish run</p>
+            <p className="eyebrow">✨ Finish</p>
             <h2 className="section-title">{isMinesweeper || isSudoku ? "Save the clear you just played" : "Choose how this run ended"}</h2>
           </div>
           <span className="status-badge status-badge-neutral">
@@ -345,7 +349,7 @@ export function GameWorkspaceScreen({ game }: GameWorkspaceScreenProps) {
                 : workspace.isPlaying ? "Ready to record" : "Start a run to unlock results"}
           </span>
         </div>
-        <div className="hero-actions">
+        <div className="hero-actions compact-action-strip">
           <Form method="post" onSubmit={() => workspace.finishRun()}>
             <input type="hidden" name="intent" value={isMinesweeper || isSudoku ? resultIntent : "completeClean"} />
             <input type="hidden" name="difficulty" value={workspace.difficulty} />

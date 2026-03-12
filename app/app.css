@@ -352,6 +352,10 @@ a {
   gap: 8px;
 }
 
+.workspace-toolbar-field {
+  margin-top: 0;
+}
+
 .field-label {
   font-size: 0.85rem;
   font-weight: 700;
@@ -386,6 +390,12 @@ a {
   display: grid;
   gap: 10px;
   line-height: 1.6;
+}
+
+.compact-detail-list {
+  margin-top: 12px;
+  gap: 8px;
+  line-height: 1.45;
 }
 
 .confirm-card {
@@ -599,6 +609,18 @@ a {
   margin-top: 18px;
 }
 
+.workspace-toolbar {
+  display: grid;
+  gap: 14px;
+  align-items: end;
+}
+
+.workspace-chip-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
 .board-card {
   max-width: 880px;
 }
@@ -671,6 +693,14 @@ a {
   margin: 16px 0 0;
   color: #476175;
   line-height: 1.6;
+}
+
+.workspace-disclosure {
+  margin-top: 18px;
+}
+
+.compact-action-strip {
+  align-items: center;
 }
 
 .sudoku-shell {
@@ -810,6 +840,10 @@ a {
   .latest-result-head,
   .inline-stat-row {
     flex-direction: column;
+    align-items: stretch;
+  }
+
+  .workspace-chip-row {
     align-items: stretch;
   }
 }
