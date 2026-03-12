@@ -6,6 +6,18 @@ function formatDuration(totalSeconds: number) {
   return `${minutes}:${seconds.toString().padStart(2, "0")}`;
 }
 
+function normalizeRecentResultSummary(gameName: string, summaryText: string) {
+  if (!summaryText) {
+    return summaryText;
+  }
+
+  if (summaryText.startsWith(gameName)) {
+    return summaryText;
+  }
+
+  return `${gameName} ${summaryText.charAt(0).toLowerCase()}${summaryText.slice(1)}`;
+}
+
 export async function getHomeDashboard(userId: string) {
   const [record, games] = await Promise.all([
     getHomeDashboardRecord(userId),
@@ -57,7 +69,7 @@ export async function getHomeDashboard(userId: string) {
       id: result.id,
       gameName: result.game.name,
       status: result.status,
-      summaryText: result.summaryText,
+      summaryText: normalizeRecentResultSummary(result.game.name, result.summaryText),
       resultPath: `/results/${result.id}`,
       totalPointsDelta: result.totalPointsDelta,
       startedAt: result.startedAt.toISOString(),

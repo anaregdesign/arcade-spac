@@ -75,11 +75,11 @@ Current production baseline:
 
 ### Subsection 2.1. Local gameplay and UX audit
 - [x] Replace placeholder gameplay flows with real game interaction for the shipped game screens.
-- [ ] Exercise the local login, home, gameplay, results, rankings, and profile flows with a game-player mindset.
-- [ ] Record concrete UI friction points that make the app feel slow, unclear, noisy, or awkward during play.
-- [ ] Implement and verify the highest-impact UX fixes before wider rollout.
+- [x] Exercise the local login, home, gameplay, results, rankings, and profile flows with a game-player mindset.
+- [x] Record concrete UI friction points that make the app feel slow, unclear, noisy, or awkward during play.
+- [x] Implement and verify the highest-impact UX fixes before wider rollout.
 - [ ] Remove broken or misleading navigation targets, trim developer-facing copy, and keep only icons that improve clarity.
-- [ ] Restore local Azure SQL access for the developer runtime or document an approved local fallback so the Section 2 walkthrough can run end to end again.
+- [x] Restore local Azure SQL access for the developer runtime or document an approved local fallback so the Section 2 walkthrough can run end to end again.
 
 #### SubSubSection 2.1.0. Actual gameplay implementation
 - [x] Make `Minesweeper` playable in the shipped game screen, with real board interaction and result capture.
@@ -95,6 +95,14 @@ Current friction inventory:
 - `Result discoverability`: home `Recent results` items show status and points, but they need an explicit link back to the saved result screen.
 - `Cross-game navigation`: the game workspace and result screens need a direct way to jump to the other shipped game, matching the screen-flow spec.
 - `Local walkthrough blocker`: the local runtime currently fails against Azure SQL because the current Entra principal cannot modify the SQL server firewall or public network access.
+
+Resolved in the latest pass:
+- Added `Open result` links to the home activity stream.
+- Added direct cross-game links on game and result screens.
+- Restored local Azure SQL walkthrough access by re-enabling SQL public network access while keeping the current client IP allow-listed.
+
+Remaining cleanup candidates:
+- Normalize older seeded result summaries that still use legacy phrasing.
 
 #### SubSubSection 2.1.3. UX polish fixes
 - [ ] Fix the highest-priority UX issues and re-verify the affected flows locally.
