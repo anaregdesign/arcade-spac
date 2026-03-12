@@ -104,7 +104,7 @@ export function ProfileScreen({ profile, activity, overall, games, trend }: Prof
           <div className="feature-card profile-preview-card">
             <p className="eyebrow">Share preview</p>
             <h3 className="card-title">{profile.sharePreviewName}</h3>
-            <p>This is the name used in rankings and Teams-ready result sharing.</p>
+            <p>This is the name shown in rankings and shared result links.</p>
           </div>
           <div className="hero-actions profile-form-actions profile-form-wide">
             <button className="action-link action-link-primary" type="submit">

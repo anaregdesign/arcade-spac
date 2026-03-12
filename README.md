@@ -4,10 +4,10 @@ Arcade is a React Router server-rendered web app for two competitive puzzle game
 
 ## Current State
 
-- Local development runtime is working with SSR, cookie session auth, seeded users, seeded rankings, gameplay result flows, rankings, and profile editing.
-- Production deployment scaffolding now exists for Azure Container Apps, GitHub release-based container publishing, App Configuration, Key Vault, and Application Insights.
-- The infrastructure path now includes an optional Azure SQL serverless target and a separate migration managed identity definition for the future production cutover.
-- Real Microsoft Entra ID sign-in and production relational persistence are still pending. Local development still uses seeded identities and SQLite.
+- Local development is working against Azure SQL with SSR, cookie session auth, real Minesweeper and Sudoku gameplay, rankings, result flows, and profile editing.
+- Production is running on Azure Container Apps with GitHub Release driven CD, Microsoft Entra ID sign-in, Azure SQL, Application Insights, and Log Analytics.
+- The current production baseline is release `v2026.03.13.1` on Container App revision `ca-arcade--0000011`.
+- Operational notes for rollback, smoke checks, SQL firewall state, and observability now live in `docs/production-operations.md`.
 
 ## Local Development
 
@@ -65,6 +65,8 @@ The current runtime reads these environment variables:
 
 For local development, the app falls back to SQLite and a local session secret. For Azure hosting, move these values to managed configuration instead of storing them in repo files.
 
+For the current local workflow in this repository, the app is verified against Azure SQL rather than SQLite.
+
 ## Azure Deployment Assets
 
 The repository now includes these Azure-oriented assets:
@@ -103,20 +105,10 @@ Before a real hosted deployment, prepare all of the following:
 
 See `docs/azure-prerequisites.md` for the detailed checklist and current gaps.
 See `docs/production-data-path.md` for the current database cutover contract.
-
-## Current Azure Gaps
-
-The app is not yet ready for a production Azure rollout without further work.
-
-- The Prisma datasource still targets SQLite, which is suitable for local development but not for Azure Container Apps production hosting.
-- Real Microsoft Entra ID callback handling has not replaced the seeded local sign-in path yet.
-- The Bicep template now defines the target Azure SQL and migration identity path, but the Prisma provider and actual database role grants are still incomplete.
-- Secretless runtime configuration is scaffolded at the infrastructure layer, but the application runtime does not yet consume Azure App Configuration or Key Vault directly.
+See `docs/production-operations.md` for the current production baseline, smoke test procedure, rollback target, and observability entry points.
 
 ## Next Steps
 
-- Move production persistence to an Azure-hosted relational database supported by Prisma for multi-instance hosting.
-- Grant least-privilege database access separately to the runtime identity and the migration identity after Azure SQL provisioning.
-- Replace seeded sign-in with Microsoft Entra ID web auth and route callback handling.
-- Wire the app runtime to Azure App Configuration, Key Vault, and managed identity.
-- Run `azd provision --preview` and `azd up` only after the production data and auth path are in place.
+- Tighten SQL local-access handling after the current UX pass is complete, including pruning workstation-specific firewall rules when they are no longer needed.
+- Keep release notes, rollback data, and smoke verification steps synchronized with `docs/production-operations.md` after each production release.
+- Continue refining player-facing copy and seeded data so older legacy result summaries do not leak into the current UX.

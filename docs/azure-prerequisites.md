@@ -77,15 +77,24 @@ The template now defines two distinct identities for the database path:
 - Container App system-assigned managed identity for runtime database access after database roles are granted
 - User-assigned managed identity for migration execution and elevated schema-change operations
 
-## Production Readiness Gaps Still Open
+## Verified Production Baseline
 
-The repository is not yet production-ready for Azure until these gaps are closed:
+The current production deployment is verified on:
 
-1. Replace SQLite with a production relational database supported by Prisma for Azure multi-instance hosting.
-2. Grant the runtime managed identity only the database roles it needs, and keep elevated migration permissions on the separate migration identity.
-3. Connect the production Entra app registration values and client secret to the deployed Container App.
-4. Teach the server runtime to read Azure App Configuration and Key Vault through managed identity.
-5. Validate the deployed Container App with post-deploy smoke tests against the real production URL.
+- Release tag `v2026.03.13.1`
+- Container App revision `ca-arcade--0000011`
+- Image `ghcr.io/anaregdesign/arcade-spac:v2026.03.13.1`
+- Microsoft Entra ID runtime mode
+- Azure SQL server `sql-arcade-qddhfw4moexbm.database.windows.net`
+
+## Ongoing Operational Concerns
+
+These are no longer bootstrap blockers, but they still need active operational discipline:
+
+1. Keep runtime database access least-privilege and separate from elevated migration access.
+2. Keep the current rollback target, SQL firewall state, and smoke procedure updated after every release.
+3. Remove workstation-specific SQL firewall exceptions when they are no longer needed for local verification.
+4. Keep Application Insights and Log Analytics access available to the release operator for first-line troubleshooting.
 
 ## Suggested Verification Sequence
 
@@ -99,3 +108,5 @@ The repository is not yet production-ready for Azure until these gaps are closed
 8. Publish a release so the GitHub workflow pushes an immutable image.
 9. Verify `https://<container-app-fqdn>/health`.
 10. Smoke-test login, gameplay, result, rankings, and profile flows in the hosted environment.
+
+For the latest verified production values and rollback notes, see `docs/production-operations.md`.
