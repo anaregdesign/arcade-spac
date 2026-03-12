@@ -84,6 +84,9 @@ jobs:
       GHCR_PULL_USERNAME: ${{ vars.GHCR_PULL_USERNAME }}
       IMAGE_REF: ghcr.io/${{ github.repository }}:${{ github.event.release.tag_name }}
     steps:
+      - name: Check out the repo
+        uses: actions/checkout@v5
+
       - name: Validate release deployment configuration
         run: |
           test -n "$AZURE_CLIENT_ID" || { echo "Missing environment variable AZURE_CLIENT_ID"; exit 1; }
