@@ -1,5 +1,45 @@
 import { getProfileRecord } from "../infrastructure/repositories/rankings-profile.repository.server";
 
+export type ProfileView = {
+  profile: {
+    displayName: string;
+    visibilityScope: "TENANT_ONLY" | "PRIVATE";
+    tagline: string;
+    favoriteGame: string;
+    sharePreviewName: string;
+  };
+  activity: {
+    streakDays: number;
+    totalPlayCount: number;
+    lastPlayedAt: string | null;
+  };
+  overall: Array<{
+    period: string;
+    totalPoints: number;
+    currentRank: number | null;
+    trendDelta: number;
+    recentPlaySummary: string;
+  }>;
+  games: Array<{
+    key: string;
+    name: string;
+    currentRank: number | null;
+    bestCompetitivePoints: number;
+    personalBestMetric: string;
+    playCount: number;
+    completedCount: number;
+    recommendationText: string;
+  }>;
+  trend: Array<{
+    index: number;
+    gameName: string;
+    status: string;
+    totalPointsDelta: number;
+    competitivePoints: number;
+    label: string;
+  }>;
+};
+
 function formatDuration(totalSeconds: number | null) {
   if (totalSeconds === null) {
     return "No record yet";
@@ -10,7 +50,7 @@ function formatDuration(totalSeconds: number | null) {
   return `${minutes}:${seconds.toString().padStart(2, "0")}`;
 }
 
-export async function getProfileView(userId: string) {
+export async function getProfileView(userId: string): Promise<ProfileView> {
   const record = await getProfileRecord(userId);
 
   if (!record) {
@@ -20,7 +60,7 @@ export async function getProfileView(userId: string) {
   return {
     profile: {
       displayName: record.displayName,
-      visibilityScope: record.visibilityScope,
+      visibilityScope: record.visibilityScope === "PRIVATE" ? "PRIVATE" : "TENANT_ONLY",
       tagline: record.profile?.tagline ?? "",
       favoriteGame: record.profile?.favoriteGame?.toLowerCase() ?? "",
       sharePreviewName: record.displayName,

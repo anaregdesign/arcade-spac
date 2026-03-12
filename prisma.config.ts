@@ -1,5 +1,7 @@
 import { defineConfig } from "prisma/config";
 
+const DEFAULT_DEV_DATABASE_URL = "sqlserver://localhost:1433;database=arcade;user=sa;password=Passw0rd!;encrypt=false;trustServerCertificate=true";
+
 export default defineConfig({
   schema: "prisma/schema.prisma",
   migrations: {
@@ -7,6 +9,6 @@ export default defineConfig({
     seed: "tsx prisma/seed.ts",
   },
   datasource: {
-    url: process.env.DATABASE_URL ?? "file:./prisma/dev.db",
+    url: process.env.DATABASE_URL ?? DEFAULT_DEV_DATABASE_URL,
   },
 });

@@ -1,5 +1,4 @@
-import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
-
+import { PrismaMssql } from "@prisma/adapter-mssql";
 import { getRuntimeConfig } from "./config/runtime-config.server";
 import { PrismaClient } from "./generated/prisma/client";
 
@@ -10,14 +9,9 @@ declare global {
 function createPrismaClient() {
   const config = getRuntimeConfig();
 
-  if (!config.databaseUrl.startsWith("file:")) {
-    throw new Error("The current Prisma runtime is still SQLite-only. Configure a SQLite file URL for local development or finish the production database migration before Azure rollout.");
-  }
-
-  const sqlitePath = config.databaseUrl.replace("file:", "");
-  const adapter = new PrismaBetterSqlite3({ url: sqlitePath });
-
-  return new PrismaClient({ adapter });
+  return new PrismaClient({
+    adapter: new PrismaMssql(config.databaseUrl),
+  });
 }
 
 export const prisma = globalThis.__arcadePrisma__ ?? createPrismaClient();

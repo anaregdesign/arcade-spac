@@ -4,36 +4,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-}
-
-enum GameKey {
-  MINESWEEPER
-  SUDOKU
-}
-
-enum Difficulty {
-  EASY
-  NORMAL
-  HARD
-  EXPERT
-}
-
-enum PlayStatus {
-  COMPLETED
-  FAILED
-  ABANDONED
-  PENDING_SAVE
-}
-
-enum PeriodType {
-  SEASON
-  LIFETIME
-}
-
-enum VisibilityScope {
-  TENANT_ONLY
-  PRIVATE
+  provider = "sqlserver"
 }
 
 model User {
@@ -43,7 +14,7 @@ model User {
   avatarUrl        String?
   joinedAt         DateTime           @default(now())
   onboardingSeenAt DateTime?
-  visibilityScope  VisibilityScope    @default(TENANT_ONLY)
+  visibilityScope  String             @default("TENANT_ONLY")
   profile          UserProfile?
   playResults      PlayResult[]
   leaderboardEntries LeaderboardEntry[]
@@ -54,7 +25,7 @@ model User {
 model UserProfile {
   userId          String   @id
   tagline         String?
-  favoriteGame    GameKey?
+  favoriteGame    String?
   streakDays      Int      @default(0)
   totalPlayCount  Int      @default(0)
   lastPlayedAt    DateTime?
@@ -63,7 +34,7 @@ model UserProfile {
 
 model Game {
   id                String             @id @default(cuid())
-  key               GameKey            @unique
+  key               String             @unique
   name              String
   shortDescription  String
   accentColor       String
@@ -77,10 +48,10 @@ model PlayResult {
   id                 String      @id @default(cuid())
   userId             String
   gameId             String
-  difficulty         Difficulty
+  difficulty         String
   startedAt          DateTime
   finishedAt         DateTime?
-  status             PlayStatus
+  status             String
   cleared            Boolean
   leaderboardEligible Boolean
   primaryMetric      Int
@@ -102,7 +73,7 @@ model PlayResult {
 
 model LeaderboardEntry {
   id            String     @id @default(cuid())
-  periodType    PeriodType
+  periodType    String
   gameId        String?
   userId        String
   rank          Int
@@ -137,7 +108,7 @@ model UserGameSummary {
 model UserOverallSummary {
   id                String     @id @default(cuid())
   userId            String
-  periodType        PeriodType
+  periodType        String
   totalPoints       Int        @default(0)
   currentRank       Int?
   trendDelta        Int        @default(0)

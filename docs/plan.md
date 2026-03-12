@@ -11,6 +11,8 @@
 ### Subsection 1.1. Prepare the production data path
 - [x] Define the production database contract, migration commands, and deployment-time checks.
 - [x] Record the remaining blocker between the current SQLite implementation and the final hosted relational store.
+- [ ] Replace the remaining SQLite-only Prisma runtime with an Azure SQL Database-compatible Prisma path.
+- [ ] Provision and seed the actual Azure SQL Database resources used by the hosted app.
 
 #### SubSubSection 1.1.1. Data contract and commands
 - [x] Add explicit production migration and status commands alongside a production-readiness data check.
@@ -20,6 +22,15 @@
 
 #### SubSubSection 1.1.3. Data cutover documentation
 - [x] Document the exact production data-path prerequisites, current limitations, and cutover sequence.
+
+#### SubSubSection 1.1.4. Prisma SQL Server migration
+- [x] Switch the Prisma datasource, generated client, and runtime bootstrap from SQLite to SQL Server.
+- [x] Regenerate the initial migration and seed path for Azure SQL Database.
+
+#### SubSubSection 1.1.5. Azure SQL rollout
+- [ ] Provision the Azure SQL logical server and database from the repo-managed infrastructure path.
+- [ ] Apply migrations and seed data to Azure SQL Database.
+- [ ] Point the hosted Container App at the Azure SQL Database connection string instead of any SQLite path.
 
 ### Subsection 1.2. Validate the hosted runtime
 - [x] Configure deployment workflow and hosted smoke verification for the MVP user journeys.

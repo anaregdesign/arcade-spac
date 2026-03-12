@@ -13,7 +13,7 @@ export type RuntimeConfig = {
   entraAuthority: string | null;
 };
 
-const DEFAULT_SQLITE_URL = "file:./prisma/dev.db";
+const DEFAULT_DEV_DATABASE_URL = "sqlserver://localhost:1433;database=arcade;user=sa;password=Passw0rd!;encrypt=false;trustServerCertificate=true";
 const DEFAULT_DEV_SESSION_SECRET = "arcade-local-session-secret";
 
 function requireAzureSetting(name: string, value: string | undefined) {
@@ -37,7 +37,7 @@ export function getRuntimeConfig(): RuntimeConfig {
     : process.env.ARCADE_SESSION_SECRET ?? DEFAULT_DEV_SESSION_SECRET;
   const databaseUrl = hostingTarget === "azure"
     ? requireAzureSetting("DATABASE_URL", process.env.DATABASE_URL)
-    : process.env.DATABASE_URL ?? DEFAULT_SQLITE_URL;
+    : process.env.DATABASE_URL ?? DEFAULT_DEV_DATABASE_URL;
   const publicAppUrl = process.env.PUBLIC_APP_URL ?? null;
   const entraTenantId = process.env.AZURE_TENANT_ID ?? null;
   const entraClientId = process.env.AZURE_CLIENT_ID ?? null;
