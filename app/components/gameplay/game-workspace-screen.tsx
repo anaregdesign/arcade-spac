@@ -3,6 +3,7 @@ import { Form, Link, useNavigation } from "react-router";
 
 import { useGameWorkspace } from "../../lib/client/usecase/game-workspace/use-game-workspace";
 import { useMinesweeperSession } from "../../lib/client/usecase/game-workspace/use-minesweeper-session";
+import { useSudokuSession } from "../../lib/client/usecase/game-workspace/use-sudoku-session";
 
 type GameWorkspaceScreenProps = {
   game: {
@@ -18,18 +19,37 @@ export function GameWorkspaceScreen({ game }: GameWorkspaceScreenProps) {
   const navigation = useNavigation();
   const workspace = useGameWorkspace();
   const isMinesweeper = game.key === "minesweeper";
+  const isSudoku = game.key === "sudoku";
   const minesweeper = useMinesweeperSession(workspace.difficulty);
-  const isLiveRun = isMinesweeper ? minesweeper.state === "playing" : workspace.isPlaying;
-  const isBoardCleared = isMinesweeper && minesweeper.state === "cleared";
-  const resultIntent = isMinesweeper && minesweeper.mistakeCount === 0 ? "completeClean" : "completeSteady";
+  const sudoku = useSudokuSession(workspace.difficulty);
+  const sessionState = isMinesweeper ? minesweeper.state : isSudoku ? sudoku.state : workspace.isPlaying ? "playing" : "idle";
+  const isLiveRun = sessionState === "playing";
+  const isRunCleared = sessionState === "cleared";
+  const resultIntent = isMinesweeper
+    ? minesweeper.mistakeCount === 0 ? "completeClean" : "completeSteady"
+    : isSudoku
+      ? sudoku.mistakeCount === 0 && sudoku.hintCount === 0 ? "completeClean" : "completeSteady"
+      : "completeClean";
+  const primaryMetric = isMinesweeper
+    ? String(minesweeper.elapsedSeconds)
+    : isSudoku
+      ? String(sudoku.elapsedSeconds)
+      : null;
+  const mistakeCount = isMinesweeper
+    ? String(minesweeper.mistakeCount)
+    : isSudoku
+      ? String(sudoku.mistakeCount)
+      : null;
+  const hintCount = isSudoku ? String(sudoku.hintCount) : null;
+  const canSaveResult = isMinesweeper || isSudoku ? isRunCleared : workspace.isPlaying;
 
   useEffect(() => {
-    if (!isMinesweeper) {
-      return;
-    }
+    workspace.setPlaying(sessionState === "playing");
+  }, [sessionState, workspace]);
 
-    workspace.setPlaying(minesweeper.state === "playing");
-  }, [isMinesweeper, minesweeper.state, workspace]);
+  function formatDuration(totalSeconds: number) {
+    return `${Math.floor(totalSeconds / 60)}:${(totalSeconds % 60).toString().padStart(2, "0")}`;
+  }
 
   return (
     <div className="dashboard-stack">
@@ -41,12 +61,18 @@ export function GameWorkspaceScreen({ game }: GameWorkspaceScreenProps) {
           </div>
           <span className="status-badge" style={{ backgroundColor: `${game.accentColor}22`, color: game.accentColor }}>
             {isMinesweeper
-              ? minesweeper.state === "cleared"
+              ? isRunCleared
                 ? "Board cleared"
-                : minesweeper.state === "playing"
+                : isLiveRun
                   ? "Board live"
                   : "Ready"
-              : workspace.isPlaying ? "Active run" : "Ready"}
+              : isSudoku
+                ? isRunCleared
+                  ? "Puzzle solved"
+                  : isLiveRun
+                    ? "Puzzle live"
+                    : "Ready"
+                : workspace.isPlaying ? "Active run" : "Ready"}
           </span>
         </div>
         <p>{game.rulesSummary}</p>
@@ -68,7 +94,7 @@ export function GameWorkspaceScreen({ game }: GameWorkspaceScreenProps) {
           <dl className="stat-grid compact-stat-grid workspace-stat-grid">
             <div>
               <dt>Time</dt>
-              <dd>{Math.floor(minesweeper.elapsedSeconds / 60)}:{(minesweeper.elapsedSeconds % 60).toString().padStart(2, "0")}</dd>
+              <dd>{formatDuration(minesweeper.elapsedSeconds)}</dd>
             </div>
             <div>
               <dt>Mistakes</dt>
@@ -80,7 +106,27 @@ export function GameWorkspaceScreen({ game }: GameWorkspaceScreenProps) {
             </div>
             <div>
               <dt>Status</dt>
-              <dd>{isBoardCleared ? "Clear ready" : isLiveRun ? "In progress" : "Waiting"}</dd>
+              <dd>{isRunCleared ? "Clear ready" : isLiveRun ? "In progress" : "Waiting"}</dd>
+            </div>
+          </dl>
+        ) : null}
+        {isSudoku ? (
+          <dl className="stat-grid compact-stat-grid workspace-stat-grid">
+            <div>
+              <dt>Time</dt>
+              <dd>{formatDuration(sudoku.elapsedSeconds)}</dd>
+            </div>
+            <div>
+              <dt>Mistakes</dt>
+              <dd>{sudoku.mistakeCount}</dd>
+            </div>
+            <div>
+              <dt>Hints</dt>
+              <dd>{sudoku.hintCount}</dd>
+            </div>
+            <div>
+              <dt>Open cells</dt>
+              <dd>{sudoku.remainingCellCount}</dd>
             </div>
           </dl>
         ) : null}
@@ -94,15 +140,25 @@ export function GameWorkspaceScreen({ game }: GameWorkspaceScreenProps) {
               if (isMinesweeper) {
                 minesweeper.beginRun();
               }
+
+              if (isSudoku) {
+                sudoku.beginRun();
+              }
             }}
           >
             {isMinesweeper
               ? isLiveRun
                 ? "Board live"
-                : isBoardCleared
+                : isRunCleared
                   ? "Start another board"
                   : "Start run"
-              : workspace.isPlaying ? "Run in progress" : "Start run"}
+              : isSudoku
+                ? isLiveRun
+                  ? "Puzzle live"
+                  : isRunCleared
+                    ? "Start another puzzle"
+                    : "Start run"
+                : workspace.isPlaying ? "Run in progress" : "Start run"}
           </button>
           {isLiveRun ? (
             <button className="action-link action-link-secondary" type="button" onClick={() => workspace.openLeaveConfirm("home")}>
@@ -133,7 +189,7 @@ export function GameWorkspaceScreen({ game }: GameWorkspaceScreenProps) {
               <h2 className="section-title">Clear every safe tile</h2>
             </div>
             <span className="status-badge status-badge-neutral">
-              {isBoardCleared ? "Ready to save" : isLiveRun ? "Left click to reveal, right click to flag" : "Start a run to begin"}
+              {isRunCleared ? "Ready to save" : isLiveRun ? "Left click to reveal, right click to flag" : "Start a run to begin"}
             </span>
           </div>
           <div className="minesweeper-shell">
@@ -177,6 +233,71 @@ export function GameWorkspaceScreen({ game }: GameWorkspaceScreenProps) {
         </section>
       ) : null}
 
+      {isSudoku ? (
+        <section className="feature-card workspace-card board-card">
+          <div className="section-heading">
+            <div>
+              <p className="eyebrow">Puzzle</p>
+              <h2 className="section-title">Fill every row, column, and box</h2>
+            </div>
+            <span className="status-badge status-badge-neutral">
+              {isRunCleared ? "Ready to save" : isLiveRun ? "Select a cell, then use the keypad or number keys" : "Start a run to begin"}
+            </span>
+          </div>
+          <div className="sudoku-shell">
+            <div className="sudoku-board" role="grid" aria-label="Sudoku board">
+              {sudoku.board.map((row, rowIndex) =>
+                row.map((cell, colIndex) => (
+                  <button
+                    aria-label={`Sudoku cell ${rowIndex + 1}-${colIndex + 1}`}
+                    className={[
+                      "sudoku-cell",
+                      cell.isFixed ? "sudoku-cell-fixed" : "",
+                      cell.isSelected ? "sudoku-cell-selected" : "",
+                      cell.isWrong ? "sudoku-cell-wrong" : "",
+                      rowIndex % 3 === 0 ? "sudoku-cell-top-heavy" : "",
+                      colIndex % 3 === 0 ? "sudoku-cell-left-heavy" : "",
+                      rowIndex === 8 ? "sudoku-cell-bottom-heavy" : "",
+                      colIndex === 8 ? "sudoku-cell-right-heavy" : "",
+                    ].filter(Boolean).join(" ")}
+                    key={`sudoku-${rowIndex}-${colIndex}`}
+                    onClick={() => sudoku.selectCell(rowIndex, colIndex)}
+                    type="button"
+                  >
+                    {cell.value > 0 ? cell.value : ""}
+                  </button>
+                )),
+              )}
+            </div>
+            <div className="sudoku-controls">
+              <div className="sudoku-keypad" role="group" aria-label="Sudoku keypad">
+                {Array.from({ length: 9 }, (_, index) => (
+                  <button
+                    className="sudoku-key"
+                    key={`digit-${index + 1}`}
+                    onClick={() => sudoku.applyDigit(index + 1)}
+                    type="button"
+                  >
+                    {index + 1}
+                  </button>
+                ))}
+              </div>
+              <div className="hero-actions compact-actions">
+                <button className="action-link action-link-secondary" onClick={() => sudoku.clearSelectedCell()} type="button">
+                  Clear cell
+                </button>
+                <button className="action-link action-link-primary" onClick={() => sudoku.useHint()} type="button">
+                  Use hint
+                </button>
+              </div>
+            </div>
+          </div>
+          {sudoku.hintCount > 0 || sudoku.mistakeCount > 0 ? (
+            <p className="workspace-note">Hints and mistakes both lower the saved result quality, but the run stays playable until the grid is complete.</p>
+          ) : null}
+        </section>
+      ) : null}
+
       <section className="feature-card workspace-card">
         <p className="eyebrow">Run guide</p>
         <h2 className="section-title">What happens during this session</h2>
@@ -184,6 +305,7 @@ export function GameWorkspaceScreen({ game }: GameWorkspaceScreenProps) {
           <li>If you leave during a live run, the app asks for confirmation before marking it abandoned.</li>
           <li>Saved-later results stay visible, but they do not affect rankings until the retry succeeds.</li>
           <li>After a clear, the result screen is where you replay, share, or switch to another game.</li>
+          {isSudoku ? <li>Number keys work while a cell is selected, and pressing H uses a hint for the active puzzle.</li> : null}
         </ul>
       </section>
 
@@ -191,29 +313,32 @@ export function GameWorkspaceScreen({ game }: GameWorkspaceScreenProps) {
         <div className="section-heading">
           <div>
             <p className="eyebrow">Finish run</p>
-            <h2 className="section-title">{isMinesweeper ? "Save the clear you just played" : "Choose how this run ended"}</h2>
+            <h2 className="section-title">{isMinesweeper || isSudoku ? "Save the clear you just played" : "Choose how this run ended"}</h2>
           </div>
           <span className="status-badge status-badge-neutral">
             {navigation.state === "submitting"
               ? "Saving"
-              : isMinesweeper
-                ? isBoardCleared
+              : isMinesweeper || isSudoku
+                ? isRunCleared
                   ? "Clear ready to save"
-                  : "Clear the board to unlock result actions"
+                  : isSudoku
+                    ? "Solve the puzzle to unlock result actions"
+                    : "Clear the board to unlock result actions"
                 : workspace.isPlaying ? "Ready to record" : "Start a run to unlock results"}
           </span>
         </div>
         <div className="hero-actions">
           <Form method="post" onSubmit={() => workspace.finishRun()}>
-            <input type="hidden" name="intent" value={isMinesweeper ? resultIntent : "completeClean"} />
+            <input type="hidden" name="intent" value={isMinesweeper || isSudoku ? resultIntent : "completeClean"} />
             <input type="hidden" name="difficulty" value={workspace.difficulty} />
-            {isMinesweeper ? <input type="hidden" name="primaryMetric" value={String(minesweeper.elapsedSeconds)} /> : null}
-            {isMinesweeper ? <input type="hidden" name="mistakeCount" value={String(minesweeper.mistakeCount)} /> : null}
-            <button className="action-link action-link-primary" disabled={isMinesweeper ? !isBoardCleared : !workspace.isPlaying} type="submit">
-              {isMinesweeper ? "Record current clear" : "Log a clean clear"}
+            {primaryMetric ? <input type="hidden" name="primaryMetric" value={primaryMetric} /> : null}
+            {mistakeCount ? <input type="hidden" name="mistakeCount" value={mistakeCount} /> : null}
+            {hintCount ? <input type="hidden" name="hintCount" value={hintCount} /> : null}
+            <button className="action-link action-link-primary" disabled={!canSaveResult} type="submit">
+              {isMinesweeper || isSudoku ? "Record current clear" : "Log a clean clear"}
             </button>
           </Form>
-          {isMinesweeper ? null : (
+          {isMinesweeper || isSudoku ? null : (
             <Form method="post" onSubmit={() => workspace.finishRun()}>
               <input type="hidden" name="intent" value="completeSteady" />
               <input type="hidden" name="difficulty" value={workspace.difficulty} />
@@ -225,9 +350,10 @@ export function GameWorkspaceScreen({ game }: GameWorkspaceScreenProps) {
           <Form method="post" onSubmit={() => workspace.finishRun()}>
             <input type="hidden" name="intent" value="completePending" />
             <input type="hidden" name="difficulty" value={workspace.difficulty} />
-            {isMinesweeper ? <input type="hidden" name="primaryMetric" value={String(minesweeper.elapsedSeconds)} /> : null}
-            {isMinesweeper ? <input type="hidden" name="mistakeCount" value={String(minesweeper.mistakeCount)} /> : null}
-            <button className="action-link action-link-secondary" disabled={isMinesweeper ? !isBoardCleared : !workspace.isPlaying} type="submit">
+            {primaryMetric ? <input type="hidden" name="primaryMetric" value={primaryMetric} /> : null}
+            {mistakeCount ? <input type="hidden" name="mistakeCount" value={mistakeCount} /> : null}
+            {hintCount ? <input type="hidden" name="hintCount" value={hintCount} /> : null}
+            <button className="action-link action-link-secondary" disabled={!canSaveResult} type="submit">
               Save and retry later
             </button>
           </Form>

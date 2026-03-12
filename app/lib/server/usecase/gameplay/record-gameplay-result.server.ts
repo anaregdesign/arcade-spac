@@ -41,17 +41,17 @@ function computeActualMetrics(input: {
   const base = difficultyBasePoints[input.difficulty];
   const primaryMetric = Math.max(1, Math.round(input.primaryMetric));
   const hintCount = input.gameKey === "sudoku" ? Math.max(0, Math.round(input.hintCount ?? 0)) : null;
-  const mistakeCount = input.gameKey === "minesweeper" ? Math.max(0, Math.round(input.mistakeCount ?? 0)) : null;
+  const mistakeCount = Math.max(0, Math.round(input.mistakeCount ?? 0));
   const penalty = input.gameKey === "minesweeper"
     ? Math.round(primaryMetric * 1.35) + (mistakeCount ?? 0) * 120
-    : Math.round(primaryMetric * 0.9) + (hintCount ?? 0) * 90;
+    : Math.round(primaryMetric * 0.9) + (hintCount ?? 0) * 90 + mistakeCount * 45;
   const pendingModifier = input.outcome === "pending" ? 0.72 : 1;
 
   return {
     primaryMetric,
     competitivePoints: Math.max(Math.round(base * 0.25), Math.round((base - penalty) * pendingModifier)),
     hintCount,
-    mistakeCount,
+    mistakeCount: input.gameKey === "minesweeper" || input.gameKey === "sudoku" ? mistakeCount : null,
   };
 }
 

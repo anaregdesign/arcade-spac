@@ -31,6 +31,8 @@ export async function loader({ request, params }: Route.LoaderArgs) {
       difficulty: result.difficulty,
       summaryText: result.summaryText,
       primaryMetric: result.primaryMetric,
+      hintCount: result.hintCount,
+      mistakeCount: result.mistakeCount,
       totalPointsDelta: result.totalPointsDelta,
       rankDelta: result.rankDelta,
       competitivePoints: result.competitivePoints,

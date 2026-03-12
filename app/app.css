@@ -581,6 +581,86 @@ a {
   line-height: 1.6;
 }
 
+.sudoku-shell {
+  display: grid;
+  gap: 20px;
+}
+
+.sudoku-board {
+  display: grid;
+  grid-template-columns: repeat(9, minmax(0, 1fr));
+  width: min(100%, 540px);
+  border-radius: 24px;
+  overflow: hidden;
+  border: 2px solid rgba(23, 48, 67, 0.22);
+  background: rgba(248, 250, 251, 0.9);
+}
+
+.sudoku-cell {
+  aspect-ratio: 1;
+  border: none;
+  border-top: 1px solid rgba(23, 48, 67, 0.12);
+  border-left: 1px solid rgba(23, 48, 67, 0.12);
+  background: rgba(255, 255, 255, 0.92);
+  color: #173043;
+  font: inherit;
+  font-size: 1.25rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.sudoku-cell-fixed {
+  background: rgba(23, 48, 67, 0.1);
+}
+
+.sudoku-cell-selected {
+  background: rgba(250, 218, 143, 0.75);
+  color: #8a5d12;
+}
+
+.sudoku-cell-wrong {
+  background: rgba(194, 63, 52, 0.88);
+  color: #fff7f5;
+}
+
+.sudoku-cell-top-heavy {
+  border-top: 2px solid rgba(23, 48, 67, 0.32);
+}
+
+.sudoku-cell-left-heavy {
+  border-left: 2px solid rgba(23, 48, 67, 0.32);
+}
+
+.sudoku-cell-right-heavy {
+  border-right: 2px solid rgba(23, 48, 67, 0.32);
+}
+
+.sudoku-cell-bottom-heavy {
+  border-bottom: 2px solid rgba(23, 48, 67, 0.32);
+}
+
+.sudoku-controls {
+  display: grid;
+  gap: 14px;
+}
+
+.sudoku-keypad {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 72px));
+  gap: 10px;
+}
+
+.sudoku-key {
+  min-height: 52px;
+  border: 1px solid rgba(23, 48, 67, 0.12);
+  border-radius: 18px;
+  background: linear-gradient(180deg, #fdfefe, #e8eff3);
+  color: #173043;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
 .error-stack {
   margin-top: 20px;
   padding: 16px;
@@ -610,6 +690,14 @@ a {
     width: 34px;
     height: 34px;
     border-radius: 10px;
+  }
+
+  .sudoku-cell {
+    font-size: 1rem;
+  }
+
+  .sudoku-keypad {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 

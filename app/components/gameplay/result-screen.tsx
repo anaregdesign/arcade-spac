@@ -7,6 +7,8 @@ type ResultScreenProps = {
     difficulty: string;
     summaryText: string;
     primaryMetric: number;
+    hintCount: number | null;
+    mistakeCount: number | null;
     totalPointsDelta: number;
     rankDelta: number | null;
     competitivePoints: number;
@@ -43,6 +45,18 @@ export function ResultScreen({ result }: ResultScreenProps) {
             <dt>Recorded time</dt>
             <dd>{formatDuration(result.primaryMetric)}</dd>
           </div>
+          {result.hintCount !== null ? (
+            <div>
+              <dt>Hints used</dt>
+              <dd>{result.hintCount}</dd>
+            </div>
+          ) : null}
+          {result.mistakeCount !== null ? (
+            <div>
+              <dt>Mistakes</dt>
+              <dd>{result.mistakeCount}</dd>
+            </div>
+          ) : null}
           <div>
             <dt>Competitive points</dt>
             <dd>{result.competitivePoints}</dd>
