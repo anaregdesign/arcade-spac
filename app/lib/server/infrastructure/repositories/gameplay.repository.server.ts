@@ -1,4 +1,5 @@
 import { prisma } from "../prisma.server";
+import { getPlayResultByIdFixture, withDevelopmentFixtures } from "./dev-fixtures.server";
 
 type UpsertGameSummaryInput = {
   userId: string;
@@ -145,17 +146,20 @@ export async function replaceUserOverallSummaries(summaries: UpsertOverallSummar
 }
 
 export async function getPlayResultById(resultId: string) {
-  return prisma.playResult.findUnique({
-    where: { id: resultId },
-    include: {
-      game: true,
-      user: {
-        include: {
-          profile: true,
+  return withDevelopmentFixtures(
+    () => prisma.playResult.findUnique({
+      where: { id: resultId },
+      include: {
+        game: true,
+        user: {
+          include: {
+            profile: true,
+          },
         },
       },
-    },
-  });
+    }),
+    () => getPlayResultByIdFixture(resultId),
+  );
 }
 
 export async function getLeaderboardSnapshot() {

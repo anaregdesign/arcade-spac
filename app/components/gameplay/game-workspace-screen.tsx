@@ -209,7 +209,8 @@ export function GameWorkspaceScreen({ game }: GameWorkspaceScreenProps) {
           <div className="disclosure-body compact-copy">
             <p>{game.rulesSummary}</p>
             <ul className="detail-list compact-detail-list">
-              <li>Leaving mid-run asks for confirmation.</li>
+              <li>Runs stay live on this screen. There is no pause mode.</li>
+              <li>Leaving mid-run asks for confirmation and records the attempt as abandoned.</li>
               <li>Pending saves do not rank yet.</li>
               <li>Clear first, then save.</li>
               {isSudoku ? <li>Number keys work. `H` uses a hint.</li> : null}

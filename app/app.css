@@ -450,6 +450,47 @@ a {
   padding: 0 16px 16px;
 }
 
+.help-inline-grid {
+  display: grid;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.help-inline-grid p {
+  margin: 0;
+}
+
+.help-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(23, 48, 67, 0.28);
+  backdrop-filter: blur(10px);
+}
+
+.help-dialog {
+  width: min(960px, 100%);
+  max-height: min(88vh, 920px);
+  overflow: auto;
+}
+
+.help-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.help-panel {
+  padding: 20px;
+  border-radius: 22px;
+  background: rgba(248, 250, 251, 0.88);
+  border: 1px solid rgba(23, 48, 67, 0.08);
+}
+
 .home-game-grid {
   align-items: start;
 }
@@ -861,6 +902,7 @@ a {
   .summary-grid,
   .feature-grid,
   .game-grid,
+  .help-grid,
   .login-grid,
   .stat-grid,
   .compact-stat-grid,

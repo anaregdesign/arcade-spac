@@ -28,6 +28,8 @@ npm install
 npm run dev
 ```
 
+If `DATABASE_URL` is not configured or the local SQL login is unavailable, the development server now falls back to in-memory fixture data for browser-based UI review on `/login`, `/home`, `/games/:gameKey`, `/results/:resultId`, `/rankings`, and `/profile`.
+
 ### Useful Commands
 
 ```bash

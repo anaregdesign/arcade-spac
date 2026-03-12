@@ -39,6 +39,10 @@ export async function getHomeDashboard(userId: string) {
       tagline: record.profile?.tagline ?? "",
       streakDays: record.profile?.streakDays ?? 0,
       totalPlayCount: record.profile?.totalPlayCount ?? 0,
+      onboardingSeenAt: record.onboardingSeenAt?.toISOString() ?? null,
+    },
+    onboarding: {
+      showGuide: !record.onboardingSeenAt,
     },
     summaries: {
       seasonPoints: seasonSummary?.totalPoints ?? 0,
