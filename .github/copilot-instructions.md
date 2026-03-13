@@ -10,13 +10,14 @@ Use them deliberately and by concern.
 
 ## Skill Selection
 
-- Call `spec-driven-workflow` when the task needs `/doc/spec/`, `/doc/plan.md`, ordered `Section`/`Subsection` planning, or deliberate commit-unit planning.
+- In this repository, consult `spec-driven-workflow` first for any non-trivial product, UI, route, API, workflow, or behavior change, even when the user asks directly for implementation.
+- Call `spec-driven-workflow` when the task needs `/docs/spec/`, `/docs/plan.md`, ordered `Section`/`Subsection` planning, or deliberate commit-unit planning.
 - Call `enforce-react-spa-architecture` when the task changes React Router + Prisma app-code architecture, route/module placement, UI boundaries, client/server/domain boundaries, or verification expectations for the app itself.
 - Call `azure-spa-clean-architecture-bootstrap` when the task changes Azure hosting, Microsoft Entra ID or other identity wiring, secretless configuration, Azure infrastructure as code, deployment topology, or release automation.
 
 ## Combining Skills
 
-- When a task spans planning plus implementation, use `spec-driven-workflow` for the spec and temporary plan artifacts, then use the relevant implementation skill for the code or platform work.
+- When a task spans planning plus implementation, use `spec-driven-workflow` first for the spec and temporary plan artifacts, then use the relevant implementation skill for the code or platform work.
 - When a task spans React SPA architecture and Azure concerns, use `enforce-react-spa-architecture` as the base skill and add `azure-spa-clean-architecture-bootstrap` only for Azure-specific deltas.
 - Do not use `azure-spa-clean-architecture-bootstrap` as a replacement for `enforce-react-spa-architecture`; the Azure skill extends the base app-code architecture skill.
 - When a task spans all three concerns, combine them in this order: `spec-driven-workflow`, `enforce-react-spa-architecture`, then `azure-spa-clean-architecture-bootstrap` for the Azure-only portions.
