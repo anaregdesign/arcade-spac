@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router";
 
 import { readStoredHomeHubState, writeStoredHomeHubState } from "../../infrastructure/browser/home-hub-storage";
+import { getGameHomeTags } from "../../../domain/entities/game-catalog";
 
 type HomeGame = {
   bestCompetitivePoints: number;
@@ -21,6 +22,34 @@ type HomeTagOption = {
   value: string;
 };
 
+const preferredTagOrder = [
+  "fast-start",
+  "logic",
+  "timing",
+  "memory",
+  "perception",
+  "reflex",
+  "rhythm",
+  "spatial",
+  "played",
+  "unplayed",
+  "ranked",
+] as const;
+
+const tagLabelByValue: Record<string, string> = {
+  "fast-start": "Fast start",
+  logic: "Logic",
+  memory: "Memory",
+  perception: "Perception",
+  played: "Played",
+  ranked: "Ranked",
+  reflex: "Reflex",
+  rhythm: "Rhythm",
+  spatial: "Spatial",
+  timing: "Timing",
+  unplayed: "Unplayed",
+};
+
 function getTagSetForGame(game: HomeGame) {
   const tags = ["all"];
 
@@ -34,19 +63,36 @@ function getTagSetForGame(game: HomeGame) {
     tags.push("ranked");
   }
 
-  if (game.key === "minesweeper") {
-    tags.push("fast-start");
-  }
-
-  if (game.key === "sudoku") {
-    tags.push("logic");
-  }
-
-  if (game.key === "drop-line") {
-    tags.push("timing");
-  }
+  tags.push(...getGameHomeTags(game.key));
 
   return tags;
+}
+
+function formatTagLabel(tag: string) {
+  return tagLabelByValue[tag]
+    ?? tag
+      .split("-")
+      .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+      .join(" ");
+}
+
+function compareTagOrder(left: string, right: string) {
+  const leftIndex = preferredTagOrder.indexOf(left as (typeof preferredTagOrder)[number]);
+  const rightIndex = preferredTagOrder.indexOf(right as (typeof preferredTagOrder)[number]);
+
+  if (leftIndex === -1 && rightIndex === -1) {
+    return left.localeCompare(right);
+  }
+
+  if (leftIndex === -1) {
+    return 1;
+  }
+
+  if (rightIndex === -1) {
+    return -1;
+  }
+
+  return leftIndex - rightIndex;
 }
 
 function matchesSearch(game: HomeGame, search: string) {
@@ -112,14 +158,18 @@ export function useHomeHub(games: HomeGame[]) {
   const search = searchParams.get("q") ?? "";
   const tag = searchParams.get("tag") ?? "all";
   const sort = searchParams.get("sort") ?? "recommended";
+  const dynamicTags = Array.from(
+    new Set(
+      games.flatMap((game) => getTagSetForGame(game))
+        .filter((candidate) => candidate !== "all"),
+    ),
+  ).sort(compareTagOrder);
   const tagOptions: HomeTagOption[] = [
     { label: "All games", value: "all" },
-    { label: "Fast start", value: "fast-start" },
-    { label: "Logic", value: "logic" },
-    { label: "Timing", value: "timing" },
-    { label: "Played", value: "played" },
-    { label: "Unplayed", value: "unplayed" },
-    { label: "Ranked", value: "ranked" },
+    ...dynamicTags.map((candidate) => ({
+      label: formatTagLabel(candidate),
+      value: candidate,
+    })),
   ];
 
   useEffect(() => {

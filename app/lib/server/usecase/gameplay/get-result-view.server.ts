@@ -3,8 +3,14 @@ import { getHomeDashboard } from "../get-home-dashboard.server";
 import { getPlayResultById } from "../../infrastructure/repositories/gameplay.repository.server";
 import type { PendingResultDraft } from "../../infrastructure/auth/session.server";
 import type { GameKey } from "../../../domain/entities/game-catalog";
-import { toRouteGameKey } from "../../../domain/entities/game-catalog";
-import { formatPrimaryMetric, getDropLineHitRating, getResultPrimaryMetricLabel } from "../../../domain/services/game-metrics";
+import { getGameDefinition, getGameSuccessfulResultLabel, toRouteGameKey } from "../../../domain/entities/game-catalog";
+import {
+  buildPrimaryMetricShareLine,
+  comparePrimaryMetrics,
+  formatPrimaryMetric,
+  getDropLineHitRating,
+  getResultPrimaryMetricLabel,
+} from "../../../domain/services/game-metrics";
 
 type PersistedPlayResult = NonNullable<Awaited<ReturnType<typeof getPlayResultById>>>;
 type RankingScope = GameKey;
@@ -75,8 +81,9 @@ function getStatusLabel(status: string) {
 
 function getSupportMetric(result: PersistedPlayResult) {
   const gameKey = toRouteGameKey(result.game.key);
+  const definition = getGameDefinition(gameKey);
 
-  if (gameKey === "minesweeper") {
+  if (!definition) {
     return {
       label: "Mistakes",
       value: String(result.mistakeCount ?? 0),
@@ -84,18 +91,24 @@ function getSupportMetric(result: PersistedPlayResult) {
     };
   }
 
-  if (gameKey === "sudoku") {
+  if (definition.supportMetric.kind === "count") {
+    const count = definition.supportMetric.source === "hintCount"
+      ? result.hintCount ?? 0
+      : result.mistakeCount ?? 0;
+
     return {
-      label: "Hints used",
-      value: String(result.hintCount ?? 0),
-      note: result.hintCount === 0 ? "No hints needed" : `${pluralize(result.hintCount ?? 0, "hint")} used`,
+      label: definition.supportMetric.label,
+      value: String(count),
+      note: count === 0
+        ? definition.supportMetric.zeroNote
+        : `${pluralize(count, definition.supportMetric.noun)} ${definition.supportMetric.noteVerb}`,
     };
   }
 
   const rating = getDropLineHitRating(result.primaryMetric, result.status);
 
   return {
-    label: "Hit rating",
+    label: definition.supportMetric.label,
     value: rating.value,
     note: rating.note,
   };
@@ -103,8 +116,9 @@ function getSupportMetric(result: PersistedPlayResult) {
 
 function describeBestDelta(gameKey: GameKey, delta: number, direction: "better" | "worse") {
   const formattedDelta = formatPrimaryMetric(gameKey, delta);
+  const definition = getGameDefinition(gameKey);
 
-  if (gameKey === "drop-line") {
+  if (definition?.primaryMetric.format === "offset_px") {
     return direction === "better"
       ? {
           deltaLabel: `-${formattedDelta}`,
@@ -135,7 +149,7 @@ function getSelfBestSummary(result: PersistedPlayResult) {
   const gameKey = toRouteGameKey(result.game.key) as GameKey;
   const previousResults = result.user.playResults
     .filter((entry) => entry.id !== result.id && entry.gameId === result.gameId && entry.status === "COMPLETED" && entry.cleared)
-    .sort((left, right) => left.primaryMetric - right.primaryMetric);
+    .sort((left, right) => comparePrimaryMetrics(gameKey, left.primaryMetric, right.primaryMetric));
   const previousBestMetric = previousResults[0]?.primaryMetric ?? null;
 
   if (result.status !== "COMPLETED") {
@@ -165,10 +179,10 @@ function getSelfBestSummary(result: PersistedPlayResult) {
     };
   }
 
-  const metricDelta = previousBestMetric - result.primaryMetric;
+  const metricDelta = result.primaryMetric - previousBestMetric;
 
-  if (metricDelta > 0) {
-    const bestDelta = describeBestDelta(gameKey, metricDelta, "better");
+  if (metricDelta < 0) {
+    const bestDelta = describeBestDelta(gameKey, Math.abs(metricDelta), "better");
 
     return {
       badge: "Personal best",
@@ -182,7 +196,9 @@ function getSelfBestSummary(result: PersistedPlayResult) {
     return {
       badge: "Matched best",
       deltaLabel: "Even",
-      detail: gameKey === "drop-line" ? "You matched your best hit offset in this game." : "You matched your best clear time in this game.",
+      detail: getGameDefinition(gameKey)?.primaryMetric.format === "offset_px"
+        ? "You matched your best hit offset in this game."
+        : "You matched your best clear time in this game.",
       shareLine: "this matched the current personal best",
     };
   }
@@ -312,9 +328,11 @@ export async function buildPersistedResultView(input: {
   const shareUrl = sharePath ? `${input.publicBaseUrl}${sharePath}` : `${input.publicBaseUrl}/results/${input.result.id}`;
   const canShare = input.viewerMode === "owner" && input.result.status === "COMPLETED" && isTenantVisible && Boolean(input.result.shareToken);
   const shareText = [
-    gameScope === "drop-line"
-      ? `Arcade: ${input.result.game.name} ${input.result.difficulty.toLowerCase()} at ${primaryMetricText} offset.`
-      : `Arcade: ${input.result.game.name} ${input.result.difficulty.toLowerCase()} in ${primaryMetricText}.`,
+    buildPrimaryMetricShareLine(gameScope, {
+      difficulty: input.result.difficulty,
+      gameName: input.result.game.name,
+      primaryMetricText,
+    }),
     `${selfBest.shareLine}.`,
     `Season total ${currentOverallPoints} pts, overall ${currentOverallRank ? formatRank(currentOverallRank) : "unranked"}.`,
     `View result: ${shareUrl}`,
@@ -376,29 +394,38 @@ export function buildPendingResultDraftView(input: {
   gameName: string;
 }) {
   const gameKey = input.draft.gameKey as GameKey;
+  const definition = getGameDefinition(gameKey);
   const primaryMetricText = formatPrimaryMetric(gameKey, input.draft.actualMetrics.primaryMetric);
-  const supportMetric = input.draft.gameKey === "minesweeper"
-    ? {
-        label: "Mistakes",
-        value: String(input.draft.actualMetrics.mistakeCount ?? 0),
-        note: (input.draft.actualMetrics.mistakeCount ?? 0) === 0
-          ? "Clean board kept in recovery."
-          : `${pluralize(input.draft.actualMetrics.mistakeCount ?? 0, "mistake")} kept in recovery.`,
-      }
-    : input.draft.gameKey === "sudoku"
-      ? {
-          label: "Hints used",
-          value: String(input.draft.actualMetrics.hintCount ?? 0),
-          note: (input.draft.actualMetrics.hintCount ?? 0) === 0
-            ? "No hints recorded in recovery."
-            : `${pluralize(input.draft.actualMetrics.hintCount ?? 0, "hint")} kept in recovery.`,
-        }
-      : {
-          label: "Hit rating",
-          ...getDropLineHitRating(input.draft.actualMetrics.primaryMetric, input.draft.outcome === "failed" ? "FAILED" : "COMPLETED"),
+  const supportMetric = !definition || definition.supportMetric.kind === "count"
+    ? (() => {
+        const countDefinition = definition?.supportMetric.kind === "count"
+          ? definition.supportMetric
+          : {
+              kind: "count" as const,
+              label: "Mistakes",
+              noun: "mistake",
+              recoveryVerb: "kept in recovery",
+              recoveryZeroNote: "Clean board kept in recovery.",
+              source: "mistakeCount" as const,
+            };
+        const count = countDefinition.source === "hintCount"
+          ? input.draft.actualMetrics.hintCount ?? 0
+          : input.draft.actualMetrics.mistakeCount ?? 0;
+
+        return {
+          label: countDefinition.label,
+          value: String(count),
+          note: count === 0
+            ? countDefinition.recoveryZeroNote
+            : `${pluralize(count, countDefinition.noun)} ${countDefinition.recoveryVerb}.`,
         };
+      })()
+    : {
+        label: definition.supportMetric.label,
+        ...getDropLineHitRating(input.draft.actualMetrics.primaryMetric, input.draft.outcome === "failed" ? "FAILED" : "COMPLETED"),
+      };
   const willPublishToLeaderboard = input.draft.outcome !== "failed";
-  const savedResultLabel = input.draft.outcome === "failed" ? "run" : input.draft.gameKey === "drop-line" ? "hit" : "clear";
+  const savedResultLabel = input.draft.outcome === "failed" ? "run" : getGameSuccessfulResultLabel(input.draft.gameKey);
   const stateExplanation = input.draft.recoveryReason === "session_expired"
     ? `Your session ended while Arcade was saving this ${savedResultLabel}. Sign in again, then retry once to publish it.`
     : willPublishToLeaderboard

@@ -13,8 +13,8 @@
 
 ## Section 2 - Shared catalog metadata and result integration
 ### Subsection 2.1 - Remove fixed three-game assumptions
-- [ ] Refactor shared game catalog metadata so home tags, metric labels, and route game definitions do not hard-code the current three titles
-- [ ] Update result and metric formatting helpers so new time-based games can reuse the same primary/support metric flow
+- [x] Refactor shared game catalog metadata so home tags, metric labels, and route game definitions do not hard-code the current three titles
+- [x] Update result and metric formatting helpers so new time-based games can reuse the same primary/support metric flow
 - [ ] Update fixture and seed data for the expanded catalog
 
 ## Section 3 - Implement Color Sweep

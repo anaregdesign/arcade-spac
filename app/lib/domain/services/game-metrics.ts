@@ -1,4 +1,4 @@
-import { toRouteGameKey } from "../entities/game-catalog";
+import { getGameDefinition, toRouteGameKey } from "../entities/game-catalog";
 
 function formatDuration(totalSeconds: number) {
   const minutes = Math.floor(totalSeconds / 60);
@@ -10,10 +10,14 @@ function normalizeGameKey(gameKey: string) {
   return toRouteGameKey(gameKey);
 }
 
-export function formatPrimaryMetric(gameKey: string, primaryMetric: number) {
-  const normalizedGameKey = normalizeGameKey(gameKey);
+function getNormalizedGameDefinition(gameKey: string) {
+  return getGameDefinition(normalizeGameKey(gameKey));
+}
 
-  if (normalizedGameKey === "drop-line") {
+export function formatPrimaryMetric(gameKey: string, primaryMetric: number) {
+  const definition = getNormalizedGameDefinition(gameKey);
+
+  if (definition?.primaryMetric.format === "offset_px") {
     return `${primaryMetric} px`;
   }
 
@@ -29,27 +33,43 @@ export function formatOptionalPrimaryMetric(gameKey: string, primaryMetric: numb
 }
 
 export function getBestMetricLabel(gameKey: string) {
-  const normalizedGameKey = normalizeGameKey(gameKey);
-
-  if (normalizedGameKey === "minesweeper") {
-    return "Best clear time";
-  }
-
-  if (normalizedGameKey === "sudoku") {
-    return "Best solve time";
-  }
-
-  return "Best hit offset";
+  return getNormalizedGameDefinition(gameKey)?.primaryMetric.bestLabel ?? "Best record";
 }
 
 export function getResultPrimaryMetricLabel(gameKey: string, status: string) {
-  const normalizedGameKey = normalizeGameKey(gameKey);
+  const definition = getNormalizedGameDefinition(gameKey);
 
-  if (normalizedGameKey === "drop-line") {
-    return status === "FAILED" || status === "ABANDONED" ? "Miss offset" : "Hit offset";
+  if (!definition) {
+    return status === "FAILED" || status === "ABANDONED" ? "Run time" : "Clear time";
   }
 
-  return status === "FAILED" || status === "ABANDONED" ? "Run time" : "Clear time";
+  return status === "FAILED" || status === "ABANDONED"
+    ? definition.primaryMetric.failedLabel
+    : definition.primaryMetric.completedLabel;
+}
+
+export function comparePrimaryMetrics(gameKey: string, left: number, right: number) {
+  const definition = getNormalizedGameDefinition(gameKey);
+
+  if (!definition || definition.primaryMetric.direction === "lower-better") {
+    return left - right;
+  }
+
+  return right - left;
+}
+
+export function buildPrimaryMetricShareLine(gameKey: string, input: {
+  difficulty: string;
+  gameName: string;
+  primaryMetricText: string;
+}) {
+  const definition = getNormalizedGameDefinition(gameKey);
+
+  if (definition?.primaryMetric.format === "offset_px") {
+    return `Arcade: ${input.gameName} ${input.difficulty.toLowerCase()} at ${input.primaryMetricText} offset.`;
+  }
+
+  return `Arcade: ${input.gameName} ${input.difficulty.toLowerCase()} in ${input.primaryMetricText}.`;
 }
 
 export function getDropLineHitRating(primaryMetric: number, status: string) {

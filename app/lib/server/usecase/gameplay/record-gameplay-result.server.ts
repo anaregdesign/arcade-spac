@@ -7,6 +7,7 @@ import {
   updatePlayResultShareToken,
   updatePlayResultStatus,
 } from "../../infrastructure/repositories/gameplay.repository.server";
+import { getGameDefinition, getGameSuccessfulResultLabel } from "../../../domain/entities/game-catalog";
 import { formatPrimaryMetric, getDropLineHitRating } from "../../../domain/services/game-metrics";
 import { rebuildAggregates } from "./rebuild-aggregates.server";
 
@@ -17,25 +18,118 @@ const difficultyBasePoints = {
   EXPERT: 1450,
 } as const;
 
+function pluralize(count: number, noun: string) {
+  return `${count} ${noun}${count === 1 ? "" : "s"}`;
+}
+
 function computeMetrics(gameKey: string, difficulty: keyof typeof difficultyBasePoints, outcome: "clean" | "steady" | "pending" | "failed") {
   const base = difficultyBasePoints[difficulty];
   const modifier = outcome === "clean" ? 1 : outcome === "steady" ? 0.82 : 0.58;
+  const definition = getGameDefinition(gameKey);
   const primaryMetric = gameKey === "minesweeper"
     ? Math.max(160, Math.round((base / 3) * modifier))
     : gameKey === "sudoku"
       ? Math.max(220, Math.round((base / 2.4) * modifier))
-      : outcome === "clean"
-        ? 6
-        : outcome === "steady"
-          ? 16
-          : 34;
+      : definition?.primaryMetric.format === "offset_px"
+        ? outcome === "clean"
+          ? 6
+          : outcome === "steady"
+            ? 16
+            : 34
+        : Math.max(150, Math.round((base / 3.4) * modifier));
 
   return {
     primaryMetric,
     competitivePoints: Math.round(base * modifier),
-    hintCount: gameKey === "sudoku" ? (outcome === "clean" ? 0 : outcome === "steady" ? 1 : 2) : null,
-    mistakeCount: gameKey === "minesweeper" ? (outcome === "clean" ? 0 : outcome === "steady" ? 1 : 2) : null,
+    hintCount: definition?.supportMetric.kind === "count" && definition.supportMetric.source === "hintCount"
+      ? (outcome === "clean" ? 0 : outcome === "steady" ? 1 : 2)
+      : null,
+    mistakeCount: definition?.supportMetric.kind === "count" && definition.supportMetric.source === "mistakeCount"
+      ? (outcome === "clean" ? 0 : outcome === "steady" ? 1 : 2)
+      : null,
   };
+}
+
+function computePenalty(input: {
+  gameKey: string;
+  hintCount: number | null;
+  mistakeCount: number | null;
+  primaryMetric: number;
+}) {
+  const definition = getGameDefinition(input.gameKey);
+
+  if (input.gameKey === "minesweeper") {
+    return Math.round(input.primaryMetric * 1.35) + (input.mistakeCount ?? 0) * 120;
+  }
+
+  if (input.gameKey === "sudoku") {
+    return Math.round(input.primaryMetric * 0.9) + (input.hintCount ?? 0) * 90 + (input.mistakeCount ?? 0) * 45;
+  }
+
+  if (definition?.primaryMetric.format === "offset_px") {
+    return Math.round(input.primaryMetric * 12);
+  }
+
+  return Math.round(input.primaryMetric * 1.1) + (input.mistakeCount ?? 0) * 70 + (input.hintCount ?? 0) * 90;
+}
+
+function getCountMetricValue(input: {
+  gameKey: string;
+  hintCount?: number;
+  mistakeCount?: number;
+}) {
+  const definition = getGameDefinition(input.gameKey);
+
+  if (definition?.supportMetric.kind !== "count") {
+    return {
+      hintCount: null,
+      mistakeCount: null,
+    };
+  }
+
+  if (definition.supportMetric.source === "hintCount") {
+    return {
+      hintCount: Math.max(0, Math.round(input.hintCount ?? 0)),
+      mistakeCount: null,
+    };
+  }
+
+  return {
+    hintCount: null,
+    mistakeCount: Math.max(0, Math.round(input.mistakeCount ?? 0)),
+  };
+}
+
+function buildGenericCountSummaryPart(input: {
+  count: number;
+  gameKey: string;
+}) {
+  const definition = getGameDefinition(input.gameKey);
+
+  if (!definition || definition.supportMetric.kind !== "count") {
+    return null;
+  }
+
+  return input.count === 0
+    ? definition.supportMetric.zeroSummaryText
+    : `${pluralize(input.count, definition.supportMetric.noun)} ${definition.supportMetric.noteVerb}`;
+}
+
+function buildGenericFailedCountSummaryPart(input: {
+  count: number;
+  gameKey: string;
+}) {
+  const definition = getGameDefinition(input.gameKey);
+
+  if (!definition || definition.supportMetric.kind !== "count") {
+    return null;
+  }
+
+  if (definition.supportMetric.source === "hintCount") {
+    return input.count === 0 ? "no hints used" : `${pluralize(input.count, definition.supportMetric.noun)} used`;
+  }
+
+  return input.count === 0 ? `no ${definition.supportMetric.noun}s` : `${pluralize(input.count, definition.supportMetric.noun)}`;
 }
 
 function computeActualMetrics(input: {
@@ -48,10 +142,11 @@ function computeActualMetrics(input: {
 }) {
   const base = difficultyBasePoints[input.difficulty];
   const primaryMetric = Math.max(1, Math.round(input.primaryMetric));
-  const hintCount = input.gameKey === "sudoku" ? Math.max(0, Math.round(input.hintCount ?? 0)) : null;
-  const mistakeCount = input.gameKey === "minesweeper" || input.gameKey === "sudoku"
-    ? Math.max(0, Math.round(input.mistakeCount ?? 0))
-    : null;
+  const { hintCount, mistakeCount } = getCountMetricValue({
+    gameKey: input.gameKey,
+    hintCount: input.hintCount,
+    mistakeCount: input.mistakeCount,
+  });
 
   if (input.outcome === "failed") {
     return {
@@ -62,11 +157,12 @@ function computeActualMetrics(input: {
     };
   }
 
-  const penalty = input.gameKey === "minesweeper"
-    ? Math.round(primaryMetric * 1.35) + (mistakeCount ?? 0) * 120
-    : input.gameKey === "sudoku"
-      ? Math.round(primaryMetric * 0.9) + (hintCount ?? 0) * 90 + (mistakeCount ?? 0) * 45
-      : Math.round(primaryMetric * 12);
+  const penalty = computePenalty({
+    gameKey: input.gameKey,
+    hintCount,
+    mistakeCount,
+    primaryMetric,
+  });
   const pendingModifier = input.outcome === "pending" ? 0.72 : 1;
 
   return {
@@ -87,8 +183,9 @@ function buildResultSummary(input: {
   primaryMetric: number;
 }) {
   const formattedMetric = formatPrimaryMetric(input.gameKey, input.primaryMetric);
+  const definition = getGameDefinition(input.gameKey);
 
-  if (input.gameKey === "drop-line") {
+  if (definition?.primaryMetric.format === "offset_px") {
     if (input.outcome === "failed") {
       return `${input.gameName} ${input.difficulty.toLowerCase()} missed the line after ${formattedMetric} offset. Result saved for history only and excluded from rankings.`;
     }
@@ -107,11 +204,31 @@ function buildResultSummary(input: {
       detailParts.push(input.mistakeCount === 1 ? "one mine triggered" : `${input.mistakeCount ?? 0} mines triggered`);
     }
 
-    if (input.gameKey === "sudoku") {
-      detailParts.push(input.hintCount === 0 ? "no hints used" : `${input.hintCount ?? 0} hints used`);
+    if (definition?.supportMetric.kind === "count" && definition.supportMetric.source === "hintCount") {
+      const hintPart = buildGenericFailedCountSummaryPart({
+        count: input.hintCount ?? 0,
+        gameKey: input.gameKey,
+      });
+
+      if (hintPart) {
+        detailParts.push(hintPart);
+      }
 
       if ((input.mistakeCount ?? 0) > 0) {
         detailParts.push(`${input.mistakeCount} mistake${input.mistakeCount === 1 ? "" : "s"}`);
+      }
+    } else if (
+      input.gameKey !== "minesweeper"
+      && definition?.supportMetric.kind === "count"
+      && definition.supportMetric.source === "mistakeCount"
+    ) {
+      const mistakePart = buildGenericFailedCountSummaryPart({
+        count: input.mistakeCount ?? 0,
+        gameKey: input.gameKey,
+      });
+
+      if (mistakePart) {
+        detailParts.push(mistakePart);
       }
     }
 
@@ -122,15 +239,29 @@ function buildResultSummary(input: {
 
   const detailParts: string[] = [];
 
-  if (input.gameKey === "minesweeper") {
-    detailParts.push(input.mistakeCount === 0 ? "no mistakes" : `${input.mistakeCount} mistake${input.mistakeCount === 1 ? "" : "s"}`);
-  }
+  if (definition?.supportMetric.kind === "count") {
+    if (definition.supportMetric.source === "hintCount") {
+      const hintPart = buildGenericCountSummaryPart({
+        count: input.hintCount ?? 0,
+        gameKey: input.gameKey,
+      });
 
-  if (input.gameKey === "sudoku") {
-    detailParts.push(input.hintCount === 0 ? "no hints" : `${input.hintCount} hint${input.hintCount === 1 ? "" : "s"}`);
+      if (hintPart) {
+        detailParts.push(hintPart);
+      }
 
-    if ((input.mistakeCount ?? 0) > 0) {
-      detailParts.push(`${input.mistakeCount} mistake${input.mistakeCount === 1 ? "" : "s"}`);
+      if ((input.mistakeCount ?? 0) > 0) {
+        detailParts.push(`${input.mistakeCount} mistake${input.mistakeCount === 1 ? "" : "s"}`);
+      }
+    } else {
+      const mistakePart = buildGenericCountSummaryPart({
+        count: input.mistakeCount ?? 0,
+        gameKey: input.gameKey,
+      });
+
+      if (mistakePart) {
+        detailParts.push(mistakePart);
+      }
     }
   }
 
@@ -204,7 +335,7 @@ export async function recordGameplayResult(input: {
     await rebuildAggregates();
   } catch {
     if (status === "COMPLETED") {
-      const preservedResultLabel = input.gameKey === "drop-line" ? "hit" : "clear";
+      const preservedResultLabel = getGameSuccessfulResultLabel(input.gameKey);
 
       await updatePlayResultStatus(result.id, {
         status: "PENDING_SAVE",
