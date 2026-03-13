@@ -20,7 +20,7 @@
 
 - 正しい target repository name `anaregdesign/arcade-spec` を確定し、workspace 内の repository-facing references を洗い出す
 - Git remote、repository documentation、GitHub workflow references、container image naming assumptions、Azure deploy integration assumptions を順番に修正し、rename 完了後の残課題を整理する
-- rename 後に必要な GitHub 側と Azure 側の follow-up task を明文化する
+- rename 後に必要な GitHub 側と Azure 側の follow-up task を明文化し、実行可能な remediation を先に適用する
 
 ## Non-Goals
 
@@ -32,13 +32,16 @@
 
 - repository docs には正しい canonical repository name と follow-up handoff が記載される
 - CI/CD の repository-bound references は rename 後の GitHub repository identity を前提に揃う
+- Azure workload identity の hard reference も rename 後の repository slug に揃う
 - rename 作業の順序が plan と archived plan に残り、途中で止まっても次の担当者が再開できる
 
 ## Acceptance Criteria
 
 - 正しい target repository name `anaregdesign/arcade-spec` が spec と plan で明示される
 - workspace 内の repository-bound references が target name に合わせて整理される
-- GitHub Actions と Azure deploy integration について、rename 後に必要な設定変更点が docs に残る
+- GitHub Actions と Azure deploy integration について、rename 後に必要な設定変更点と監査結果が docs に残る
+- GitHub `production` Environment、recent release workflow、main branch protection、live Container App image path の確認結果が runbook に残る
+- Azure deploy 用 federated credential subject が `repo:anaregdesign/arcade-spec:environment:production` に更新される
 - rename 作業の execution plan が `/docs/plans/plan.md` で追跡され、完了時に archive される
 
 ## Edge Cases
@@ -52,6 +55,8 @@
 - target repository name は `anaregdesign/arcade-spec` とする
 - GitHub 側の repository rename は完了したが、post-rename verification と外部 follow-up が残る
 - Azure deploy integration は GitHub repository slug に依存する設定がありうるため、rename 後の follow-up を明示する必要がある
+- GitHub Environment variables や branch protection のような repo-hosted state は code review だけでは保証できないため、実測結果を runbook に残す必要がある
+- branch protection policy の具体値は運用判断を伴うため、未設定の確認と要件整理を先行し、機械的な強制設定は行わない
 
 ## Links
 
