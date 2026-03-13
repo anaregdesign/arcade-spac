@@ -786,7 +786,11 @@ export function listLeaderboardEntriesFixture(periodType: RankingPeriod, scope: 
         return entry.gameId === null;
       }
 
-      return requireGame(entry.gameId ?? "").key === scope.toUpperCase();
+      if (!entry.gameId) {
+        return false;
+      }
+
+      return requireGame(entry.gameId).key === scope.toUpperCase();
     })
     .sort((left, right) => left.rank - right.rank)
     .map((entry) => ({
@@ -809,6 +813,13 @@ export function getPlayResultByIdFixture(resultId: string) {
     user: {
       ...requireUser(result.userId),
       profile: getProfile(result.userId),
+      playResults: devState.playResults
+        .filter((entry) => entry.userId === result.userId)
+        .sort((left, right) => right.startedAt.getTime() - left.startedAt.getTime())
+        .map((entry) => ({
+          ...entry,
+          game: requireGame(entry.gameId),
+        })),
     },
   });
 }

@@ -315,6 +315,41 @@ a {
   gap: 12px;
 }
 
+.result-badge-row,
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.status-badge {
+  min-height: 34px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: rgba(23, 48, 67, 0.08);
+  color: #173043;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.status-badge-success {
+  background: rgba(15, 118, 110, 0.14);
+  color: #0f766e;
+}
+
+.status-badge-pending {
+  background: rgba(194, 120, 24, 0.16);
+  color: #9a6700;
+}
+
+.status-badge-neutral {
+  background: rgba(35, 84, 127, 0.12);
+  color: #23547f;
+}
+
 .game-points {
   margin: 0;
   font-size: 0.95rem;
@@ -678,6 +713,10 @@ a {
 
 .workspace-card {
   max-width: 720px;
+}
+
+.result-impact-grid {
+  max-width: 960px;
 }
 
 .workspace-stat-grid {

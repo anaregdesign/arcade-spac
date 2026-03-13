@@ -17,10 +17,10 @@
 - [x] Add a persistent home-level help entry point so the first-use guidance and scoring explanation remain reachable after dismissal
 
 ### Subsection 2.2 - Result screen impact summary and sharing
-- [ ] Add self-best state to the result summary, including a personal-best badge and the difference from the previous best when applicable
-- [ ] Rework the result KPI area to match the spec's common layout: current result metrics, game rank movement or ranking exclusion reason, total points delta, and overall rank delta
-- [ ] Update the result action ordering and Teams share payload so sharing includes the required result context without exposing raw internal identifiers
-- [ ] Make pending-save and ranking-excluded states explicitly describe what is provisional, what is excluded, and what the user should do next
+- [x] Add self-best state to the result summary, including a personal-best badge and the difference from the previous best when applicable
+- [x] Rework the result KPI area to match the spec's common layout: current result metrics, game rank movement or ranking exclusion reason, total points delta, and overall rank delta
+- [x] Update the result action ordering and Teams share payload so sharing includes the required result context without exposing raw internal identifiers
+- [x] Make pending-save and ranking-excluded states explicitly describe what is provisional, what is excluded, and what the user should do next
 
 ### Subsection 2.3 - Rankings clarity and rivalry context
 - [ ] Show leader-gap and nearest-rival deltas inside the ranking list or adjacent row detail so users can compare themselves with nearby positions without relying only on the top summary cards

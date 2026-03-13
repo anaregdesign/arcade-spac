@@ -154,6 +154,14 @@ export async function getPlayResultById(resultId: string) {
         user: {
           include: {
             profile: true,
+            playResults: {
+              include: {
+                game: true,
+              },
+              orderBy: {
+                startedAt: "desc",
+              },
+            },
           },
         },
       },
