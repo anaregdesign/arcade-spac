@@ -10,8 +10,7 @@
     </linearGradient>
   </defs>
   <rect width="720" height="520" rx="40" fill="url(#bg)"/>
-  <rect x="128" y="100" width="464" height="320" rx="28" fill="url(#panel)" stroke="#C3D0DB" stroke-width="4"/>
-  <rect x="164" y="136" width="392" height="58" rx="18" fill="#F6F8FB"/>
+  <rect x="136" y="108" width="448" height="372" rx="30" fill="url(#panel)" stroke="#C3D0DB" stroke-width="4"/>
   <rect x="452" y="146" width="84" height="38" rx="19" fill="#4FD1A6"/>
   <text x="186" y="171" fill="#536270" font-family="ui-sans-serif, system-ui" font-size="26" font-weight="700">Target Color</text>
   <g transform="translate(164 220)">

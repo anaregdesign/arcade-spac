@@ -10,8 +10,7 @@
     </linearGradient>
   </defs>
   <rect width="720" height="520" rx="40" fill="url(#bg)"/>
-  <rect x="128" y="96" width="464" height="328" rx="30" fill="url(#panel)" stroke="#C1CFDA" stroke-width="4"/>
-  <rect x="164" y="132" width="392" height="56" rx="18" fill="#F6F8FB"/>
+  <rect x="136" y="104" width="448" height="370" rx="30" fill="url(#panel)" stroke="#C1CFDA" stroke-width="4"/>
   <text x="184" y="166" fill="#536270" font-family="ui-sans-serif, system-ui" font-size="26" font-weight="700">Next 12</text>
   <g transform="translate(164 214)">
     <rect x="0" y="0" width="76" height="76" rx="18" fill="#E6EEF7"/>
