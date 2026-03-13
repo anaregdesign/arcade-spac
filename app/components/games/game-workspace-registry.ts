@@ -1,11 +1,11 @@
 import type { ComponentType } from "react";
 
 import { ColorSweepGameWorkspace } from "./color-sweep/color-sweep-game-workspace";
-import { DropLineGameWorkspace } from "./drop-line/drop-line-game-workspace";
 import { MinesweeperGameWorkspace } from "./minesweeper/minesweeper-game-workspace";
 import { NumberChainGameWorkspace } from "./number-chain/number-chain-game-workspace";
 import { PairFlipGameWorkspace } from "./pair-flip/pair-flip-game-workspace";
 import { PatternEchoGameWorkspace } from "./pattern-echo/pattern-echo-game-workspace";
+import { PrecisionDropGameWorkspace } from "./precision-drop/precision-drop-game-workspace";
 import type { GameInstructions } from "./shared/game-instructions-dialog";
 import { SudokuGameWorkspace } from "./sudoku/sudoku-game-workspace";
 import type { GameWorkspaceComponentProps } from "./shared/game-workspace-types";
@@ -52,7 +52,7 @@ const gameDefinitionByKey: Record<string, GameDefinition> = {
     },
     workspace: ColorSweepGameWorkspace,
   },
-  "drop-line": {
+  "precision-drop": {
     instructions: {
       summary: "Start a drop, watch the ball accelerate as it falls, and tap once when it overlaps the line to keep the hit offset as small as possible.",
       sections: [
@@ -73,13 +73,13 @@ const gameDefinitionByKey: Record<string, GameDefinition> = {
           ],
         },
       ],
-      title: "Drop Ball controls",
+      title: "Precision Drop controls",
     },
     presentation: {
       previewAlt: "Falling ball above a target line in a vertical lane",
-      previewSrc: "/images/games/drop-line-preview.svg",
+      previewSrc: "/images/games/precision-drop-preview.svg",
     },
-    workspace: DropLineGameWorkspace,
+    workspace: PrecisionDropGameWorkspace,
   },
   minesweeper: {
     instructions: {

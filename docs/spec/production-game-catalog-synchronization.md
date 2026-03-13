@@ -51,7 +51,7 @@ Production must always show the full phase 1 game lineup on Home, Profile, Ranki
 
 ## Constraints and Dependencies
 
-- The canonical phase 1 lineup remains `Minesweeper`, `Sudoku`, `Drop Ball`, `Color Sweep`, `Number Chain`, and `Pair Flip`.
+- The canonical phase 1 lineup remains `Minesweeper`, `Sudoku`, `Precision Drop`, `Color Sweep`, `Number Chain`, and `Pair Flip`.
 - Prisma access stays inside server infrastructure.
 - This work is tracked in `/docs/plans/plan.md` while active.
 

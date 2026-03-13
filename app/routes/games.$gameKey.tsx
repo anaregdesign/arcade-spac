@@ -6,14 +6,21 @@ import type { Route } from "./+types/games.$gameKey";
 import { AppShell } from "../components/app-shell";
 import { GameWorkspaceScreen } from "../components/gameplay/game-workspace-screen";
 import { buildSharedHelpSections } from "../components/shared/help-content";
+import { resolveGameKey } from "../lib/domain/entities/game-catalog";
 import { commitSession, getCurrentUserId, getSession, requireCurrentUserId, setPendingResultDraft } from "../lib/server/infrastructure/auth/session.server";
 import { getHomeDashboard, getGameWorkspace } from "../lib/server/usecase/get-home-dashboard.server";
 import { recordAbandonedRun, recordGameplayResult } from "../lib/server/usecase/gameplay/record-gameplay-result.server";
 
 export async function loader({ request, params }: Route.LoaderArgs) {
+  const canonicalGameKey = resolveGameKey(params.gameKey);
+
+  if (canonicalGameKey && canonicalGameKey !== params.gameKey) {
+    return redirect(`/games/${canonicalGameKey}`);
+  }
+
   const userId = await requireCurrentUserId(request);
   const dashboard = await getHomeDashboard(userId);
-  const game = await getGameWorkspace(params.gameKey);
+  const game = await getGameWorkspace(canonicalGameKey ?? params.gameKey);
   const gameSummary = dashboard.games.find((entry) => entry.key === game.key);
 
   return {
@@ -33,6 +40,12 @@ export async function loader({ request, params }: Route.LoaderArgs) {
 }
 
 export async function action({ request, params }: Route.ActionArgs) {
+  const canonicalGameKey = resolveGameKey(params.gameKey);
+
+  if (!canonicalGameKey) {
+    throw new Response("Game not found", { status: 404 });
+  }
+
   const session = await getSession(request);
   const userId = await getCurrentUserId(request);
   const formData = await request.formData();
@@ -68,7 +81,7 @@ export async function action({ request, params }: Route.ActionArgs) {
         id: pendingDraftId,
         actualMetrics,
         difficulty: difficulty as "EASY" | "NORMAL" | "HARD" | "EXPERT",
-        gameKey: params.gameKey,
+        gameKey: canonicalGameKey,
         outcome: intent === "completeClean" ? "clean" : intent === "fail" ? "failed" : "steady",
         ownerUserId: null,
         recoveryReason: "session_expired",
@@ -87,7 +100,7 @@ export async function action({ request, params }: Route.ActionArgs) {
     try {
       const resultId = await recordGameplayResult({
         userId,
-        gameKey: params.gameKey,
+        gameKey: canonicalGameKey,
         difficulty: difficulty as "EASY" | "NORMAL" | "HARD" | "EXPERT",
         outcome: intent === "completeClean"
           ? "clean"
@@ -105,7 +118,7 @@ export async function action({ request, params }: Route.ActionArgs) {
         id: pendingDraftId,
         actualMetrics,
         difficulty: difficulty as "EASY" | "NORMAL" | "HARD" | "EXPERT",
-        gameKey: params.gameKey,
+        gameKey: canonicalGameKey,
         outcome: intent === "completeClean" ? "clean" : intent === "fail" ? "failed" : "steady",
         ownerUserId: userId,
         recoveryReason: "save_failed",
@@ -131,7 +144,7 @@ export async function action({ request, params }: Route.ActionArgs) {
 
     await recordAbandonedRun({
       userId,
-      gameKey: params.gameKey,
+      gameKey: canonicalGameKey,
       difficulty: difficulty as "EASY" | "NORMAL" | "HARD" | "EXPERT",
     });
 

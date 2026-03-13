@@ -3,12 +3,12 @@ import { getHomeDashboard } from "../get-home-dashboard.server";
 import { getPlayResultById } from "../../infrastructure/repositories/gameplay.repository.server";
 import type { PendingResultDraft } from "../../infrastructure/auth/session.server";
 import type { GameKey } from "../../../domain/entities/game-catalog";
-import { getGameDefinition, getGameSuccessfulResultLabel, toRouteGameKey } from "../../../domain/entities/game-catalog";
+import { getGameDefinition, getGameSuccessfulResultLabel, resolveGameKey, toRouteGameKey } from "../../../domain/entities/game-catalog";
 import {
   buildPrimaryMetricShareLine,
   comparePrimaryMetrics,
   formatPrimaryMetric,
-  getDropLineHitRating,
+  getPrecisionDropHitRating,
   getResultPrimaryMetricLabel,
 } from "../../../domain/services/game-metrics";
 
@@ -105,7 +105,7 @@ function getSupportMetric(result: PersistedPlayResult) {
     };
   }
 
-  const rating = getDropLineHitRating(result.primaryMetric, result.status);
+  const rating = getPrecisionDropHitRating(result.primaryMetric, result.status);
 
   return {
     label: definition.supportMetric.label,
@@ -393,7 +393,7 @@ export function buildPendingResultDraftView(input: {
   draft: PendingResultDraft;
   gameName: string;
 }) {
-  const gameKey = input.draft.gameKey as GameKey;
+  const gameKey = resolveGameKey(input.draft.gameKey) ?? input.draft.gameKey as GameKey;
   const definition = getGameDefinition(gameKey);
   const primaryMetricText = formatPrimaryMetric(gameKey, input.draft.actualMetrics.primaryMetric);
   const supportMetric = !definition || definition.supportMetric.kind === "count"
@@ -422,7 +422,7 @@ export function buildPendingResultDraftView(input: {
       })()
     : {
         label: definition.supportMetric.label,
-        ...getDropLineHitRating(input.draft.actualMetrics.primaryMetric, input.draft.outcome === "failed" ? "FAILED" : "COMPLETED"),
+        ...getPrecisionDropHitRating(input.draft.actualMetrics.primaryMetric, input.draft.outcome === "failed" ? "FAILED" : "COMPLETED"),
       };
   const willPublishToLeaderboard = input.draft.outcome !== "failed";
   const savedResultLabel = input.draft.outcome === "failed" ? "run" : getGameSuccessfulResultLabel(input.draft.gameKey);
@@ -469,6 +469,6 @@ export function buildPendingResultDraftView(input: {
     shareText: "",
     shareAvailabilityNote: "Teams share stays locked until the retry succeeds and the result becomes a completed published record.",
     canShare: false,
-    rankingsHref: `/rankings?period=season&scope=${input.draft.gameKey}`,
+    rankingsHref: `/rankings?period=season&scope=${gameKey}`,
   } satisfies ResultViewModel;
 }

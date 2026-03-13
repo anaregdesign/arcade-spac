@@ -1,8 +1,8 @@
-# Drop Ball Game
+# Precision Drop Game
 
 ## Summary
 
-`Arcade` に 3 本目の game として `Drop Ball` を追加する。上から落下する 1 つの ball が下部の line と重なる瞬間を狙って click または tap し、ball と line の距離が小さいほど高得点になる timing game を提供する。ball は一定速度ではなく、等加速度でだんだん速くなる。
+`Arcade` に timing game として `Precision Drop` を追加する。上から落下する 1 つの ball が下部の line と重なる瞬間を狙って click または tap し、ball と line の距離が小さいほど高得点になる short-run game を提供する。ball は一定速度ではなく、等加速度でだんだん速くなる。
 
 ## User Problem
 
@@ -12,14 +12,14 @@
 
 ## Users and Scenarios
 
-- ユーザは home から `Drop Ball` を選び、短い 1 run をすぐ始めたい
+- ユーザは home から `Precision Drop` を選び、短い 1 run をすぐ始めたい
 - ユーザは falling ball と target line の位置関係だけに集中し、重なった瞬間に画面を click または tap したい
 - ユーザは run の直後に、自分の hit 精度と rankings への影響を result で確認したい
 - ユーザは miss した場合でも、何が起きたかを理解してすぐ replay したい
 
 ## Scope
 
-- `Drop Ball` を home の game list、game screen、result、rankings、profile に統合する
+- `Precision Drop` を home の game list、game screen、result、rankings、profile に統合する
 - 1 本の vertical lane 内で 1 つの ball が落下するシンプルな play loop を提供する
 - `difficulty` ごとに初速と加速度を変え、game ごとの難易度差を作る
 - score metric は `line offset` とし、line 中心と ball 中心の距離を `px` で扱う
@@ -33,23 +33,23 @@
 
 ## User-Visible Behavior
 
-- home で `Drop Ball` card が既存 game と同じ導線で表示される
+- home で `Precision Drop` card が既存 game と同じ導線で表示される
 - game screen では `difficulty` を選んで `Start run` すると、ball が random な高さから落下し始め、下へ行くほど速くなる
 - live run 中に play area を click または tap すると、その時点の `line offset` を計測して run を終了し、自動で result へ遷移する
 - `line offset` が小さいほど良い result として扱い、home、profile、result では best metric を `px` 表示する
 - ball が line を通過して play area の下端まで落ちても click されなかった場合、その run は miss として扱い、result へ自動遷移する
 - game screen には current state、difficulty、`How to play` を既存 pattern で表示し、cross-game navigation は `app shell` または result から行える
-- result screen では `Drop Ball` 用の metric label と summary を表示し、`px` 単位の hit 精度がわかる
-- rankings と profile では `Drop Ball` が他 game と同じように board 対象として扱われる
+- result screen では `Precision Drop` 用の metric label と summary を表示し、`px` 単位の hit 精度がわかる
+- rankings と profile では `Precision Drop` が他 game と同じように board 対象として扱われる
 
 ## Acceptance Criteria
 
-- ユーザは home から `Drop Ball` を選択して game screen を開ける
+- ユーザは home から `Precision Drop` を選択して game screen を開ける
 - ユーザは mouse click と touch tap の両方で run を完了できる
 - live run 中の 1 回の click または tap で result が保存され、追加の confirm 操作なしに result screen へ遷移する
-- result screen では `Drop Ball` の primary metric が `px` 表示になり、time 表示にならない
+- result screen では `Precision Drop` の primary metric が `px` 表示になり、time 表示にならない
 - ball を click しないまま落とし切った場合は miss として result が保存され、rankings 対象外になる
-- `Drop Ball` の best record と ranking scope が profile と rankings に表示される
+- `Precision Drop` の best record と ranking scope が profile と rankings に表示される
 
 ## Edge Cases
 
@@ -62,7 +62,7 @@
 ## Constraints and Dependencies
 
 - 既存の `games.$gameKey` route と共通 result 保存 flow を再利用する
-- `primaryMetric` は `Drop Ball` だけ `px`、既存 game は従来通り duration 表示を維持する
+- `primaryMetric` は `Precision Drop` だけ `px`、既存 game は従来通り duration 表示を維持する
 - home、result、profile、rankings、fixture data の game list を 3 game 前提に更新する
 
 ## Links

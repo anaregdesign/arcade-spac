@@ -23,7 +23,7 @@ function getOffsetPx(ballCenterY: number) {
   return Math.abs(Math.round(lineCenterY - ballCenterY));
 }
 
-export function useDropLineSession(difficulty: Difficulty) {
+export function usePrecisionDropSession(difficulty: Difficulty) {
   const animationFrameRef = useRef<number | null>(null);
   const startedAtRef = useRef<number | null>(null);
   const difficultySettings = difficultyConfig[difficulty];

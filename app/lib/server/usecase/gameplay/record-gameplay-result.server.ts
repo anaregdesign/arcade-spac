@@ -8,7 +8,7 @@ import {
   updatePlayResultStatus,
 } from "../../infrastructure/repositories/gameplay.repository.server";
 import { getGameDefinition, getGameSuccessfulResultLabel } from "../../../domain/entities/game-catalog";
-import { formatPrimaryMetric, getDropLineHitRating } from "../../../domain/services/game-metrics";
+import { formatPrimaryMetric, getPrecisionDropHitRating } from "../../../domain/services/game-metrics";
 import { rebuildAggregates } from "./rebuild-aggregates.server";
 
 const difficultyBasePoints = {
@@ -190,7 +190,7 @@ function buildResultSummary(input: {
       return `${input.gameName} ${input.difficulty.toLowerCase()} missed the line after ${formattedMetric} offset. Result saved for history only and excluded from rankings.`;
     }
 
-    const rating = getDropLineHitRating(input.primaryMetric, "COMPLETED");
+    const rating = getPrecisionDropHitRating(input.primaryMetric, "COMPLETED");
     const baseSummary = `${input.gameName} ${input.difficulty.toLowerCase()} hit landed at ${formattedMetric} offset with a ${rating.value.toLowerCase()} rating`;
     return input.outcome === "pending" ? `${baseSummary}, save pending.` : `${baseSummary}.`;
   }

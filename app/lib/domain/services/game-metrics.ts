@@ -72,7 +72,7 @@ export function buildPrimaryMetricShareLine(gameKey: string, input: {
   return `Arcade: ${input.gameName} ${input.difficulty.toLowerCase()} in ${input.primaryMetricText}.`;
 }
 
-export function getDropLineHitRating(primaryMetric: number, status: string) {
+export function getPrecisionDropHitRating(primaryMetric: number, status: string) {
   if (status === "FAILED" || status === "ABANDONED") {
     return {
       note: "The ball passed the line before the hit registered.",

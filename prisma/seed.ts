@@ -10,7 +10,7 @@ const userIds = {
 const persistedGames = listPersistedGames();
 const gameIds = {
   colorSweep: persistedGames.find((game) => game.key === "COLOR_SWEEP")!.id,
-  dropLine: persistedGames.find((game) => game.key === "DROP_LINE")!.id,
+  precisionDrop: persistedGames.find((game) => game.key === "DROP_LINE")!.id,
   minesweeper: persistedGames.find((game) => game.key === "MINESWEEPER")!.id,
   numberChain: persistedGames.find((game) => game.key === "NUMBER_CHAIN")!.id,
   pairFlip: persistedGames.find((game) => game.key === "PAIR_FLIP")!.id,

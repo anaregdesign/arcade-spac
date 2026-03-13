@@ -150,7 +150,7 @@ flowchart TD
 
 ## 4. MVP での画面遷移上の前提
 
-- phase 1 lineup は `マインスイーパ`、`数独`、`Drop Ball`、`Color Sweep`、`Number Chain`、`Pair Flip` の 6 つ
+- phase 1 lineup は `マインスイーパ`、`数独`、`Precision Drop`、`Color Sweep`、`Number Chain`、`Pair Flip` の 6 つ
 - 初回利用時もホーム本文に追加フローを差し込まず、一覧と探索導線だけで開始できるようにする
 - 通常時のヘルプ本文はホームに常時表示しない
 - ヘルプは全画面で共通コンポーネントとして再利用できる前提で設計する

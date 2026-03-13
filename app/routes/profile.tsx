@@ -3,7 +3,7 @@ import { redirect, useLoaderData } from "react-router";
 import { AppShell } from "../components/app-shell";
 import { ProfileScreen } from "../components/profile-screen";
 import { buildSharedHelpSections } from "../components/shared/help-content";
-import { isGameKey, toStoredGameKey } from "../lib/domain/entities/game-catalog";
+import { resolveGameKey, toStoredGameKey } from "../lib/domain/entities/game-catalog";
 import { requireCurrentUserId } from "../lib/server/infrastructure/auth/session.server";
 import { updateProfileRecord } from "../lib/server/infrastructure/repositories/rankings-profile.repository.server";
 import { getHomeDashboard } from "../lib/server/usecase/get-home-dashboard.server";
@@ -40,12 +40,14 @@ export async function action({ request }: { request: Request }) {
     throw new Response("Theme preference is invalid", { status: 400 });
   }
 
+  const canonicalFavoriteGame = typeof favoriteGame === "string" ? resolveGameKey(favoriteGame) : null;
+
   await updateProfileRecord({
     userId,
     displayName,
     visibilityScope,
     tagline: typeof tagline === "string" ? tagline : "",
-    favoriteGame: typeof favoriteGame === "string" && isGameKey(favoriteGame) ? toStoredGameKey(favoriteGame) : null,
+    favoriteGame: canonicalFavoriteGame ? toStoredGameKey(canonicalFavoriteGame) : null,
     themePreference,
   });
 

@@ -12,12 +12,12 @@ type CountSupportMetricDefinition = {
   zeroNote: string;
 };
 
-type DropLineRatingSupportMetricDefinition = {
-  kind: "drop-line-rating";
+type PrecisionDropRatingSupportMetricDefinition = {
+  kind: "precision-drop-rating";
   label: "Hit rating";
 };
 
-type GameSupportMetricDefinition = CountSupportMetricDefinition | DropLineRatingSupportMetricDefinition;
+type GameSupportMetricDefinition = CountSupportMetricDefinition | PrecisionDropRatingSupportMetricDefinition;
 
 type GamePrimaryMetricDefinition = {
   bestLabel: string;
@@ -205,9 +205,9 @@ export const supportedGames = [
   {
     accentColor: "#f97316",
     homeTags: ["timing", "fast-start"],
-    id: "game-drop-line",
-    key: "drop-line",
-    name: "Drop Ball",
+    id: "game-precision-drop",
+    key: "precision-drop",
+    name: "Precision Drop",
     primaryMetric: {
       bestLabel: "Best hit offset",
       completedLabel: "Hit offset",
@@ -220,7 +220,7 @@ export const supportedGames = [
     storedKey: "DROP_LINE",
     successfulResultLabel: "hit",
     supportMetric: {
-      kind: "drop-line-rating",
+      kind: "precision-drop-rating",
       label: "Hit rating",
     },
   },
@@ -258,25 +258,47 @@ export type GameLink = {
   label: string;
 };
 
+const gameDefinitionByKey = new Map(supportedGames.map((game) => [game.key, game] as const));
+const legacyRouteKeyByAlias = new Map<string, GameKey>([
+  ["drop-ball", "precision-drop"],
+  ["drop-line", "precision-drop"],
+]);
+
 export function isGameKey(value: string): value is GameKey {
-  return supportedGames.some((game) => game.key === value);
+  return gameDefinitionByKey.has(value as GameKey);
+}
+
+export function resolveGameKey(value: string): GameKey | null {
+  const normalizedRouteKey = value.toLowerCase().replace(/_/g, "-");
+
+  if (gameDefinitionByKey.has(normalizedRouteKey as GameKey)) {
+    return normalizedRouteKey as GameKey;
+  }
+
+  return legacyRouteKeyByAlias.get(normalizedRouteKey) ?? null;
 }
 
 export function toStoredGameKey(gameKey: GameKey): StoredGameKey;
 export function toStoredGameKey(gameKey: string): string;
 export function toStoredGameKey(gameKey: string) {
-  return gameKey.toUpperCase().replace(/-/g, "_");
+  const resolvedGameKey = resolveGameKey(gameKey);
+
+  if (!resolvedGameKey) {
+    return gameKey.toUpperCase().replace(/-/g, "_");
+  }
+
+  return gameDefinitionByKey.get(resolvedGameKey)!.storedKey;
 }
 
 export function toRouteGameKey(gameKey: StoredGameKey): GameKey;
 export function toRouteGameKey(gameKey: string): string;
 export function toRouteGameKey(gameKey: string) {
-  return gameKey.toLowerCase().replace(/_/g, "-");
+  return resolveGameKey(gameKey) ?? gameKey.toLowerCase().replace(/_/g, "-");
 }
 
 export function getGameDefinition(gameKey: string) {
-  const normalizedKey = toRouteGameKey(gameKey);
-  return supportedGames.find((game) => game.key === normalizedKey) ?? null;
+  const normalizedKey = resolveGameKey(gameKey);
+  return normalizedKey ? gameDefinitionByKey.get(normalizedKey) ?? null : null;
 }
 
 export function getGameName(gameKey: string) {
@@ -292,8 +314,10 @@ export function getGameSuccessfulResultLabel(gameKey: string) {
 }
 
 export function buildAlternateGameLinks(currentGameKey: string): GameLink[] {
+  const normalizedCurrentGameKey = toRouteGameKey(currentGameKey);
+
   return supportedGames
-    .filter((game) => game.key !== currentGameKey)
+    .filter((game) => game.key !== normalizedCurrentGameKey)
     .map((game) => ({
       href: `/games/${game.key}`,
       key: game.key,
