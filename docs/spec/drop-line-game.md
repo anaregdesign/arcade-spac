@@ -38,7 +38,7 @@
 - live run 中に play area を click または tap すると、その時点の `line offset` を計測して run を終了し、自動で result へ遷移する
 - `line offset` が小さいほど良い result として扱い、home、profile、result では best metric を `px` 表示する
 - ball が line を通過して play area の下端まで落ちても click されなかった場合、その run は miss として扱い、result へ自動遷移する
-- game screen には current state、difficulty、`How to play`、home 遷移、他 game 遷移を既存 pattern で表示する
+- game screen には current state、difficulty、`How to play` を既存 pattern で表示し、cross-game navigation は `app shell` または result から行える
 - result screen では `Drop Line` 用の metric label と summary を表示し、`px` 単位の hit 精度がわかる
 - rankings と profile では `Drop Line` が他 game と同じように board 対象として扱われる
 
@@ -54,7 +54,7 @@
 ## Edge Cases
 
 - run 開始前や result 遷移中の click は score に反映しない
-- live run 中に home または別 game へ移動する場合は既存の leave confirm を再利用する
+- route を離れても live run は自動で hit または miss として保存しない
 - random な開始高さでも ball が line より下から spawn しない
 - narrow viewport でも play area 全体、line、ball、主要 actions が 1 画面内で操作できる
 - miss 後も replay 導線は直ちに利用できる

@@ -36,7 +36,7 @@ const gameDefinitionByKey: Record<string, GameDefinition> = {
           items: [
             { label: "Tap to score", detail: "The lane accepts one click or tap during a live run." },
             { label: "Read the score", detail: "The smaller the hit offset in px, the better the result." },
-            { label: "Leave", detail: "Go home or switch games during a live drop to record the run as abandoned." },
+            { label: "Miss handling", detail: "If the ball drops past the line before you tap, the run is saved as a miss and excluded from rankings." },
           ],
         },
       ],
@@ -57,7 +57,7 @@ const gameDefinitionByKey: Record<string, GameDefinition> = {
           items: [
             { label: "Start run", detail: "Choose a difficulty and press Start run, or just open the first cell to begin on the board." },
             { label: "Clear", detail: "Reveal every safe cell. When the board ends, the Result screen opens automatically." },
-            { label: "Leave", detail: "Go home or switch games during a live board to record the attempt as abandoned." },
+            { label: "Mistakes", detail: "A mine ends the board immediately and opens the Result screen with a failed run." },
           ],
         },
         {

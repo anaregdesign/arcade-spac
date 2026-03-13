@@ -1,8 +1,10 @@
 import { useEffect, useRef } from "react";
-import { Link, useNavigation, useSubmit } from "react-router";
+import { useNavigation, useSubmit } from "react-router";
 
-import type { GameDifficulty } from "../../../lib/client/usecase/game-workspace/use-game-workspace";
 import { useDropLineSession } from "../../../lib/client/usecase/game-workspace/use-drop-line-session";
+import { GameWorkspaceBoardOverlay } from "../shared/GameWorkspaceBoardOverlay";
+import { GameWorkspaceControlsCard } from "../shared/GameWorkspaceControlsCard";
+import { GameWorkspaceFinishCard } from "../shared/GameWorkspaceFinishCard";
 import { GameInstructionsDialog } from "../shared/game-instructions-dialog";
 import type { GameWorkspaceComponentProps } from "../shared/game-workspace-types";
 
@@ -10,11 +12,12 @@ function formatElapsedMs(elapsedMs: number) {
   return `${(elapsedMs / 1000).toFixed(2)}s`;
 }
 
-export function DropLineGameWorkspace({ alternateGames, instructions, workspace }: GameWorkspaceComponentProps) {
+export function DropLineGameWorkspace({ instructions, workspace }: GameWorkspaceComponentProps) {
   const navigation = useNavigation();
   const submit = useSubmit();
   const submittedOutcomeRef = useRef<"cleared" | "failed" | null>(null);
   const dropLine = useDropLineSession(workspace.difficulty);
+  const isRunIdle = dropLine.state === "idle";
   const isLiveRun = dropLine.state === "playing";
   const isRunCleared = dropLine.state === "cleared";
   const isRunFailed = dropLine.state === "failed";
@@ -63,68 +66,25 @@ export function DropLineGameWorkspace({ alternateGames, instructions, workspace 
 
   return (
     <>
-      <section className="feature-card workspace-card workspace-controls-card">
-        <div className="workspace-toolbar workspace-toolbar-minimal">
-          <label className="field-block workspace-toolbar-field">
-            <span className="field-label">Difficulty</span>
-            <select
-              className="field-select"
-              value={workspace.difficulty}
-              disabled={isLiveRun}
-              onChange={(event) => workspace.changeDifficulty(event.currentTarget.value as GameDifficulty)}
-            >
-              <option value="EASY">Easy</option>
-              <option value="NORMAL">Normal</option>
-              <option value="HARD">Hard</option>
-              <option value="EXPERT">Expert</option>
-            </select>
-          </label>
-          <div className="workspace-chip-row" aria-label="Run status">
+      <GameWorkspaceControlsCard
+        difficulty={workspace.difficulty}
+        isDifficultyDisabled={isLiveRun}
+        onDifficultyChange={workspace.changeDifficulty}
+        primaryActions={(
+          <GameInstructionsDialog instructions={instructions} />
+        )}
+        statusChips={(
+          <>
             <span className="status-badge status-badge-neutral">{runStatusLabel}</span>
             <span className="status-badge status-badge-neutral">Offset {resolvedOffsetPx} px</span>
             <span className="status-badge status-badge-neutral">Elapsed {formatElapsedMs(dropLine.elapsedMs)}</span>
             <span className="status-badge status-badge-neutral">Speed {dropLine.speedPxPerSecond} px/s</span>
-          </div>
-          <div className="hero-actions compact-actions workspace-primary-actions">
-            <button
-              className="action-link action-link-primary"
-              type="button"
-              onClick={() => {
-                workspace.beginRun();
-                dropLine.beginRun();
-              }}
-            >
-              {startActionLabel}
-            </button>
-            <GameInstructionsDialog instructions={instructions} />
-            {isLiveRun ? (
-              <button className="action-link action-link-secondary" type="button" onClick={() => workspace.openLeaveConfirm("home")}>
-                Go home
-              </button>
-            ) : (
-              <Link className="action-link action-link-secondary" to="/home">
-                Go home
-              </Link>
-            )}
-            {alternateGames.map((game) =>
-              isLiveRun
-                ? (
-                  <button className="action-link action-link-secondary" key={game.key} type="button" onClick={() => workspace.openLeaveConfirm(game.href)}>
-                    {game.label}
-                  </button>
-                )
-                : (
-                  <Link className="action-link action-link-secondary" key={game.key} to={game.href}>
-                    {game.label}
-                  </Link>
-                ),
-            )}
-          </div>
-        </div>
-      </section>
+          </>
+        )}
+      />
 
-      <section className="feature-card workspace-card board-card board-card-minimal" aria-label="Drop Line lane">
-        <div className="drop-line-shell">
+      <section className="feature-card workspace-card board-card board-card-minimal drop-line-board-card" aria-label="Drop Line lane">
+        <div className="drop-line-shell game-board-overlay-shell">
           <button
             aria-label={isLiveRun ? "Tap when the ball overlaps the line" : "Drop Line play area"}
             className="drop-line-lane"
@@ -145,23 +105,29 @@ export function DropLineGameWorkspace({ alternateGames, instructions, workspace 
             />
             <span className="drop-line-lane-copy">{lanePrompt}</span>
           </button>
+          <GameWorkspaceBoardOverlay
+            actionLabel={startActionLabel}
+            detail="Drop a ball, then tap when it overlaps the line."
+            isVisible={isRunIdle}
+            onAction={() => {
+              workspace.beginRun();
+              dropLine.beginRun();
+            }}
+            title="Timing lane"
+          />
         </div>
       </section>
 
-      <section className="feature-card workspace-card workspace-finish-card">
-        <div className="workspace-finish-row">
-          <div className="workspace-finish-copy">
-            <strong>{saveStatusLabel}</strong>
-            <span>
-              {isRunCleared
-                ? "A smaller offset scores better and opens the Result screen automatically."
-                : isRunFailed
-                  ? "Missed runs are recorded for history and open the Result screen automatically."
-                  : "Tap once when the ball overlaps the line. If the ball drops past the lane, the run is recorded as missed."}
-            </span>
-          </div>
-        </div>
-      </section>
+      <GameWorkspaceFinishCard
+        detail={
+          isRunCleared
+            ? "A smaller offset scores better and opens the Result screen automatically."
+            : isRunFailed
+              ? "Missed runs are recorded for history and open the Result screen automatically."
+              : "Tap once when the ball overlaps the line. If the ball drops past the lane, the run is recorded as missed."
+        }
+        emphasis={saveStatusLabel}
+      />
     </>
   );
 }

@@ -24,7 +24,7 @@ export function buildSharedHelpSections(extraSections: AppHelpSection[] = []) {
     {
       eyebrow: "4. Know run states",
       title: "Confirmed clears count, pending saves wait",
-      body: "Leaving a live board records an abandoned run. Pending saves stay visible but do not change rankings or total points until the retry succeeds.",
+      body: "A run is recorded only after the board ends or you finish it explicitly. Pending saves stay visible but do not change rankings or total points until the retry succeeds.",
     },
     ...extraSections,
   ];

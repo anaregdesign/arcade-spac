@@ -1242,6 +1242,60 @@ a {
   background: transparent;
 }
 
+.game-board-overlay-shell {
+  position: relative;
+  width: fit-content;
+  max-width: 100%;
+}
+
+.game-board-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  pointer-events: none;
+}
+
+.game-board-overlay-card {
+  width: min(100%, 320px);
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  padding: 18px 18px 16px;
+  border-radius: 24px;
+  background: color-mix(in srgb, var(--surface-card) 86%, rgba(9, 14, 20, 0.22));
+  box-shadow: 0 20px 48px rgba(15, 23, 42, 0.18);
+  text-align: center;
+  pointer-events: auto;
+  backdrop-filter: blur(10px);
+}
+
+.game-board-overlay-title {
+  margin: 0;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+}
+
+.game-board-overlay-card .action-link {
+  min-width: 180px;
+  justify-content: center;
+}
+
+.game-board-overlay-detail {
+  margin: 0;
+  color: var(--text-secondary);
+  line-height: 1.45;
+}
+
+.drop-line-board-card {
+  width: min(100%, 420px);
+}
+
 .minesweeper-shell {
   display: grid;
   gap: 6px;
@@ -1510,10 +1564,11 @@ a {
 }
 
 .drop-line-shell {
-  width: min(100%, 420px);
+  width: 100%;
 }
 
 .drop-line-lane {
+  display: block;
   position: relative;
   width: 100%;
   min-height: 420px;
@@ -1775,5 +1830,14 @@ a {
 
   .workspace-primary-actions {
     justify-content: flex-start;
+  }
+
+  .game-board-overlay {
+    padding: 12px;
+  }
+
+  .game-board-overlay-card {
+    width: min(100%, 280px);
+    padding: 16px 16px 14px;
   }
 }
