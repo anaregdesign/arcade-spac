@@ -1,0 +1,32 @@
+<svg width="720" height="520" viewBox="0 0 720 520" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="80" y1="48" x2="640" y2="472" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F8FAFC"/>
+      <stop offset="1" stop-color="#DDE7F0"/>
+    </linearGradient>
+    <linearGradient id="panel" x1="140" y1="110" x2="580" y2="420" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#ECF3F8"/>
+    </linearGradient>
+  </defs>
+  <rect width="720" height="520" rx="40" fill="url(#bg)"/>
+  <rect x="128" y="100" width="464" height="320" rx="28" fill="url(#panel)" stroke="#C3D0DB" stroke-width="4"/>
+  <rect x="164" y="136" width="392" height="58" rx="18" fill="#F6F8FB"/>
+  <rect x="452" y="146" width="84" height="38" rx="19" fill="#4FD1A6"/>
+  <text x="186" y="171" fill="#536270" font-family="ui-sans-serif, system-ui" font-size="26" font-weight="700">Target Color</text>
+  <g transform="translate(164 220)">
+    <rect x="0" y="0" width="76" height="76" rx="18" fill="#F6B44B"/>
+    <rect x="88" y="0" width="76" height="76" rx="18" fill="#5BC3F8"/>
+    <rect x="176" y="0" width="76" height="76" rx="18" fill="#4FD1A6"/>
+    <rect x="264" y="0" width="76" height="76" rx="18" fill="#E57D8D"/>
+    <rect x="0" y="88" width="76" height="76" rx="18" fill="#5BC3F8"/>
+    <rect x="88" y="88" width="76" height="76" rx="18" fill="#4FD1A6"/>
+    <rect x="176" y="88" width="76" height="76" rx="18" fill="#4FD1A6"/>
+    <rect x="264" y="88" width="76" height="76" rx="18" fill="#AC8CFF"/>
+    <rect x="0" y="176" width="76" height="76" rx="18" fill="#F6B44B"/>
+    <rect x="88" y="176" width="76" height="76" rx="18" fill="#4FD1A6"/>
+    <rect x="176" y="176" width="76" height="76" rx="18" fill="#E57D8D"/>
+    <rect x="264" y="176" width="76" height="76" rx="18" fill="#4FD1A6"/>
+    <rect x="376" y="0" width="16" height="252" rx="8" fill="#D5DFE7"/>
+  </g>
+</svg>

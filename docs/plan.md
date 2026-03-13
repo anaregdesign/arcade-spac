@@ -19,9 +19,9 @@
 
 ## Section 3 - Implement Color Sweep
 ### Subsection 3.1 - Game workspace and session flow
-- [ ] Add the `Color Sweep` session Hook and workspace React Component
-- [ ] Register `Color Sweep` presentation, instructions, tags, and metadata in the shared catalog
-- [ ] Add preview artwork and responsive styling for the board
+- [x] Add the `Color Sweep` session Hook and workspace React Component
+- [x] Register `Color Sweep` presentation, instructions, tags, and metadata in the shared catalog
+- [x] Add preview artwork and responsive styling for the board
 
 ## Section 4 - Implement Number Chain
 ### Subsection 4.1 - Game workspace and session flow

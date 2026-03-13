@@ -1,5 +1,6 @@
 import type { ComponentType } from "react";
 
+import { ColorSweepGameWorkspace } from "./color-sweep/color-sweep-game-workspace";
 import { DropLineGameWorkspace } from "./drop-line/drop-line-game-workspace";
 import { MinesweeperGameWorkspace } from "./minesweeper/minesweeper-game-workspace";
 import type { GameInstructions } from "./shared/game-instructions-dialog";
@@ -19,6 +20,35 @@ type GameDefinition = {
 };
 
 const gameDefinitionByKey: Record<string, GameDefinition> = {
+  "color-sweep": {
+    instructions: {
+      summary: "Find the target color, tap only those tiles, and clear the whole set before the timer expires.",
+      sections: [
+        {
+          title: "Run flow",
+          items: [
+            { label: "Start run", detail: "Choose a difficulty and press Start run to randomize the board and arm the timer." },
+            { label: "Clear", detail: "Tap every tile that matches the target color before the time limit expires. The Result screen opens automatically on clear." },
+            { label: "Timeout", detail: "If any target tile remains when the timer ends, the run is saved as not cleared and opens the Result screen automatically." },
+          ],
+        },
+        {
+          title: "Board controls",
+          items: [
+            { label: "Read the target", detail: "The target color is shown above the board and in the status chips." },
+            { label: "Tap carefully", detail: "Correct target tiles disappear. Wrong taps increase the support metric but do not stop the run." },
+            { label: "Stay mobile-safe", detail: "Every tile is a first-class tap target on desktop and touch devices." },
+          ],
+        },
+      ],
+      title: "Color Sweep controls",
+    },
+    presentation: {
+      previewAlt: "Color Sweep board showing a target swatch and a grid of colored tiles",
+      previewSrc: "/images/games/color-sweep-preview.svg",
+    },
+    workspace: ColorSweepGameWorkspace,
+  },
   "drop-line": {
     instructions: {
       summary: "Start a drop, watch the ball fall, and tap once when it overlaps the line to keep the hit offset as small as possible.",

@@ -7,6 +7,7 @@ const userIds = {
 } as const;
 
 const gameIds = {
+  colorSweep: "game-color-sweep",
   dropLine: "game-drop-line",
   minesweeper: "game-minesweeper",
   sudoku: "game-sudoku",
@@ -23,6 +24,14 @@ async function main() {
 
   await prisma.game.createMany({
     data: [
+      {
+        id: gameIds.colorSweep,
+        key: "COLOR_SWEEP",
+        name: "Color Sweep",
+        shortDescription: "Clear every tile that matches the target color before the timer expires.",
+        accentColor: "#14b8a6",
+        rulesSummary: "Only the target color counts. Wrong taps lower quality, and timeouts stay in history only.",
+      },
       {
         id: gameIds.dropLine,
         key: "DROP_LINE",

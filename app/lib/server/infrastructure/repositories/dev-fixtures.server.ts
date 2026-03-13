@@ -189,6 +189,14 @@ function createInitialState(): DevState {
     ],
     games: [
       {
+        id: "game-color-sweep",
+        key: "COLOR_SWEEP",
+        name: "Color Sweep",
+        shortDescription: "Clear every tile that matches the target color before the timer expires.",
+        accentColor: "#14b8a6",
+        rulesSummary: "Only the target color counts. Wrong taps lower quality, and timeouts stay in history only.",
+      },
+      {
         id: "game-drop-line",
         key: "DROP_LINE",
         name: "Drop Line",

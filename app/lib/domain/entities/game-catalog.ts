@@ -29,6 +29,31 @@ type GamePrimaryMetricDefinition = {
 
 export const supportedGames = [
   {
+    homeTags: ["perception", "fast-start"],
+    key: "color-sweep",
+    name: "Color Sweep",
+    primaryMetric: {
+      bestLabel: "Best clear time",
+      completedLabel: "Clear time",
+      direction: "lower-better",
+      failedLabel: "Run time",
+      format: "duration_seconds",
+    },
+    storedKey: "COLOR_SWEEP",
+    successfulResultLabel: "clear",
+    supportMetric: {
+      kind: "count",
+      label: "Wrong taps",
+      noun: "wrong tap",
+      noteVerb: "recorded",
+      recoveryVerb: "kept in recovery",
+      recoveryZeroNote: "Perfect sweep kept in recovery.",
+      source: "mistakeCount",
+      zeroSummaryText: "no wrong taps",
+      zeroNote: "Perfect sweep",
+    },
+  },
+  {
     homeTags: ["fast-start", "logic"],
     key: "minesweeper",
     name: "Minesweeper",
