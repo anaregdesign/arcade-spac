@@ -6,7 +6,7 @@
 
 ## User Problem
 
-- local workspace directory は `arcade-spec` だが、rename 前は origin remote と GitHub repository が `arcade-spac` で不一致だった
+- local workspace directory は `arcade-spec` だが、rename 前は origin remote と GitHub repository slug が canonical name と不一致だった
 - GitHub repository identity が曖昧なままだと、GHCR image path、OIDC subject、GitHub Environment 運用、release automation、Azure Container Apps deploy の前提がずれる
 - ドキュメントと運用コマンドが誤った repository identity を前提に残ると、rename 後の保守で事故が起きやすい
 

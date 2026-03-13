@@ -36,7 +36,7 @@ This runbook captures the remaining external follow-up needed after standardizin
    - `AZURE_CONTAINER_APP_NAME`
 3. Do not assume GHCR pull credentials exist. The current `production` Environment has no visible Actions secrets, and the optional `Configure GHCR auth for private packages` step is therefore skipped.
 4. Keep the release workflow package write permission as-is. The latest inspected release run still published to GHCR successfully after the repository rename.
-5. Decide whether the old GHCR package namespace `ghcr.io/anaregdesign/arcade-spac` should remain available for rollback history or be retired now that the first successful post-rename release has completed.
+5. Remove legacy package namespace dependencies from operational procedures now that the first successful post-rename release has completed.
 
 ## Azure Follow-Up
 
@@ -65,4 +65,4 @@ This runbook captures the remaining external follow-up needed after standardizin
 
 ## Notes On Historical Values
 
-- Remaining references to `ghcr.io/anaregdesign/arcade-spac` now exist only to preserve rollback history for pre-cutover releases.
+- Keep operational references aligned to the current canonical namespace `ghcr.io/anaregdesign/arcade-spec`.

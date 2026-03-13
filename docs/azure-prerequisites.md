@@ -82,9 +82,9 @@ The template now defines two distinct identities for the database path:
 
 The current production deployment is verified on:
 
-- Release tag `v2026.03.13.1`
-- Container App revision `ca-arcade--0000011`
-- Image `ghcr.io/anaregdesign/arcade-spac:v2026.03.13.1`
+- Release tag `v2026.03.13.9`
+- Container App revision `ca-arcade--0000020`
+- Image `ghcr.io/anaregdesign/arcade-spec:v2026.03.13.9`
 - Microsoft Entra ID runtime mode
 - `AzureADMultipleOrgs` app registration with `organizations` authority for hosted sign-in
 - Azure SQL server `sql-arcade-qddhfw4moexbm.database.windows.net`
@@ -92,8 +92,8 @@ The current production deployment is verified on:
 ## Repository Rename Note
 
 - The canonical GitHub repository slug is `anaregdesign/arcade-spec`.
-- Future release workflows should publish GHCR images under `ghcr.io/anaregdesign/arcade-spec` because the workflow derives the image name from `${{ github.repository }}`.
-- The historical baseline above still references `ghcr.io/anaregdesign/arcade-spac` until a post-rename release is actually deployed.
+- Release workflows publish GHCR images under `ghcr.io/anaregdesign/arcade-spec` because the workflow derives the image name from `${{ github.repository }}`.
+- Keep the baseline above aligned with the live production release after each deployment.
 
 ## Ongoing Operational Concerns
 

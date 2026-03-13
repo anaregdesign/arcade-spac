@@ -15,12 +15,12 @@ This runbook records the verified production baseline for Arcade on Azure and th
 
 - The canonical repository slug is now `anaregdesign/arcade-spec`.
 - The first successful release published from the renamed repository is now live, so the current production baseline uses `ghcr.io/anaregdesign/arcade-spec`.
-- Historical rollback targets can still point at `ghcr.io/anaregdesign/arcade-spac` until a newer healthy revision replaces them.
+- The next rollback target should be refreshed from the most recent known-good release after each production deployment.
 
 ## Rollback Target
 
-- Previous healthy revision: `ca-arcade--0000019`
-- Previous healthy image: `ghcr.io/anaregdesign/arcade-spac:v2026.03.13.8`
+- Previous healthy revision: not yet recorded under the current image namespace
+- Previous healthy image: establish this after the next successful production release
 
 Rollback command:
 
@@ -28,7 +28,7 @@ Rollback command:
 az containerapp update \
   --resource-group rg-arcade-spec-dev \
   --name ca-arcade \
-  --image ghcr.io/anaregdesign/arcade-spac:v2026.03.13.8
+  --image ghcr.io/anaregdesign/arcade-spec:<known-good-tag>
 ```
 
 After rollback, confirm the ready revision and health endpoint again.
