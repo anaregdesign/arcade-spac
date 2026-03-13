@@ -6,6 +6,7 @@ type SessionState = "idle" | "playing" | "cleared" | "failed";
 const laneHeight = 420;
 const lineCenterY = 308;
 const ballRadius = 22;
+const idleBallCenterY = 96;
 
 const difficultyConfig: Record<Difficulty, { speedPxPerSecond: number; spawnRange: [number, number] }> = {
   EASY: { speedPxPerSecond: 190, spawnRange: [42, 118] },
@@ -26,17 +27,17 @@ export function useDropLineSession(difficulty: Difficulty) {
   const animationFrameRef = useRef<number | null>(null);
   const startedAtRef = useRef<number | null>(null);
   const difficultySettings = difficultyConfig[difficulty];
-  const [ballCenterY, setBallCenterY] = useState(() => getRandomSpawnY(difficultySettings.spawnRange));
+  const [ballCenterY, setBallCenterY] = useState(idleBallCenterY);
   const [elapsedMs, setElapsedMs] = useState(0);
   const [resolvedOffsetPx, setResolvedOffsetPx] = useState<number | null>(null);
-  const [spawnY, setSpawnY] = useState(() => getRandomSpawnY(difficultySettings.spawnRange));
+  const [spawnY, setSpawnY] = useState(idleBallCenterY);
   const [state, setState] = useState<SessionState>("idle");
 
   useEffect(() => {
-    setBallCenterY(getRandomSpawnY(difficultySettings.spawnRange));
+    setBallCenterY(idleBallCenterY);
     setElapsedMs(0);
     setResolvedOffsetPx(null);
-    setSpawnY(getRandomSpawnY(difficultySettings.spawnRange));
+    setSpawnY(idleBallCenterY);
     setState("idle");
     startedAtRef.current = null;
 
@@ -44,7 +45,7 @@ export function useDropLineSession(difficulty: Difficulty) {
       window.cancelAnimationFrame(animationFrameRef.current);
       animationFrameRef.current = null;
     }
-  }, [difficultySettings.spawnRange]);
+  }, [difficulty]);
 
   useEffect(() => {
     if (state !== "playing") {
