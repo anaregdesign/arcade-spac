@@ -19,7 +19,7 @@ When the app requires user authentication, prefer a real local sign-in path with
 ## Companion Skill Requirement
 
 - Install `enforce-react-spa-architecture` together with this skill. Do not use this skill as a standalone replacement for the base architecture skill.
-- If the companion skill is missing, install it before continuing from [https://github.com/anaregdesign/hiroki/tree/main/engineer/development/create-single-page-application/enforce-react-spa-architecture](https://github.com/anaregdesign/hiroki/tree/main/engineer/development/create-single-page-application/enforce-react-spa-architecture).
+- If the companion skill is missing, install it before continuing from [https://github.com/anaregdesign/hiroki/tree/main/skills/engineer/development/create-single-page-application/enforce-react-spa-architecture](https://github.com/anaregdesign/hiroki/tree/main/skills/engineer/development/create-single-page-application/enforce-react-spa-architecture).
 - Prefer `$skill-installer` for the install step when another Codex instance needs to fetch the published skill from GitHub.
 - Continue only after the sibling references under `../enforce-react-spa-architecture/references/` are locally available.
 
@@ -36,7 +36,7 @@ When the app requires user authentication, prefer a real local sign-in path with
    - request these prerequisites at project start instead of waiting for release hardening
 3. Confirm the companion skill is installed:
    - required skill: `enforce-react-spa-architecture`
-   - published URL: `https://github.com/anaregdesign/hiroki/tree/main/engineer/development/create-single-page-application/enforce-react-spa-architecture`
+   - published URL: `https://github.com/anaregdesign/hiroki/tree/main/skills/engineer/development/create-single-page-application/enforce-react-spa-architecture`
    - if missing, install it with `$skill-installer` before reading the sibling references
 4. Read the base architecture references from the sibling skill:
    - full architecture overview index for multi-boundary changes: [`../enforce-react-spa-architecture/references/layout-and-dependency-rules.md`](../enforce-react-spa-architecture/references/layout-and-dependency-rules.md)
