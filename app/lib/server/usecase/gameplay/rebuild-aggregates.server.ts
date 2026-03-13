@@ -62,13 +62,16 @@ export async function rebuildAggregates() {
         gameName: game.name,
         bestPoints: bestResult?.competitivePoints ?? 0,
         bestMetric: bestResult?.primaryMetric ?? null,
+        isTenantVisible: user.visibilityScope === "TENANT_ONLY",
         playCount: gameResults.length,
         completedCount: gameResults.filter((result) => result.status === "COMPLETED").length,
         lastPlayedAt: gameResults[0]?.finishedAt ?? null,
       };
     });
 
-    const rankedUsers = perUser.filter((entry) => entry.bestPoints > 0).sort((left, right) => right.bestPoints - left.bestPoints);
+    const rankedUsers = perUser
+      .filter((entry) => entry.bestPoints > 0 && entry.isTenantVisible)
+      .sort((left, right) => right.bestPoints - left.bestPoints);
 
     rankedUsers.forEach((entry, index) => {
       leaderboardRows.push({
@@ -134,6 +137,7 @@ export async function rebuildAggregates() {
 
   const overallRanked = [...overallSummaryRows]
     .filter((entry) => entry.periodType === "SEASON")
+    .filter((entry) => users.find((user) => user.id === entry.userId)?.visibilityScope === "TENANT_ONLY")
     .sort((left, right) => right.totalPoints - left.totalPoints);
 
   overallRanked.forEach((entry, index) => {
@@ -150,6 +154,7 @@ export async function rebuildAggregates() {
 
   const lifetimeRanked = [...overallSummaryRows]
     .filter((entry) => entry.periodType === "LIFETIME")
+    .filter((entry) => users.find((user) => user.id === entry.userId)?.visibilityScope === "TENANT_ONLY")
     .sort((left, right) => right.totalPoints - left.totalPoints);
 
   lifetimeRanked.forEach((entry, index) => {

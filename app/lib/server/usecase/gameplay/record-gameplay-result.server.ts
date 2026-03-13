@@ -4,6 +4,7 @@ import {
   createPlayResultRecord,
   getGameByKey,
   getPlayResultById,
+  updatePlayResultShareToken,
   updatePlayResultStatus,
 } from "../../infrastructure/repositories/gameplay.repository.server";
 import { rebuildAggregates } from "./rebuild-aggregates.server";
@@ -120,6 +121,7 @@ export async function recordGameplayResult(input: {
   const status = input.outcome === "pending" ? "PENDING_SAVE" : "COMPLETED";
   const leaderboardEligible = status === "COMPLETED";
   const resultId = `play-${randomUUID()}`;
+  const shareToken = status === "COMPLETED" ? `share-${randomUUID()}` : null;
 
   const result = await createPlayResultRecord({
     id: resultId,
@@ -145,10 +147,24 @@ export async function recordGameplayResult(input: {
       outcome: input.outcome,
       primaryMetric: metrics.primaryMetric,
     }),
-    sharePath: `/results/${resultId}`,
+    sharePath: shareToken ? `/results/shared/${shareToken}` : null,
+    shareToken,
   });
 
-  await rebuildAggregates();
+  try {
+    await rebuildAggregates();
+  } catch {
+    if (status === "COMPLETED") {
+      await updatePlayResultStatus(result.id, {
+        status: "PENDING_SAVE",
+        leaderboardEligible: false,
+        totalPointsDelta: 0,
+        rankDelta: null,
+        summaryText: `${game.name} clear was preserved, but publish failed. Retry save to add it to rankings and total points.`,
+      });
+    }
+  }
+
   return result.id;
 }
 
@@ -200,6 +216,10 @@ export async function retryPendingResult(resultId: string) {
     rankDelta: 1,
     summaryText: `${result.game.name} save retry succeeded and the result is now counted.`,
   });
+
+  if (!result.shareToken) {
+    await updatePlayResultShareToken(result.id, `share-${randomUUID()}`);
+  }
 
   await rebuildAggregates();
   return result.id;

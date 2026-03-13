@@ -19,6 +19,7 @@ type DevUserProfile = {
   userId: string;
   tagline: string | null;
   favoriteGame: FavoriteGame;
+  themePreference: "LIGHT" | "DARK";
   streakDays: number;
   totalPlayCount: number;
   lastPlayedAt: Date | null;
@@ -53,6 +54,7 @@ type DevPlayResult = {
   isPersonalBest: boolean;
   summaryText: string;
   sharePath: string | null;
+  shareToken: string | null;
 };
 
 type DevUserGameSummary = {
@@ -150,6 +152,7 @@ function createInitialState(): DevState {
         userId: "user-aiko",
         tagline: "Going for top seasonal rank across every puzzle.",
         favoriteGame: "MINESWEEPER",
+        themePreference: "LIGHT",
         streakDays: 5,
         totalPlayCount: 18,
         lastPlayedAt: new Date("2026-03-11T20:10:40.000Z"),
@@ -158,6 +161,7 @@ function createInitialState(): DevState {
         userId: "user-hiroki",
         tagline: null,
         favoriteGame: null,
+        themePreference: "LIGHT",
         streakDays: 0,
         totalPlayCount: 0,
         lastPlayedAt: null,
@@ -166,6 +170,7 @@ function createInitialState(): DevState {
         userId: "user-mio",
         tagline: "New challenger learning both games.",
         favoriteGame: "SUDOKU",
+        themePreference: "DARK",
         streakDays: 1,
         totalPlayCount: 4,
         lastPlayedAt: new Date("2026-03-10T18:15:10.000Z"),
@@ -174,6 +179,7 @@ function createInitialState(): DevState {
         userId: "user-ren",
         tagline: "Sudoku specialist building overall score.",
         favoriteGame: "SUDOKU",
+        themePreference: "LIGHT",
         streakDays: 3,
         totalPlayCount: 11,
         lastPlayedAt: new Date("2026-03-11T19:42:10.000Z"),
@@ -218,6 +224,7 @@ function createInitialState(): DevState {
         isPersonalBest: true,
         summaryText: "Hard cleared in 5:32 with no mistakes.",
         sharePath: "/results/play-aiko-mine-1",
+        shareToken: "share-aiko-mine-1",
       },
       {
         id: "play-aiko-sudoku-1",
@@ -239,6 +246,7 @@ function createInitialState(): DevState {
         isPersonalBest: false,
         summaryText: "Normal cleared in 8:40 with one hint.",
         sharePath: "/results/play-aiko-sudoku-1",
+        shareToken: "share-aiko-sudoku-1",
       },
       {
         id: "play-mio-sudoku-pending",
@@ -260,6 +268,7 @@ function createInitialState(): DevState {
         isPersonalBest: false,
         summaryText: "Easy cleared but save is still pending.",
         sharePath: null,
+        shareToken: null,
       },
       {
         id: "play-mio-mine-abandoned",
@@ -281,6 +290,7 @@ function createInitialState(): DevState {
         isPersonalBest: false,
         summaryText: "Left the board mid-run and it was recorded as abandoned.",
         sharePath: null,
+        shareToken: null,
       },
       {
         id: "play-ren-sudoku-1",
@@ -302,6 +312,7 @@ function createInitialState(): DevState {
         isPersonalBest: true,
         summaryText: "Hard cleared in 7:15 with no hints.",
         sharePath: "/results/play-ren-sudoku-1",
+        shareToken: "share-ren-sudoku-1",
       },
       {
         id: "play-ren-mine-1",
@@ -323,6 +334,7 @@ function createInitialState(): DevState {
         isPersonalBest: false,
         summaryText: "Normal cleared in 4:10 with one mistake.",
         sharePath: "/results/play-ren-mine-1",
+        shareToken: "share-ren-mine-1",
       },
     ],
     gameSummaries: [
@@ -775,6 +787,164 @@ export function listRankingGamesFixture() {
   return listGameRecordsFixture();
 }
 
+export function listUsersWithResultsFixture() {
+  return devState.users.map((user) => ({
+    ...clone(user),
+    playResults: devState.playResults
+      .filter((result) => result.userId === user.id && (result.status === "COMPLETED" || result.status === "PENDING_SAVE"))
+      .sort((left, right) => (right.finishedAt?.getTime() ?? 0) - (left.finishedAt?.getTime() ?? 0))
+      .map((result) => clone(result)),
+  }));
+}
+
+export function createPlayResultRecordFixture(input: {
+  id: string;
+  userId: string;
+  gameId: string;
+  difficulty: "EASY" | "NORMAL" | "HARD" | "EXPERT";
+  status: "COMPLETED" | "FAILED" | "ABANDONED" | "PENDING_SAVE";
+  cleared: boolean;
+  leaderboardEligible: boolean;
+  primaryMetric: number;
+  secondaryMetric?: number | null;
+  hintCount?: number | null;
+  mistakeCount?: number | null;
+  competitivePoints: number;
+  totalPointsDelta?: number;
+  rankDelta?: number | null;
+  isPersonalBest?: boolean;
+  summaryText: string;
+  sharePath?: string | null;
+  shareToken?: string | null;
+}) {
+  const now = new Date();
+  const nextResult: DevPlayResult = {
+    id: input.id,
+    userId: input.userId,
+    gameId: input.gameId,
+    difficulty: input.difficulty,
+    startedAt: now,
+    finishedAt: now,
+    status: input.status,
+    cleared: input.cleared,
+    leaderboardEligible: input.leaderboardEligible,
+    primaryMetric: input.primaryMetric,
+    secondaryMetric: input.secondaryMetric ?? null,
+    hintCount: input.hintCount ?? null,
+    mistakeCount: input.mistakeCount ?? null,
+    competitivePoints: input.competitivePoints,
+    totalPointsDelta: input.totalPointsDelta ?? 0,
+    rankDelta: input.rankDelta ?? null,
+    isPersonalBest: input.isPersonalBest ?? false,
+    summaryText: input.summaryText,
+    sharePath: input.sharePath ?? null,
+    shareToken: input.shareToken ?? null,
+  };
+
+  devState.playResults.unshift(nextResult);
+
+  const profile = getProfile(input.userId);
+  if (profile) {
+    profile.totalPlayCount += 1;
+    profile.lastPlayedAt = now;
+    profile.streakDays = Math.max(profile.streakDays, 1);
+  }
+
+  return clone(nextResult);
+}
+
+export function updatePlayResultStatusFixture(resultId: string, input: {
+  status: "COMPLETED" | "FAILED" | "ABANDONED" | "PENDING_SAVE";
+  leaderboardEligible: boolean;
+  totalPointsDelta: number;
+  rankDelta: number | null;
+  summaryText: string;
+}) {
+  const result = devState.playResults.find((entry) => entry.id === resultId);
+
+  if (!result) {
+    throw new Response("Result not found", { status: 404 });
+  }
+
+  result.status = input.status;
+  result.leaderboardEligible = input.leaderboardEligible;
+  result.totalPointsDelta = input.totalPointsDelta;
+  result.rankDelta = input.rankDelta;
+  result.summaryText = input.summaryText;
+  result.finishedAt = new Date();
+
+  return clone(result);
+}
+
+export function replaceLeaderboardEntriesFixture(entries: Array<{
+  periodType: RankingPeriod;
+  gameId?: string;
+  userId: string;
+  rank: number;
+  points: number;
+  deltaToLeader: number | null;
+  deltaToNext: number | null;
+}>) {
+  const now = new Date();
+  devState.leaderboardEntries = entries.map((entry) => ({
+    id: `leader-${entry.periodType}-${entry.gameId ?? "overall"}-${entry.userId}`,
+    periodType: entry.periodType,
+    gameId: entry.gameId ?? null,
+    userId: entry.userId,
+    rank: entry.rank,
+    points: entry.points,
+    deltaToLeader: entry.deltaToLeader,
+    deltaToNext: entry.deltaToNext,
+    capturedAt: now,
+  }));
+}
+
+export function replaceUserGameSummariesFixture(summaries: Array<{
+  userId: string;
+  gameId: string;
+  currentRank: number | null;
+  bestCompetitivePoints: number;
+  personalBestMetric: number | null;
+  playCount: number;
+  completedCount: number;
+  lastPlayedAt: Date | null;
+  recommendationText: string | null;
+}>) {
+  devState.gameSummaries = summaries.map((summary) => ({
+    id: `game-summary-${summary.userId}-${summary.gameId}`,
+    userId: summary.userId,
+    gameId: summary.gameId,
+    currentRank: summary.currentRank,
+    bestCompetitivePoints: summary.bestCompetitivePoints,
+    personalBestMetric: summary.personalBestMetric,
+    playCount: summary.playCount,
+    completedCount: summary.completedCount,
+    lastPlayedAt: summary.lastPlayedAt,
+    recommendationText: summary.recommendationText,
+  }));
+}
+
+export function replaceUserOverallSummariesFixture(summaries: Array<{
+  userId: string;
+  periodType: RankingPeriod;
+  totalPoints: number;
+  currentRank: number | null;
+  trendDelta: number;
+  recentPlaySummary: string | null;
+}>) {
+  const now = new Date();
+  devState.overallSummaries = summaries.map((summary) => ({
+    id: `overall-summary-${summary.userId}-${summary.periodType}`,
+    userId: summary.userId,
+    periodType: summary.periodType,
+    totalPoints: summary.totalPoints,
+    currentRank: summary.currentRank,
+    trendDelta: summary.trendDelta,
+    recentPlaySummary: summary.recentPlaySummary,
+    updatedAt: now,
+  }));
+}
+
 export function listLeaderboardEntriesFixture(periodType: RankingPeriod, scope: RankingScope) {
   return devState.leaderboardEntries
     .filter((entry) => {
@@ -792,6 +962,7 @@ export function listLeaderboardEntriesFixture(periodType: RankingPeriod, scope: 
 
       return requireGame(entry.gameId).key === scope.toUpperCase();
     })
+    .filter((entry) => requireUser(entry.userId).visibilityScope === "TENANT_ONLY")
     .sort((left, right) => left.rank - right.rank)
     .map((entry) => ({
       ...clone(entry),
@@ -824,12 +995,30 @@ export function getPlayResultByIdFixture(resultId: string) {
   });
 }
 
+export function getPlayResultByShareTokenFixture(shareToken: string) {
+  const result = devState.playResults.find((entry) => entry.shareToken === shareToken);
+  return result ? getPlayResultByIdFixture(result.id) : null;
+}
+
+export function updatePlayResultShareTokenFixture(resultId: string, shareToken: string) {
+  const result = devState.playResults.find((entry) => entry.id === resultId);
+
+  if (!result) {
+    throw new Response("Result not found", { status: 404 });
+  }
+
+  result.shareToken = shareToken;
+  result.sharePath = `/results/shared/${shareToken}`;
+  return clone(result);
+}
+
 export function updateProfileRecordFixture(input: {
   userId: string;
   displayName: string;
   visibilityScope: VisibilityScope;
   tagline: string;
   favoriteGame: FavoriteGame;
+  themePreference: "LIGHT" | "DARK";
 }) {
   const user = getUser(input.userId);
 
@@ -846,11 +1035,13 @@ export function updateProfileRecordFixture(input: {
   if (existingProfile) {
     existingProfile.tagline = trimmedTagline || null;
     existingProfile.favoriteGame = input.favoriteGame;
+    existingProfile.themePreference = input.themePreference;
   } else {
     devState.profiles.push({
       userId: input.userId,
       tagline: trimmedTagline || null,
       favoriteGame: input.favoriteGame,
+      themePreference: input.themePreference,
       streakDays: 0,
       totalPlayCount: 0,
       lastPlayedAt: null,
@@ -872,6 +1063,10 @@ export function markOnboardingSeenFixture(userId: string) {
   }
 
   return clone(user);
+}
+
+export function getThemePreferenceByUserIdFixture(userId: string) {
+  return getProfile(userId)?.themePreference ?? "LIGHT";
 }
 
 export function resetDevelopmentFixtures() {

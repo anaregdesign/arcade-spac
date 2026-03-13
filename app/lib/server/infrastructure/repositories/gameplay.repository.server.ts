@@ -1,5 +1,18 @@
 import { prisma } from "../prisma.server";
-import { getPlayResultByIdFixture, withDevelopmentFixtures } from "./dev-fixtures.server";
+import {
+  createPlayResultRecordFixture,
+  getPlayResultByIdFixture,
+  getPlayResultByShareTokenFixture,
+  getGameRecordFixture,
+  listGameRecordsFixture,
+  listUsersWithResultsFixture,
+  replaceLeaderboardEntriesFixture,
+  replaceUserGameSummariesFixture,
+  replaceUserOverallSummariesFixture,
+  updatePlayResultStatusFixture,
+  updatePlayResultShareTokenFixture,
+  withDevelopmentFixtures,
+} from "./dev-fixtures.server";
 
 type UpsertGameSummaryInput = {
   userId: string;
@@ -23,9 +36,12 @@ type UpsertOverallSummaryInput = {
 };
 
 export async function getGameByKey(gameKey: string) {
-  return prisma.game.findFirst({
-    where: { key: gameKey.toUpperCase() as "MINESWEEPER" | "SUDOKU" },
-  });
+  return withDevelopmentFixtures(
+    () => prisma.game.findFirst({
+      where: { key: gameKey.toUpperCase() as "MINESWEEPER" | "SUDOKU" },
+    }),
+    () => getGameRecordFixture(gameKey),
+  );
 }
 
 export async function createPlayResultRecord(input: {
@@ -46,20 +62,32 @@ export async function createPlayResultRecord(input: {
   isPersonalBest?: boolean;
   summaryText: string;
   sharePath?: string | null;
+  shareToken?: string | null;
 }) {
   const now = new Date();
 
-  return prisma.playResult.create({
-    data: {
+  return withDevelopmentFixtures(
+    () => prisma.playResult.create({
+      data: {
+        ...input,
+        startedAt: now,
+        finishedAt: now,
+        totalPointsDelta: input.totalPointsDelta ?? 0,
+        rankDelta: input.rankDelta ?? null,
+        isPersonalBest: input.isPersonalBest ?? false,
+        sharePath: input.sharePath ?? null,
+        shareToken: input.shareToken ?? null,
+      },
+    }),
+    () => createPlayResultRecordFixture({
       ...input,
-      startedAt: now,
-      finishedAt: now,
       totalPointsDelta: input.totalPointsDelta ?? 0,
       rankDelta: input.rankDelta ?? null,
       isPersonalBest: input.isPersonalBest ?? false,
       sharePath: input.sharePath ?? null,
-    },
-  });
+      shareToken: input.shareToken ?? null,
+    }),
+  );
 }
 
 export async function updatePlayResultStatus(resultId: string, input: {
@@ -69,42 +97,51 @@ export async function updatePlayResultStatus(resultId: string, input: {
   rankDelta: number | null;
   summaryText: string;
 }) {
-  return prisma.playResult.update({
-    where: { id: resultId },
-    data: {
-      status: input.status,
-      leaderboardEligible: input.leaderboardEligible,
-      totalPointsDelta: input.totalPointsDelta,
-      rankDelta: input.rankDelta,
-      summaryText: input.summaryText,
-      finishedAt: new Date(),
-    },
-  });
+  return withDevelopmentFixtures(
+    () => prisma.playResult.update({
+      where: { id: resultId },
+      data: {
+        status: input.status,
+        leaderboardEligible: input.leaderboardEligible,
+        totalPointsDelta: input.totalPointsDelta,
+        rankDelta: input.rankDelta,
+        summaryText: input.summaryText,
+        finishedAt: new Date(),
+      },
+    }),
+    () => updatePlayResultStatusFixture(resultId, input),
+  );
 }
 
 export async function listUsersWithResults() {
-  return prisma.user.findMany({
-    include: {
-      playResults: {
-        where: {
-          status: {
-            in: ["COMPLETED", "PENDING_SAVE"],
+  return withDevelopmentFixtures(
+    () => prisma.user.findMany({
+      include: {
+        playResults: {
+          where: {
+            status: {
+              in: ["COMPLETED", "PENDING_SAVE"],
+            },
+          },
+          orderBy: {
+            finishedAt: "desc",
           },
         },
-        orderBy: {
-          finishedAt: "desc",
-        },
       },
-    },
-  });
+    }),
+    () => listUsersWithResultsFixture(),
+  );
 }
 
 export async function listGames() {
-  return prisma.game.findMany({
-    orderBy: {
-      name: "asc",
-    },
-  });
+  return withDevelopmentFixtures(
+    () => prisma.game.findMany({
+      orderBy: {
+        name: "asc",
+      },
+    }),
+    () => listGameRecordsFixture(),
+  );
 }
 
 export async function replaceLeaderboardEntries(entries: Array<{
@@ -116,33 +153,48 @@ export async function replaceLeaderboardEntries(entries: Array<{
   deltaToLeader: number | null;
   deltaToNext: number | null;
 }>) {
-  await prisma.leaderboardEntry.deleteMany();
+  return withDevelopmentFixtures(
+    async () => {
+      await prisma.leaderboardEntry.deleteMany();
 
-  if (entries.length > 0) {
-    await prisma.leaderboardEntry.createMany({
-      data: entries,
-    });
-  }
+      if (entries.length > 0) {
+        await prisma.leaderboardEntry.createMany({
+          data: entries,
+        });
+      }
+    },
+    () => replaceLeaderboardEntriesFixture(entries),
+  );
 }
 
 export async function replaceUserGameSummaries(summaries: UpsertGameSummaryInput[]) {
-  await prisma.userGameSummary.deleteMany();
+  return withDevelopmentFixtures(
+    async () => {
+      await prisma.userGameSummary.deleteMany();
 
-  if (summaries.length > 0) {
-    await prisma.userGameSummary.createMany({
-      data: summaries,
-    });
-  }
+      if (summaries.length > 0) {
+        await prisma.userGameSummary.createMany({
+          data: summaries,
+        });
+      }
+    },
+    () => replaceUserGameSummariesFixture(summaries),
+  );
 }
 
 export async function replaceUserOverallSummaries(summaries: UpsertOverallSummaryInput[]) {
-  await prisma.userOverallSummary.deleteMany();
+  return withDevelopmentFixtures(
+    async () => {
+      await prisma.userOverallSummary.deleteMany();
 
-  if (summaries.length > 0) {
-    await prisma.userOverallSummary.createMany({
-      data: summaries,
-    });
-  }
+      if (summaries.length > 0) {
+        await prisma.userOverallSummary.createMany({
+          data: summaries,
+        });
+      }
+    },
+    () => replaceUserOverallSummariesFixture(summaries),
+  );
 }
 
 export async function getPlayResultById(resultId: string) {
@@ -167,6 +219,44 @@ export async function getPlayResultById(resultId: string) {
       },
     }),
     () => getPlayResultByIdFixture(resultId),
+  );
+}
+
+export async function getPlayResultByShareToken(shareToken: string) {
+  return withDevelopmentFixtures(
+    () => prisma.playResult.findFirst({
+      where: { shareToken },
+      include: {
+        game: true,
+        user: {
+          include: {
+            profile: true,
+            playResults: {
+              include: {
+                game: true,
+              },
+              orderBy: {
+                startedAt: "desc",
+              },
+            },
+          },
+        },
+      },
+    }),
+    () => getPlayResultByShareTokenFixture(shareToken),
+  );
+}
+
+export async function updatePlayResultShareToken(resultId: string, shareToken: string) {
+  return withDevelopmentFixtures(
+    () => prisma.playResult.update({
+      where: { id: resultId },
+      data: {
+        shareToken,
+        sharePath: `/results/shared/${shareToken}`,
+      },
+    }),
+    () => updatePlayResultShareTokenFixture(resultId, shareToken),
   );
 }
 

@@ -5,9 +5,25 @@ import { isEntraAuthEnabled, getEntraAuthStartHref } from "../lib/server/infrast
 import { createUserSession, getCurrentUserId, sanitizeReturnToPath } from "../lib/server/infrastructure/auth/session.server";
 import { getLoginOptions } from "../lib/server/usecase/get-login-options.server";
 
+function getLoginErrorMessage(errorCode: string | null) {
+  switch (errorCode) {
+    case "session_expired_result_save":
+      return "Your session ended while Arcade was saving a clear. Sign in again to recover the pending result and retry publishing it.";
+    case "auth_state_mismatch":
+      return "Sign-in state could not be verified. Start the Microsoft Entra sign-in flow again.";
+    case "entra_access_denied":
+      return "Microsoft Entra sign-in was canceled or denied before Arcade could finish the callback.";
+    case "entra_exchange_failed":
+      return "Arcade could not finish the Microsoft Entra callback. Retry sign-in, and if it repeats, check the app registration and callback URL.";
+    default:
+      return null;
+  }
+}
+
 export async function loader({ request }: { request: Request }) {
   const url = new URL(request.url);
   const returnTo = sanitizeReturnToPath(url.searchParams.get("returnTo")) ?? "/home";
+  const errorMessage = getLoginErrorMessage(url.searchParams.get("error"));
   const userId = await getCurrentUserId(request);
 
   if (userId) {
@@ -18,6 +34,7 @@ export async function loader({ request }: { request: Request }) {
 
   return {
     authMode,
+    errorMessage,
     entraSignInHref: authMode === "entra" ? getEntraAuthStartHref(returnTo) : null,
     returnTo,
     users: authMode === "local" ? await getLoginOptions() : [],
@@ -37,7 +54,7 @@ export async function action({ request }: { request: Request }) {
     throw new Response("User selection is required", { status: 400 });
   }
 
-  return createUserSession(userId, sanitizeReturnToPath(typeof redirectTo === "string" ? redirectTo : null) ?? "/home");
+  return createUserSession(request, userId, sanitizeReturnToPath(typeof redirectTo === "string" ? redirectTo : null) ?? "/home");
 }
 
 export default function Login() {

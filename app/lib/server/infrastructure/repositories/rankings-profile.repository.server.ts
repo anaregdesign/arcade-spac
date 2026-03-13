@@ -1,5 +1,6 @@
 import { prisma } from "../prisma.server";
 import {
+  getThemePreferenceByUserIdFixture,
   getProfileRecordFixture,
   listLeaderboardEntriesFixture,
   listRankingGamesFixture,
@@ -28,6 +29,9 @@ export async function listLeaderboardEntries(periodType: RankingPeriod, scope: R
     () => prisma.leaderboardEntry.findMany({
       where: {
         periodType,
+        user: {
+          visibilityScope: "TENANT_ONLY",
+        },
         ...(scope === "overall" ? { gameId: null } : { game: { key: scope.toUpperCase() as "MINESWEEPER" | "SUDOKU" } }),
       },
       include: {
@@ -84,6 +88,7 @@ export async function updateProfileRecord(input: {
   visibilityScope: VisibilityScope;
   tagline: string;
   favoriteGame: FavoriteGame;
+  themePreference: "LIGHT" | "DARK";
 }) {
   const trimmedDisplayName = input.displayName.trim();
   const trimmedTagline = input.tagline.trim();
@@ -99,10 +104,12 @@ export async function updateProfileRecord(input: {
             create: {
               tagline: trimmedTagline,
               favoriteGame: input.favoriteGame,
+              themePreference: input.themePreference,
             },
             update: {
               tagline: trimmedTagline,
               favoriteGame: input.favoriteGame,
+              themePreference: input.themePreference,
             },
           },
         },
@@ -113,5 +120,18 @@ export async function updateProfileRecord(input: {
       displayName: trimmedDisplayName,
       tagline: trimmedTagline,
     }),
+  );
+}
+
+export async function getThemePreferenceByUserId(userId: string) {
+  return withDevelopmentFixtures(
+    async () => {
+      const profile = await prisma.userProfile.findUnique({
+        where: { userId },
+        select: { themePreference: true },
+      });
+      return profile?.themePreference ?? "LIGHT";
+    },
+    () => getThemePreferenceByUserIdFixture(userId),
   );
 }

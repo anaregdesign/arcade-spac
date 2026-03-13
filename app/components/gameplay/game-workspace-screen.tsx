@@ -12,6 +12,14 @@ type GameWorkspaceScreenProps = {
     shortDescription: string;
     rulesSummary: string;
     accentColor: string;
+    standing: {
+      bestCompetitivePoints: number;
+      currentRank: number | null;
+      personalBestMetric: number | null;
+      playCount: number;
+      seasonPoints: number;
+      seasonRank: number | null;
+    };
   };
 };
 
@@ -55,6 +63,25 @@ export function GameWorkspaceScreen({ game }: GameWorkspaceScreenProps) {
   function formatDuration(totalSeconds: number) {
     return `${Math.floor(totalSeconds / 60)}:${(totalSeconds % 60).toString().padStart(2, "0")}`;
   }
+
+  const livePrimaryMetric = primaryMetric ? Number(primaryMetric) : null;
+  const paceDelta = livePrimaryMetric !== null && game.standing.personalBestMetric !== null
+    ? livePrimaryMetric - game.standing.personalBestMetric
+    : null;
+  const paceLabel = game.standing.personalBestMetric === null
+    ? "No ranked best yet"
+    : paceDelta === null
+      ? `Best clear ${formatDuration(game.standing.personalBestMetric)}`
+      : paceDelta <= 0
+        ? `${formatDuration(Math.abs(paceDelta))} ahead of best`
+        : `${formatDuration(paceDelta)} behind best`;
+  const paceNote = game.standing.personalBestMetric === null
+    ? "Your next confirmed clear will become the first ranked best for this board."
+    : paceDelta === null
+      ? "Start a run to compare the live timer against your best clear."
+      : paceDelta <= 0
+        ? "Staying clean keeps this run on a personal-best pace."
+        : "A reset may be faster if you are specifically chasing a better time.";
 
   return (
     <div className="dashboard-stack">
@@ -219,6 +246,24 @@ export function GameWorkspaceScreen({ game }: GameWorkspaceScreenProps) {
         </details>
       </section>
 
+      <section className="summary-grid result-impact-grid" aria-label="Current target">
+        <article className="summary-card warm-card">
+          <p className="eyebrow">🎯 Self best</p>
+          <h2 className="section-title">{paceLabel}</h2>
+          <p>{paceNote}</p>
+        </article>
+        <article className="summary-card cool-card">
+          <p className="eyebrow">🏁 Board rank</p>
+          <h2 className="section-title">{game.standing.currentRank ? `#${game.standing.currentRank}` : "Unranked"}</h2>
+          <p>{game.standing.bestCompetitivePoints > 0 ? `${game.standing.bestCompetitivePoints} pts best score` : "Complete a confirmed clear to enter the board."}</p>
+        </article>
+        <article className="summary-card neutral-card">
+          <p className="eyebrow">➕ Season total</p>
+          <h2 className="section-title">{game.standing.seasonPoints} pts</h2>
+          <p>{game.standing.seasonRank ? `Overall #${game.standing.seasonRank}` : "Overall rank unlocks after enough confirmed scores."}</p>
+        </article>
+      </section>
+
       {isMinesweeper ? (
         <section className="feature-card workspace-card board-card">
           <div className="section-heading">
@@ -370,17 +415,8 @@ export function GameWorkspaceScreen({ game }: GameWorkspaceScreenProps) {
               </button>
             </Form>
           )}
-          <Form method="post" onSubmit={() => workspace.finishRun()}>
-            <input type="hidden" name="intent" value="completePending" />
-            <input type="hidden" name="difficulty" value={workspace.difficulty} />
-            {primaryMetric ? <input type="hidden" name="primaryMetric" value={primaryMetric} /> : null}
-            {mistakeCount ? <input type="hidden" name="mistakeCount" value={mistakeCount} /> : null}
-            {hintCount ? <input type="hidden" name="hintCount" value={hintCount} /> : null}
-            <button className="action-link action-link-secondary" disabled={!canSaveResult} type="submit">
-              Save and retry later
-            </button>
-          </Form>
         </div>
+        <p className="workspace-note">If save fails or the session expires, Arcade now preserves the clear and routes you to a pending result recovery screen instead of asking you to choose that path manually.</p>
       </section>
 
       {workspace.showLeaveConfirm ? (

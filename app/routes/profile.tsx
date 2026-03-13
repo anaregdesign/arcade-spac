@@ -2,6 +2,7 @@ import { redirect, useLoaderData } from "react-router";
 
 import { AppShell } from "../components/app-shell";
 import { ProfileScreen } from "../components/profile-screen";
+import { buildSharedHelpSections } from "../components/shared/help-content";
 import { requireCurrentUserId } from "../lib/server/infrastructure/auth/session.server";
 import { updateProfileRecord } from "../lib/server/infrastructure/repositories/rankings-profile.repository.server";
 import { getHomeDashboard } from "../lib/server/usecase/get-home-dashboard.server";
@@ -24,6 +25,7 @@ export async function action({ request }: { request: Request }) {
   const visibilityScope = formData.get("visibilityScope");
   const tagline = formData.get("tagline");
   const favoriteGame = formData.get("favoriteGame");
+  const themePreference = formData.get("themePreference");
 
   if (typeof displayName !== "string" || !displayName.trim()) {
     throw new Response("Display name is required", { status: 400 });
@@ -33,12 +35,17 @@ export async function action({ request }: { request: Request }) {
     throw new Response("Visibility scope is invalid", { status: 400 });
   }
 
+  if (themePreference !== "LIGHT" && themePreference !== "DARK") {
+    throw new Response("Theme preference is invalid", { status: 400 });
+  }
+
   await updateProfileRecord({
     userId,
     displayName,
     visibilityScope,
     tagline: typeof tagline === "string" ? tagline : "",
     favoriteGame: favoriteGame === "MINESWEEPER" || favoriteGame === "SUDOKU" ? favoriteGame : null,
+    themePreference,
   });
 
   return redirect("/profile");
@@ -50,6 +57,18 @@ export default function Profile() {
   return (
     <AppShell
       currentPath="profile"
+      help={{
+        intro: "Profile controls how your name, visibility, and theme appear across rankings and result sharing.",
+        sections: buildSharedHelpSections([
+          {
+            eyebrow: "5. Profile controls",
+            title: "Visibility and theme apply across the app",
+            body: "Private visibility removes you from shared leaderboards and disables Teams share. Theme preference is saved here and reused on the next sign-in.",
+          },
+        ]),
+        title: "Profile help",
+        triggerLabel: "Help",
+      }}
       titleEmoji="🪪"
       sectionLabel="Player card"
       title="Profile"

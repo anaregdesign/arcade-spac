@@ -3,6 +3,7 @@ import { Form, Link } from "react-router";
 type ResultScreenProps = {
   result: {
     id: string;
+    viewerMode: "owner" | "shared";
     status: string;
     statusLabel: string;
     difficulty: string;
@@ -34,7 +35,9 @@ type ResultScreenProps = {
     gameName: string;
     shareUrl: string;
     shareText: string;
+    shareAvailabilityNote: string;
     canShare: boolean;
+    rankingsHref: string;
   };
 };
 
@@ -107,15 +110,20 @@ export function ResultScreen({ result }: ResultScreenProps) {
           <Link className="action-link action-link-primary" to={`/games/${result.gameKey}`}>
             Replay {result.gameName}
           </Link>
-          {result.canShare ? (
-            <a className="action-link action-link-secondary" href={teamsShareHref} target="_blank" rel="noreferrer">
-              Microsoft Teams で共有
-            </a>
-          ) : (
-            <span className="action-link action-link-secondary action-link-disabled" aria-disabled="true">
-              Microsoft Teams で共有
-            </span>
-          )}
+          <Link className="action-link action-link-secondary" to={result.rankingsHref}>
+            Open {result.gameName} rankings
+          </Link>
+          {result.viewerMode === "owner"
+            ? result.canShare ? (
+              <a className="action-link action-link-secondary" href={teamsShareHref} target="_blank" rel="noreferrer">
+                Microsoft Teams で共有
+              </a>
+            ) : (
+              <span className="action-link action-link-secondary action-link-disabled" aria-disabled="true">
+                Microsoft Teams で共有
+              </span>
+            )
+            : null}
           {alternateGame ? (
             <Link className="action-link action-link-secondary" to={alternateGame.href}>
               {alternateGame.label}
@@ -131,7 +139,7 @@ export function ResultScreen({ result }: ResultScreenProps) {
             <dl className="stat-grid compact-stat-grid">
               <div>
                 <dt>Share</dt>
-                <dd>{result.canShare ? "Ready" : "Locked"}</dd>
+                <dd>{result.viewerMode === "owner" ? result.canShare ? "Ready" : "Locked" : "Owner only"}</dd>
               </div>
               <div>
                 <dt>Status</dt>
@@ -139,18 +147,19 @@ export function ResultScreen({ result }: ResultScreenProps) {
               </div>
               <div>
                 <dt>Result link</dt>
-                <dd>Ready for Teams share</dd>
+                <dd>{result.viewerMode === "owner" && result.canShare ? "Ready for Teams share" : "Visible inside app only"}</dd>
               </div>
               <div>
                 <dt>Best badge</dt>
                 <dd>{result.selfBestBadge}</dd>
               </div>
             </dl>
+            <p className="compact-copy">{result.shareAvailabilityNote}</p>
           </div>
         </details>
       </section>
 
-      {result.status === "PENDING_SAVE" ? (
+      {result.status === "PENDING_SAVE" && result.viewerMode === "owner" ? (
         <section className="feature-card workspace-card">
           <p className="eyebrow">⏳ Pending save</p>
           <h2 className="section-title">Retry save</h2>

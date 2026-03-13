@@ -20,6 +20,7 @@ const AUTH_STATE_KEY = "authState";
 const AUTH_NONCE_KEY = "authNonce";
 const AUTH_CODE_VERIFIER_KEY = "authCodeVerifier";
 const AUTH_RETURN_TO_KEY = "authReturnTo";
+const PENDING_RESULT_KEY = "pendingResult";
 
 export function sanitizeReturnToPath(returnTo: string | null | undefined) {
   if (!returnTo || !returnTo.startsWith("/") || returnTo.startsWith("//")) {
@@ -34,6 +35,20 @@ export type PendingAuthFlow = {
   nonce: string;
   codeVerifier: string;
   returnTo: string;
+};
+
+export type PendingResultDraft = {
+  id: string;
+  actualMetrics: {
+    hintCount?: number;
+    mistakeCount?: number;
+    primaryMetric: number;
+  };
+  difficulty: "EASY" | "NORMAL" | "HARD" | "EXPERT";
+  gameKey: string;
+  outcome: "clean" | "steady";
+  ownerUserId: string | null;
+  recoveryReason: "save_failed" | "session_expired";
 };
 
 export async function getSession(request: Request) {
@@ -98,8 +113,55 @@ export function clearPendingAuthFlow(session: Awaited<ReturnType<typeof getSessi
   session.unset(AUTH_RETURN_TO_KEY);
 }
 
-export async function createUserSession(userId: string, redirectTo = "/home") {
-  const session = await sessionStorage.getSession();
+export function getPendingResultDraft(session: Awaited<ReturnType<typeof getSession>>): PendingResultDraft | null {
+  const draft = session.get(PENDING_RESULT_KEY);
+
+  if (!draft || typeof draft !== "object") {
+    return null;
+  }
+
+  const candidate = draft as Partial<PendingResultDraft>;
+  const actualMetrics = candidate.actualMetrics;
+
+  if (
+    typeof candidate.id !== "string"
+    || typeof candidate.gameKey !== "string"
+    || (candidate.difficulty !== "EASY" && candidate.difficulty !== "NORMAL" && candidate.difficulty !== "HARD" && candidate.difficulty !== "EXPERT")
+    || (candidate.outcome !== "clean" && candidate.outcome !== "steady")
+    || (candidate.ownerUserId !== null && typeof candidate.ownerUserId !== "string" && candidate.ownerUserId !== undefined)
+    || (candidate.recoveryReason !== "save_failed" && candidate.recoveryReason !== "session_expired")
+    || !actualMetrics
+    || typeof actualMetrics !== "object"
+    || typeof actualMetrics.primaryMetric !== "number"
+  ) {
+    return null;
+  }
+
+  return {
+    id: candidate.id,
+    actualMetrics: {
+      primaryMetric: actualMetrics.primaryMetric,
+      hintCount: typeof actualMetrics.hintCount === "number" ? actualMetrics.hintCount : undefined,
+      mistakeCount: typeof actualMetrics.mistakeCount === "number" ? actualMetrics.mistakeCount : undefined,
+    },
+    difficulty: candidate.difficulty,
+    gameKey: candidate.gameKey,
+    outcome: candidate.outcome,
+    ownerUserId: candidate.ownerUserId ?? null,
+    recoveryReason: candidate.recoveryReason,
+  };
+}
+
+export function setPendingResultDraft(session: Awaited<ReturnType<typeof getSession>>, draft: PendingResultDraft) {
+  session.set(PENDING_RESULT_KEY, draft);
+}
+
+export function clearPendingResultDraft(session: Awaited<ReturnType<typeof getSession>>) {
+  session.unset(PENDING_RESULT_KEY);
+}
+
+export async function createUserSession(request: Request, userId: string, redirectTo = "/home") {
+  const session = await getSession(request);
   setCurrentUserId(session, userId);
 
   return redirect(redirectTo, {

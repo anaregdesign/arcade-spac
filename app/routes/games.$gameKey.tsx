@@ -1,9 +1,12 @@
+import { randomUUID } from "node:crypto";
+
 import { redirect, useLoaderData } from "react-router";
 
 import type { Route } from "./+types/games.$gameKey";
 import { AppShell } from "../components/app-shell";
 import { GameWorkspaceScreen } from "../components/gameplay/game-workspace-screen";
-import { requireCurrentUserId } from "../lib/server/infrastructure/auth/session.server";
+import { buildSharedHelpSections } from "../components/shared/help-content";
+import { commitSession, getCurrentUserId, getSession, requireCurrentUserId, setPendingResultDraft } from "../lib/server/infrastructure/auth/session.server";
 import { getHomeDashboard, getGameWorkspace } from "../lib/server/usecase/get-home-dashboard.server";
 import { recordAbandonedRun, recordGameplayResult } from "../lib/server/usecase/gameplay/record-gameplay-result.server";
 
@@ -11,12 +14,27 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   const userId = await requireCurrentUserId(request);
   const dashboard = await getHomeDashboard(userId);
   const game = await getGameWorkspace(params.gameKey);
+  const gameSummary = dashboard.games.find((entry) => entry.key === game.key);
 
-  return { dashboard, game };
+  return {
+    dashboard,
+    game: {
+      ...game,
+      standing: {
+        bestCompetitivePoints: gameSummary?.bestCompetitivePoints ?? 0,
+        currentRank: gameSummary?.currentRank ?? null,
+        personalBestMetric: gameSummary?.personalBestMetric ?? null,
+        playCount: gameSummary?.playCount ?? 0,
+        seasonPoints: dashboard.summaries.seasonPoints,
+        seasonRank: dashboard.summaries.seasonRank,
+      },
+    },
+  };
 }
 
 export async function action({ request, params }: Route.ActionArgs) {
-  const userId = await requireCurrentUserId(request);
+  const session = await getSession(request);
+  const userId = await getCurrentUserId(request);
   const formData = await request.formData();
   const intent = formData.get("intent");
   const difficulty = formData.get("difficulty");
@@ -32,25 +50,77 @@ export async function action({ request, params }: Route.ActionArgs) {
     const primaryMetric = typeof primaryMetricInput === "string" && primaryMetricInput ? Number(primaryMetricInput) : undefined;
     const mistakeCount = typeof mistakeCountInput === "string" && mistakeCountInput ? Number(mistakeCountInput) : undefined;
     const hintCount = typeof hintCountInput === "string" && hintCountInput ? Number(hintCountInput) : undefined;
+    const actualMetrics = primaryMetric && Number.isFinite(primaryMetric)
+      ? {
+          primaryMetric,
+          mistakeCount: mistakeCount !== undefined && Number.isFinite(mistakeCount) ? mistakeCount : undefined,
+          hintCount: hintCount !== undefined && Number.isFinite(hintCount) ? hintCount : undefined,
+        }
+      : undefined;
+    const pendingDraftId = `pending-${randomUUID()}`;
 
-    const resultId = await recordGameplayResult({
-      userId,
-      gameKey: params.gameKey,
-      difficulty: difficulty as "EASY" | "NORMAL" | "HARD" | "EXPERT",
-      outcome: intent === "completeClean" ? "clean" : intent === "completeSteady" ? "steady" : "pending",
-      actualMetrics: primaryMetric && Number.isFinite(primaryMetric)
-        ? {
-            primaryMetric,
-            mistakeCount: mistakeCount !== undefined && Number.isFinite(mistakeCount) ? mistakeCount : undefined,
-            hintCount: hintCount !== undefined && Number.isFinite(hintCount) ? hintCount : undefined,
-          }
-        : undefined,
-    });
+    if (!actualMetrics) {
+      throw new Response("Primary metric is required", { status: 400 });
+    }
 
-    return redirect(`/results/${resultId}`);
+    if (!userId) {
+      setPendingResultDraft(session, {
+        id: pendingDraftId,
+        actualMetrics,
+        difficulty: difficulty as "EASY" | "NORMAL" | "HARD" | "EXPERT",
+        gameKey: params.gameKey,
+        outcome: intent === "completeClean" ? "clean" : "steady",
+        ownerUserId: null,
+        recoveryReason: "session_expired",
+      });
+
+      return redirect(`/login?${new URLSearchParams({
+        error: "session_expired_result_save",
+        returnTo: `/results/pending/${pendingDraftId}`,
+      }).toString()}`, {
+        headers: {
+          "Set-Cookie": await commitSession(session),
+        },
+      });
+    }
+
+    try {
+      const resultId = await recordGameplayResult({
+        userId,
+        gameKey: params.gameKey,
+        difficulty: difficulty as "EASY" | "NORMAL" | "HARD" | "EXPERT",
+        outcome: intent === "completeClean" ? "clean" : intent === "completeSteady" ? "steady" : "pending",
+        actualMetrics,
+      });
+
+      return redirect(`/results/${resultId}`);
+    } catch {
+      setPendingResultDraft(session, {
+        id: pendingDraftId,
+        actualMetrics,
+        difficulty: difficulty as "EASY" | "NORMAL" | "HARD" | "EXPERT",
+        gameKey: params.gameKey,
+        outcome: intent === "completeClean" ? "clean" : "steady",
+        ownerUserId: userId,
+        recoveryReason: "save_failed",
+      });
+
+      return redirect(`/results/pending/${pendingDraftId}`, {
+        headers: {
+          "Set-Cookie": await commitSession(session),
+        },
+      });
+    }
   }
 
   if (intent === "abandon") {
+    if (!userId) {
+      const redirectTo = formData.get("redirectTo");
+      return redirect(`/login?${new URLSearchParams({
+        returnTo: typeof redirectTo === "string" ? redirectTo : "/home",
+      }).toString()}`);
+    }
+
     const redirectTo = formData.get("redirectTo");
 
     await recordAbandonedRun({
@@ -71,6 +141,18 @@ export default function GameWorkspace() {
   return (
     <AppShell
       currentPath="games"
+      help={{
+        intro: "The game screen keeps the live board primary, while the support panel tells you whether this run is ahead of your own best and how it could affect rankings.",
+        sections: buildSharedHelpSections([
+          {
+            eyebrow: "5. Live target",
+            title: "Use self-best and rank context while the board stays active",
+            body: "The decision-support block shows your current best pace, current board rank, and overall total so you can decide whether to push for a faster clear or reset quickly.",
+          },
+        ]),
+        title: "Game help",
+        triggerLabel: "Help",
+      }}
       titleEmoji="🕹️"
       sectionLabel="Game room"
       title={`${game.name}`}

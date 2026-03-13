@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Form, Link } from "react-router";
 
 type ProfileScreenProps = {
@@ -6,6 +7,7 @@ type ProfileScreenProps = {
     visibilityScope: "TENANT_ONLY" | "PRIVATE";
     tagline: string;
     favoriteGame: string;
+    themePreference: "LIGHT" | "DARK";
     sharePreviewName: string;
     visibilitySummary: string;
     teamsShareSummary: string;
@@ -80,6 +82,19 @@ function buildTrendPath(points: ProfileScreenProps["trend"]) {
 export function ProfileScreen({ profile, activity, overall, games, breakdown, growthGuidance, trend }: ProfileScreenProps) {
   const trendPath = buildTrendPath(trend);
   const recentTrend = trend.slice(-3).reverse();
+  const [themePreference, setThemePreference] = useState<"LIGHT" | "DARK">(profile.themePreference);
+
+  useEffect(() => {
+    setThemePreference(profile.themePreference);
+  }, [profile.themePreference]);
+
+  useEffect(() => {
+    if (typeof document === "undefined") {
+      return;
+    }
+
+    document.body.dataset.theme = themePreference === "DARK" ? "dark" : "light";
+  }, [themePreference]);
 
   return (
     <div className="dashboard-stack">
@@ -135,6 +150,18 @@ export function ProfileScreen({ profile, activity, overall, games, breakdown, gr
                       {game.name}
                     </option>
                   ))}
+                </select>
+              </label>
+              <label className="field-block">
+                <span className="field-label">Theme</span>
+                <select
+                  className="field-select"
+                  name="themePreference"
+                  onChange={(event) => setThemePreference(event.currentTarget.value as "LIGHT" | "DARK")}
+                  value={themePreference}
+                >
+                  <option value="LIGHT">Light</option>
+                  <option value="DARK">Dark</option>
                 </select>
               </label>
               <div className="hero-actions profile-form-actions profile-form-wide">
@@ -244,7 +271,7 @@ export function ProfileScreen({ profile, activity, overall, games, breakdown, gr
           {trendPath ? (
             <div className="trend-chart-shell">
               <svg viewBox="0 0 100 100" className="trend-chart" preserveAspectRatio="none" aria-label="Recent score trend">
-                <path d={trendPath} fill="none" stroke="#173043" strokeWidth="3" vectorEffect="non-scaling-stroke" />
+                <path d={trendPath} fill="none" stroke="var(--surface-strong)" strokeWidth="3" vectorEffect="non-scaling-stroke" />
               </svg>
             </div>
           ) : (

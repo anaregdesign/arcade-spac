@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { Form, Link } from "react-router";
+import { Link } from "react-router";
 
 function getGameEmoji(gameKey: string) {
   switch (gameKey) {
@@ -13,38 +12,22 @@ function getGameEmoji(gameKey: string) {
 }
 
 type HomeDashboardProps = {
-  user: {
-    displayName: string;
-    avatarUrl?: string | null;
-    tagline: string;
-    streakDays: number;
-    totalPlayCount: number;
-    onboardingSeenAt: string | null;
-  };
-  onboarding: {
-    showGuide: boolean;
-  };
-  summaries: {
-    seasonPoints: number;
-    seasonRank: number | null;
-    lifetimePoints: number;
-    trendDelta: number;
-    recentPlaySummary: string;
-  };
   games: Array<{
     key: string;
-    name: string;
-    shortDescription: string;
-    accentColor: string;
-    currentRank: number | null;
-    bestCompetitivePoints: number;
-    personalBestMetric: number | null;
-    playCount: number;
-    completedCount: number;
-    recommendationText: string | null;
     metricLabel: string;
     metricValue: string;
+    name: string;
+    playCount: number;
+    recommendationText: string | null;
+    shortDescription: string;
+    currentRank: number | null;
   }>;
+  hasMore: boolean;
+  highlightedGame: {
+    key: string;
+    name: string;
+  } | null;
+  matchCount: number;
   recentResults: Array<{
     id: string;
     gameName: string;
@@ -52,202 +35,177 @@ type HomeDashboardProps = {
     summaryText: string;
     resultPath: string;
     totalPointsDelta: number;
-    startedAt: string;
   }>;
+  search: string;
+  showMore: () => void;
+  setSearch: (nextValue: string) => void;
+  setSort: (nextValue: string) => void;
+  setTag: (nextValue: string) => void;
+  sort: string;
+  sortOptions: Array<{
+    label: string;
+    value: string;
+  }>;
+  summaries: {
+    seasonPoints: number;
+    seasonRank: number | null;
+    trendDelta: number;
+  };
+  tag: string;
+  tagOptions: Array<{
+    label: string;
+    value: string;
+  }>;
+  user: {
+    streakDays: number;
+    totalPlayCount: number;
+  };
 };
 
-export function HomeDashboard({ user, onboarding, summaries, games, recentResults }: HomeDashboardProps) {
-  const featuredGames = games.slice(0, 2);
+export function HomeDashboard({
+  games,
+  hasMore,
+  highlightedGame,
+  matchCount,
+  recentResults,
+  search,
+  showMore,
+  setSearch,
+  setSort,
+  setTag,
+  sort,
+  sortOptions,
+  summaries,
+  tag,
+  tagOptions,
+  user,
+}: HomeDashboardProps) {
   const latestResult = recentResults[0] ?? null;
-  const remainingResults = recentResults.slice(1, 5);
-  const shouldShowOnboarding = onboarding.showGuide;
-  const primaryGame = featuredGames[0] ?? games[0] ?? null;
-  const secondaryGame = featuredGames[1] ?? games[1] ?? null;
-  const [isHelpOpen, setHelpOpen] = useState(shouldShowOnboarding);
 
   return (
-    <div className="dashboard-stack">
-      <section className="feature-card">
+    <div className="dashboard-stack home-hub-stack">
+      <section className="feature-card home-hub-card">
         <div className="section-heading">
           <div>
-            <p className="eyebrow">🧭 Help</p>
-            <h2 className="section-title">{shouldShowOnboarding ? "First run guide" : "Help and scoring"}</h2>
+            <p className="eyebrow">🎯 Game selection</p>
+            <h2 className="section-title">Choose your next board</h2>
           </div>
-          <button className="action-link action-link-secondary" type="button" onClick={() => setHelpOpen(true)}>
-            {shouldShowOnboarding ? "Open guide" : "Open help"}
-          </button>
-        </div>
-        <p className="compact-copy">
-          {shouldShowOnboarding
-            ? "Your first sign-in now opens a focused guide instead of keeping the explanation inline on the page."
-            : "Reopen the guide any time to review how game choice, total points, rankings, and saved results fit together."}
-        </p>
-        <div className="hero-actions compact-actions">
-          {primaryGame ? (
-            <Link className="action-link action-link-primary" to={`/games/${primaryGame.key}`}>
-              Start with {primaryGame.name}
-            </Link>
-          ) : null}
-          {secondaryGame ? (
-            <Link className="action-link action-link-secondary" to={`/games/${secondaryGame.key}`}>
-              Try {secondaryGame.name}
+          {highlightedGame ? (
+            <Link className="action-link action-link-primary" to={`/games/${highlightedGame.key}`}>
+              Start with {highlightedGame.name}
             </Link>
           ) : null}
         </div>
-        <div className="help-inline-grid compact-copy">
-          <p><strong>Pick a lane:</strong> Start with the game that gives the quickest ranked result, or switch games to grow your total faster.</p>
-          <p><strong>Total points:</strong> Arcade adds your strongest confirmed score from each game, so broad improvement beats staying in one lane.</p>
+        <p className="compact-copy">Search or filter first, then jump straight into the next game. Rankings and profile stay available from the shared header when you need them.</p>
+        <div className="home-hub-toolbar" aria-label="Game discovery controls">
+          <label className="field-block home-hub-search">
+            <span className="field-label">Search</span>
+            <input
+              className="field-input"
+              onChange={(event) => setSearch(event.currentTarget.value)}
+              placeholder="Find a game, style, or recommendation"
+              value={search}
+            />
+          </label>
+          <label className="field-block home-hub-filter">
+            <span className="field-label">Filter</span>
+            <select className="field-select" onChange={(event) => setTag(event.currentTarget.value)} value={tag}>
+              {tagOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="field-block home-hub-filter">
+            <span className="field-label">Sort</span>
+            <select className="field-select" onChange={(event) => setSort(event.currentTarget.value)} value={sort}>
+              {sortOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </label>
         </div>
-      </section>
-
-      {isHelpOpen ? (
-        <section className="help-overlay" aria-label="First-use help">
-          <div className="help-dialog feature-card" role="dialog" aria-modal="true" aria-labelledby="home-help-title">
-            <div className="section-heading">
-              <div>
-                <p className="eyebrow">🧭 First-use help</p>
-                <h2 className="section-title" id="home-help-title">Start, score, and switch with confidence</h2>
+        <div className="home-hub-meta-row">
+          <span className="status-badge status-badge-neutral">{matchCount} games</span>
+          <span className="status-badge status-badge-neutral">{games.filter((game) => game.playCount === 0).length} visible unplayed</span>
+          <span className="status-badge status-badge-neutral">{games.filter((game) => game.currentRank).length} visible ranked</span>
+        </div>
+        <div className="game-grid home-game-grid home-primary-grid">
+          {games.map((game) => (
+            <article key={game.key} className="game-card home-game-card">
+              <div className="game-card-top">
+                <span className="game-icon-chip" aria-hidden="true">{getGameEmoji(game.key)}</span>
+                <span className="status-badge status-badge-neutral">
+                  {game.currentRank ? `Rank #${game.currentRank}` : game.playCount > 0 ? "Played" : "New"}
+                </span>
               </div>
-              {!shouldShowOnboarding ? (
-                <button className="action-link action-link-secondary" type="button" onClick={() => setHelpOpen(false)}>
-                  Close
-                </button>
-              ) : null}
-            </div>
-            <div className="help-grid">
-              <article className="help-panel">
-                <p className="eyebrow">1. Choose a game</p>
-                <h3 className="card-title">Start from the board that matches your goal</h3>
-                <p className="compact-copy">Minesweeper is the quickest path to a first ranked clear. Sudoku gives you a slower run with hints when you want a steadier start.</p>
-              </article>
-              <article className="help-panel">
-                <p className="eyebrow">2. Read total points</p>
-                <h3 className="card-title">Overall points reward cross-game strength</h3>
-                <p className="compact-copy">Your total grows from the best confirmed score in each game. A better result in a second game usually moves the overall board more than repeating a score you already own.</p>
-              </article>
-              <article className="help-panel">
-                <p className="eyebrow">3. Read rankings</p>
-                <h3 className="card-title">Use overall and game boards together</h3>
-                <p className="compact-copy">Overall rankings show your cross-game standing. Game boards show where a single stronger clear could cut the gap to the next rival.</p>
-              </article>
-              <article className="help-panel">
-                <p className="eyebrow">4. Know run states</p>
-                <h3 className="card-title">Confirmed clears count, pending saves wait</h3>
-                <p className="compact-copy">Leaving a live board records an abandoned run. Pending saves stay visible but do not change rankings or total points until the retry succeeds.</p>
-              </article>
-            </div>
-            <div className="hero-actions">
-              {primaryGame ? (
-                <Link className="action-link action-link-primary" to={`/games/${primaryGame.key}`}>
-                  Start with {primaryGame.name}
+              <div>
+                <h3 className="card-title">{game.name}</h3>
+                <p className="compact-copy">{game.shortDescription}</p>
+              </div>
+              <div className="home-card-meta">
+                <span>{game.metricLabel}: {game.metricValue}</span>
+                <span>{game.playCount > 0 ? `${game.playCount} runs` : "First run ready"}</span>
+              </div>
+              <div className="game-card-footer home-card-footer">
+                <p className="recommendation-copy">{game.recommendationText ?? "Open and start immediately."}</p>
+                <Link className="action-link action-link-primary" to={`/games/${game.key}`}>
+                  Play {game.name}
                 </Link>
-              ) : null}
-              {secondaryGame ? (
-                <Link className="action-link action-link-secondary" to={`/games/${secondaryGame.key}`}>
-                  Try {secondaryGame.name}
-                </Link>
-              ) : null}
-              <Link className="action-link action-link-secondary" to="/rankings">
-                Open rankings
-              </Link>
-              {shouldShowOnboarding ? (
-                <Form method="post">
-                  <input type="hidden" name="intent" value="dismissOnboarding" />
-                  <button className="action-link action-link-secondary" type="submit">
-                    Got it
-                  </button>
-                </Form>
-              ) : (
-                <button className="action-link action-link-secondary" type="button" onClick={() => setHelpOpen(false)}>
-                  Back to home
-                </button>
-              )}
-            </div>
+              </div>
+            </article>
+          ))}
+        </div>
+        {games.length === 0 ? (
+          <article className="latest-result-card home-empty-state">
+            <strong>No games match this search</strong>
+            <p className="compact-copy">Try a broader search or switch the filter so the game grid can come back into view.</p>
+          </article>
+        ) : null}
+        {hasMore ? (
+          <div className="hero-actions compact-actions">
+            <button className="action-link action-link-secondary" type="button" onClick={showMore}>
+              Show more games
+            </button>
           </div>
-        </section>
-      ) : null}
-
-      <section className="summary-grid" aria-label="Summary cards">
-        <article className="summary-card warm-card">
-          <p className="eyebrow">🏆 Season</p>
-          <h2 className="section-title">{summaries.seasonRank ? `#${summaries.seasonRank}` : "Unranked"}</h2>
-          <p>{summaries.seasonPoints} pts</p>
-        </article>
-        <article className="summary-card cool-card">
-          <p className="eyebrow">📈 Momentum</p>
-          <h2 className="section-title">{summaries.trendDelta >= 0 ? `+${summaries.trendDelta}` : summaries.trendDelta}</h2>
-          <p>Recent trend</p>
-        </article>
-        <article className="summary-card neutral-card">
-          <p className="eyebrow">🔥 Activity</p>
-          <h2 className="section-title">{user.streakDays} day streak</h2>
-          <p>{user.totalPlayCount} recorded runs</p>
-        </article>
+        ) : null}
       </section>
 
-      <section className="feature-grid">
-        <article className="feature-card span-two">
+      <section className="feature-grid home-secondary-grid">
+        <article className="feature-card">
           <div className="section-heading">
             <div>
-              <p className="eyebrow">🎯 Next play</p>
-              <h2 className="section-title">Pick a board and go</h2>
-            </div>
-            <div className="hero-actions compact-actions">
-              <Link className="action-link action-link-primary" to={`/games/${featuredGames[0]?.key ?? games[0]?.key ?? "minesweeper"}`}>
-                Play now
-              </Link>
-              <Link className="action-link action-link-secondary" to="/rankings">
-                Open board
-              </Link>
+              <p className="eyebrow">📌 Quick context</p>
+              <h2 className="section-title">Current standing</h2>
             </div>
           </div>
-          <div className="game-grid home-game-grid">
-            {games.map((game) => (
-              <article key={game.key} className="game-card" style={{ borderColor: `${game.accentColor}33` }}>
-                <div className="game-card-top">
-                  <span className="game-icon-chip" aria-hidden="true">{getGameEmoji(game.key)}</span>
-                  <span className="status-badge" style={{ backgroundColor: `${game.accentColor}22`, color: game.accentColor }}>
-                    {game.currentRank ? `Rank #${game.currentRank}` : "Unranked"}
-                  </span>
-                </div>
-                <div>
-                  <h3 className="card-title">{game.name}</h3>
-                  <p className="compact-copy">{game.shortDescription}</p>
-                </div>
-                <dl className="stat-grid compact-stat-grid">
-                  <div>
-                    <dt>{game.metricLabel}</dt>
-                    <dd>{game.metricValue}</dd>
-                  </div>
-                  <div>
-                    <dt>Score</dt>
-                    <dd>{game.bestCompetitivePoints} pts</dd>
-                  </div>
-                  <div>
-                    <dt>Clears</dt>
-                    <dd>{game.completedCount} / {game.playCount}</dd>
-                  </div>
-                  <div>
-                    <dt>Focus</dt>
-                    <dd>{game.currentRank ? `#${game.currentRank}` : "First run"}</dd>
-                  </div>
-                </dl>
-                <div className="game-card-footer">
-                  <p className="recommendation-copy">{game.recommendationText ?? "Next run"}</p>
-                  <Link className="action-link action-link-primary" to={`/games/${game.key}`}>
-                    Open {game.name}
-                  </Link>
-                </div>
-              </article>
-            ))}
+          <div className="summary-grid home-secondary-summary">
+            <article className="summary-card warm-card">
+              <p className="eyebrow">🏆 Season</p>
+              <h2 className="section-title">{summaries.seasonRank ? `#${summaries.seasonRank}` : "Unranked"}</h2>
+              <p>{summaries.seasonPoints} pts</p>
+            </article>
+            <article className="summary-card cool-card">
+              <p className="eyebrow">📈 Trend</p>
+              <h2 className="section-title">{summaries.trendDelta >= 0 ? `+${summaries.trendDelta}` : summaries.trendDelta}</h2>
+              <p>Recent movement</p>
+            </article>
+            <article className="summary-card neutral-card">
+              <p className="eyebrow">🔥 Activity</p>
+              <h2 className="section-title">{user.streakDays} day streak</h2>
+              <p>{user.totalPlayCount} recorded runs</p>
+            </article>
           </div>
         </article>
 
         <article className="feature-card">
           <div className="section-heading">
             <div>
-              <p className="eyebrow">🧭 Right now</p>
-              <h2 className="section-title">Now</h2>
+              <p className="eyebrow">🕒 Latest result</p>
+              <h2 className="section-title">Most recent run</h2>
             </div>
           </div>
           {latestResult ? (
@@ -267,26 +225,14 @@ export function HomeDashboard({ user, onboarding, summaries, games, recentResult
           ) : (
             <article className="latest-result-card">
               <strong>No runs yet</strong>
-              <p className="compact-copy">Pick a game above to record a first result and unlock rankings, result history, and profile trends.</p>
-              <div className="hero-actions compact-actions">
-                {primaryGame ? (
-                  <Link className="action-link action-link-primary" to={`/games/${primaryGame.key}`}>
-                    Open {primaryGame.name}
-                  </Link>
-                ) : null}
-                {secondaryGame ? (
-                  <Link className="action-link action-link-secondary" to={`/games/${secondaryGame.key}`}>
-                    Open {secondaryGame.name}
-                  </Link>
-                ) : null}
-              </div>
+              <p className="compact-copy">Pick a game above and record a first result to unlock rankings, result history, and profile trends.</p>
             </article>
           )}
-          {remainingResults.length > 0 ? (
+          {recentResults.length > 1 ? (
             <details className="disclosure-card">
-              <summary>More</summary>
+              <summary>More recent results</summary>
               <div className="recent-results-list disclosure-body">
-                {remainingResults.map((result) => (
+                {recentResults.slice(1).map((result) => (
                   <article key={result.id} className="recent-result-item">
                     <div>
                       <strong>{result.gameName}</strong>

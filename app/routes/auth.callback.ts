@@ -12,32 +12,51 @@ export async function loader({ request }: { request: Request }) {
   const url = new URL(request.url);
   const state = url.searchParams.get("state");
   const code = url.searchParams.get("code");
+  const providerError = url.searchParams.get("error");
   const session = await getSession(request);
   const pendingAuthFlow = getPendingAuthFlow(session);
+  const returnTo = pendingAuthFlow?.returnTo ?? "/home";
 
-  if (!pendingAuthFlow || !state || !code || pendingAuthFlow.state !== state) {
+  if (providerError) {
     clearPendingAuthFlow(session);
-
-    return redirect("/login", {
+    return redirect(`/login?${new URLSearchParams({ error: "entra_access_denied", returnTo }).toString()}`, {
       headers: {
         "Set-Cookie": await commitSession(session),
       },
     });
   }
 
-  const entraIdentity = await exchangeCodeForEntraIdentity({
-    code,
-    codeVerifier: pendingAuthFlow.codeVerifier,
-    nonce: pendingAuthFlow.nonce,
-  });
-  const user = await getOrCreateUserFromEntraIdentity(entraIdentity);
+  if (!pendingAuthFlow || !state || !code || pendingAuthFlow.state !== state) {
+    clearPendingAuthFlow(session);
+    return redirect(`/login?${new URLSearchParams({ error: "auth_state_mismatch", returnTo }).toString()}`, {
+      headers: {
+        "Set-Cookie": await commitSession(session),
+      },
+    });
+  }
 
-  clearPendingAuthFlow(session);
-  setCurrentUserId(session, user.id);
+  try {
+    const entraIdentity = await exchangeCodeForEntraIdentity({
+      code,
+      codeVerifier: pendingAuthFlow.codeVerifier,
+      nonce: pendingAuthFlow.nonce,
+    });
+    const user = await getOrCreateUserFromEntraIdentity(entraIdentity);
 
-  return redirect(pendingAuthFlow.returnTo, {
-    headers: {
-      "Set-Cookie": await commitSession(session),
-    },
-  });
+    clearPendingAuthFlow(session);
+    setCurrentUserId(session, user.id);
+
+    return redirect(pendingAuthFlow.returnTo, {
+      headers: {
+        "Set-Cookie": await commitSession(session),
+      },
+    });
+  } catch {
+    clearPendingAuthFlow(session);
+    return redirect(`/login?${new URLSearchParams({ error: "entra_exchange_failed", returnTo }).toString()}`, {
+      headers: {
+        "Set-Cookie": await commitSession(session),
+      },
+    });
+  }
 }

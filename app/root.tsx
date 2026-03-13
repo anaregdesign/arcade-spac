@@ -5,9 +5,12 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useRouteLoaderData,
 } from "react-router";
 
 import type { Route } from "./+types/root";
+import { getCurrentUserId } from "./lib/server/infrastructure/auth/session.server";
+import { getThemePreferenceByUserId } from "./lib/server/infrastructure/repositories/rankings-profile.repository.server";
 import "./app.css";
 
 export const links: Route.LinksFunction = () => [
@@ -23,7 +26,16 @@ export const links: Route.LinksFunction = () => [
   },
 ];
 
-function AppDocument({ children }: { children: React.ReactNode }) {
+export async function loader({ request }: Route.LoaderArgs) {
+  const userId = await getCurrentUserId(request);
+  const themePreference = userId ? await getThemePreferenceByUserId(userId) : "LIGHT";
+
+  return {
+    themePreference: themePreference === "DARK" ? "dark" : "light",
+  } as const;
+}
+
+function AppDocument({ children, themePreference }: { children: React.ReactNode; themePreference: "dark" | "light" }) {
   return (
     <html lang="ja">
       <head>
@@ -32,7 +44,7 @@ function AppDocument({ children }: { children: React.ReactNode }) {
         <Meta />
         <Links />
       </head>
-      <body>
+      <body data-theme={themePreference}>
         {children}
         <ScrollRestoration />
         <Scripts />
@@ -42,7 +54,8 @@ function AppDocument({ children }: { children: React.ReactNode }) {
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {
-  return <AppDocument>{children}</AppDocument>;
+  const data = useRouteLoaderData<typeof loader>("root");
+  return <AppDocument themePreference={data?.themePreference ?? "light"}>{children}</AppDocument>;
 }
 
 export default function App() {

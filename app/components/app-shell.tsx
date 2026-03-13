@@ -1,4 +1,8 @@
+import { useState } from "react";
 import { Link } from "react-router";
+
+import { AppHelpDialog } from "./shared/AppHelpDialog";
+import type { AppHelpSection } from "./shared/help-content";
 
 type AppShellProps = {
   children: React.ReactNode;
@@ -11,6 +15,15 @@ type AppShellProps = {
     displayName: string;
     avatarUrl?: string | null;
   };
+  help?: {
+    defaultOpen?: boolean;
+    footer?: React.ReactNode;
+    intro: string;
+    sections: AppHelpSection[];
+    title: string;
+    titleEyebrow?: string;
+    triggerLabel?: string;
+  };
 };
 
 const navItems = [
@@ -19,7 +32,9 @@ const navItems = [
   { key: "profile", label: "Profile", emoji: "🪪", to: "/profile" },
 ] as const;
 
-export function AppShell({ children, currentPath, titleEmoji, sectionLabel, title, subtitle, user }: AppShellProps) {
+export function AppShell({ children, currentPath, titleEmoji, sectionLabel, title, subtitle, user, help }: AppShellProps) {
+  const [isHelpOpen, setHelpOpen] = useState(Boolean(help?.defaultOpen));
+
   return (
     <div className="page-shell">
       <header className="app-shell-header">
@@ -52,6 +67,11 @@ export function AppShell({ children, currentPath, titleEmoji, sectionLabel, titl
             </span>
             <span>{user.displayName}</span>
           </div>
+          {help ? (
+            <button className="action-link action-link-secondary" type="button" onClick={() => setHelpOpen(true)}>
+              {help.triggerLabel ?? "Help"}
+            </button>
+          ) : null}
           <form method="post" action="/logout">
             <button className="action-link action-link-secondary" type="submit">
               Sign out
@@ -60,6 +80,17 @@ export function AppShell({ children, currentPath, titleEmoji, sectionLabel, titl
         </div>
       </header>
       <div className="page-content">{children}</div>
+      {help ? (
+        <AppHelpDialog
+          footer={help.footer}
+          intro={help.intro}
+          isOpen={isHelpOpen}
+          onClose={() => setHelpOpen(false)}
+          sections={help.sections}
+          title={help.title}
+          titleEyebrow={help.titleEyebrow}
+        />
+      ) : null}
     </div>
   );
 }

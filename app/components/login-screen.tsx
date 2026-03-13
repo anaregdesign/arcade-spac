@@ -10,12 +10,13 @@ type LoginOption = {
 
 type LoginScreenProps = {
   authMode: "local" | "entra";
+  errorMessage: string | null;
   entraSignInHref: string | null;
   returnTo: string | null;
   users: LoginOption[];
 };
 
-export function LoginScreen({ authMode, entraSignInHref, returnTo, users }: LoginScreenProps) {
+export function LoginScreen({ authMode, errorMessage, entraSignInHref, returnTo, users }: LoginScreenProps) {
   const eyebrow = authMode === "entra" ? "🔐 Microsoft Entra ID" : "🧪 Local access";
 
   return (
@@ -27,10 +28,40 @@ export function LoginScreen({ authMode, entraSignInHref, returnTo, users }: Logi
           {returnTo ? <span className="status-badge status-badge-neutral">Return {returnTo}</span> : null}
           {authMode === "entra" ? <span className="status-badge status-badge-neutral">Tenant sign-in</span> : <span className="status-badge status-badge-neutral">Seeded players</span>}
         </div>
+        <p className="hero-copy">
+          Arcade is a tenant-scoped game hub for quick Minesweeper and Sudoku runs, shared rankings, and result review.
+          Sign-in is required for Home, Game, Result, Rankings, and Profile.
+        </p>
+        <div className="help-inline-grid compact-copy login-context-grid">
+          <p><strong>Without sign-in:</strong> You can still open Privacy and Terms.</p>
+          <p><strong>After sign-in:</strong> The app returns to the board, shared result, or screen you originally requested.</p>
+        </div>
+        {errorMessage ? (
+          <article className="login-error-card" role="alert">
+            <strong>Sign-in could not complete</strong>
+            <p className="compact-copy">{errorMessage}</p>
+          </article>
+        ) : null}
         {authMode === "entra" && entraSignInHref ? (
           <div className="hero-actions">
             <a className="action-link action-link-primary" href={entraSignInHref}>
-              Continue
+              Continue with Microsoft Entra ID
+            </a>
+            <a className="action-link action-link-secondary" href="/privacy">
+              Privacy
+            </a>
+            <a className="action-link action-link-secondary" href="/terms">
+              Terms
+            </a>
+          </div>
+        ) : null}
+        {authMode === "local" ? (
+          <div className="hero-actions">
+            <a className="action-link action-link-secondary" href="/privacy">
+              Privacy
+            </a>
+            <a className="action-link action-link-secondary" href="/terms">
+              Terms
             </a>
           </div>
         ) : null}

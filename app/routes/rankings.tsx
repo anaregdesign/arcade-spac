@@ -2,6 +2,7 @@ import { useLoaderData } from "react-router";
 
 import { AppShell } from "../components/app-shell";
 import { RankingsScreen } from "../components/rankings-screen";
+import { buildSharedHelpSections } from "../components/shared/help-content";
 import { requireCurrentUserId } from "../lib/server/infrastructure/auth/session.server";
 import { getHomeDashboard } from "../lib/server/usecase/get-home-dashboard.server";
 import { getRankingsView } from "../lib/server/usecase/get-rankings-view.server";
@@ -26,6 +27,18 @@ export default function Rankings() {
   return (
     <AppShell
       currentPath="rankings"
+      help={{
+        intro: "Rankings compare your confirmed best scores across the season or lifetime, while private profiles stay off the shared boards.",
+        sections: buildSharedHelpSections([
+          {
+            eyebrow: "5. Ranking filters",
+            title: "Switch between overall progress and one-board gaps",
+            body: "Overall rankings show cross-game strength. A game board shows whether one stronger clear can pass the nearest rival or close the gap to the leader.",
+          },
+        ]),
+        title: "Rankings help",
+        triggerLabel: "Help",
+      }}
       titleEmoji="🏆"
       sectionLabel="Leaderboard"
       title="Rankings"

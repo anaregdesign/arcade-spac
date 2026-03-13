@@ -36,6 +36,7 @@ export async function getOrCreateUserFromEntraIdentity(identity: EntraIdentity) 
     await transaction.userProfile.create({
       data: {
         tagline: "New arcade challenger",
+        themePreference: "LIGHT",
         userId: createdUser.id,
       },
     });
