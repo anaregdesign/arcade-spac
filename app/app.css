@@ -383,6 +383,13 @@ a {
   cursor: not-allowed;
 }
 
+.action-link:disabled,
+.sudoku-key:disabled,
+.sudoku-cell:disabled {
+  opacity: 0.48;
+  cursor: not-allowed;
+}
+
 .compact-actions {
   margin-top: 0;
 }
@@ -1262,6 +1269,11 @@ a {
   font: inherit;
   font-weight: 800;
   cursor: pointer;
+}
+
+.mine-cell:disabled {
+  opacity: 0.48;
+  cursor: not-allowed;
 }
 
 .mine-cell-revealed {

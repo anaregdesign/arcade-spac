@@ -1,5 +1,5 @@
-import { useEffect } from "react";
-import { Form, Link, useNavigation } from "react-router";
+import { useEffect, useRef } from "react";
+import { Form, Link, useNavigation, useSubmit } from "react-router";
 
 import type { GameDifficulty } from "../../../lib/client/usecase/game-workspace/use-game-workspace";
 import { useSudokuSession } from "../../../lib/client/usecase/game-workspace/use-sudoku-session";
@@ -12,6 +12,8 @@ function formatDuration(totalSeconds: number) {
 
 export function SudokuGameWorkspace({ alternateGame, instructions, workspace }: GameWorkspaceComponentProps) {
   const navigation = useNavigation();
+  const submit = useSubmit();
+  const submittedClearRef = useRef(false);
   const sudoku = useSudokuSession(workspace.difficulty);
   const isLiveRun = sudoku.state === "playing";
   const isRunCleared = sudoku.state === "cleared";
@@ -19,12 +21,34 @@ export function SudokuGameWorkspace({ alternateGame, instructions, workspace }: 
   const runStatusLabel = isRunCleared ? "Solved" : isLiveRun ? "Live" : "Ready";
   const startActionLabel = isLiveRun ? "Running" : isRunCleared ? "Start another puzzle" : "Start run";
   const saveStatusLabel = navigation.state === "submitting"
-    ? "Saving"
-    : isRunCleared ? "Ready to save" : isLiveRun ? "Finish or solve" : "Solve to save";
+    ? "Opening result"
+    : isRunCleared ? "Opening result" : isLiveRun ? "Finish or solve" : "Solve to finish";
 
   useEffect(() => {
     workspace.setPlaying(sudoku.state === "playing");
   }, [sudoku.state, workspace]);
+
+  useEffect(() => {
+    if (sudoku.state !== "cleared") {
+      submittedClearRef.current = false;
+      return;
+    }
+
+    if (submittedClearRef.current) {
+      return;
+    }
+
+    submittedClearRef.current = true;
+    workspace.finishRun();
+
+    const formData = new FormData();
+    formData.set("intent", resultIntent);
+    formData.set("difficulty", workspace.difficulty);
+    formData.set("primaryMetric", String(sudoku.elapsedSeconds));
+    formData.set("mistakeCount", String(sudoku.mistakeCount));
+    formData.set("hintCount", String(sudoku.hintCount));
+    submit(formData, { method: "post" });
+  }, [resultIntent, submit, sudoku.elapsedSeconds, sudoku.hintCount, sudoku.mistakeCount, sudoku.state, workspace]);
 
   return (
     <>
@@ -106,6 +130,7 @@ export function SudokuGameWorkspace({ alternateGame, instructions, workspace }: 
                     rowIndex === 8 ? "sudoku-cell-bottom-heavy" : "",
                     colIndex === 8 ? "sudoku-cell-right-heavy" : "",
                   ].filter(Boolean).join(" ")}
+                  disabled={!isLiveRun}
                   key={`sudoku-${rowIndex}-${colIndex}`}
                   onClick={() => sudoku.selectCell(rowIndex, colIndex)}
                   type="button"
@@ -120,6 +145,7 @@ export function SudokuGameWorkspace({ alternateGame, instructions, workspace }: 
               {Array.from({ length: 9 }, (_, index) => (
                 <button
                   className="sudoku-key"
+                  disabled={!isLiveRun}
                   key={`digit-${index + 1}`}
                   onClick={() => sudoku.applyDigit(index + 1)}
                   type="button"
@@ -129,10 +155,10 @@ export function SudokuGameWorkspace({ alternateGame, instructions, workspace }: 
               ))}
             </div>
             <div className="hero-actions compact-actions workspace-utility-actions">
-              <button className="action-link action-link-secondary" onClick={() => sudoku.clearSelectedCell()} type="button">
+              <button className="action-link action-link-secondary" disabled={!isLiveRun} onClick={() => sudoku.clearSelectedCell()} type="button">
                 Clear cell
               </button>
-              <button className="action-link action-link-primary" onClick={() => sudoku.useHint()} type="button">
+              <button className="action-link action-link-primary" disabled={!isLiveRun} onClick={() => sudoku.useHint()} type="button">
                 Use hint
               </button>
             </div>
@@ -146,23 +172,13 @@ export function SudokuGameWorkspace({ alternateGame, instructions, workspace }: 
             <strong>{saveStatusLabel}</strong>
             <span>
               {isRunCleared
-                ? "Record this clear when you are done."
+                ? "The Result screen opens automatically when the puzzle is solved."
                 : isLiveRun
                   ? "Solve the puzzle for a ranked clear, or finish now to open a not-cleared result."
-                  : "Solve the puzzle, then record the clear."}
+                  : "Solve the puzzle to open the Result screen automatically."}
             </span>
           </div>
           <div className="hero-actions compact-actions compact-action-strip">
-            <Form method="post" onSubmit={() => workspace.finishRun()}>
-              <input type="hidden" name="intent" value={resultIntent} />
-              <input type="hidden" name="difficulty" value={workspace.difficulty} />
-              <input type="hidden" name="primaryMetric" value={String(sudoku.elapsedSeconds)} />
-              <input type="hidden" name="mistakeCount" value={String(sudoku.mistakeCount)} />
-              <input type="hidden" name="hintCount" value={String(sudoku.hintCount)} />
-              <button className="action-link action-link-primary" disabled={!isRunCleared} type="submit">
-                Record current clear
-              </button>
-            </Form>
             {isLiveRun ? (
               <Form method="post" onSubmit={() => workspace.finishRun()}>
                 <input type="hidden" name="intent" value="fail" />

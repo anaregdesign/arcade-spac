@@ -174,6 +174,10 @@ export function useSudokuSession(difficulty: Difficulty) {
   }
 
   function selectCell(rowIndex: number, colIndex: number) {
+    if (state !== "playing") {
+      return;
+    }
+
     setSelectedCell({ rowIndex, colIndex });
   }
 

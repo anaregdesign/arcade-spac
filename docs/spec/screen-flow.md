@@ -111,8 +111,11 @@ flowchart TD
 - ホームの各 game card は実ゲーム画面のスクリーンショット preview を主役にし、視覚的にゲーム内容を選べるようにする
 - ホームの各 game card では、ゲーム名と短い状態ラベル以外の説明文を極力減らし、画像主導で比較できることを優先する
 - ヘルプは各画面で共通利用できる補助レイヤとして扱い、呼び出し体験を画面ごとに分断しない
-- ゲーム画面の常設 UI は、盤面、進行状態、難易度、離脱導線、保存 action までに絞り、自己ベストやランキング影響などの補助情報は結果画面または Help 側へ逃がす
+- ゲーム画面の常設 UI は、盤面、進行状態、難易度、離脱導線、必要時の run 終了 action までに絞り、自己ベストやランキング影響などの補助情報は結果画面または Help 側へ逃がす
 - ゲーム画面の primary actions には `How to play` などの操作ガイド導線を含め、同じ補助レイヤ Component で game-specific な操作内容を 1 操作で開けること
+- clear、failed、または explicit な終了 action の直後は、game screen 上で別の保存確定 step を挟まずそのまま Result screen へ遷移する
+- touch device で必要な secondary action は toolbar などから明示的に切り替えられ、desktop 固有の context menu 操作へ依存しない
+- run 前後で無効な control は disabled または同等の affordance で表現し、押しても反応しない見かけの button を残さない
 
 ### 3.1 初回利用
 

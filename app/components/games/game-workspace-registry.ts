@@ -25,8 +25,8 @@ const gameDefinitionByKey: Record<string, GameDefinition> = {
         {
           title: "Run flow",
           items: [
-            { label: "Start run", detail: "Choose a difficulty and press Start run to open a fresh board." },
-            { label: "Clear", detail: "Reveal every safe cell. Hitting one mine ends the board and opens the Result screen automatically." },
+            { label: "Start run", detail: "Choose a difficulty and press Start run, or just open the first cell to begin on the board." },
+            { label: "Clear", detail: "Reveal every safe cell. When the board ends, the Result screen opens automatically." },
             { label: "Leave", detail: "Go home or switch games during a live board to record the attempt as abandoned." },
           ],
         },
@@ -34,7 +34,7 @@ const gameDefinitionByKey: Record<string, GameDefinition> = {
           title: "Board controls",
           items: [
             { label: "Open cell", detail: "Primary click or tap a closed cell to reveal it." },
-            { label: "Flag cell", detail: "Secondary click a closed cell to toggle a flag when you want to mark a suspected mine." },
+            { label: "Flag cell", detail: "Secondary click a closed cell on desktop, or switch on Flag mode to mark mines on touch devices." },
             { label: "Read clues", detail: "A revealed number shows how many mines touch that cell." },
           ],
         },
@@ -55,7 +55,7 @@ const gameDefinitionByKey: Record<string, GameDefinition> = {
           title: "Run flow",
           items: [
             { label: "Start run", detail: "Choose a difficulty and press Start run to begin a new puzzle." },
-            { label: "Clear", detail: "Fill every editable cell with the correct digit to unlock Record current clear." },
+            { label: "Clear", detail: "Fill every editable cell with the correct digit to finish the puzzle and open the Result screen automatically." },
             { label: "Finish run", detail: "Use Finish run during a live puzzle when you want to store a not-cleared Result and move on." },
           ],
         },

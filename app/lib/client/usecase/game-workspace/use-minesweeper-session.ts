@@ -171,8 +171,12 @@ export function useMinesweeperSession(difficulty: Difficulty) {
   }
 
   function revealCell(rowIndex: number, columnIndex: number) {
-    if (state !== "playing") {
+    if (state !== "playing" && state !== "idle") {
       return;
+    }
+
+    if (state === "idle") {
+      setState("playing");
     }
 
     const nextBoard = ensureBoard(rowIndex, columnIndex);
