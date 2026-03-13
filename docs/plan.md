@@ -31,9 +31,9 @@
 
 ## Section 5 - Implement Pair Flip
 ### Subsection 5.1 - Game workspace and session flow
-- [ ] Add the `Pair Flip` session Hook and workspace React Component
-- [ ] Register `Pair Flip` presentation, instructions, tags, and metadata in the shared catalog
-- [ ] Add responsive styling for the memory grid
+- [x] Add the `Pair Flip` session Hook and workspace React Component
+- [x] Register `Pair Flip` presentation, instructions, tags, and metadata in the shared catalog
+- [x] Add responsive styling for the memory grid
 
 ## Section 6 - Verification and cleanup
 ### Subsection 6.1 - Validate the touched flows

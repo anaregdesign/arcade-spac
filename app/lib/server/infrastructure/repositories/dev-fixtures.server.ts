@@ -221,6 +221,14 @@ function createInitialState(): DevState {
         rulesSummary: "Only the next number advances the chain. Wrong taps lower quality, and timeouts stay in history only.",
       },
       {
+        id: "game-pair-flip",
+        key: "PAIR_FLIP",
+        name: "Pair Flip",
+        shortDescription: "Flip cards two at a time and match every symbol before the timer expires.",
+        accentColor: "#7c3aed",
+        rulesSummary: "Mismatched cards flip back after a short reveal. Timeouts stay in history only.",
+      },
+      {
         id: "game-sudoku",
         key: "SUDOKU",
         name: "Sudoku",

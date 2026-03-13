@@ -1,0 +1,29 @@
+<svg width="720" height="520" viewBox="0 0 720 520" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="72" y1="52" x2="648" y2="472" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F8FAFC"/>
+      <stop offset="1" stop-color="#DDE5ED"/>
+    </linearGradient>
+    <linearGradient id="panel" x1="140" y1="104" x2="580" y2="420" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#EBF1F6"/>
+    </linearGradient>
+  </defs>
+  <rect width="720" height="520" rx="40" fill="url(#bg)"/>
+  <rect x="128" y="96" width="464" height="328" rx="30" fill="url(#panel)" stroke="#C4D2DC" stroke-width="4"/>
+  <rect x="164" y="132" width="392" height="56" rx="18" fill="#F6F8FB"/>
+  <text x="186" y="166" fill="#536270" font-family="ui-sans-serif, system-ui" font-size="26" font-weight="700">Memory Board</text>
+  <g transform="translate(164 214)">
+    <rect x="0" y="0" width="76" height="96" rx="20" fill="#DDE6F0"/>
+    <rect x="88" y="0" width="76" height="96" rx="20" fill="#DDE6F0"/>
+    <rect x="176" y="0" width="76" height="96" rx="20" fill="#C7E8FF"/>
+    <text x="202" y="60" fill="#12486E" font-family="ui-sans-serif, system-ui" font-size="34" font-weight="800">B</text>
+    <rect x="264" y="0" width="76" height="96" rx="20" fill="#DDE6F0"/>
+    <rect x="0" y="108" width="76" height="96" rx="20" fill="#F6D6C7"/>
+    <text x="26" y="168" fill="#8B4424" font-family="ui-sans-serif, system-ui" font-size="34" font-weight="800">K</text>
+    <rect x="88" y="108" width="76" height="96" rx="20" fill="#DDE6F0"/>
+    <rect x="176" y="108" width="76" height="96" rx="20" fill="#DDE6F0"/>
+    <rect x="264" y="108" width="76" height="96" rx="20" fill="#C7E8FF"/>
+    <text x="290" y="168" fill="#12486E" font-family="ui-sans-serif, system-ui" font-size="34" font-weight="800">B</text>
+  </g>
+</svg>

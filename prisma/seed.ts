@@ -11,6 +11,7 @@ const gameIds = {
   dropLine: "game-drop-line",
   minesweeper: "game-minesweeper",
   numberChain: "game-number-chain",
+  pairFlip: "game-pair-flip",
   sudoku: "game-sudoku",
 } as const;
 
@@ -56,6 +57,14 @@ async function main() {
         shortDescription: "Tap the shuffled numbers in ascending order before the timer expires.",
         accentColor: "#3b82f6",
         rulesSummary: "Only the next number advances the chain. Wrong taps lower quality, and timeouts stay in history only.",
+      },
+      {
+        id: gameIds.pairFlip,
+        key: "PAIR_FLIP",
+        name: "Pair Flip",
+        shortDescription: "Flip cards two at a time and match every symbol before the timer expires.",
+        accentColor: "#7c3aed",
+        rulesSummary: "Mismatched cards flip back after a short reveal. Timeouts stay in history only.",
       },
       {
         id: gameIds.sudoku,
