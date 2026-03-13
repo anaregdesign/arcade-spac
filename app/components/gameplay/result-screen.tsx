@@ -108,24 +108,37 @@ export function ResultScreen({ result }: ResultScreenProps) {
         </dl>
         <div className="hero-actions compact-action-strip result-primary-actions">
           <Link className="action-link action-link-primary" to={`/games/${result.gameKey}`}>
-            Replay {result.gameName}
+            <span aria-hidden="true" className="action-link-icon-mark">↺</span>
+            <span>Replay {result.gameName}</span>
           </Link>
-          <Link className="action-link action-link-secondary" to={result.rankingsHref}>
-            Open rankings
+          <Link
+            aria-label="Open rankings"
+            className="action-link action-link-secondary action-link-icon"
+            title="Open rankings"
+            to={result.rankingsHref}
+          >
+            <span aria-hidden="true" className="action-link-icon-mark">🏆</span>
           </Link>
           {result.viewerMode === "owner"
             ? result.canShare ? (
               <a className="action-link action-link-secondary" href={teamsShareHref} target="_blank" rel="noreferrer">
-                Microsoft Teams で共有
+                <span aria-hidden="true" className="action-link-icon-mark">⇪</span>
+                <span>Share to Teams</span>
               </a>
             ) : (
               <span className="action-link action-link-secondary action-link-disabled" aria-disabled="true">
-                Microsoft Teams で共有
+                <span aria-hidden="true" className="action-link-icon-mark">⇪</span>
+                <span>Share to Teams</span>
               </span>
             )
             : null}
-          <Link className="action-link action-link-secondary" to="/home">
-            Back to home
+          <Link
+            aria-label="Back to home"
+            className="action-link action-link-secondary action-link-icon"
+            title="Back to home"
+            to="/home"
+          >
+            <span aria-hidden="true" className="action-link-icon-mark">⌂</span>
           </Link>
         </div>
       </section>

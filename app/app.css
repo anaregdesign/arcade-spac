@@ -353,10 +353,16 @@ a {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 6px;
   min-height: 36px;
   padding: 0 12px;
   border-radius: 12px;
   font-weight: 700;
+}
+
+.action-link-icon-mark {
+  flex: 0 0 auto;
+  line-height: 1;
 }
 
 .action-link-primary {
@@ -381,6 +387,16 @@ a {
 .action-link-disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+.action-link-icon {
+  width: 36px;
+  min-width: 36px;
+  padding: 0;
+}
+
+.action-link-icon .action-link-icon-mark {
+  font-size: 1rem;
 }
 
 .action-link:disabled,
