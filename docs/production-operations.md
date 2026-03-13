@@ -4,17 +4,17 @@ This runbook records the verified production baseline for Arcade on Azure and th
 
 ## Current Production Baseline
 
-- Release tag: `v2026.03.13.6`
-- Image: `ghcr.io/anaregdesign/arcade-spac:v2026.03.13.6`
+- Release tag: `v2026.03.13.7`
+- Image: `ghcr.io/anaregdesign/arcade-spac:v2026.03.13.7`
 - Container App: `ca-arcade`
-- Latest ready revision: `ca-arcade--0000017`
+- Latest ready revision: `ca-arcade--0000018`
 - Public app URL: `https://ca-arcade.bravepond-f695129a.japaneast.azurecontainerapps.io`
 - Resource group: `rg-arcade-spec-dev`
 
 ## Rollback Target
 
-- Previous healthy revision: `ca-arcade--0000016`
-- Previous healthy image: `ghcr.io/anaregdesign/arcade-spac:v2026.03.13.5`
+- Previous healthy revision: `ca-arcade--0000017`
+- Previous healthy image: `ghcr.io/anaregdesign/arcade-spac:v2026.03.13.6`
 
 Rollback command:
 
@@ -22,7 +22,7 @@ Rollback command:
 az containerapp update \
   --resource-group rg-arcade-spec-dev \
   --name ca-arcade \
-  --image ghcr.io/anaregdesign/arcade-spac:v2026.03.13.5
+  --image ghcr.io/anaregdesign/arcade-spac:v2026.03.13.6
 ```
 
 After rollback, confirm the ready revision and health endpoint again.
