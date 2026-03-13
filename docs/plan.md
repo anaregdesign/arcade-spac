@@ -23,9 +23,9 @@
 - [x] Make pending-save and ranking-excluded states explicitly describe what is provisional, what is excluded, and what the user should do next
 
 ### Subsection 2.3 - Rankings clarity and rivalry context
-- [ ] Show leader-gap and nearest-rival deltas inside the ranking list or adjacent row detail so users can compare themselves with nearby positions without relying only on the top summary cards
-- [ ] Keep the current user context visible when switching overall versus game boards and season versus lifetime, including a clearer focus treatment for the user's row and nearby rivals
-- [ ] Add a concise explanation of displayed names and visibility behavior so the ranking surface communicates the current public-name rules
+- [x] Show leader-gap and nearest-rival deltas inside the ranking list or adjacent row detail so users can compare themselves with nearby positions without relying only on the top summary cards
+- [x] Keep the current user context visible when switching overall versus game boards and season versus lifetime, including a clearer focus treatment for the user's row and nearby rivals
+- [x] Add a concise explanation of displayed names and visibility behavior so the ranking surface communicates the current public-name rules
 
 ### Subsection 2.4 - Profile score breakdown and visibility understanding
 - [ ] Add a total-points breakdown view on profile so the user can see how each game's best contributes to the overall score
