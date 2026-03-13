@@ -2,11 +2,13 @@ import { useEffect, useRef } from "react";
 import { Form, useNavigation, useSubmit } from "react-router";
 
 import { useSudokuSession } from "../../../lib/client/usecase/game-workspace/use-sudoku-session";
+import sharedStyles from "../shared/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../shared/GameWorkspaceBoardOverlay";
 import { GameWorkspaceControlsCard } from "../shared/GameWorkspaceControlsCard";
 import { GameWorkspaceFinishCard } from "../shared/GameWorkspaceFinishCard";
 import { GameInstructionsDialog } from "../shared/game-instructions-dialog";
 import type { GameWorkspaceComponentProps } from "../shared/game-workspace-types";
+import styles from "./sudoku-game-workspace.module.css";
 
 function formatDuration(totalSeconds: number) {
   return `${Math.floor(totalSeconds / 60)}:${(totalSeconds % 60).toString().padStart(2, "0")}`;
@@ -73,23 +75,23 @@ export function SudokuGameWorkspace({ instructions, workspace }: GameWorkspaceCo
         )}
       />
 
-      <section className="feature-card workspace-card board-card board-card-minimal" aria-label="Sudoku board">
-        <div className="game-board-overlay-shell">
-          <div className="sudoku-shell">
-            <div className="sudoku-board" role="grid" aria-label="Sudoku board">
+      <section className={["feature-card", sharedStyles["workspace-card"], sharedStyles["board-card"], sharedStyles["board-card-minimal"]].join(" ")} aria-label="Sudoku board">
+        <div className={sharedStyles["game-board-overlay-shell"]}>
+          <div className={styles["sudoku-shell"]}>
+            <div className={styles["sudoku-board"]} role="grid" aria-label="Sudoku board">
               {sudoku.board.map((row, rowIndex) =>
                 row.map((cell, colIndex) => (
                   <button
                     aria-label={`Sudoku cell ${rowIndex + 1}-${colIndex + 1}`}
                     className={[
-                      "sudoku-cell",
-                      cell.isFixed ? "sudoku-cell-fixed" : "",
-                      cell.isSelected ? "sudoku-cell-selected" : "",
-                      cell.isWrong ? "sudoku-cell-wrong" : "",
-                      rowIndex % 3 === 0 ? "sudoku-cell-top-heavy" : "",
-                      colIndex % 3 === 0 ? "sudoku-cell-left-heavy" : "",
-                      rowIndex === 8 ? "sudoku-cell-bottom-heavy" : "",
-                      colIndex === 8 ? "sudoku-cell-right-heavy" : "",
+                      styles["sudoku-cell"],
+                      cell.isFixed ? styles["sudoku-cell-fixed"] : "",
+                      cell.isSelected ? styles["sudoku-cell-selected"] : "",
+                      cell.isWrong ? styles["sudoku-cell-wrong"] : "",
+                      rowIndex % 3 === 0 ? styles["sudoku-cell-top-heavy"] : "",
+                      colIndex % 3 === 0 ? styles["sudoku-cell-left-heavy"] : "",
+                      rowIndex === 8 ? styles["sudoku-cell-bottom-heavy"] : "",
+                      colIndex === 8 ? styles["sudoku-cell-right-heavy"] : "",
                     ].filter(Boolean).join(" ")}
                     disabled={!isLiveRun}
                     key={`sudoku-${rowIndex}-${colIndex}`}
@@ -101,11 +103,11 @@ export function SudokuGameWorkspace({ instructions, workspace }: GameWorkspaceCo
                 )),
               )}
             </div>
-            <div className="sudoku-controls">
-              <div className="sudoku-keypad" role="group" aria-label="Sudoku keypad">
+            <div className={styles["sudoku-controls"]}>
+              <div className={styles["sudoku-keypad"]} role="group" aria-label="Sudoku keypad">
                 {Array.from({ length: 9 }, (_, index) => (
                   <button
-                    className="sudoku-key"
+                    className={styles["sudoku-key"]}
                     disabled={!isLiveRun}
                     key={`digit-${index + 1}`}
                     onClick={() => sudoku.applyDigit(index + 1)}
@@ -115,7 +117,7 @@ export function SudokuGameWorkspace({ instructions, workspace }: GameWorkspaceCo
                   </button>
                 ))}
               </div>
-              <div className="hero-actions compact-actions workspace-utility-actions">
+              <div className={["hero-actions", "compact-actions", sharedStyles["workspace-utility-actions"]].join(" ")}>
                 <button className="action-link action-link-secondary" disabled={!isLiveRun} onClick={() => sudoku.clearSelectedCell()} type="button">
                   Clear cell
                 </button>

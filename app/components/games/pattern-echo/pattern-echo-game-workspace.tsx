@@ -2,11 +2,13 @@ import { useEffect, useRef } from "react";
 import { useNavigation, useSubmit } from "react-router";
 
 import { usePatternEchoSession } from "../../../lib/client/usecase/game-workspace/use-pattern-echo-session";
+import sharedStyles from "../shared/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../shared/GameWorkspaceBoardOverlay";
 import { GameWorkspaceControlsCard } from "../shared/GameWorkspaceControlsCard";
 import { GameWorkspaceFinishCard } from "../shared/GameWorkspaceFinishCard";
 import { GameInstructionsDialog } from "../shared/game-instructions-dialog";
 import type { GameWorkspaceComponentProps } from "../shared/game-workspace-types";
+import styles from "./pattern-echo-game-workspace.module.css";
 
 function formatDuration(totalSeconds: number) {
   return `${Math.floor(totalSeconds / 60)}:${(totalSeconds % 60).toString().padStart(2, "0")}`;
@@ -81,11 +83,11 @@ export function PatternEchoGameWorkspace({ instructions, workspace }: GameWorksp
         )}
       />
 
-      <section className="feature-card workspace-card board-card board-card-minimal pattern-echo-board-card" aria-label="Pattern Echo board">
-        <div className="pattern-echo-shell game-board-overlay-shell">
-          <div className="pattern-echo-panel">
-            <div className="pattern-echo-legend">
-              <div className="pattern-echo-target-copy">
+      <section className={["feature-card", sharedStyles["workspace-card"], sharedStyles["board-card"], sharedStyles["board-card-minimal"], styles["pattern-echo-board-card"]].join(" ")} aria-label="Pattern Echo board">
+        <div className={[styles["pattern-echo-shell"], sharedStyles["game-board-overlay-shell"]].join(" ")}>
+          <div className={styles["pattern-echo-panel"]}>
+            <div className={styles["pattern-echo-legend"]}>
+              <div className={styles["pattern-echo-target-copy"]}>
                 <p className="eyebrow">{isWatching ? "Watch" : isInputting ? "Repeat" : "Pattern Echo"}</p>
                 <strong>{isWatching ? "Memorise the sequence" : isInputting ? "Tap in the same order" : "Watch, then repeat"}</strong>
               </div>
@@ -98,7 +100,7 @@ export function PatternEchoGameWorkspace({ instructions, workspace }: GameWorksp
               </p>
             </div>
             <div
-              className="pattern-echo-grid"
+              className={styles["pattern-echo-grid"]}
               style={{ gridTemplateColumns: `repeat(${patternEcho.columns}, minmax(0, 1fr))` }}
             >
               {patternEcho.pads.map((pad) => {
@@ -109,10 +111,10 @@ export function PatternEchoGameWorkspace({ instructions, workspace }: GameWorksp
                   <button
                     aria-label={`Pad ${pad.index + 1}`}
                     className={[
-                      "pattern-echo-pad",
-                      `pattern-echo-pad-${pad.color}`,
-                      isFlashing ? "pattern-echo-pad-flash" : "",
-                      !isActive && !isFlashing ? "pattern-echo-pad-dim" : "",
+                      styles["pattern-echo-pad"],
+                      styles[`pattern-echo-pad-${pad.color}`],
+                      isFlashing ? styles["pattern-echo-pad-flash"] : "",
+                      !isActive && !isFlashing ? styles["pattern-echo-pad-dim"] : "",
                     ].filter(Boolean).join(" ")}
                     disabled={!isActive}
                     key={pad.index}

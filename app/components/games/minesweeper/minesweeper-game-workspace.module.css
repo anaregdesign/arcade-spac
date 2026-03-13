@@ -1,0 +1,83 @@
+.minesweeper-shell {
+  display: grid;
+  gap: 6px;
+  width: fit-content;
+  max-width: 100%;
+  padding: 10px;
+  border-radius: var(--layout-card-radius-tight);
+  background: var(--surface-card);
+  overflow: auto;
+}
+
+.minesweeper-row {
+  display: grid;
+  grid-auto-flow: column;
+  gap: 6px;
+}
+
+.mine-cell {
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--border-strong);
+  border-radius: 12px;
+  background: linear-gradient(180deg, var(--surface-elevated), color-mix(in srgb, var(--surface-elevated) 65%, #8ea6bb));
+  color: var(--text-primary);
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.mine-cell:disabled {
+  opacity: 0.48;
+  cursor: not-allowed;
+}
+
+.mine-cell-revealed {
+  background: color-mix(in srgb, var(--surface-strong) 10%, transparent);
+}
+
+.mine-cell-flagged {
+  background: rgba(250, 218, 143, 0.9);
+  color: #8a5d12;
+}
+
+.mine-cell-exploded {
+  background: rgba(194, 63, 52, 0.9);
+  color: #fff7f5;
+}
+
+.mine-cell-value-1 {
+  color: #2459d3;
+}
+
+.mine-cell-value-2 {
+  color: #167347;
+}
+
+.mine-cell-value-3 {
+  color: #c2410c;
+}
+
+.mine-cell-value-4,
+.mine-cell-value-5,
+.mine-cell-value-6,
+.mine-cell-value-7,
+.mine-cell-value-8 {
+  color: #7c2d12;
+}
+
+@media (max-width: 640px) {
+  .mine-cell {
+    width: clamp(28px, 8vw, 30px);
+    height: clamp(28px, 8vw, 30px);
+    border-radius: 10px;
+  }
+
+  .minesweeper-shell {
+    padding: 8px;
+  }
+
+  .minesweeper-row {
+    gap: 4px;
+  }
+}

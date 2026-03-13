@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 
 import type { GameDifficulty } from "../../../lib/client/usecase/game-workspace/use-game-workspace";
+import styles from "./GameWorkspaceShared.module.css";
 
 const difficultyOptions: Array<{ label: string; value: GameDifficulty }> = [
   { label: "Easy", value: "EASY" },
@@ -25,9 +26,9 @@ export function GameWorkspaceControlsCard({
   statusChips,
 }: GameWorkspaceControlsCardProps) {
   return (
-    <section className="feature-card workspace-card workspace-controls-card">
-      <div className="workspace-toolbar workspace-toolbar-minimal">
-        <label className="field-block workspace-toolbar-field">
+    <section className={["feature-card", styles["workspace-card"], styles["workspace-controls-card"]].join(" ")}>
+      <div className={[styles["workspace-toolbar"], styles["workspace-toolbar-minimal"]].join(" ")}>
+        <label className={["field-block", styles["workspace-toolbar-field"]].join(" ")}>
           <span className="field-label">Difficulty</span>
           <select
             className="field-select"
@@ -42,10 +43,10 @@ export function GameWorkspaceControlsCard({
             ))}
           </select>
         </label>
-        <div className="workspace-chip-row" aria-label="Run status">
+        <div className={styles["workspace-chip-row"]} aria-label="Run status">
           {statusChips}
         </div>
-        <div className="hero-actions compact-actions workspace-primary-actions">
+        <div className={["hero-actions", "compact-actions", styles["workspace-primary-actions"]].join(" ")}>
           {primaryActions}
         </div>
       </div>

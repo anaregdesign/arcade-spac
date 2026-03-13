@@ -1,0 +1,149 @@
+.profile-shell-card {
+  max-width: 1040px;
+}
+
+.profile-breakdown-card,
+.profile-growth-note {
+  margin-bottom: 14px;
+  padding: 14px;
+  border-radius: 18px;
+  background: var(--card-muted);
+}
+
+.breakdown-list,
+.trend-list {
+  display: grid;
+  gap: 12px;
+}
+
+.breakdown-row {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+
+.breakdown-metric-block {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.breakdown-bar {
+  height: 10px;
+  border-radius: 999px;
+  background: var(--status-neutral-bg);
+  overflow: hidden;
+}
+
+.breakdown-bar span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--surface-strong);
+}
+
+.profile-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.profile-form-grid > *,
+.profile-overview-grid > * {
+  min-width: 0;
+}
+
+.profile-form-wide {
+  grid-column: 1 / -1;
+}
+
+.profile-preview-card {
+  min-width: 0;
+  padding: 16px;
+  border-radius: 18px;
+  background: var(--card-muted);
+}
+
+.profile-overview-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.profile-edit-disclosure {
+  margin-top: 12px;
+}
+
+.profile-form-actions {
+  align-items: center;
+}
+
+.profile-game-card {
+  min-width: 0;
+}
+
+.profile-game-card > .recommendation-copy {
+  margin-top: auto;
+}
+
+.profile-game-card > :global(.action-link) {
+  margin-top: var(--layout-tight-gap);
+  align-self: flex-start;
+}
+
+.game-card-top,
+.recent-result-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.game-points {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+
+.recommendation-copy {
+  margin: 0;
+  color: var(--text-secondary);
+  overflow-wrap: anywhere;
+}
+
+.trend-chart-shell {
+  margin-top: 6px;
+  border-radius: 18px;
+  background: var(--card-muted);
+  padding: 10px;
+}
+
+.trend-chart {
+  display: block;
+  width: 100%;
+  height: 160px;
+}
+
+.recent-result-item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 12px 0;
+  border-top: 1px solid var(--border-color);
+}
+
+.recent-result-item:first-child {
+  border-top: none;
+  padding-top: 0;
+}
+
+@media (max-width: 900px) {
+  .profile-form-grid,
+  .profile-overview-grid {
+    grid-template-columns: 1fr;
+  }
+}

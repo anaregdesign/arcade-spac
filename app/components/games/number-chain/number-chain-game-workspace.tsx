@@ -2,11 +2,13 @@ import { useEffect, useRef } from "react";
 import { useNavigation, useSubmit } from "react-router";
 
 import { useNumberChainSession } from "../../../lib/client/usecase/game-workspace/use-number-chain-session";
+import sharedStyles from "../shared/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../shared/GameWorkspaceBoardOverlay";
 import { GameWorkspaceControlsCard } from "../shared/GameWorkspaceControlsCard";
 import { GameWorkspaceFinishCard } from "../shared/GameWorkspaceFinishCard";
 import { GameInstructionsDialog } from "../shared/game-instructions-dialog";
 import type { GameWorkspaceComponentProps } from "../shared/game-workspace-types";
+import styles from "./number-chain-game-workspace.module.css";
 
 function formatDuration(totalSeconds: number) {
   return `${Math.floor(totalSeconds / 60)}:${(totalSeconds % 60).toString().padStart(2, "0")}`;
@@ -78,18 +80,18 @@ export function NumberChainGameWorkspace({ instructions, workspace }: GameWorksp
         )}
       />
 
-      <section className="feature-card workspace-card board-card board-card-minimal number-chain-board-card" aria-label="Number Chain board">
-        <div className="number-chain-shell game-board-overlay-shell">
-          <div className="number-chain-panel">
-            <div className="number-chain-legend">
-              <div className="number-chain-target-copy">
+      <section className={["feature-card", sharedStyles["workspace-card"], sharedStyles["board-card"], sharedStyles["board-card-minimal"], styles["number-chain-board-card"]].join(" ")} aria-label="Number Chain board">
+        <div className={[styles["number-chain-shell"], sharedStyles["game-board-overlay-shell"]].join(" ")}>
+          <div className={styles["number-chain-panel"]}>
+            <div className={styles["number-chain-legend"]}>
+              <div className={styles["number-chain-target-copy"]}>
                 <p className="eyebrow">Next number</p>
                 <strong>{numberChain.nextNumber}</strong>
               </div>
               <p className="compact-copy">Tap the numbers in ascending order before the timer expires.</p>
             </div>
             <div
-              className="number-chain-grid"
+              className={styles["number-chain-grid"]}
               style={{ gridTemplateColumns: `repeat(${numberChain.columns}, minmax(0, 1fr))` }}
             >
               {numberChain.board.flatMap((row, rowIndex) =>
@@ -97,9 +99,9 @@ export function NumberChainGameWorkspace({ instructions, workspace }: GameWorksp
                   <button
                     aria-label={`Number ${cell.value}`}
                     className={[
-                      "number-chain-tile",
-                      cell.isCleared ? "number-chain-tile-cleared" : "",
-                      isLiveRun && cell.value === numberChain.nextNumber ? "number-chain-tile-next" : "",
+                      styles["number-chain-tile"],
+                      cell.isCleared ? styles["number-chain-tile-cleared"] : "",
+                      isLiveRun && cell.value === numberChain.nextNumber ? styles["number-chain-tile-next"] : "",
                     ].filter(Boolean).join(" ")}
                     key={cell.id}
                     onClick={() => numberChain.tapCell(rowIndex, columnIndex)}

@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { Form, Link } from "react-router";
 
+import styles from "./profile-screen.module.css";
+
 type ProfileScreenProps = {
   profile: {
     displayName: string;
@@ -98,7 +100,7 @@ export function ProfileScreen({ profile, activity, overall, games, breakdown, gr
 
   return (
     <div className="dashboard-stack">
-      <section className="feature-card profile-shell-card">
+      <section className={["feature-card", styles["profile-shell-card"]].join(" ")}>
         <div className="section-heading">
           <div>
             <p className="eyebrow">Identity</p>
@@ -108,24 +110,24 @@ export function ProfileScreen({ profile, activity, overall, games, breakdown, gr
             Open rankings
           </Link>
         </div>
-        <div className="profile-overview-grid">
-          <article className="profile-preview-card feature-card">
+        <div className={styles["profile-overview-grid"]}>
+          <article className={["feature-card", styles["profile-preview-card"]].join(" ")}>
             <p className="eyebrow">Public name</p>
             <h3 className="card-title">{profile.sharePreviewName}</h3>
             <p className="compact-copy">{profile.visibilityScope === "TENANT_ONLY" ? "Visible to signed-in players" : "Private"}</p>
             <p className="compact-copy">{profile.visibilitySummary}</p>
           </article>
-          <article className="profile-preview-card feature-card">
+          <article className={["feature-card", styles["profile-preview-card"]].join(" ")}>
             <p className="eyebrow">Tagline</p>
             <h3 className="card-title">{profile.tagline || "No tagline yet"}</h3>
             <p className="compact-copy">Favorite: {profile.favoriteGame || "No preference yet"}</p>
             <p className="compact-copy">{profile.teamsShareSummary}</p>
           </article>
         </div>
-        <details className="disclosure-card profile-edit-disclosure">
+        <details className={["disclosure-card", styles["profile-edit-disclosure"]].join(" ")}>
           <summary>Edit</summary>
           <div className="disclosure-body">
-            <Form method="post" className="profile-form-grid">
+            <Form method="post" className={styles["profile-form-grid"]}>
               <label className="field-block">
                 <span className="field-label">Display name</span>
                 <input className="field-input" name="displayName" defaultValue={profile.displayName} maxLength={40} required />
@@ -137,7 +139,7 @@ export function ProfileScreen({ profile, activity, overall, games, breakdown, gr
                   <option value="PRIVATE">Private</option>
                 </select>
               </label>
-              <label className="field-block profile-form-wide">
+              <label className={["field-block", styles["profile-form-wide"]].join(" ")}>
                 <span className="field-label">Tagline</span>
                 <input className="field-input" name="tagline" defaultValue={profile.tagline} maxLength={120} />
               </label>
@@ -164,7 +166,7 @@ export function ProfileScreen({ profile, activity, overall, games, breakdown, gr
                   <option value="DARK">Dark</option>
                 </select>
               </label>
-              <div className="hero-actions profile-form-actions profile-form-wide">
+              <div className={["hero-actions", styles["profile-form-actions"], styles["profile-form-wide"]].join(" ")}>
                 <button className="action-link action-link-primary" type="submit">
                   Save profile
                 </button>
@@ -200,7 +202,7 @@ export function ProfileScreen({ profile, activity, overall, games, breakdown, gr
               <h2 className="section-title">Per-game performance</h2>
             </div>
           </div>
-          <div className="profile-breakdown-card">
+          <div className={styles["profile-breakdown-card"]}>
             <div className="section-heading">
               <div>
                 <p className="eyebrow">Total points</p>
@@ -208,18 +210,18 @@ export function ProfileScreen({ profile, activity, overall, games, breakdown, gr
               </div>
               <span className="status-badge status-badge-neutral">{breakdown.totalPoints} pts total</span>
             </div>
-            <div className="breakdown-list">
+            <div className={styles["breakdown-list"]}>
               {breakdown.items.map((item) => (
-                <article key={item.key} className="breakdown-row">
+                <article key={item.key} className={styles["breakdown-row"]}>
                   <div>
                     <strong>{item.name}</strong>
                     <p className="compact-copy">{item.rankLabel} · {item.recommendationText}</p>
                   </div>
-                  <div className="breakdown-metric-block">
+                  <div className={styles["breakdown-metric-block"]}>
                     <strong>{item.points} pts</strong>
                     <span>{item.contributionShare}%</span>
                   </div>
-                  <div className="breakdown-bar" aria-hidden="true">
+                  <div className={styles["breakdown-bar"]} aria-hidden="true">
                     <span style={{ width: `${item.contributionShare}%` }} />
                   </div>
                 </article>
@@ -228,10 +230,10 @@ export function ProfileScreen({ profile, activity, overall, games, breakdown, gr
           </div>
           <div className="game-grid">
             {games.map((game) => (
-              <article key={game.key} className="game-card">
-                <div className="game-card-top">
+              <article key={game.key} className={["game-card", styles["profile-game-card"]].join(" ")}>
+                <div className={styles["game-card-top"]}>
                   <span className="status-badge status-badge-neutral">{game.currentRank ? `Rank #${game.currentRank}` : "Unranked"}</span>
-                  <p className="game-points">{game.bestCompetitivePoints} pts</p>
+                  <p className={styles["game-points"]}>{game.bestCompetitivePoints} pts</p>
                 </div>
                 <h3 className="card-title">{game.name}</h3>
                 <dl className="stat-grid compact-stat-grid">
@@ -248,7 +250,7 @@ export function ProfileScreen({ profile, activity, overall, games, breakdown, gr
                     <dd>{game.contributionShare}%</dd>
                   </div>
                 </dl>
-                <p className="recommendation-copy">{game.recommendationText}</p>
+                <p className={styles["recommendation-copy"]}>{game.recommendationText}</p>
                 <Link className="action-link action-link-secondary" to={`/games/${game.key}`}>
                   Play {game.name}
                 </Link>
@@ -264,27 +266,27 @@ export function ProfileScreen({ profile, activity, overall, games, breakdown, gr
               <h2 className="section-title">Recent score movement</h2>
             </div>
           </div>
-          <div className="profile-growth-note">
+          <div className={styles["profile-growth-note"]}>
             <strong>{growthGuidance.title}</strong>
             <p className="compact-copy">{growthGuidance.detail}</p>
           </div>
           {trendPath ? (
-            <div className="trend-chart-shell">
-              <svg viewBox="0 0 100 100" className="trend-chart" preserveAspectRatio="none" aria-label="Recent score trend">
+            <div className={styles["trend-chart-shell"]}>
+              <svg viewBox="0 0 100 100" className={styles["trend-chart"]} preserveAspectRatio="none" aria-label="Recent score trend">
                 <path d={trendPath} fill="none" stroke="var(--surface-strong)" strokeWidth="3" vectorEffect="non-scaling-stroke" />
               </svg>
             </div>
           ) : (
             <p className="compact-copy">No runs yet.</p>
           )}
-          <div className="trend-list">
+          <div className={styles["trend-list"]}>
             {recentTrend.map((item) => (
-              <article key={`${item.label}-${item.index}`} className="recent-result-item">
+              <article key={`${item.label}-${item.index}`} className={styles["recent-result-item"]}>
                 <div>
                   <strong>{item.gameName}</strong>
                   <p className="compact-copy">{item.label} · {item.status}</p>
                 </div>
-                <div className="recent-result-meta">
+                <div className={styles["recent-result-meta"]}>
                   <span className="status-badge status-badge-neutral">{item.competitivePoints} pts</span>
                   <span>{item.totalPointsDelta >= 0 ? `+${item.totalPointsDelta}` : item.totalPointsDelta}</span>
                 </div>
@@ -294,14 +296,14 @@ export function ProfileScreen({ profile, activity, overall, games, breakdown, gr
           {trend.length > 3 ? (
             <details className="disclosure-card">
               <summary>More</summary>
-              <div className="trend-list disclosure-body">
+              <div className={["disclosure-body", styles["trend-list"]].join(" ")}>
                 {trend.slice(0, -3).reverse().map((item) => (
-                  <article key={`${item.label}-${item.index}`} className="recent-result-item">
+                  <article key={`${item.label}-${item.index}`} className={styles["recent-result-item"]}>
                     <div>
                       <strong>{item.gameName}</strong>
                       <p className="compact-copy">{item.label} · {item.status}</p>
                     </div>
-                    <div className="recent-result-meta">
+                    <div className={styles["recent-result-meta"]}>
                       <span className="status-badge status-badge-neutral">{item.competitivePoints} pts</span>
                       <span>{item.totalPointsDelta >= 0 ? `+${item.totalPointsDelta}` : item.totalPointsDelta}</span>
                     </div>

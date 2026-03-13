@@ -1,0 +1,74 @@
+.login-shell {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  gap: 18px;
+  padding: 20px;
+}
+
+.login-hero {
+  width: min(720px, 100%);
+  padding: 24px;
+  border-radius: var(--layout-card-radius);
+  background: var(--surface-card);
+}
+
+.login-hero h1 {
+  margin: 0;
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  line-height: 0.95;
+  letter-spacing: -0.05em;
+}
+
+.login-meta-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+
+.login-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--layout-grid-gap);
+  align-items: stretch;
+}
+
+.login-grid > * {
+  min-width: 0;
+}
+
+.login-card {
+  min-width: 0;
+  border-radius: var(--layout-card-radius);
+  padding: var(--layout-card-padding);
+  background: var(--surface-card);
+}
+
+.login-card-header {
+  margin-bottom: 12px;
+}
+
+.login-form {
+  margin-top: 12px;
+}
+
+.login-error-card {
+  margin-top: 14px;
+  padding: 14px;
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--surface-strong) 8%, var(--surface-card));
+}
+
+@media (max-width: 640px) {
+  .login-hero {
+    padding: 20px;
+    border-radius: 20px;
+  }
+}
+
+@media (max-width: 900px) {
+  .login-grid {
+    grid-template-columns: 1fr;
+  }
+}

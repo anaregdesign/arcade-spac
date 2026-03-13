@@ -1,5 +1,7 @@
 import { useId, useState } from "react";
 
+import styles from "./GameWorkspaceShared.module.css";
+
 export type GameInstructionItem = {
   detail: string;
   label: string;
@@ -38,7 +40,7 @@ export function GameInstructionsDialog({
           <div
             aria-labelledby={titleId}
             aria-modal="true"
-            className="help-dialog feature-card game-instructions-dialog"
+            className={["help-dialog", "feature-card", styles["game-instructions-dialog"]].join(" ")}
             role="dialog"
           >
             <div className="section-heading">
@@ -51,13 +53,13 @@ export function GameInstructionsDialog({
               </button>
             </div>
             <p className="compact-copy">{instructions.summary}</p>
-            <div className="game-instructions-grid">
+            <div className={styles["game-instructions-grid"]}>
               {instructions.sections.map((section) => (
-                <article className="game-instructions-panel" key={section.title}>
+                <article className={styles["game-instructions-panel"]} key={section.title}>
                   <h3 className="card-title">{section.title}</h3>
-                  <dl className="game-instructions-list">
+                  <dl className={styles["game-instructions-list"]}>
                     {section.items.map((item) => (
-                      <div className="game-instructions-row" key={`${section.title}-${item.label}`}>
+                      <div className={styles["game-instructions-row"]} key={`${section.title}-${item.label}`}>
                         <dt>{item.label}</dt>
                         <dd>{item.detail}</dd>
                       </div>

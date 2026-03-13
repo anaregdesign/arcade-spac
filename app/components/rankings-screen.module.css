@@ -1,0 +1,121 @@
+.rankings-shell-card {
+  max-width: 1040px;
+}
+
+.filter-stack {
+  display: grid;
+  gap: var(--layout-tight-gap);
+}
+
+.pill-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.filter-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 38px;
+  padding: 0 14px;
+  border-radius: 10px;
+  background: var(--card-muted);
+  font-weight: 700;
+}
+
+.filter-pill-active {
+  background: var(--surface-strong);
+  color: color-mix(in srgb, var(--surface-card) 96%, white);
+}
+
+.rankings-list {
+  display: grid;
+  gap: 12px;
+}
+
+.ranking-name-block {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.ranking-inline-meta {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.ranking-meta-copy {
+  color: var(--text-secondary);
+  font-size: 0.92rem;
+  overflow-wrap: anywhere;
+}
+
+.ranking-row {
+  padding: 14px;
+  border-radius: 18px;
+  background: var(--card-muted);
+}
+
+.ranking-row-active {
+  background: color-mix(in srgb, var(--surface-strong) 6%, var(--surface-card));
+}
+
+.ranking-row-rival {
+  background: color-mix(in srgb, var(--surface-strong) 4%, var(--surface-card));
+}
+
+.ranking-gap-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 12px 0 6px;
+}
+
+.ranking-gap-grid dt {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-tertiary);
+}
+
+.ranking-gap-grid dd {
+  margin: 6px 0 0;
+  font-weight: 800;
+}
+
+.rankings-context-copy {
+  margin-top: 14px;
+}
+
+.ranking-main {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.ranking-rank {
+  margin: 0 0 6px;
+  font-size: 0.88rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+}
+
+.ranking-points {
+  display: grid;
+  justify-items: end;
+  gap: 4px;
+  min-width: 0;
+}
+
+@media (max-width: 900px) {
+  .ranking-gap-grid {
+    grid-template-columns: 1fr;
+  }
+}
