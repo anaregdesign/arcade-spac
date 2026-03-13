@@ -4,17 +4,17 @@ This runbook records the verified production baseline for Arcade on Azure and th
 
 ## Current Production Baseline
 
-- Release tag: `v2026.03.13.1`
-- Image: `ghcr.io/anaregdesign/arcade-spac:v2026.03.13.1`
+- Release tag: `v2026.03.13.5`
+- Image: `ghcr.io/anaregdesign/arcade-spac:v2026.03.13.5`
 - Container App: `ca-arcade`
-- Latest ready revision: `ca-arcade--0000011`
+- Latest ready revision: `ca-arcade--0000015`
 - Public app URL: `https://ca-arcade.bravepond-f695129a.japaneast.azurecontainerapps.io`
 - Resource group: `rg-arcade-spec-dev`
 
 ## Rollback Target
 
-- Previous healthy revision: `ca-arcade--0000010`
-- Previous healthy image: `ghcr.io/anaregdesign/arcade-spac:v2026.03.12.4`
+- Previous healthy revision: `ca-arcade--0000014`
+- Previous healthy image: `ghcr.io/anaregdesign/arcade-spac:v2026.03.13.4`
 
 Rollback command:
 
@@ -22,7 +22,7 @@ Rollback command:
 az containerapp update \
   --resource-group rg-arcade-spec-dev \
   --name ca-arcade \
-  --image ghcr.io/anaregdesign/arcade-spac:v2026.03.12.4
+  --image ghcr.io/anaregdesign/arcade-spac:v2026.03.13.4
 ```
 
 After rollback, confirm the ready revision and health endpoint again.
@@ -54,7 +54,7 @@ If local verification is no longer needed, remove the workstation-specific rule 
 - Runtime health route: `/health`
 - Smoke script: `scripts/azure/smoke-test.sh`
 
-The Container App runtime exports `APPLICATIONINSIGHTS_CONNECTION_STRING`, so first-line verification can start from the live app health endpoint and then move to the Application Insights resource and linked Log Analytics workspace.
+The Container App runtime exports `APPLICATIONINSIGHTS_CONNECTION_STRING`, so first-line verification can start from the live app health endpoint and then move to the Application Insights resource and linked Log Analytics workspace. The hosted `/health` route now also verifies database compatibility by executing the same `UserProfile.themePreference` select path used by authenticated app loaders, so schema drift is expected to surface there before users hit `/home`.
 
 ## Post-Release Smoke Procedure
 
@@ -97,3 +97,15 @@ az containerapp show -g rg-arcade-spec-dev -n ca-arcade -o json
 ```bash
 az sql server firewall-rule list -g rg-arcade-spec-dev -s sql-arcade-qddhfw4moexbm -o table
 ```
+
+- Schema drift confirmation for the `themePreference` and `shareToken` production repair:
+
+```bash
+sqlcmd -S sql-arcade-qddhfw4moexbm.database.windows.net -d arcade -G -Q "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'UserProfile' ORDER BY ORDINAL_POSITION;"
+
+sqlcmd -S sql-arcade-qddhfw4moexbm.database.windows.net -d arcade -G -Q "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'PlayResult' AND COLUMN_NAME = 'shareToken';"
+```
+
+- Recovery note:
+
+The outage recovered on March 13, 2026 by adding the missing `UserProfile.themePreference` column and `PlayResult.shareToken` column plus index to the production Azure SQL database. The live symptom was `/home` returning `500` after sign-in while `/health` still returned `200`, which is why the health route now includes a database compatibility check.
