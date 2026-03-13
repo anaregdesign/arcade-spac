@@ -24,8 +24,11 @@ export type Pad = {
 
 type DifficultyConfig = {
   columns: number;
+  /** Duration in ms each pad stays lit during the watch phase. */
   flashDurationMs: number;
+  /** Gap in ms between consecutive pad flashes during the watch phase. */
   flashGapMs: number;
+  /** Total number of pads in the grid (padCount must be <= PAD_COLORS.length). */
   padCount: number;
   sequenceLength: number;
   timeLimitSeconds: number;
