@@ -59,7 +59,7 @@ export default function ResultRoute() {
           {
             eyebrow: "5. Result actions",
             title: "Replay, rankings, and share each solve a different next step",
-            body: "Replay is the fastest path back into the board. Rankings show the gap to close next. Teams share stays available only for completed results from tenant-visible profiles.",
+            body: "Replay is the fastest path back into the board. Rankings show the gap to close next. Teams share stays available only for completed results from share-enabled profiles.",
           },
         ]),
         title: "Result help",

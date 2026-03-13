@@ -26,10 +26,10 @@ export function LoginScreen({ authMode, errorMessage, entraSignInHref, returnTo,
         <h1>{authMode === "entra" ? "Sign in to Arcade" : "Choose a development identity"}</h1>
         <div className="login-meta-row">
           {returnTo ? <span className="status-badge status-badge-neutral">Return {returnTo}</span> : null}
-          {authMode === "entra" ? <span className="status-badge status-badge-neutral">Tenant sign-in</span> : <span className="status-badge status-badge-neutral">Seeded players</span>}
+          {authMode === "entra" ? <span className="status-badge status-badge-neutral">Organization sign-in</span> : <span className="status-badge status-badge-neutral">Seeded players</span>}
         </div>
         <p className="hero-copy">
-          Arcade is a tenant-scoped game hub for quick game runs, shared rankings, and result review.
+          Arcade is a sign-in-required game hub for quick game runs, shared rankings, and result review across organization accounts.
           Sign-in is required for Home, Game, Result, Rankings, and Profile.
         </p>
         <div className="help-inline-grid compact-copy login-context-grid">

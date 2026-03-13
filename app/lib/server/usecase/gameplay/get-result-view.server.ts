@@ -234,7 +234,7 @@ function getRankShift(entries: Array<{ userId: string; rank: number; points: num
 
 function getShareAvailabilityNote(result: PersistedPlayResult, canShare: boolean) {
   if (canShare) {
-    return "Completed results from tenant-visible profiles can be shared in Microsoft Teams.";
+    return "Completed results from share-enabled profiles can be shared in Microsoft Teams.";
   }
 
   if (result.user.visibilityScope !== "TENANT_ONLY") {
@@ -299,10 +299,10 @@ function getExcludedOverallValue(result: PersistedPlayResult, currentOverallRank
   }
 
   return {
-    value: formatRank(currentOverallRank),
-    note: "Private visibility keeps overall ranking hidden from shared boards until the profile becomes tenant-visible.",
-  };
-}
+      value: formatRank(currentOverallRank),
+      note: "Private visibility keeps overall ranking hidden from shared boards until the profile becomes visible again.",
+    };
+  }
 
 export async function buildPersistedResultView(input: {
   publicBaseUrl: string;
@@ -314,8 +314,8 @@ export async function buildPersistedResultView(input: {
   const primaryMetricText = formatPrimaryMetric(gameScope, input.result.primaryMetric);
   const supportMetric = getSupportMetric(input.result);
   const selfBest = getSelfBestSummary(input.result);
-  const isTenantVisible = input.result.user.visibilityScope === "TENANT_ONLY";
-  const boardEligible = input.result.leaderboardEligible && isTenantVisible;
+  const isSharedVisible = input.result.user.visibilityScope === "TENANT_ONLY";
+  const boardEligible = input.result.leaderboardEligible && isSharedVisible;
   const [overallEntries, gameEntries] = await Promise.all([
     listLeaderboardEntries("SEASON", "overall"),
     listLeaderboardEntries("SEASON", gameScope),
@@ -326,7 +326,7 @@ export async function buildPersistedResultView(input: {
   const currentOverallPoints = ownerDashboard.summaries.seasonPoints;
   const sharePath = input.result.shareToken ? `/results/shared/${input.result.shareToken}` : null;
   const shareUrl = sharePath ? `${input.publicBaseUrl}${sharePath}` : `${input.publicBaseUrl}/results/${input.result.id}`;
-  const canShare = input.viewerMode === "owner" && input.result.status === "COMPLETED" && isTenantVisible && Boolean(input.result.shareToken);
+  const canShare = input.viewerMode === "owner" && input.result.status === "COMPLETED" && isSharedVisible && Boolean(input.result.shareToken);
   const shareText = [
     buildPrimaryMetricShareLine(gameScope, {
       difficulty: input.result.difficulty,
@@ -360,7 +360,7 @@ export async function buildPersistedResultView(input: {
             value: formatRank(gameShift.currentRank),
             note: gameShift.delta && gameShift.delta > 0 ? `Up ${pluralize(gameShift.delta, "spot")} on the ${input.result.game.name} board.` : "No board movement from this result.",
           }
-        : getExcludedBoardValue(input.result, isTenantVisible),
+        : getExcludedBoardValue(input.result, isSharedVisible),
       totalPoints: {
         value: `${input.result.totalPointsDelta >= 0 ? "+" : ""}${input.result.totalPointsDelta} pts`,
         note: `Season total is now ${currentOverallPoints} pts.`,
@@ -370,7 +370,7 @@ export async function buildPersistedResultView(input: {
             value: formatRank(currentOverallRank),
             note: overallShift.delta && overallShift.delta > 0 ? `Up ${pluralize(overallShift.delta, "spot")} on the overall board.` : currentOverallRank ? "No overall rank movement from this result." : "You still need another ranked result to enter the overall board.",
           }
-        : getExcludedOverallValue(input.result, currentOverallRank, isTenantVisible),
+        : getExcludedOverallValue(input.result, currentOverallRank, isSharedVisible),
     },
     stateExplanation: input.result.status === "PENDING_SAVE"
       ? "This run is stored locally, but rankings and total points stay provisional until the retry succeeds."

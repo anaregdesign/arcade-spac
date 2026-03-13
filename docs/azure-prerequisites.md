@@ -50,6 +50,7 @@ These values are needed before the app can boot correctly in Azure:
 - `DATABASE_URL`
 - `PUBLIC_APP_URL`
 - `ENTRA_TENANT_ID`
+- `ENTRA_AUTHORITY_TENANT`
 - `ENTRA_CLIENT_ID`
 - `ENTRA_CLIENT_SECRET`
 
@@ -85,6 +86,7 @@ The current production deployment is verified on:
 - Container App revision `ca-arcade--0000011`
 - Image `ghcr.io/anaregdesign/arcade-spac:v2026.03.13.1`
 - Microsoft Entra ID runtime mode
+- `AzureADMultipleOrgs` app registration with `organizations` authority for hosted sign-in
 - Azure SQL server `sql-arcade-qddhfw4moexbm.database.windows.net`
 
 ## Ongoing Operational Concerns

@@ -112,7 +112,7 @@ export function ProfileScreen({ profile, activity, overall, games, breakdown, gr
           <article className="profile-preview-card feature-card">
             <p className="eyebrow">Public name</p>
             <h3 className="card-title">{profile.sharePreviewName}</h3>
-            <p className="compact-copy">{profile.visibilityScope === "TENANT_ONLY" ? "Visible inside the tenant" : "Private"}</p>
+            <p className="compact-copy">{profile.visibilityScope === "TENANT_ONLY" ? "Visible to signed-in players" : "Private"}</p>
             <p className="compact-copy">{profile.visibilitySummary}</p>
           </article>
           <article className="profile-preview-card feature-card">
@@ -133,7 +133,7 @@ export function ProfileScreen({ profile, activity, overall, games, breakdown, gr
               <label className="field-block">
                 <span className="field-label">Visibility scope</span>
                 <select className="field-select" name="visibilityScope" defaultValue={profile.visibilityScope}>
-                  <option value="TENANT_ONLY">Tenant only</option>
+                  <option value="TENANT_ONLY">Visible to signed-in players</option>
                   <option value="PRIVATE">Private</option>
                 </select>
               </label>

@@ -41,7 +41,7 @@ export default function SharedResultRoute() {
     <AppShell
       currentPath="games"
       help={{
-        intro: "Shared results keep the score detail visible inside the tenant while owner-only actions stay hidden.",
+        intro: "Shared results keep the score detail visible to signed-in players while owner-only actions stay hidden.",
         sections: buildSharedHelpSections([
           {
             eyebrow: "5. Shared result",

@@ -9,6 +9,7 @@ type VisibilityScope = "TENANT_ONLY" | "PRIVATE";
 
 type DevUser = {
   id: string;
+  entraTenantId: string;
   entraObjectId: string;
   displayName: string;
   avatarUrl: string | null;
@@ -114,6 +115,7 @@ function createInitialState(): DevState {
     users: [
       {
         id: "user-aiko",
+        entraTenantId: "eecca864-7a91-4b48-9327-e19aa5cc3f35",
         entraObjectId: "entra-aiko",
         displayName: "Aiko Tanaka",
         avatarUrl: "https://api.dicebear.com/9.x/shapes/svg?seed=Aiko",
@@ -123,6 +125,7 @@ function createInitialState(): DevState {
       },
       {
         id: "user-hiroki",
+        entraTenantId: "eecca864-7a91-4b48-9327-e19aa5cc3f35",
         entraObjectId: "entra-hiroki",
         displayName: "Hiroki Mizukami",
         avatarUrl: "https://api.dicebear.com/9.x/shapes/svg?seed=Hiroki",
@@ -132,6 +135,7 @@ function createInitialState(): DevState {
       },
       {
         id: "user-mio",
+        entraTenantId: "eecca864-7a91-4b48-9327-e19aa5cc3f35",
         entraObjectId: "entra-mio",
         displayName: "Mio Kuroda",
         avatarUrl: "https://api.dicebear.com/9.x/shapes/svg?seed=Mio",
@@ -141,6 +145,7 @@ function createInitialState(): DevState {
       },
       {
         id: "user-ren",
+        entraTenantId: "eecca864-7a91-4b48-9327-e19aa5cc3f35",
         entraObjectId: "entra-ren",
         displayName: "Ren Sato",
         avatarUrl: "https://api.dicebear.com/9.x/shapes/svg?seed=Ren",

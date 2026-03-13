@@ -5,8 +5,8 @@ export default function Privacy() {
         <p className="eyebrow">Privacy</p>
         <h1>Privacy Notice</h1>
         <p className="hero-copy">
-          Arcade stores sign-in state, profile settings, rankings, and run history to show gameplay progress inside the tenant.
-          Shared results stay tenant-scoped, and private visibility removes your profile from leaderboards and Teams share availability.
+          Arcade stores sign-in state, profile settings, rankings, and run history to show gameplay progress for signed-in players.
+          Shared results stay limited to authenticated access, and private visibility removes your profile from leaderboards and Teams share availability.
         </p>
         <p className="hero-copy">
           Operational logs and authentication events may be retained for reliability and security review.

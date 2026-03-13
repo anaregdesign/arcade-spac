@@ -8,6 +8,7 @@ export type RuntimeConfig = {
   azureAppConfigurationEndpoint: string | null;
   azureKeyVaultUri: string | null;
   entraTenantId: string | null;
+  entraAuthorityTenant: string | null;
   entraClientId: string | null;
   entraClientSecret: string | null;
   entraAuthority: string | null;
@@ -40,6 +41,7 @@ export function getRuntimeConfig(): RuntimeConfig {
     : process.env.DATABASE_URL ?? DEFAULT_DEV_DATABASE_URL;
   const publicAppUrl = process.env.PUBLIC_APP_URL ?? null;
   const entraTenantId = process.env.ENTRA_TENANT_ID ?? process.env.AZURE_TENANT_ID ?? null;
+  const entraAuthorityTenant = process.env.ENTRA_AUTHORITY_TENANT ?? entraTenantId;
   const entraClientId = process.env.ENTRA_CLIENT_ID ?? null;
   const entraClientSecret = process.env.ENTRA_CLIENT_SECRET ?? null;
 
@@ -60,8 +62,9 @@ export function getRuntimeConfig(): RuntimeConfig {
     azureAppConfigurationEndpoint: process.env.AZURE_APPCONFIG_ENDPOINT ?? null,
     azureKeyVaultUri: process.env.AZURE_KEY_VAULT_URI ?? null,
     entraTenantId,
+    entraAuthorityTenant,
     entraClientId,
     entraClientSecret,
-    entraAuthority: entraTenantId ? `https://login.microsoftonline.com/${entraTenantId}/v2.0` : null,
+    entraAuthority: entraAuthorityTenant ? `https://login.microsoftonline.com/${entraAuthorityTenant}/v2.0` : null,
   };
 }

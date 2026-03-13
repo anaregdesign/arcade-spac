@@ -109,7 +109,7 @@ export async function getProfileView(userId: string): Promise<ProfileView> {
       favoriteGame: record.profile?.favoriteGame ? toRouteGameKey(record.profile.favoriteGame) : "",
       themePreference: record.profile?.themePreference === "DARK" ? "DARK" : "LIGHT",
       sharePreviewName: record.displayName,
-      visibilitySummary: record.visibilityScope === "PRIVATE" ? "Private profiles stay out of rankings until visibility is changed." : "Rankings and in-app views use this display name inside the tenant.",
+      visibilitySummary: record.visibilityScope === "PRIVATE" ? "Private profiles stay out of rankings until visibility is changed." : "Rankings and in-app views use this display name for signed-in players.",
       teamsShareSummary: record.visibilityScope === "PRIVATE" ? "Teams shares stay disabled until the result itself is eligible, and private visibility keeps your profile out of public ranking views." : "Teams result shares use the same display name preview that appears in rankings.",
     },
     activity: {

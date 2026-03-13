@@ -23,4 +23,15 @@ if ! grep -qiE 'Arcade|Microsoft Entra ID|Sign in' /tmp/arcade-login-smoke.out; 
   exit 1
 fi
 
+auth_start_status="$(curl --silent --show-error --output /tmp/arcade-auth-start-smoke.out --dump-header /tmp/arcade-auth-start-smoke.headers --write-out '%{http_code}' --max-time 30 "${APP_URL%/}/auth/start?returnTo=%2Fhome")"
+if [[ "$auth_start_status" != "302" ]]; then
+  echo "Auth start route returned ${auth_start_status}."
+  exit 1
+fi
+
+if ! grep -qi '^location: .*login\.microsoftonline\.com/organizations/oauth2/v2\.0/authorize' /tmp/arcade-auth-start-smoke.headers; then
+  echo "Auth start route did not redirect to the organizations authorization endpoint."
+  exit 1
+fi
+
 echo "Smoke test passed for ${APP_URL%/}."

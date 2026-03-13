@@ -81,6 +81,7 @@ async function main() {
     data: [
       {
         id: userIds.aiko,
+        entraTenantId: "eecca864-7a91-4b48-9327-e19aa5cc3f35",
         entraObjectId: "entra-aiko",
         displayName: "Aiko Tanaka",
         avatarUrl: "https://api.dicebear.com/9.x/shapes/svg?seed=Aiko",
@@ -89,6 +90,7 @@ async function main() {
       },
       {
         id: userIds.ren,
+        entraTenantId: "eecca864-7a91-4b48-9327-e19aa5cc3f35",
         entraObjectId: "entra-ren",
         displayName: "Ren Sato",
         avatarUrl: "https://api.dicebear.com/9.x/shapes/svg?seed=Ren",
@@ -97,6 +99,7 @@ async function main() {
       },
       {
         id: userIds.mio,
+        entraTenantId: "eecca864-7a91-4b48-9327-e19aa5cc3f35",
         entraObjectId: "entra-mio",
         displayName: "Mio Kuroda",
         avatarUrl: "https://api.dicebear.com/9.x/shapes/svg?seed=Mio",

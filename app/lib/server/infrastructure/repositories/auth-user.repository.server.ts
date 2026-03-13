@@ -4,12 +4,16 @@ type EntraIdentity = {
   avatarUrl: string | null;
   displayName: string;
   entraObjectId: string;
+  entraTenantId: string;
 };
 
 export async function getOrCreateUserFromEntraIdentity(identity: EntraIdentity) {
   const existingUser = await prisma.user.findUnique({
     where: {
-      entraObjectId: identity.entraObjectId,
+      entraTenantId_entraObjectId: {
+        entraTenantId: identity.entraTenantId,
+        entraObjectId: identity.entraObjectId,
+      },
     },
   });
 
@@ -28,6 +32,7 @@ export async function getOrCreateUserFromEntraIdentity(identity: EntraIdentity) 
       data: {
         avatarUrl: identity.avatarUrl,
         displayName: identity.displayName,
+        entraTenantId: identity.entraTenantId,
         entraObjectId: identity.entraObjectId,
         visibilityScope: "TENANT_ONLY",
       },

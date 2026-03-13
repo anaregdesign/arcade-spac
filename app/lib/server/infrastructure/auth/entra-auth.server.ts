@@ -1,6 +1,6 @@
 import { createHash, randomBytes } from "node:crypto";
 
-import { createRemoteJWKSet, jwtVerify } from "jose";
+import { createRemoteJWKSet, decodeJwt, jwtVerify } from "jose";
 
 import { getRuntimeConfig } from "../config/runtime-config.server";
 
@@ -15,6 +15,7 @@ type EntraIdentity = {
   avatarUrl: string | null;
   displayName: string;
   entraObjectId: string;
+  entraTenantId: string;
 };
 
 const metadataCache = new Map<string, Promise<OpenIdConfiguration>>();
@@ -29,6 +30,35 @@ function createRandomToken() {
 
 function createPkceChallenge(codeVerifier: string) {
   return createHash("sha256").update(codeVerifier).digest("base64url");
+}
+
+function usesSharedTenantAuthority(authorityTenant: string | null) {
+  return authorityTenant === "organizations" || authorityTenant === "common";
+}
+
+function getExpectedIssuer(input: {
+  authorityTenant: string | null;
+  idToken: string;
+  metadataIssuer: string;
+}) {
+  if (!usesSharedTenantAuthority(input.authorityTenant)) {
+    return {
+      issuer: input.metadataIssuer,
+      tenantId: null,
+    };
+  }
+
+  const decoded = decodeJwt(input.idToken);
+  const tenantId = typeof decoded.tid === "string" ? decoded.tid : null;
+
+  if (!tenantId) {
+    throw new Error("Entra identity token did not include a tenant identifier.");
+  }
+
+  return {
+    issuer: `https://login.microsoftonline.com/${tenantId}/v2.0`,
+    tenantId,
+  };
 }
 
 async function getOpenIdConfiguration() {
@@ -129,10 +159,15 @@ export async function exchangeCodeForEntraIdentity(input: {
     throw new Error("Entra token response did not include an id_token.");
   }
 
+  const expectedIssuer = getExpectedIssuer({
+    authorityTenant: runtimeConfig.entraAuthorityTenant,
+    idToken: tokenPayload.id_token,
+    metadataIssuer: metadata.issuer,
+  });
   const jwks = createRemoteJWKSet(new URL(metadata.jwks_uri));
   const verified = await jwtVerify(tokenPayload.id_token, jwks, {
     audience: runtimeConfig.entraClientId!,
-    issuer: metadata.issuer,
+    issuer: expectedIssuer.issuer,
   });
 
   if (verified.payload.nonce !== input.nonce) {
@@ -149,6 +184,14 @@ export async function exchangeCodeForEntraIdentity(input: {
     throw new Error("Entra identity token did not include a stable object identifier.");
   }
 
+  const entraTenantId = typeof verified.payload.tid === "string"
+    ? verified.payload.tid
+    : expectedIssuer.tenantId;
+
+  if (!entraTenantId) {
+    throw new Error("Entra identity token did not include a tenant identifier.");
+  }
+
   return {
     avatarUrl: null,
     displayName: typeof verified.payload.name === "string"
@@ -157,5 +200,6 @@ export async function exchangeCodeForEntraIdentity(input: {
         ? verified.payload.preferred_username
         : "Arcade Player",
     entraObjectId,
+    entraTenantId,
   } satisfies EntraIdentity;
 }

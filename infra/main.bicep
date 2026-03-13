@@ -16,6 +16,7 @@ param sqlEntraAdminLogin string = ''
 param sqlEntraAdminObjectId string = ''
 param entraClientId string = ''
 param entraTenantId string = tenant().tenantId
+param entraAuthorityTenant string = entraTenantId
 @secure()
 param entraClientSecret string = ''
 @secure()
@@ -241,6 +242,10 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
               {
                 name: 'ENTRA_TENANT_ID'
                 value: entraTenantId
+              }
+              {
+                name: 'ENTRA_AUTHORITY_TENANT'
+                value: entraAuthorityTenant
               }
               {
                 name: 'ARCADE_SESSION_SECRET'
