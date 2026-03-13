@@ -53,7 +53,6 @@ export default function Home() {
       <HomeDashboard
         games={hub.visibleGames}
         hasMore={hub.hasMore}
-        highlightedGame={hub.highlightedGame}
         matchCount={hub.matchCount}
         search={hub.search}
         showMore={hub.showMore}

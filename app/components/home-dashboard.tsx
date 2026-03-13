@@ -31,10 +31,6 @@ type HomeDashboardProps = {
     currentRank: number | null;
   }>;
   hasMore: boolean;
-  highlightedGame: {
-    key: string;
-    name: string;
-  } | null;
   matchCount: number;
   search: string;
   showMore: () => void;
@@ -56,7 +52,6 @@ type HomeDashboardProps = {
 export function HomeDashboard({
   games,
   hasMore,
-  highlightedGame,
   matchCount,
   search,
   showMore,
@@ -70,17 +65,6 @@ export function HomeDashboard({
 }: HomeDashboardProps) {
   return (
     <section className="feature-card home-hub-card">
-      <div className="section-heading">
-        <div>
-          <p className="eyebrow">Game selection</p>
-          <h2 className="section-title">Choose your next board</h2>
-        </div>
-        {highlightedGame ? (
-          <Link className="action-link action-link-primary" to={`/games/${highlightedGame.key}`}>
-            Start with {highlightedGame.name}
-          </Link>
-        ) : null}
-      </div>
       <div className="home-hub-toolbar" aria-label="Game discovery controls">
         <label className="field-block home-hub-search">
           <span className="field-label">Search</span>
