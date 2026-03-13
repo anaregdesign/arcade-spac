@@ -6,7 +6,6 @@
 ## Links
 
 - Requirements: [product-requirements.md](./product-requirements.md)
-- Execution plan: [../plan.md](../plan.md)
 
 ## 1. 主要画面
 

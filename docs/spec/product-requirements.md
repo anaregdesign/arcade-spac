@@ -44,7 +44,6 @@
 ## Links
 
 - Flow: [screen-flow.md](./screen-flow.md)
-- Execution plan: [../plan.md](../plan.md)
 
 ## 1. このアプリが提供する体験
 
