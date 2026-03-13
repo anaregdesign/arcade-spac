@@ -5,6 +5,7 @@ import { DropLineGameWorkspace } from "./drop-line/drop-line-game-workspace";
 import { MinesweeperGameWorkspace } from "./minesweeper/minesweeper-game-workspace";
 import { NumberChainGameWorkspace } from "./number-chain/number-chain-game-workspace";
 import { PairFlipGameWorkspace } from "./pair-flip/pair-flip-game-workspace";
+import { PatternEchoGameWorkspace } from "./pattern-echo/pattern-echo-game-workspace";
 import type { GameInstructions } from "./shared/game-instructions-dialog";
 import { SudokuGameWorkspace } from "./sudoku/sudoku-game-workspace";
 import type { GameWorkspaceComponentProps } from "./shared/game-workspace-types";
@@ -166,6 +167,36 @@ const gameDefinitionByKey: Record<string, GameDefinition> = {
       previewSrc: "/images/games/pair-flip-preview.svg",
     },
     workspace: PairFlipGameWorkspace,
+  },
+  "pattern-echo": {
+    instructions: {
+      summary: "Watch the coloured pads flash in sequence, then reproduce the exact same order before the timer expires.",
+      sections: [
+        {
+          title: "Run flow",
+          items: [
+            { label: "Start run", detail: "Choose a difficulty and press Start run to begin a new sequence and arm the timer." },
+            { label: "Watch phase", detail: "Each pad lights up once in order. You cannot tap during this phase — just memorise the sequence." },
+            { label: "Input phase", detail: "Once the last pad fades, tap each pad in the exact order you saw. The Result screen opens automatically on clear." },
+            { label: "Timeout", detail: "If the timer ends before the sequence is completed, the run is saved as not cleared and opens the Result screen automatically." },
+          ],
+        },
+        {
+          title: "Board controls",
+          items: [
+            { label: "Watch carefully", detail: "The status row shows Watching while the sequence plays. Each pad flashes once." },
+            { label: "Tap in order", detail: "After the watch phase the status switches to Live. Tap the pads in the same order." },
+            { label: "Wrong taps", detail: "Incorrect taps increase the wrong input count but do not stop the run. Keep going until the sequence is complete or time runs out." },
+          ],
+        },
+      ],
+      title: "Pattern Echo controls",
+    },
+    presentation: {
+      previewAlt: "Pattern Echo board with a 3×3 grid of coloured pads",
+      previewSrc: "/images/games/pattern-echo-preview.svg",
+    },
+    workspace: PatternEchoGameWorkspace,
   },
   sudoku: {
     instructions: {
