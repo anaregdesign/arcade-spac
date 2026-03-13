@@ -4,17 +4,17 @@ This runbook records the verified production baseline for Arcade on Azure and th
 
 ## Current Production Baseline
 
-- Release tag: `v2026.03.13.5`
-- Image: `ghcr.io/anaregdesign/arcade-spac:v2026.03.13.5`
+- Release tag: `v2026.03.13.6`
+- Image: `ghcr.io/anaregdesign/arcade-spac:v2026.03.13.6`
 - Container App: `ca-arcade`
-- Latest ready revision: `ca-arcade--0000015`
+- Latest ready revision: `ca-arcade--0000017`
 - Public app URL: `https://ca-arcade.bravepond-f695129a.japaneast.azurecontainerapps.io`
 - Resource group: `rg-arcade-spec-dev`
 
 ## Rollback Target
 
-- Previous healthy revision: `ca-arcade--0000014`
-- Previous healthy image: `ghcr.io/anaregdesign/arcade-spac:v2026.03.13.4`
+- Previous healthy revision: `ca-arcade--0000016`
+- Previous healthy image: `ghcr.io/anaregdesign/arcade-spac:v2026.03.13.5`
 
 Rollback command:
 
@@ -22,7 +22,7 @@ Rollback command:
 az containerapp update \
   --resource-group rg-arcade-spec-dev \
   --name ca-arcade \
-  --image ghcr.io/anaregdesign/arcade-spac:v2026.03.13.4
+  --image ghcr.io/anaregdesign/arcade-spac:v2026.03.13.5
 ```
 
 After rollback, confirm the ready revision and health endpoint again.
@@ -31,6 +31,13 @@ After rollback, confirm the ready revision and health endpoint again.
 
 - Container App identity type: `SystemAssigned`
 - Runtime principal ID: `ed42b2bc-ba63-4860-a3be-605e14bfae93`
+
+## Entra Sign-In Contract
+
+- App registration client ID: `8bcae5fd-ef3c-4eba-9471-43970e5f08ad`
+- App registration audience: `AzureADMultipleOrgs`
+- Runtime authority tenant segment: `organizations`
+- Personal Microsoft accounts: `disabled`
 
 ## Azure SQL Recovery Notes
 
@@ -76,6 +83,8 @@ az containerapp show \
   -g rg-arcade-spec-dev \
   -n ca-arcade \
   --query '{image:properties.template.containers[0].image,latestRevision:properties.latestRevisionName,latestReadyRevision:properties.latestReadyRevisionName}'
+
+curl -i -sS "https://ca-arcade.bravepond-f695129a.japaneast.azurecontainerapps.io/auth/start?returnTo=%2Fhome"
 ```
 
 ## Troubleshooting Entry Points
@@ -109,3 +118,5 @@ sqlcmd -S sql-arcade-qddhfw4moexbm.database.windows.net -d arcade -G -Q "SELECT 
 - Recovery note:
 
 The outage recovered on March 13, 2026 by adding the missing `UserProfile.themePreference` column and `PlayResult.shareToken` column plus index to the production Azure SQL database. The live symptom was `/home` returning `500` after sign-in while `/health` still returned `200`, which is why the health route now includes a database compatibility check.
+
+The hosted sign-in contract was expanded later on March 13, 2026 to accept organization accounts from other Microsoft Entra tenants. Production now stores Entra identities as `tenantId + objectId`, and the hosted `/auth/start` flow is expected to redirect to the `organizations` authorization endpoint.

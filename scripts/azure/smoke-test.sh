@@ -29,7 +29,7 @@ if [[ "$auth_start_status" != "302" ]]; then
   exit 1
 fi
 
-if ! grep -qi '^location: .*login\.microsoftonline\.com/organizations/oauth2/v2\.0/authorize' /tmp/arcade-auth-start-smoke.headers; then
+if ! tr -d '\r' </tmp/arcade-auth-start-smoke.headers | grep -qi 'login\.microsoftonline\.com/organizations/oauth2/v2\.0/authorize'; then
   echo "Auth start route did not redirect to the organizations authorization endpoint."
   exit 1
 fi
