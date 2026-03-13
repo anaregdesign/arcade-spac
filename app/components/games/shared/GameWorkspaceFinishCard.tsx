@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
 
+import styles from "./GameWorkspaceShared.module.css";
+
 type GameWorkspaceFinishCardProps = {
   actions?: ReactNode;
   detail: ReactNode;
@@ -8,9 +10,9 @@ type GameWorkspaceFinishCardProps = {
 
 export function GameWorkspaceFinishCard({ actions, detail, emphasis }: GameWorkspaceFinishCardProps) {
   return (
-    <section className="feature-card workspace-card workspace-finish-card">
-      <div className="workspace-finish-row">
-        <div className="workspace-finish-copy">
+    <section className={["feature-card", styles["workspace-card"], styles["workspace-finish-card"]].join(" ")}>
+      <div className={styles["workspace-finish-row"]}>
+        <div className={styles["workspace-finish-copy"]}>
           <strong>{emphasis}</strong>
           <span>{detail}</span>
         </div>

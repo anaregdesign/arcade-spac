@@ -1,3 +1,5 @@
+import styles from "./login-screen.module.css";
+
 type LoginOption = {
   id: string;
   displayName: string;
@@ -20,11 +22,11 @@ export function LoginScreen({ authMode, errorMessage, entraSignInHref, returnTo,
   const eyebrow = authMode === "entra" ? "🔐 Microsoft Entra ID" : "🧪 Local access";
 
   return (
-    <main className="login-shell">
-      <section className="login-hero">
+    <main className={styles["login-shell"]}>
+      <section className={styles["login-hero"]}>
         <p className="eyebrow">{eyebrow}</p>
         <h1>{authMode === "entra" ? "Sign in to Arcade" : "Choose a development identity"}</h1>
-        <div className="login-meta-row">
+        <div className={styles["login-meta-row"]}>
           {returnTo ? <span className="status-badge status-badge-neutral">Return {returnTo}</span> : null}
           {authMode === "entra" ? <span className="status-badge status-badge-neutral">Organization sign-in</span> : <span className="status-badge status-badge-neutral">Seeded players</span>}
         </div>
@@ -37,7 +39,7 @@ export function LoginScreen({ authMode, errorMessage, entraSignInHref, returnTo,
           <p><strong>After sign-in:</strong> The app returns to the board, shared result, or screen you originally requested.</p>
         </div>
         {errorMessage ? (
-          <article className="login-error-card" role="alert">
+          <article className={styles["login-error-card"]} role="alert">
             <strong>Sign-in could not complete</strong>
             <p className="compact-copy">{errorMessage}</p>
           </article>
@@ -67,10 +69,10 @@ export function LoginScreen({ authMode, errorMessage, entraSignInHref, returnTo,
         ) : null}
       </section>
       {authMode === "local" ? (
-        <section className="login-grid" aria-label="Available users">
+        <section className={styles["login-grid"]} aria-label="Available users">
           {users.map((user) => (
-            <article key={user.id} className="login-card">
-              <div className="login-card-header">
+            <article key={user.id} className={styles["login-card"]}>
+              <div className={styles["login-card-header"]}>
                 <div className="user-chip">
                   <span className="avatar-chip" aria-hidden="true">
                     {user.displayName.slice(0, 1).toUpperCase()}
@@ -95,7 +97,7 @@ export function LoginScreen({ authMode, errorMessage, entraSignInHref, returnTo,
                   <dd>{user.favoriteGame}</dd>
                 </div>
               </dl>
-              <form method="post" className="login-form">
+              <form method="post" className={styles["login-form"]}>
                 <input type="hidden" name="userId" value={user.id} />
                 <input type="hidden" name="redirectTo" value={returnTo ?? "/home"} />
                 <button className="action-link action-link-primary" type="submit">

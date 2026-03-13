@@ -2,11 +2,13 @@ import { useEffect, useRef } from "react";
 import { useNavigation, useSubmit } from "react-router";
 
 import { usePairFlipSession } from "../../../lib/client/usecase/game-workspace/use-pair-flip-session";
+import sharedStyles from "../shared/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../shared/GameWorkspaceBoardOverlay";
 import { GameWorkspaceControlsCard } from "../shared/GameWorkspaceControlsCard";
 import { GameWorkspaceFinishCard } from "../shared/GameWorkspaceFinishCard";
 import { GameInstructionsDialog } from "../shared/game-instructions-dialog";
 import type { GameWorkspaceComponentProps } from "../shared/game-workspace-types";
+import styles from "./pair-flip-game-workspace.module.css";
 
 function formatDuration(totalSeconds: number) {
   return `${Math.floor(totalSeconds / 60)}:${(totalSeconds % 60).toString().padStart(2, "0")}`;
@@ -78,18 +80,18 @@ export function PairFlipGameWorkspace({ instructions, workspace }: GameWorkspace
         )}
       />
 
-      <section className="feature-card workspace-card board-card board-card-minimal pair-flip-board-card" aria-label="Pair Flip board">
-        <div className="pair-flip-shell game-board-overlay-shell">
-          <div className="pair-flip-panel">
-            <div className="pair-flip-legend">
-              <div className="pair-flip-target-copy">
+      <section className={["feature-card", sharedStyles["workspace-card"], sharedStyles["board-card"], sharedStyles["board-card-minimal"], styles["pair-flip-board-card"]].join(" ")} aria-label="Pair Flip board">
+        <div className={[styles["pair-flip-shell"], sharedStyles["game-board-overlay-shell"]].join(" ")}>
+          <div className={styles["pair-flip-panel"]}>
+            <div className={styles["pair-flip-legend"]}>
+              <div className={styles["pair-flip-target-copy"]}>
                 <p className="eyebrow">Memory board</p>
                 <strong>Match every pair</strong>
               </div>
               <p className="compact-copy">Open two cards at a time. Mismatched cards flip back after a short reveal.</p>
             </div>
             <div
-              className="pair-flip-grid"
+              className={styles["pair-flip-grid"]}
               style={{ gridTemplateColumns: `repeat(${pairFlip.columns}, minmax(0, 1fr))` }}
             >
               {pairFlip.board.flatMap((row, rowIndex) =>
@@ -97,15 +99,15 @@ export function PairFlipGameWorkspace({ instructions, workspace }: GameWorkspace
                   <button
                     aria-label={`Card ${rowIndex + 1}-${columnIndex + 1}`}
                     className={[
-                      "pair-flip-card",
-                      card.isOpen ? "pair-flip-card-open" : "",
-                      card.isMatched ? "pair-flip-card-matched" : "",
+                      styles["pair-flip-card"],
+                      card.isOpen ? styles["pair-flip-card-open"] : "",
+                      card.isMatched ? styles["pair-flip-card-matched"] : "",
                     ].filter(Boolean).join(" ")}
                     key={card.id}
                     onClick={() => pairFlip.tapCard(rowIndex, columnIndex)}
                     type="button"
                   >
-                    <span className="pair-flip-card-face">
+                    <span className={styles["pair-flip-card-face"]}>
                       {card.isOpen || card.isMatched ? card.symbol : ""}
                     </span>
                   </button>

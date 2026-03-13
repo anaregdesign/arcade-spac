@@ -1,0 +1,102 @@
+.number-chain-board-card {
+  width: min(100%, 560px);
+}
+
+.number-chain-shell {
+  width: 100%;
+}
+
+.number-chain-panel {
+  display: grid;
+  gap: 14px;
+  width: 100%;
+  padding: 14px;
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at top right, rgba(255, 255, 255, 0.68), transparent 40%),
+    linear-gradient(180deg, color-mix(in srgb, var(--surface-elevated) 88%, #d1dce5), color-mix(in srgb, var(--surface-card) 92%, #8395a7));
+}
+
+.number-chain-legend {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 14px 16px;
+  border-radius: 22px;
+  background: color-mix(in srgb, var(--surface-card) 92%, rgba(255, 255, 255, 0.2));
+}
+
+.number-chain-target-copy {
+  display: grid;
+  gap: 4px;
+}
+
+.number-chain-target-copy :global(.eyebrow) {
+  margin: 0;
+}
+
+.number-chain-target-copy strong {
+  font-size: 1.3rem;
+  color: var(--text-primary);
+}
+
+.number-chain-legend :global(.compact-copy) {
+  max-width: 260px;
+  margin: 0;
+  color: var(--text-secondary);
+  text-align: right;
+}
+
+.number-chain-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.number-chain-tile {
+  min-height: 64px;
+  border: none;
+  border-radius: 18px;
+  background: linear-gradient(180deg, #f8fbff, #dde7f0);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 1.2rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.36),
+    0 10px 20px rgba(15, 23, 42, 0.1);
+  transition: transform 120ms ease, opacity 120ms ease, background-color 120ms ease;
+}
+
+.number-chain-tile:hover,
+.number-chain-tile:focus-visible {
+  transform: translateY(-2px);
+}
+
+.number-chain-tile-next {
+  background: linear-gradient(180deg, #d2ecff, #aad9ff);
+  color: #123c60;
+}
+
+.number-chain-tile-cleared {
+  opacity: 0.16;
+  pointer-events: none;
+}
+
+@media (max-width: 640px) {
+  .number-chain-panel {
+    padding: 10px;
+    border-radius: 22px;
+  }
+
+  .number-chain-legend {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .number-chain-legend :global(.compact-copy) {
+    max-width: none;
+    text-align: left;
+  }
+}

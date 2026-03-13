@@ -1,6 +1,7 @@
 import { Link } from "react-router";
 
 import type { GameKey } from "../lib/domain/entities/game-catalog";
+import styles from "./rankings-screen.module.css";
 
 type RankingsScreenProps = {
   filter: {
@@ -60,7 +61,7 @@ export function RankingsScreen({ filter, boardMeta, games, currentUserEntry, ent
 
   return (
     <div className="dashboard-stack">
-      <section className="feature-card workspace-card rankings-shell-card">
+      <section className={["feature-card", styles["rankings-shell-card"]].join(" ")}>
         <div className="section-heading">
           <div>
             <p className="eyebrow">Board switch</p>
@@ -70,23 +71,23 @@ export function RankingsScreen({ filter, boardMeta, games, currentUserEntry, ent
             Back to home
           </Link>
         </div>
-        <div className="filter-stack">
-          <div className="pill-row">
+        <div className={styles["filter-stack"]}>
+          <div className={styles["pill-row"]}>
             {scopes.map((scope) => (
               <Link
                 key={scope.key}
-                className={filter.scope === scope.key ? "filter-pill filter-pill-active" : "filter-pill"}
+                className={filter.scope === scope.key ? [styles["filter-pill"], styles["filter-pill-active"]].join(" ") : styles["filter-pill"]}
                 to={buildRankingsHref(filter.period, scope.key)}
               >
                 {scope.label}
               </Link>
             ))}
           </div>
-          <div className="pill-row">
+          <div className={styles["pill-row"]}>
             {periods.map((period) => (
               <Link
                 key={period.key}
-                className={filter.period === period.key ? "filter-pill filter-pill-active" : "filter-pill"}
+                className={filter.period === period.key ? [styles["filter-pill"], styles["filter-pill-active"]].join(" ") : styles["filter-pill"]}
                 to={buildRankingsHref(period.key, filter.scope)}
               >
                 {period.label}
@@ -94,7 +95,7 @@ export function RankingsScreen({ filter, boardMeta, games, currentUserEntry, ent
             ))}
           </div>
         </div>
-        <div className="help-inline-grid compact-copy rankings-context-copy">
+        <div className={["help-inline-grid", "compact-copy", styles["rankings-context-copy"]].join(" ")}>
           <p><strong>Viewing:</strong> {boardMeta.periodLabel} / {boardMeta.boardLabel}. Your row stays highlighted and the rows nearest to you stay marked as rivals.</p>
           <p><strong>Display names:</strong> {boardMeta.visibilityNote}</p>
         </div>
@@ -118,7 +119,7 @@ export function RankingsScreen({ filter, boardMeta, games, currentUserEntry, ent
         </article>
       </section>
 
-      <section className="feature-card rankings-shell-card">
+      <section className={["feature-card", styles["rankings-shell-card"]].join(" ")}>
         <div className="section-heading">
           <div>
             <p className="eyebrow">Leaderboard</p>
@@ -135,29 +136,33 @@ export function RankingsScreen({ filter, boardMeta, games, currentUserEntry, ent
             ))}
           </div>
         </details>
-        <div className="rankings-list" role="list">
+        <div className={styles["rankings-list"]} role="list">
           {entries.map((entry) => (
             <article
               key={entry.id}
-              className={entry.isCurrentUser ? "ranking-row ranking-row-active" : entry.isNearbyRival ? "ranking-row ranking-row-rival" : "ranking-row"}
+              className={entry.isCurrentUser
+                ? [styles["ranking-row"], styles["ranking-row-active"]].join(" ")
+                : entry.isNearbyRival
+                  ? [styles["ranking-row"], styles["ranking-row-rival"]].join(" ")
+                  : styles["ranking-row"]}
               role="listitem"
             >
-              <div className="ranking-main">
-                <div className="ranking-name-block">
-                  <p className="ranking-rank">#{entry.rank}</p>
+              <div className={styles["ranking-main"]}>
+                <div className={styles["ranking-name-block"]}>
+                  <p className={styles["ranking-rank"]}>#{entry.rank}</p>
                   <h3 className="card-title">{entry.displayName}</h3>
-                  <div className="ranking-inline-meta">
+                  <div className={styles["ranking-inline-meta"]}>
                     {entry.isCurrentUser ? <span className="status-badge status-badge-neutral">You</span> : null}
                     {entry.isNearbyRival ? <span className="status-badge status-badge-pending">Rival</span> : null}
-                    <span className="ranking-meta-copy">{entry.gameName}</span>
+                    <span className={styles["ranking-meta-copy"]}>{entry.gameName}</span>
                   </div>
                 </div>
-                <div className="ranking-points">
+                <div className={styles["ranking-points"]}>
                   <strong>{entry.points}</strong>
                   <span>pts</span>
                 </div>
               </div>
-              <dl className="ranking-gap-grid">
+              <dl className={styles["ranking-gap-grid"]}>
                 <div>
                   <dt>Leader gap</dt>
                   <dd>{entry.leaderGapValue}</dd>
@@ -167,7 +172,7 @@ export function RankingsScreen({ filter, boardMeta, games, currentUserEntry, ent
                   <dd>{entry.rivalGapValue}</dd>
                 </div>
               </dl>
-              <p className="ranking-meta-copy">{entry.leaderGapCopy} {entry.rivalGapCopy}</p>
+              <p className={styles["ranking-meta-copy"]}>{entry.leaderGapCopy} {entry.rivalGapCopy}</p>
             </article>
           ))}
         </div>

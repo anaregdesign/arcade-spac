@@ -2,11 +2,13 @@ import { useEffect, useRef } from "react";
 import { useNavigation, useSubmit } from "react-router";
 
 import { useDropLineSession } from "../../../lib/client/usecase/game-workspace/use-drop-line-session";
+import sharedStyles from "../shared/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../shared/GameWorkspaceBoardOverlay";
 import { GameWorkspaceControlsCard } from "../shared/GameWorkspaceControlsCard";
 import { GameWorkspaceFinishCard } from "../shared/GameWorkspaceFinishCard";
 import { GameInstructionsDialog } from "../shared/game-instructions-dialog";
 import type { GameWorkspaceComponentProps } from "../shared/game-workspace-types";
+import styles from "./drop-line-game-workspace.module.css";
 
 function formatElapsedMs(elapsedMs: number) {
   return `${(elapsedMs / 1000).toFixed(2)}s`;
@@ -83,27 +85,27 @@ export function DropLineGameWorkspace({ instructions, workspace }: GameWorkspace
         )}
       />
 
-      <section className="feature-card workspace-card board-card board-card-minimal drop-line-board-card" aria-label="Drop Ball lane">
-        <div className="drop-line-shell game-board-overlay-shell">
+      <section className={["feature-card", sharedStyles["workspace-card"], sharedStyles["board-card"], sharedStyles["board-card-minimal"], styles["drop-line-board-card"]].join(" ")} aria-label="Drop Ball lane">
+        <div className={[styles["drop-line-shell"], sharedStyles["game-board-overlay-shell"]].join(" ")}>
           <button
             aria-label={isLiveRun ? "Tap when the ball overlaps the line" : "Drop Ball play area"}
-            className="drop-line-lane"
+            className={styles["drop-line-lane"]}
             disabled={!isLiveRun}
             onClick={() => dropLine.captureHit()}
             type="button"
           >
-            <span aria-hidden="true" className="drop-line-grid" />
+            <span aria-hidden="true" className={styles["drop-line-grid"]} />
             <span
               aria-hidden="true"
-              className="drop-line-target-line"
+              className={styles["drop-line-target-line"]}
               style={{ top: `${(dropLine.lineCenterY / dropLine.laneHeight) * 100}%` }}
             />
             <span
               aria-hidden="true"
-              className="drop-line-ball"
+              className={styles["drop-line-ball"]}
               style={{ top: `${(dropLine.ballCenterY / dropLine.laneHeight) * 100}%` }}
             />
-            <span className="drop-line-lane-copy">{lanePrompt}</span>
+            <span className={styles["drop-line-lane-copy"]}>{lanePrompt}</span>
           </button>
           <GameWorkspaceBoardOverlay
             actionLabel={startActionLabel}

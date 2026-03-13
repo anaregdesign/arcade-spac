@@ -1,0 +1,113 @@
+.pair-flip-board-card {
+  width: min(100%, 620px);
+}
+
+.pair-flip-shell {
+  width: 100%;
+}
+
+.pair-flip-panel {
+  display: grid;
+  gap: 14px;
+  width: 100%;
+  padding: 14px;
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at top center, rgba(255, 255, 255, 0.66), transparent 40%),
+    linear-gradient(180deg, color-mix(in srgb, var(--surface-elevated) 88%, #d6dee6), color-mix(in srgb, var(--surface-card) 92%, #8797a6));
+}
+
+.pair-flip-legend {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 14px 16px;
+  border-radius: 22px;
+  background: color-mix(in srgb, var(--surface-card) 92%, rgba(255, 255, 255, 0.2));
+}
+
+.pair-flip-target-copy {
+  display: grid;
+  gap: 4px;
+}
+
+.pair-flip-target-copy :global(.eyebrow) {
+  margin: 0;
+}
+
+.pair-flip-target-copy strong {
+  font-size: 1.18rem;
+  color: var(--text-primary);
+}
+
+.pair-flip-legend :global(.compact-copy) {
+  max-width: 280px;
+  margin: 0;
+  color: var(--text-secondary);
+  text-align: right;
+}
+
+.pair-flip-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.pair-flip-card {
+  min-height: 90px;
+  border: none;
+  padding: 0;
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 50% 18%, rgba(255, 255, 255, 0.42), transparent 24%),
+    linear-gradient(180deg, #b6c4d1, #7f93a5);
+  color: transparent;
+  font: inherit;
+  font-size: 1.5rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.24),
+    0 12px 22px rgba(15, 23, 42, 0.12);
+  transition: transform 140ms ease, background-color 140ms ease, color 140ms ease, opacity 140ms ease;
+}
+
+.pair-flip-card:hover,
+.pair-flip-card:focus-visible {
+  transform: translateY(-2px);
+}
+
+.pair-flip-card-face {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.pair-flip-card-open {
+  background: linear-gradient(180deg, #f9fbff, #e2eaf2);
+  color: var(--text-primary);
+}
+
+.pair-flip-card-matched {
+  background: linear-gradient(180deg, #d7efe5, #b8dccf);
+  color: #164b35;
+  opacity: 0.82;
+}
+
+@media (max-width: 640px) {
+  .pair-flip-panel {
+    padding: 10px;
+    border-radius: 22px;
+  }
+
+  .pair-flip-legend {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .pair-flip-legend :global(.compact-copy) {
+    max-width: none;
+    text-align: left;
+  }
+}

@@ -1,0 +1,213 @@
+.workspace-card {
+  max-width: 1040px;
+  width: min(100%, 1040px);
+}
+
+.workspace-stack {
+  gap: 12px;
+  justify-items: center;
+}
+
+.workspace-controls-card,
+.workspace-finish-card {
+  padding-top: 14px;
+  padding-bottom: 14px;
+}
+
+.workspace-finish-card {
+  width: min(100%, 720px);
+}
+
+.workspace-toolbar {
+  display: grid;
+  gap: 10px;
+  align-items: end;
+}
+
+.workspace-toolbar-field {
+  min-width: 0;
+}
+
+.workspace-toolbar-minimal {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.workspace-toolbar-minimal .workspace-toolbar-field {
+  flex: 0 0 180px;
+}
+
+.workspace-chip-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  flex: 1 1 320px;
+}
+
+.workspace-primary-actions,
+.workspace-utility-actions {
+  margin-top: 0;
+}
+
+.workspace-primary-actions {
+  justify-content: flex-end;
+}
+
+.workspace-finish-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.workspace-finish-copy {
+  display: grid;
+  gap: 4px;
+  color: var(--text-secondary);
+  min-width: 0;
+}
+
+.workspace-finish-copy strong {
+  color: var(--text-primary);
+}
+
+.board-card {
+  max-width: 1120px;
+  width: fit-content;
+}
+
+.board-card-minimal {
+  padding: 0;
+  background: transparent;
+}
+
+.game-board-overlay-shell {
+  position: relative;
+  width: fit-content;
+  max-width: 100%;
+}
+
+.game-board-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  pointer-events: none;
+}
+
+.game-board-overlay-card {
+  width: min(100%, 320px);
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  padding: 18px 18px 16px;
+  border-radius: 24px;
+  background: color-mix(in srgb, var(--surface-card) 86%, rgba(9, 14, 20, 0.22));
+  box-shadow: 0 20px 48px rgba(15, 23, 42, 0.18);
+  text-align: center;
+  pointer-events: auto;
+  backdrop-filter: blur(10px);
+}
+
+.game-board-overlay-card :global(.action-link) {
+  min-width: 180px;
+  justify-content: center;
+}
+
+.game-board-overlay-title {
+  margin: 0;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+}
+
+.game-board-overlay-detail {
+  margin: 0;
+  color: var(--text-secondary);
+  line-height: 1.45;
+}
+
+.game-instructions-dialog {
+  width: min(100%, 920px);
+}
+
+.game-instructions-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.game-instructions-panel {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 18px;
+  background: var(--card-muted);
+  min-width: 0;
+}
+
+.game-instructions-list {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+}
+
+.game-instructions-row {
+  display: grid;
+  gap: 4px;
+}
+
+.game-instructions-row dt {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.game-instructions-row dd {
+  margin: 0;
+  color: var(--text-secondary);
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 900px) {
+  .game-instructions-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .workspace-chip-row {
+    align-items: stretch;
+  }
+
+  .workspace-toolbar-minimal,
+  .workspace-finish-row {
+    align-items: stretch;
+  }
+
+  .workspace-toolbar-minimal .workspace-toolbar-field,
+  .workspace-primary-actions {
+    flex: 1 1 100%;
+  }
+
+  .workspace-primary-actions {
+    justify-content: flex-start;
+  }
+
+  .game-board-overlay {
+    padding: 12px;
+  }
+
+  .game-board-overlay-card {
+    width: min(100%, 280px);
+    padding: 16px 16px 14px;
+  }
+}

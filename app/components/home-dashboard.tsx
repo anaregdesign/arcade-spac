@@ -1,6 +1,7 @@
 import { Link } from "react-router";
 
 import { getGamePresentation } from "./games/game-workspace-registry";
+import styles from "./home-dashboard.module.css";
 
 function getGameStatusLabel(game: {
   currentRank: number | null;
@@ -64,9 +65,9 @@ export function HomeDashboard({
   tagOptions,
 }: HomeDashboardProps) {
   return (
-    <section className="feature-card home-hub-card">
-      <div className="home-hub-toolbar" aria-label="Game discovery controls">
-        <label className="field-block home-hub-search">
+    <section className={["feature-card", styles["home-hub-card"]].join(" ")}>
+      <div className={styles["home-hub-toolbar"]} aria-label="Game discovery controls">
+        <label className={["field-block", styles["home-hub-search"]].join(" ")}>
           <span className="field-label">Search</span>
           <input
             className="field-input"
@@ -75,7 +76,7 @@ export function HomeDashboard({
             value={search}
           />
         </label>
-        <label className="field-block home-hub-filter">
+        <label className={["field-block", styles["home-hub-filter"]].join(" ")}>
           <span className="field-label">Filter</span>
           <select className="field-select" onChange={(event) => setTag(event.currentTarget.value)} value={tag}>
             {tagOptions.map((option) => (
@@ -85,7 +86,7 @@ export function HomeDashboard({
             ))}
           </select>
         </label>
-        <label className="field-block home-hub-filter">
+        <label className={["field-block", styles["home-hub-filter"]].join(" ")}>
           <span className="field-label">Sort</span>
           <select className="field-select" onChange={(event) => setSort(event.currentTarget.value)} value={sort}>
             {sortOptions.map((option) => (
@@ -96,48 +97,48 @@ export function HomeDashboard({
           </select>
         </label>
       </div>
-      <div className="home-hub-meta-row">
+      <div className={styles["home-hub-meta-row"]}>
         <span className="status-badge status-badge-neutral">{matchCount} games</span>
         <span className="status-badge status-badge-neutral">{games.filter((game) => game.playCount === 0).length} visible unplayed</span>
         <span className="status-badge status-badge-neutral">{games.filter((game) => game.currentRank).length} visible ranked</span>
       </div>
-      <div className="game-grid home-game-grid home-primary-grid">
+      <div className={["game-grid", styles["home-game-grid"], styles["home-primary-grid"]].join(" ")}>
         {games.map((game) => {
           const presentation = getGamePresentation(game.key);
 
           return (
-            <article key={game.key} className="game-card home-game-card">
+            <article key={game.key} className={["game-card", styles["home-game-card"]].join(" ")}>
               <Link
                 aria-label={`Open ${game.name}`}
-                className="game-preview-link"
+                className={styles["game-preview-link"]}
                 to={`/games/${game.key}`}
               >
-                <div className="game-preview-frame">
+                <div className={styles["game-preview-frame"]}>
                   {presentation ? (
                     <img
                       alt={presentation.previewAlt}
-                      className="game-preview-image"
+                      className={styles["game-preview-image"]}
                       loading="lazy"
                       src={presentation.previewSrc}
                       style={{ objectPosition: presentation.previewObjectPosition ?? "center center" }}
                     />
                   ) : (
-                    <div className="game-preview-fallback" aria-hidden="true">
+                    <div className={styles["game-preview-fallback"]} aria-hidden="true">
                       <span>{game.name.slice(0, 2).toUpperCase()}</span>
                     </div>
                   )}
                 </div>
               </Link>
-              <div className="home-card-body">
-                <div className="home-card-status-row">
+              <div className={styles["home-card-body"]}>
+                <div className={styles["home-card-status-row"]}>
                   <span className="status-badge status-badge-neutral">{getGameStatusLabel(game)}</span>
                   <span className="status-badge status-badge-neutral">{getGameRecordLabel(game)}</span>
                 </div>
-                <div className="home-card-heading">
+                <div className={styles["home-card-heading"]}>
                   <h3 className="card-title">{game.name}</h3>
-                  <span className="home-card-kicker">{game.playCount > 0 ? `${game.playCount} runs` : "First run"}</span>
+                  <span className={styles["home-card-kicker"]}>{game.playCount > 0 ? `${game.playCount} runs` : "First run"}</span>
                 </div>
-                <Link className="action-link action-link-primary home-card-action" to={`/games/${game.key}`}>
+                <Link className={["action-link", "action-link-primary", styles["home-card-action"]].join(" ")} to={`/games/${game.key}`}>
                   Play
                 </Link>
               </div>

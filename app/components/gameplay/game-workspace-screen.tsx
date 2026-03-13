@@ -2,6 +2,7 @@ import { Link } from "react-router";
 
 import { getGameInstructions, getGameWorkspaceComponent } from "../games/game-workspace-registry";
 import { useGameWorkspace } from "../../lib/client/usecase/game-workspace/use-game-workspace";
+import styles from "../games/shared/GameWorkspaceShared.module.css";
 
 type GameWorkspaceScreenProps = {
   game: {
@@ -27,11 +28,11 @@ export function GameWorkspaceScreen({ game }: GameWorkspaceScreenProps) {
   const instructions = getGameInstructions(game.key);
 
   return (
-    <div className="dashboard-stack workspace-stack">
+    <div className={["dashboard-stack", styles["workspace-stack"]].join(" ")}>
       {GameWorkspaceComponent && instructions ? (
         <GameWorkspaceComponent instructions={instructions} workspace={workspace} />
       ) : (
-        <section className="feature-card workspace-card confirm-card">
+        <section className={["feature-card", styles["workspace-card"], "confirm-card"].join(" ")}>
           <p className="eyebrow">Game setup</p>
           <h2 className="section-title">{game.name} is not registered yet</h2>
           <p className="compact-copy">

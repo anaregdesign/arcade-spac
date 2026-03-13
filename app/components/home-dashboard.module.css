@@ -1,0 +1,131 @@
+.home-hub-card {
+  display: grid;
+  gap: var(--layout-grid-gap);
+}
+
+.home-hub-toolbar {
+  display: grid;
+  grid-template-columns: minmax(0, 1.8fr) repeat(2, minmax(180px, 1fr));
+  gap: 12px;
+  align-items: end;
+}
+
+.home-hub-toolbar :global(.field-block),
+.home-hub-search,
+.home-hub-filter {
+  margin-top: 0;
+}
+
+.home-hub-meta-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.home-game-grid {
+  align-items: stretch;
+}
+
+.home-primary-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.home-game-card {
+  height: 100%;
+}
+
+.game-preview-link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+.game-preview-frame {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  border-radius: 16px;
+  background: var(--surface-elevated);
+}
+
+.game-preview-image,
+.game-preview-fallback {
+  width: 100%;
+  height: 100%;
+}
+
+.game-preview-image {
+  display: block;
+  object-fit: cover;
+}
+
+.game-preview-fallback {
+  display: grid;
+  place-items: center;
+  background: var(--surface-elevated);
+  color: var(--text-secondary);
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.home-card-status-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.home-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.home-card-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px 12px;
+  flex-wrap: wrap;
+}
+
+.home-card-kicker {
+  color: var(--text-secondary);
+  font-size: 0.86rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.home-card-action {
+  margin-top: auto;
+  align-self: flex-start;
+}
+
+@media (max-width: 1100px) {
+  .home-primary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .home-hub-toolbar {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .home-hub-search {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 900px) {
+  .home-hub-toolbar {
+    grid-template-columns: 1fr;
+  }
+
+  .home-hub-search {
+    grid-column: auto;
+  }
+}

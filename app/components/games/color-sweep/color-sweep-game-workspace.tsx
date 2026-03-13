@@ -2,11 +2,13 @@ import { useEffect, useRef } from "react";
 import { useNavigation, useSubmit } from "react-router";
 
 import { useColorSweepSession } from "../../../lib/client/usecase/game-workspace/use-color-sweep-session";
+import sharedStyles from "../shared/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../shared/GameWorkspaceBoardOverlay";
 import { GameWorkspaceControlsCard } from "../shared/GameWorkspaceControlsCard";
 import { GameWorkspaceFinishCard } from "../shared/GameWorkspaceFinishCard";
 import { GameInstructionsDialog } from "../shared/game-instructions-dialog";
 import type { GameWorkspaceComponentProps } from "../shared/game-workspace-types";
+import styles from "./color-sweep-game-workspace.module.css";
 
 const targetColorLabelByKey = {
   amber: "Amber",
@@ -87,21 +89,21 @@ export function ColorSweepGameWorkspace({ instructions, workspace }: GameWorkspa
         )}
       />
 
-      <section className="feature-card workspace-card board-card board-card-minimal color-sweep-board-card" aria-label="Color Sweep board">
-        <div className="color-sweep-shell game-board-overlay-shell">
-          <div className="color-sweep-panel">
-            <div className="color-sweep-legend">
-              <div className="color-sweep-target-copy">
+      <section className={["feature-card", sharedStyles["workspace-card"], sharedStyles["board-card"], sharedStyles["board-card-minimal"], styles["color-sweep-board-card"]].join(" ")} aria-label="Color Sweep board">
+        <div className={[styles["color-sweep-shell"], sharedStyles["game-board-overlay-shell"]].join(" ")}>
+          <div className={styles["color-sweep-panel"]}>
+            <div className={styles["color-sweep-legend"]}>
+              <div className={styles["color-sweep-target-copy"]}>
                 <p className="eyebrow">Target color</p>
                 <strong>{targetColorLabelByKey[colorSweep.targetColorKey]}</strong>
               </div>
               <span
                 aria-hidden="true"
-                className={`color-sweep-swatch color-sweep-swatch-${colorSweep.targetColorKey}`}
+                className={[styles["color-sweep-swatch"], styles[`color-sweep-swatch-${colorSweep.targetColorKey}`]].join(" ")}
               />
             </div>
             <div
-              className="color-sweep-grid"
+              className={styles["color-sweep-grid"]}
               style={{ gridTemplateColumns: `repeat(${colorSweep.columns}, minmax(0, 1fr))` }}
             >
               {colorSweep.board.flatMap((row, rowIndex) =>
@@ -109,15 +111,15 @@ export function ColorSweepGameWorkspace({ instructions, workspace }: GameWorkspa
                   <button
                     aria-label={`Color tile ${rowIndex + 1}-${columnIndex + 1}`}
                     className={[
-                      "color-sweep-tile",
-                      `color-sweep-tile-${cell.colorKey}`,
-                      cell.isCleared ? "color-sweep-tile-cleared" : "",
+                      styles["color-sweep-tile"],
+                      styles[`color-sweep-tile-${cell.colorKey}`],
+                      cell.isCleared ? styles["color-sweep-tile-cleared"] : "",
                     ].filter(Boolean).join(" ")}
                     key={cell.id}
                     onClick={() => colorSweep.tapCell(rowIndex, columnIndex)}
                     type="button"
                   >
-                    <span className="color-sweep-tile-core" />
+                    <span className={styles["color-sweep-tile-core"]} />
                   </button>
                 )),
               )}

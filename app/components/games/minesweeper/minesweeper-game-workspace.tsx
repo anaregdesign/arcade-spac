@@ -2,11 +2,13 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigation, useSubmit } from "react-router";
 
 import { useMinesweeperSession } from "../../../lib/client/usecase/game-workspace/use-minesweeper-session";
+import sharedStyles from "../shared/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../shared/GameWorkspaceBoardOverlay";
 import { GameWorkspaceControlsCard } from "../shared/GameWorkspaceControlsCard";
 import { GameWorkspaceFinishCard } from "../shared/GameWorkspaceFinishCard";
 import { GameInstructionsDialog } from "../shared/game-instructions-dialog";
 import type { GameWorkspaceComponentProps } from "../shared/game-workspace-types";
+import styles from "./minesweeper-game-workspace.module.css";
 
 function formatDuration(totalSeconds: number) {
   return `${Math.floor(totalSeconds / 60)}:${(totalSeconds % 60).toString().padStart(2, "0")}`;
@@ -95,20 +97,20 @@ export function MinesweeperGameWorkspace({ instructions, workspace }: GameWorksp
         )}
       />
 
-      <section className="feature-card workspace-card board-card board-card-minimal" aria-label="Minesweeper board">
-        <div className="game-board-overlay-shell">
-          <div className="minesweeper-shell">
+      <section className={["feature-card", sharedStyles["workspace-card"], sharedStyles["board-card"], sharedStyles["board-card-minimal"]].join(" ")} aria-label="Minesweeper board">
+        <div className={sharedStyles["game-board-overlay-shell"]}>
+          <div className={styles["minesweeper-shell"]}>
             {minesweeper.board.map((row, rowIndex) => (
-              <div className="minesweeper-row" key={`row-${rowIndex}`}>
+              <div className={styles["minesweeper-row"]} key={`row-${rowIndex}`}>
                 {row.map((cell, columnIndex) => (
                   <button
                     aria-label={`Cell ${rowIndex + 1}-${columnIndex + 1}`}
                     className={[
-                      "mine-cell",
-                      cell.isRevealed ? "mine-cell-revealed" : "",
-                      cell.isFlagged ? "mine-cell-flagged" : "",
-                      cell.isExploded ? "mine-cell-exploded" : "",
-                      cell.isRevealed && cell.adjacentMines > 0 ? `mine-cell-value-${cell.adjacentMines}` : "",
+                      styles["mine-cell"],
+                      cell.isRevealed ? styles["mine-cell-revealed"] : "",
+                      cell.isFlagged ? styles["mine-cell-flagged"] : "",
+                      cell.isExploded ? styles["mine-cell-exploded"] : "",
+                      cell.isRevealed && cell.adjacentMines > 0 ? styles[`mine-cell-value-${cell.adjacentMines}`] : "",
                     ].filter(Boolean).join(" ")}
                     key={`cell-${rowIndex}-${columnIndex}`}
                     onClick={() => {

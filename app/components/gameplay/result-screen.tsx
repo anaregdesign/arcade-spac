@@ -1,6 +1,8 @@
 import { Form, Link } from "react-router";
 
 import { buildAlternateGameLinks } from "../../lib/domain/entities/game-catalog";
+import sharedStyles from "../games/shared/GameWorkspaceShared.module.css";
+import styles from "./result-screen.module.css";
 
 type ResultScreenProps = {
   result: {
@@ -82,31 +84,31 @@ export function ResultScreen({ result }: ResultScreenProps) {
 
   return (
     <div className="dashboard-stack">
-      <section className="feature-card workspace-card result-hero-card">
-        <div className="section-heading result-meta-heading">
+      <section className={["feature-card", sharedStyles["workspace-card"], styles["result-hero-card"]].join(" ")}>
+        <div className={["section-heading", styles["result-meta-heading"]].join(" ")}>
           <div>
             <p className="eyebrow">Result</p>
             <h2 className="section-title">{result.gameName} {result.difficulty.toLowerCase()}</h2>
           </div>
-          <div className="result-badge-row">
+          <div className={styles["result-badge-row"]}>
             <span className={statusBadgeClass}>{result.statusLabel}</span>
             <span className="status-badge status-badge-neutral">{result.selfBestBadge}</span>
           </div>
         </div>
-        <div className="result-score-stage" aria-label="Primary score">
-          <p className="result-score-label">{result.primaryMetricLabel}</p>
-          <p className="result-score-value">{result.primaryMetric}</p>
-          {compactStateCopy ? <p className="result-state-inline">{compactStateCopy}</p> : null}
+        <div className={styles["result-score-stage"]} aria-label="Primary score">
+          <p className={styles["result-score-label"]}>{result.primaryMetricLabel}</p>
+          <p className={styles["result-score-value"]}>{result.primaryMetric}</p>
+          {compactStateCopy ? <p className={styles["result-state-inline"]}>{compactStateCopy}</p> : null}
         </div>
-        <dl className="result-quick-grid" aria-label="Score summary">
+        <dl className={styles["result-quick-grid"]} aria-label="Score summary">
           {quickStats.map((item) => (
-            <div key={item.label} className="result-quick-item">
+            <div key={item.label} className={styles["result-quick-item"]}>
               <dt>{item.label}</dt>
               <dd>{item.value}</dd>
             </div>
           ))}
         </dl>
-        <div className="hero-actions compact-action-strip result-primary-actions">
+        <div className={["hero-actions", "compact-action-strip", styles["result-primary-actions"]].join(" ")}>
           <Link className="action-link action-link-primary" to={`/games/${result.gameKey}`}>
             <span aria-hidden="true" className="action-link-icon-mark">↺</span>
             <span>Replay {result.gameName}</span>
@@ -143,22 +145,22 @@ export function ResultScreen({ result }: ResultScreenProps) {
         </div>
       </section>
 
-      <section className="summary-grid result-impact-grid" aria-label="Impact summary">
+      <section className={["summary-grid", styles["result-impact-grid"]].join(" ")} aria-label="Impact summary">
         {impactCards.map((card) => (
-          <article key={card.key} className="summary-card result-impact-card">
+          <article key={card.key} className={["summary-card", styles["result-impact-card"]].join(" ")}>
             <p className="eyebrow">{card.label}</p>
             <h2 className="section-title">{card.value}</h2>
           </article>
         ))}
       </section>
 
-      <section className="feature-card workspace-card result-detail-card">
-        <details className="disclosure-card workspace-disclosure">
+      <section className={["feature-card", sharedStyles["workspace-card"], styles["result-detail-card"]].join(" ")}>
+        <details className={["disclosure-card", styles["workspace-disclosure"]].join(" ")}>
           <summary>Run detail</summary>
           <div className="disclosure-body">
             <p className="compact-copy">{result.summaryText}</p>
             {result.stateExplanation ? <p className="compact-copy">{result.stateExplanation}</p> : null}
-            <dl className="stat-grid compact-stat-grid result-detail-grid">
+            <dl className={["stat-grid", "compact-stat-grid", styles["result-detail-grid"]].join(" ")}>
               <div>
                 <dt>{result.supportMetricLabel}</dt>
                 <dd>{result.supportMetricValue}</dd>
@@ -182,9 +184,9 @@ export function ResultScreen({ result }: ResultScreenProps) {
               <div>
                 <dt>Share</dt>
                 <dd>{result.viewerMode === "owner" ? result.canShare ? "Ready" : "Locked" : "Owner only"}</dd>
-              </div>
-            </dl>
-            <div className="result-detail-copy">
+                </div>
+              </dl>
+            <div className={styles["result-detail-copy"]}>
               <p className="compact-copy">{result.selfBestDetail}</p>
               <p className="compact-copy">{result.supportMetricNote}</p>
               <p className="compact-copy">{result.impact.gameRank.note}</p>
@@ -206,7 +208,7 @@ export function ResultScreen({ result }: ResultScreenProps) {
       </section>
 
       {result.status === "PENDING_SAVE" && result.viewerMode === "owner" ? (
-        <section className="feature-card workspace-card">
+        <section className={["feature-card", sharedStyles["workspace-card"]].join(" ")}>
           <p className="eyebrow">Pending save</p>
           <h2 className="section-title">Retry save</h2>
           <p className="compact-copy">This result stays provisional until the save retry succeeds. Rankings and total points will update only after confirmation.</p>
