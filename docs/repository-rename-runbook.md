@@ -36,21 +36,21 @@ This runbook captures the remaining external follow-up needed after standardizin
    - `AZURE_CONTAINER_APP_NAME`
 3. Do not assume GHCR pull credentials exist. The current `production` Environment has no visible Actions secrets, and the optional `Configure GHCR auth for private packages` step is therefore skipped.
 4. Keep the release workflow package write permission as-is. The latest inspected release run still published to GHCR successfully after the repository rename.
-5. Decide whether the old GHCR package namespace `ghcr.io/anaregdesign/arcade-spac` should remain available for rollback history or be retired after the first successful post-rename release.
+5. Decide whether the old GHCR package namespace `ghcr.io/anaregdesign/arcade-spac` should remain available for rollback history or be retired now that the first successful post-rename release has completed.
 
 ## Azure Follow-Up
 
 1. The deploy app registration federated credential subject has been corrected to `repo:anaregdesign/arcade-spec:environment:production`.
 2. Keep verifying that the GitHub Actions deploy identity matches the exact repository and `production` Environment subject after future identity changes.
-3. After the first post-rename release, verify that Azure Container Apps can pull the new GHCR image path `ghcr.io/anaregdesign/arcade-spec:<tag>`.
-4. Update operational docs that track the current live image only after a release built from the renamed repository is actually deployed.
+3. Azure Container Apps has now pulled and started the new GHCR image path `ghcr.io/anaregdesign/arcade-spec:v2026.03.13.9` successfully.
+4. Keep `docs/production-operations.md` aligned with the current live image after each future release.
 
 ## Verified Audit Findings
 
 - Repository metadata now resolves as `anaregdesign/arcade-spec` with default branch `main`.
 - The Azure deploy federated credential now reports `repo:anaregdesign/arcade-spec:environment:production`.
-- The latest inspected release workflow run kept the publish job green and failed later in the smoke-test step, so the rename did not break GHCR publish permissions.
-- The live Container App still points to `ghcr.io/anaregdesign/arcade-spac:v2026.03.13.8`, so production has not yet cut over to the new GHCR namespace.
+- The release workflow for `v2026.03.13.9` completed successfully, including publish, Azure deploy, and smoke test.
+- The live Container App now points to `ghcr.io/anaregdesign/arcade-spec:v2026.03.13.9` on revision `ca-arcade--0000020`.
 - The `production` Environment still exists after the rename.
 - The `main` branch is currently unprotected.
 
@@ -65,4 +65,4 @@ This runbook captures the remaining external follow-up needed after standardizin
 
 ## Notes On Historical Values
 
-- Existing production baseline entries that mention `ghcr.io/anaregdesign/arcade-spac` describe historical releases and should only be rewritten when a new release from `anaregdesign/arcade-spec` becomes the live baseline.
+- Remaining references to `ghcr.io/anaregdesign/arcade-spac` now exist only to preserve rollback history for pre-cutover releases.
