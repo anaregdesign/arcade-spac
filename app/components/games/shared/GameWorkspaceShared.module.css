@@ -148,21 +148,22 @@
 
 .game-instructions-panel {
   display: grid;
-  gap: 10px;
-  padding: 14px;
+  gap: 12px;
+  padding: 16px;
   border-radius: 18px;
   background: var(--card-muted);
+  min-width: 0;
 }
 
 .game-instructions-list {
   display: grid;
-  gap: 10px;
+  gap: 12px;
   margin: 0;
 }
 
 .game-instructions-row {
   display: grid;
-  gap: 2px;
+  gap: 4px;
 }
 
 .game-instructions-row dt {
