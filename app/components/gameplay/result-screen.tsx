@@ -44,6 +44,22 @@ type ResultScreenProps = {
   };
 };
 
+function getCompactStateCopy(result: ResultScreenProps["result"]) {
+  if (result.status === "PENDING_SAVE") {
+    return "Provisional until save retry";
+  }
+
+  if (result.status === "FAILED") {
+    return "History only, no ranking update";
+  }
+
+  if (result.status === "ABANDONED") {
+    return "Abandoned run, no ranking update";
+  }
+
+  return null;
+}
+
 export function ResultScreen({ result }: ResultScreenProps) {
   const teamsShareHref = `https://teams.microsoft.com/share?href=${encodeURIComponent(result.shareUrl)}&msgText=${encodeURIComponent(result.shareText)}`;
   const statusBadgeClass = result.status === "COMPLETED"
@@ -52,11 +68,22 @@ export function ResultScreen({ result }: ResultScreenProps) {
       ? "status-badge status-badge-pending"
       : "status-badge status-badge-neutral";
   const alternateGames = buildAlternateGameLinks(result.gameKey);
+  const compactStateCopy = getCompactStateCopy(result);
+  const quickStats = [
+    { label: result.supportMetricLabel, value: result.supportMetricValue },
+    { label: "Vs best", value: result.selfBestDeltaLabel },
+    { label: "Board score", value: String(result.competitivePoints) },
+  ];
+  const impactCards = [
+    { key: "game-rank", label: "Game rank", value: result.impact.gameRank.value },
+    { key: "total-points", label: "Total points", value: result.impact.totalPoints.value },
+    { key: "overall-rank", label: "Overall rank", value: result.impact.overallRank.value },
+  ];
 
   return (
     <div className="dashboard-stack">
-      <section className="feature-card workspace-card">
-        <div className="section-heading">
+      <section className="feature-card workspace-card result-hero-card">
+        <div className="section-heading result-meta-heading">
           <div>
             <p className="eyebrow">Result</p>
             <h2 className="section-title">{result.gameName} {result.difficulty.toLowerCase()}</h2>
@@ -66,56 +93,25 @@ export function ResultScreen({ result }: ResultScreenProps) {
             <span className="status-badge status-badge-neutral">{result.selfBestBadge}</span>
           </div>
         </div>
-        <p className="compact-copy">{result.summaryText}</p>
-        {result.stateExplanation ? <p className="workspace-note">{result.stateExplanation}</p> : null}
-        <dl className="stat-grid compact-stat-grid">
-          <div>
-            <dt>{result.primaryMetricLabel}</dt>
-            <dd>{result.primaryMetric}</dd>
-          </div>
-          <div>
-            <dt>{result.supportMetricLabel}</dt>
-            <dd>{result.supportMetricValue}</dd>
-          </div>
-          <div>
-            <dt>Vs best</dt>
-            <dd>{result.selfBestDeltaLabel}</dd>
-          </div>
-          <div>
-            <dt>Board score</dt>
-            <dd>{result.competitivePoints}</dd>
-          </div>
+        <div className="result-score-stage" aria-label="Primary score">
+          <p className="result-score-label">{result.primaryMetricLabel}</p>
+          <p className="result-score-value">{result.primaryMetric}</p>
+          {compactStateCopy ? <p className="result-state-inline">{compactStateCopy}</p> : null}
+        </div>
+        <dl className="result-quick-grid" aria-label="Score summary">
+          {quickStats.map((item) => (
+            <div key={item.label} className="result-quick-item">
+              <dt>{item.label}</dt>
+              <dd>{item.value}</dd>
+            </div>
+          ))}
         </dl>
-        <p className="compact-copy">{result.selfBestDetail} {result.supportMetricNote}</p>
-      </section>
-
-      <section className="summary-grid result-impact-grid" aria-label="Impact summary">
-        <article className="summary-card warm-card">
-          <p className="eyebrow">Game rank</p>
-          <h2 className="section-title">{result.impact.gameRank.value}</h2>
-          <p>{result.impact.gameRank.note}</p>
-        </article>
-        <article className="summary-card cool-card">
-          <p className="eyebrow">Total points</p>
-          <h2 className="section-title">{result.impact.totalPoints.value}</h2>
-          <p>{result.impact.totalPoints.note}</p>
-        </article>
-        <article className="summary-card neutral-card">
-          <p className="eyebrow">Overall rank</p>
-          <h2 className="section-title">{result.impact.overallRank.value}</h2>
-          <p>{result.impact.overallRank.note}</p>
-        </article>
-      </section>
-
-      <section className="feature-card workspace-card">
-        <p className="eyebrow">Next action</p>
-        <h2 className="section-title">Choose what to do next</h2>
-        <div className="hero-actions compact-action-strip">
+        <div className="hero-actions compact-action-strip result-primary-actions">
           <Link className="action-link action-link-primary" to={`/games/${result.gameKey}`}>
             Replay {result.gameName}
           </Link>
           <Link className="action-link action-link-secondary" to={result.rankingsHref}>
-            Open {result.gameName} rankings
+            Open rankings
           </Link>
           {result.viewerMode === "owner"
             ? result.canShare ? (
@@ -128,37 +124,70 @@ export function ResultScreen({ result }: ResultScreenProps) {
               </span>
             )
             : null}
-          {alternateGames.map((game) => (
-            <Link key={game.key} className="action-link action-link-secondary" to={game.href}>
-              {game.label}
-            </Link>
-          ))}
           <Link className="action-link action-link-secondary" to="/home">
             Back to home
           </Link>
         </div>
+      </section>
+
+      <section className="summary-grid result-impact-grid" aria-label="Impact summary">
+        {impactCards.map((card) => (
+          <article key={card.key} className="summary-card result-impact-card">
+            <p className="eyebrow">{card.label}</p>
+            <h2 className="section-title">{card.value}</h2>
+          </article>
+        ))}
+      </section>
+
+      <section className="feature-card workspace-card result-detail-card">
         <details className="disclosure-card workspace-disclosure">
           <summary>Run detail</summary>
           <div className="disclosure-body">
-            <dl className="stat-grid compact-stat-grid">
+            <p className="compact-copy">{result.summaryText}</p>
+            {result.stateExplanation ? <p className="compact-copy">{result.stateExplanation}</p> : null}
+            <dl className="stat-grid compact-stat-grid result-detail-grid">
+              <div>
+                <dt>{result.supportMetricLabel}</dt>
+                <dd>{result.supportMetricValue}</dd>
+              </div>
+              <div>
+                <dt>Vs best</dt>
+                <dd>{result.selfBestDeltaLabel}</dd>
+              </div>
+              <div>
+                <dt>Game rank</dt>
+                <dd>{result.impact.gameRank.value}</dd>
+              </div>
+              <div>
+                <dt>Total points</dt>
+                <dd>{result.impact.totalPoints.value}</dd>
+              </div>
+              <div>
+                <dt>Overall rank</dt>
+                <dd>{result.impact.overallRank.value}</dd>
+              </div>
               <div>
                 <dt>Share</dt>
                 <dd>{result.viewerMode === "owner" ? result.canShare ? "Ready" : "Locked" : "Owner only"}</dd>
               </div>
-              <div>
-                <dt>Status</dt>
-                <dd>{result.statusLabel}</dd>
-              </div>
-              <div>
-                <dt>Result link</dt>
-                <dd>{result.viewerMode === "owner" && result.canShare ? "Ready for Teams share" : "Visible inside app only"}</dd>
-              </div>
-              <div>
-                <dt>Best badge</dt>
-                <dd>{result.selfBestBadge}</dd>
-              </div>
             </dl>
-            <p className="compact-copy">{result.shareAvailabilityNote}</p>
+            <div className="result-detail-copy">
+              <p className="compact-copy">{result.selfBestDetail}</p>
+              <p className="compact-copy">{result.supportMetricNote}</p>
+              <p className="compact-copy">{result.impact.gameRank.note}</p>
+              <p className="compact-copy">{result.impact.totalPoints.note}</p>
+              <p className="compact-copy">{result.impact.overallRank.note}</p>
+              <p className="compact-copy">{result.shareAvailabilityNote}</p>
+            </div>
+            {alternateGames.length > 0 ? (
+              <div className="hero-actions compact-action-strip">
+                {alternateGames.map((game) => (
+                  <Link key={game.key} className="action-link action-link-secondary" to={game.href}>
+                    {game.label}
+                  </Link>
+                ))}
+              </div>
+            ) : null}
           </div>
         </details>
       </section>
