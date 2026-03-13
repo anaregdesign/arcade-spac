@@ -29,7 +29,9 @@ type GamePrimaryMetricDefinition = {
 
 export const supportedGames = [
   {
+    accentColor: "#14b8a6",
     homeTags: ["perception", "fast-start"],
+    id: "game-color-sweep",
     key: "color-sweep",
     name: "Color Sweep",
     primaryMetric: {
@@ -39,6 +41,8 @@ export const supportedGames = [
       failedLabel: "Run time",
       format: "duration_seconds",
     },
+    rulesSummary: "Only the target color counts. Wrong taps lower quality, and timeouts stay in history only.",
+    shortDescription: "Clear every tile that matches the target color before the timer expires.",
     storedKey: "COLOR_SWEEP",
     successfulResultLabel: "clear",
     supportMetric: {
@@ -54,7 +58,9 @@ export const supportedGames = [
     },
   },
   {
+    accentColor: "#ea580c",
     homeTags: ["fast-start", "logic"],
+    id: "game-minesweeper",
     key: "minesweeper",
     name: "Minesweeper",
     primaryMetric: {
@@ -64,6 +70,8 @@ export const supportedGames = [
       failedLabel: "Run time",
       format: "duration_seconds",
     },
+    rulesSummary: "Reveal all safe tiles. Mistakes cost quality score and leaderboard points.",
+    shortDescription: "Clear the board quickly while keeping mistakes low.",
     storedKey: "MINESWEEPER",
     successfulResultLabel: "clear",
     supportMetric: {
@@ -79,7 +87,9 @@ export const supportedGames = [
     },
   },
   {
+    accentColor: "#3b82f6",
     homeTags: ["logic", "fast-start"],
+    id: "game-number-chain",
     key: "number-chain",
     name: "Number Chain",
     primaryMetric: {
@@ -89,6 +99,8 @@ export const supportedGames = [
       failedLabel: "Run time",
       format: "duration_seconds",
     },
+    rulesSummary: "Only the next number advances the chain. Wrong taps lower quality, and timeouts stay in history only.",
+    shortDescription: "Tap the shuffled numbers in ascending order before the timer expires.",
     storedKey: "NUMBER_CHAIN",
     successfulResultLabel: "clear",
     supportMetric: {
@@ -104,7 +116,9 @@ export const supportedGames = [
     },
   },
   {
+    accentColor: "#7c3aed",
     homeTags: ["memory"],
+    id: "game-pair-flip",
     key: "pair-flip",
     name: "Pair Flip",
     primaryMetric: {
@@ -114,6 +128,8 @@ export const supportedGames = [
       failedLabel: "Run time",
       format: "duration_seconds",
     },
+    rulesSummary: "Mismatched cards flip back after a short reveal. Timeouts stay in history only.",
+    shortDescription: "Flip cards two at a time and match every symbol before the timer expires.",
     storedKey: "PAIR_FLIP",
     successfulResultLabel: "clear",
     supportMetric: {
@@ -129,7 +145,9 @@ export const supportedGames = [
     },
   },
   {
+    accentColor: "#0f766e",
     homeTags: ["logic"],
+    id: "game-sudoku",
     key: "sudoku",
     name: "Sudoku",
     primaryMetric: {
@@ -139,6 +157,8 @@ export const supportedGames = [
       failedLabel: "Run time",
       format: "duration_seconds",
     },
+    rulesSummary: "Finish the puzzle fast. Hints lower quality and can remove leaderboard eligibility.",
+    shortDescription: "Complete the grid with as few hints and errors as possible.",
     storedKey: "SUDOKU",
     successfulResultLabel: "clear",
     supportMetric: {
@@ -154,9 +174,11 @@ export const supportedGames = [
     },
   },
   {
+    accentColor: "#f97316",
     homeTags: ["timing", "fast-start"],
+    id: "game-drop-line",
     key: "drop-line",
-    name: "Drop Line",
+    name: "Drop Ball",
     primaryMetric: {
       bestLabel: "Best hit offset",
       completedLabel: "Hit offset",
@@ -164,6 +186,8 @@ export const supportedGames = [
       failedLabel: "Miss offset",
       format: "offset_px",
     },
+    rulesSummary: "A smaller hit offset scores better. Missed drops stay in history only and do not enter rankings.",
+    shortDescription: "Tap when the falling ball overlaps the target line to keep the offset tiny.",
     storedKey: "DROP_LINE",
     successfulResultLabel: "hit",
     supportMetric: {
@@ -172,14 +196,29 @@ export const supportedGames = [
     },
   },
 ] as const satisfies ReadonlyArray<{
+  accentColor: string;
   homeTags: readonly string[];
+  id: string;
   key: string;
   name: string;
   primaryMetric: GamePrimaryMetricDefinition;
+  rulesSummary: string;
+  shortDescription: string;
   storedKey: string;
   successfulResultLabel: string;
   supportMetric: GameSupportMetricDefinition;
 }>;
+
+export function listPersistedGames() {
+  return supportedGames.map((game) => ({
+    id: game.id,
+    key: game.storedKey,
+    name: game.name,
+    shortDescription: game.shortDescription,
+    accentColor: game.accentColor,
+    rulesSummary: game.rulesSummary,
+  }));
+}
 
 export type GameKey = (typeof supportedGames)[number]["key"];
 export type StoredGameKey = (typeof supportedGames)[number]["storedKey"];

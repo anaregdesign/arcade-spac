@@ -83,10 +83,10 @@ export function DropLineGameWorkspace({ instructions, workspace }: GameWorkspace
         )}
       />
 
-      <section className="feature-card workspace-card board-card board-card-minimal drop-line-board-card" aria-label="Drop Line lane">
+      <section className="feature-card workspace-card board-card board-card-minimal drop-line-board-card" aria-label="Drop Ball lane">
         <div className="drop-line-shell game-board-overlay-shell">
           <button
-            aria-label={isLiveRun ? "Tap when the ball overlaps the line" : "Drop Line play area"}
+            aria-label={isLiveRun ? "Tap when the ball overlaps the line" : "Drop Ball play area"}
             className="drop-line-lane"
             disabled={!isLiveRun}
             onClick={() => dropLine.captureHit()}
@@ -113,7 +113,7 @@ export function DropLineGameWorkspace({ instructions, workspace }: GameWorkspace
               workspace.beginRun();
               dropLine.beginRun();
             }}
-            title="Timing lane"
+            title="Drop Ball lane"
           />
         </div>
       </section>

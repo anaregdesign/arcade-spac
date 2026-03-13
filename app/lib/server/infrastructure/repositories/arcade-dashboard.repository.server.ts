@@ -8,10 +8,13 @@ import {
   markOnboardingSeenFixture,
   withDevelopmentFixtures,
 } from "./dev-fixtures.server";
+import { ensureCanonicalGameCatalog } from "./game-catalog.repository.server";
 
 export async function listSignInUsers() {
   return withDevelopmentFixtures(
-    () => prisma.user.findMany({
+    async () => {
+      await ensureCanonicalGameCatalog();
+      return prisma.user.findMany({
       include: {
         profile: true,
         overallSummaries: {
@@ -26,7 +29,8 @@ export async function listSignInUsers() {
       orderBy: {
         displayName: "asc",
       },
-    }),
+      });
+    },
     () => listSignInUsersFixture(),
   );
 }
@@ -69,20 +73,26 @@ export async function getHomeDashboardRecord(userId: string) {
 
 export async function getGameRecord(gameKey: string) {
   return withDevelopmentFixtures(
-    () => prisma.game.findFirst({
-      where: { key: toStoredGameKey(gameKey) },
-    }),
+    async () => {
+      await ensureCanonicalGameCatalog();
+      return prisma.game.findFirst({
+        where: { key: toStoredGameKey(gameKey) },
+      });
+    },
     () => getGameRecordFixture(gameKey),
   );
 }
 
 export async function listGameRecords() {
   return withDevelopmentFixtures(
-    () => prisma.game.findMany({
-      orderBy: {
-        name: "asc",
-      },
-    }),
+    async () => {
+      await ensureCanonicalGameCatalog();
+      return prisma.game.findMany({
+        orderBy: {
+          name: "asc",
+        },
+      });
+    },
     () => listGameRecordsFixture(),
   );
 }

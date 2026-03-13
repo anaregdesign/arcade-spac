@@ -5,14 +5,14 @@ type SessionState = "idle" | "playing" | "cleared" | "failed";
 
 const laneHeight = 420;
 const lineCenterY = 308;
-const ballRadius = 22;
+const ballRadius = 18;
 const idleBallCenterY = 96;
 
-const difficultyConfig: Record<Difficulty, { speedPxPerSecond: number; spawnRange: [number, number] }> = {
-  EASY: { speedPxPerSecond: 190, spawnRange: [42, 118] },
-  NORMAL: { speedPxPerSecond: 250, spawnRange: [36, 104] },
-  HARD: { speedPxPerSecond: 320, spawnRange: [28, 92] },
-  EXPERT: { speedPxPerSecond: 395, spawnRange: [20, 82] },
+const difficultyConfig: Record<Difficulty, { initialSpeedPxPerSecond: number; accelerationPxPerSecondSquared: number; spawnRange: [number, number] }> = {
+  EASY: { initialSpeedPxPerSecond: 72, accelerationPxPerSecondSquared: 560, spawnRange: [42, 118] },
+  NORMAL: { initialSpeedPxPerSecond: 88, accelerationPxPerSecondSquared: 720, spawnRange: [36, 104] },
+  HARD: { initialSpeedPxPerSecond: 104, accelerationPxPerSecondSquared: 900, spawnRange: [28, 92] },
+  EXPERT: { initialSpeedPxPerSecond: 120, accelerationPxPerSecondSquared: 1080, spawnRange: [20, 82] },
 };
 
 function getRandomSpawnY([min, max]: [number, number]) {
@@ -30,6 +30,7 @@ export function useDropLineSession(difficulty: Difficulty) {
   const [ballCenterY, setBallCenterY] = useState(idleBallCenterY);
   const [elapsedMs, setElapsedMs] = useState(0);
   const [resolvedOffsetPx, setResolvedOffsetPx] = useState<number | null>(null);
+  const [speedPxPerSecond, setSpeedPxPerSecond] = useState(0);
   const [spawnY, setSpawnY] = useState(idleBallCenterY);
   const [state, setState] = useState<SessionState>("idle");
 
@@ -37,6 +38,7 @@ export function useDropLineSession(difficulty: Difficulty) {
     setBallCenterY(idleBallCenterY);
     setElapsedMs(0);
     setResolvedOffsetPx(null);
+    setSpeedPxPerSecond(0);
     setSpawnY(idleBallCenterY);
     setState("idle");
     startedAtRef.current = null;
@@ -63,10 +65,16 @@ export function useDropLineSession(difficulty: Difficulty) {
       }
 
       const nextElapsedMs = now - startedAtRef.current;
-      const nextBallCenterY = spawnY + ((nextElapsedMs / 1000) * difficultySettings.speedPxPerSecond);
+      const elapsedSeconds = nextElapsedMs / 1000;
+      const nextSpeedPxPerSecond = difficultySettings.initialSpeedPxPerSecond
+        + (difficultySettings.accelerationPxPerSecondSquared * elapsedSeconds);
+      const nextBallCenterY = spawnY
+        + (difficultySettings.initialSpeedPxPerSecond * elapsedSeconds)
+        + (0.5 * difficultySettings.accelerationPxPerSecondSquared * elapsedSeconds * elapsedSeconds);
       const nextOffsetPx = getOffsetPx(nextBallCenterY);
 
       setElapsedMs(nextElapsedMs);
+      setSpeedPxPerSecond(Math.round(nextSpeedPxPerSecond));
 
       if (nextBallCenterY - ballRadius > laneHeight) {
         setBallCenterY(nextBallCenterY);
@@ -88,7 +96,7 @@ export function useDropLineSession(difficulty: Difficulty) {
         animationFrameRef.current = null;
       }
     };
-  }, [difficultySettings.speedPxPerSecond, spawnY, state]);
+  }, [difficultySettings.accelerationPxPerSecondSquared, difficultySettings.initialSpeedPxPerSecond, spawnY, state]);
 
   function beginRun() {
     const nextSpawnY = getRandomSpawnY(difficultySettings.spawnRange);
@@ -102,6 +110,7 @@ export function useDropLineSession(difficulty: Difficulty) {
     setBallCenterY(nextSpawnY);
     setElapsedMs(0);
     setResolvedOffsetPx(null);
+    setSpeedPxPerSecond(difficultySettings.initialSpeedPxPerSecond);
     setSpawnY(nextSpawnY);
     setState("playing");
   }
@@ -130,7 +139,7 @@ export function useDropLineSession(difficulty: Difficulty) {
     laneHeight,
     lineCenterY,
     resolvedOffsetPx,
-    speedPxPerSecond: difficultySettings.speedPxPerSecond,
+    speedPxPerSecond,
     state,
   };
 }

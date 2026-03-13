@@ -14,6 +14,7 @@ import {
   updatePlayResultShareTokenFixture,
   withDevelopmentFixtures,
 } from "./dev-fixtures.server";
+import { ensureCanonicalGameCatalog } from "./game-catalog.repository.server";
 
 type UpsertGameSummaryInput = {
   userId: string;
@@ -38,9 +39,12 @@ type UpsertOverallSummaryInput = {
 
 export async function getGameByKey(gameKey: string) {
   return withDevelopmentFixtures(
-    () => prisma.game.findFirst({
-      where: { key: toStoredGameKey(gameKey) },
-    }),
+    async () => {
+      await ensureCanonicalGameCatalog();
+      return prisma.game.findFirst({
+        where: { key: toStoredGameKey(gameKey) },
+      });
+    },
     () => getGameRecordFixture(gameKey),
   );
 }
@@ -136,11 +140,14 @@ export async function listUsersWithResults() {
 
 export async function listGames() {
   return withDevelopmentFixtures(
-    () => prisma.game.findMany({
-      orderBy: {
-        name: "asc",
-      },
-    }),
+    async () => {
+      await ensureCanonicalGameCatalog();
+      return prisma.game.findMany({
+        orderBy: {
+          name: "asc",
+        },
+      });
+    },
     () => listGameRecordsFixture(),
   );
 }

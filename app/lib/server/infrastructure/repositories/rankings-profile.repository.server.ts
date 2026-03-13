@@ -9,6 +9,7 @@ import {
   updateProfileRecordFixture,
   withDevelopmentFixtures,
 } from "./dev-fixtures.server";
+import { ensureCanonicalGameCatalog } from "./game-catalog.repository.server";
 
 type RankingPeriod = "SEASON" | "LIFETIME";
 type RankingScope = "overall" | GameKey;
@@ -17,11 +18,14 @@ type VisibilityScope = "TENANT_ONLY" | "PRIVATE";
 
 export async function listRankingGames() {
   return withDevelopmentFixtures(
-    () => prisma.game.findMany({
-      orderBy: {
-        name: "asc",
-      },
-    }),
+    async () => {
+      await ensureCanonicalGameCatalog();
+      return prisma.game.findMany({
+        orderBy: {
+          name: "asc",
+        },
+      });
+    },
     () => listRankingGamesFixture(),
   );
 }

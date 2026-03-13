@@ -1,4 +1,5 @@
 import { prisma } from "../prisma.server";
+import { ensureCanonicalGameCatalog } from "./game-catalog.repository.server";
 
 type EntraIdentity = {
   avatarUrl: string | null;
@@ -8,6 +9,8 @@ type EntraIdentity = {
 };
 
 export async function getOrCreateUserFromEntraIdentity(identity: EntraIdentity) {
+  await ensureCanonicalGameCatalog();
+
   const existingUser = await prisma.user.findUnique({
     where: {
       entraTenantId_entraObjectId: {

@@ -1,6 +1,6 @@
 import { getRuntimeConfig } from "../config/runtime-config.server";
 import type { GameKey, StoredGameKey } from "../../../domain/entities/game-catalog";
-import { toStoredGameKey } from "../../../domain/entities/game-catalog";
+import { listPersistedGames, toStoredGameKey } from "../../../domain/entities/game-catalog";
 
 type RankingPeriod = "SEASON" | "LIFETIME";
 type RankingScope = "overall" | GameKey;
@@ -192,56 +192,7 @@ function createInitialState(): DevState {
         lastPlayedAt: new Date("2026-03-11T19:42:10.000Z"),
       },
     ],
-    games: [
-      {
-        id: "game-color-sweep",
-        key: "COLOR_SWEEP",
-        name: "Color Sweep",
-        shortDescription: "Clear every tile that matches the target color before the timer expires.",
-        accentColor: "#14b8a6",
-        rulesSummary: "Only the target color counts. Wrong taps lower quality, and timeouts stay in history only.",
-      },
-      {
-        id: "game-drop-line",
-        key: "DROP_LINE",
-        name: "Drop Line",
-        shortDescription: "Tap when the falling ball overlaps the target line to keep the offset tiny.",
-        accentColor: "#f97316",
-        rulesSummary: "A smaller hit offset scores better. Missed drops stay in history only and do not enter rankings.",
-      },
-      {
-        id: "game-minesweeper",
-        key: "MINESWEEPER",
-        name: "Minesweeper",
-        shortDescription: "Clear the board quickly while keeping mistakes low.",
-        accentColor: "#ea580c",
-        rulesSummary: "Reveal all safe tiles. Mistakes cost quality score and leaderboard points.",
-      },
-      {
-        id: "game-number-chain",
-        key: "NUMBER_CHAIN",
-        name: "Number Chain",
-        shortDescription: "Tap the shuffled numbers in ascending order before the timer expires.",
-        accentColor: "#3b82f6",
-        rulesSummary: "Only the next number advances the chain. Wrong taps lower quality, and timeouts stay in history only.",
-      },
-      {
-        id: "game-pair-flip",
-        key: "PAIR_FLIP",
-        name: "Pair Flip",
-        shortDescription: "Flip cards two at a time and match every symbol before the timer expires.",
-        accentColor: "#7c3aed",
-        rulesSummary: "Mismatched cards flip back after a short reveal. Timeouts stay in history only.",
-      },
-      {
-        id: "game-sudoku",
-        key: "SUDOKU",
-        name: "Sudoku",
-        shortDescription: "Complete the grid with as few hints and errors as possible.",
-        accentColor: "#0f766e",
-        rulesSummary: "Finish the puzzle fast. Hints lower quality and can remove leaderboard eligibility.",
-      },
-    ],
+    games: listPersistedGames(),
     playResults: [
       {
         id: "play-aiko-mine-1",

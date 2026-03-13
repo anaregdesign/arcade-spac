@@ -1,4 +1,5 @@
 import { prisma } from "../app/lib/server/infrastructure/prisma.server";
+import { listPersistedGames } from "../app/lib/domain/entities/game-catalog";
 
 const userIds = {
   aiko: "user-aiko",
@@ -6,13 +7,14 @@ const userIds = {
   mio: "user-mio",
 } as const;
 
+const persistedGames = listPersistedGames();
 const gameIds = {
-  colorSweep: "game-color-sweep",
-  dropLine: "game-drop-line",
-  minesweeper: "game-minesweeper",
-  numberChain: "game-number-chain",
-  pairFlip: "game-pair-flip",
-  sudoku: "game-sudoku",
+  colorSweep: persistedGames.find((game) => game.key === "COLOR_SWEEP")!.id,
+  dropLine: persistedGames.find((game) => game.key === "DROP_LINE")!.id,
+  minesweeper: persistedGames.find((game) => game.key === "MINESWEEPER")!.id,
+  numberChain: persistedGames.find((game) => game.key === "NUMBER_CHAIN")!.id,
+  pairFlip: persistedGames.find((game) => game.key === "PAIR_FLIP")!.id,
+  sudoku: persistedGames.find((game) => game.key === "SUDOKU")!.id,
 } as const;
 
 async function main() {
@@ -25,56 +27,7 @@ async function main() {
   await prisma.user.deleteMany();
 
   await prisma.game.createMany({
-    data: [
-      {
-        id: gameIds.colorSweep,
-        key: "COLOR_SWEEP",
-        name: "Color Sweep",
-        shortDescription: "Clear every tile that matches the target color before the timer expires.",
-        accentColor: "#14b8a6",
-        rulesSummary: "Only the target color counts. Wrong taps lower quality, and timeouts stay in history only.",
-      },
-      {
-        id: gameIds.dropLine,
-        key: "DROP_LINE",
-        name: "Drop Line",
-        shortDescription: "Tap when the falling ball overlaps the target line to keep the offset tiny.",
-        accentColor: "#f97316",
-        rulesSummary: "A smaller hit offset scores better. Missed drops stay in history only and do not enter rankings.",
-      },
-      {
-        id: gameIds.minesweeper,
-        key: "MINESWEEPER",
-        name: "Minesweeper",
-        shortDescription: "Clear the board quickly while keeping mistakes low.",
-        accentColor: "#ea580c",
-        rulesSummary: "Reveal all safe tiles. Mistakes cost quality score and leaderboard points.",
-      },
-      {
-        id: gameIds.numberChain,
-        key: "NUMBER_CHAIN",
-        name: "Number Chain",
-        shortDescription: "Tap the shuffled numbers in ascending order before the timer expires.",
-        accentColor: "#3b82f6",
-        rulesSummary: "Only the next number advances the chain. Wrong taps lower quality, and timeouts stay in history only.",
-      },
-      {
-        id: gameIds.pairFlip,
-        key: "PAIR_FLIP",
-        name: "Pair Flip",
-        shortDescription: "Flip cards two at a time and match every symbol before the timer expires.",
-        accentColor: "#7c3aed",
-        rulesSummary: "Mismatched cards flip back after a short reveal. Timeouts stay in history only.",
-      },
-      {
-        id: gameIds.sudoku,
-        key: "SUDOKU",
-        name: "Sudoku",
-        shortDescription: "Complete the grid with as few hints and errors as possible.",
-        accentColor: "#0f766e",
-        rulesSummary: "Finish the puzzle fast. Hints lower quality and can remove leaderboard eligibility.",
-      },
-    ],
+    data: persistedGames,
   });
 
   await prisma.user.createMany({

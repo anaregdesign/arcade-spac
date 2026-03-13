@@ -53,7 +53,7 @@ const gameDefinitionByKey: Record<string, GameDefinition> = {
   },
   "drop-line": {
     instructions: {
-      summary: "Start a drop, watch the ball fall, and tap once when it overlaps the line to keep the hit offset as small as possible.",
+      summary: "Start a drop, watch the ball accelerate as it falls, and tap once when it overlaps the line to keep the hit offset as small as possible.",
       sections: [
         {
           title: "Run flow",
@@ -67,12 +67,12 @@ const gameDefinitionByKey: Record<string, GameDefinition> = {
           title: "Board controls",
           items: [
             { label: "Tap to score", detail: "The lane accepts one click or tap during a live run." },
-            { label: "Read the score", detail: "The smaller the hit offset in px, the better the result." },
+            { label: "Read the score", detail: "The smaller the hit offset in px, the better the result, even as the ball speeds up while falling." },
             { label: "Miss handling", detail: "If the ball drops past the line before you tap, the run is saved as a miss and excluded from rankings." },
           ],
         },
       ],
-      title: "Drop Line controls",
+      title: "Drop Ball controls",
     },
     presentation: {
       previewAlt: "Falling ball above a target line in a vertical lane",
