@@ -6,7 +6,7 @@
 
 ## User Problem
 
-- 現在の local workspace directory は `arcade-spec`、origin remote は `arcade-spac` で不一致があり、どちらも typo の可能性がある
+- local workspace directory は `arcade-spec` だが、rename 前は origin remote と GitHub repository が `arcade-spac` で不一致だった
 - GitHub repository identity が曖昧なままだと、GHCR image path、OIDC subject、GitHub Environment 運用、release automation、Azure Container Apps deploy の前提がずれる
 - ドキュメントと運用コマンドが誤った repository identity を前提に残ると、rename 後の保守で事故が起きやすい
 
@@ -19,7 +19,7 @@
 ## Scope
 
 - 正しい target repository name `anaregdesign/arcade-spec` を確定し、workspace 内の repository-facing references を洗い出す
-- Git remote、repository documentation、GitHub workflow references、container image naming assumptions、Azure deploy integration assumptions を順番に修正する
+- Git remote、repository documentation、GitHub workflow references、container image naming assumptions、Azure deploy integration assumptions を順番に修正し、rename 完了後の残課題を整理する
 - rename 後に必要な GitHub 側と Azure 側の follow-up task を明文化する
 
 ## Non-Goals
@@ -50,12 +50,12 @@
 ## Constraints And Dependencies
 
 - target repository name は `anaregdesign/arcade-spec` とする
-- GitHub 側の repository rename 実作業は、この workspace の編集だけでは完了しない可能性がある
+- GitHub 側の repository rename は完了したが、post-rename verification と外部 follow-up が残る
 - Azure deploy integration は GitHub repository slug に依存する設定がありうるため、rename 後の follow-up を明示する必要がある
 
 ## Links
 
-- Plan Archive: [../plans/plan.20260313-211626.md](../plans/plan.20260313-211626.md)
+- Plan Archive: [../plans/plan.20260313-212133.md](../plans/plan.20260313-212133.md)
 - Follow-up: [../repository-rename-runbook.md](../repository-rename-runbook.md)
 - Workflow: [../../.github/workflows/release-container-image.yml](../../.github/workflows/release-container-image.yml)
 - Azure config: [../../azure.yaml](../../azure.yaml)

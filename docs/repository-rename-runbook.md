@@ -1,6 +1,6 @@
 # Repository Rename Runbook
 
-This runbook captures the ordered steps and external follow-up needed to standardize the repository identity on `anaregdesign/arcade-spec`.
+This runbook captures the remaining external follow-up needed after standardizing the repository identity on `anaregdesign/arcade-spec`.
 
 ## Canonical Repository Identity
 
@@ -8,23 +8,27 @@ This runbook captures the ordered steps and external follow-up needed to standar
 - SSH remote URL: `git@github.com:anaregdesign/arcade-spec.git`
 - GHCR image namespace after the rename cutover: `ghcr.io/anaregdesign/arcade-spec`
 
+## Rename Status
+
+- The GitHub repository now resolves as `anaregdesign/arcade-spec`.
+- The local `origin` remote now points to `git@github.com:anaregdesign/arcade-spec.git`.
+
 ## What Is Already Safe In Repo
 
 - `.github/workflows/release-container-image.yml` derives `IMAGE_NAME` and deploy `IMAGE_REF` from `${{ github.repository }}`.
-- Once GitHub reports the repository as `anaregdesign/arcade-spec`, future release builds will automatically push `ghcr.io/anaregdesign/arcade-spec:<tag>`.
+- Future release builds will automatically push `ghcr.io/anaregdesign/arcade-spec:<tag>` because GitHub now reports the repository as `anaregdesign/arcade-spec`.
 - `azure.yaml` does not embed the repository slug directly.
 
 ## Workspace Changes Applied
 
 - The local repository spec and execution plan now use `anaregdesign/arcade-spec` as the canonical target name.
-- The local `origin` remote should point to `git@github.com:anaregdesign/arcade-spec.git`.
+- The local `origin` remote points to `git@github.com:anaregdesign/arcade-spec.git`.
 - Repository rename follow-up is documented here so GitHub-side and Azure-side steps are not lost.
 
 ## GitHub Follow-Up
 
-1. Rename the GitHub repository to `arcade-spec` if it is still published as `arcade-spac`.
-2. Confirm the default branch, branch protections, required checks, and GitHub Environment configuration stayed attached to the renamed repository.
-3. Confirm the `production` Environment still exposes the expected Variables and Secrets:
+1. Confirm the default branch, branch protections, required checks, and GitHub Environment configuration stayed attached to the renamed repository.
+2. Confirm the `production` Environment still exposes the expected Variables and Secrets:
    - `AZURE_CLIENT_ID`
    - `AZURE_TENANT_ID`
    - `AZURE_SUBSCRIPTION_ID`
@@ -32,8 +36,8 @@ This runbook captures the ordered steps and external follow-up needed to standar
    - `AZURE_CONTAINER_APP_NAME`
    - `GHCR_PULL_USERNAME`
    - `GHCR_PULL_TOKEN`
-4. Confirm the release workflow still has package write permission after the rename.
-5. Decide whether the old GHCR package namespace `ghcr.io/anaregdesign/arcade-spac` should remain available for rollback history or be retired after the first successful post-rename release.
+3. Confirm the release workflow still has package write permission after the rename.
+4. Decide whether the old GHCR package namespace `ghcr.io/anaregdesign/arcade-spac` should remain available for rollback history or be retired after the first successful post-rename release.
 
 ## Azure Follow-Up
 
