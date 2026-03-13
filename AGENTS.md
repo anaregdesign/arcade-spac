@@ -17,3 +17,9 @@
 ## Documentation Consistency
 
 - Follow `/docs/` paths, not legacy `/doc/` paths, when applying `spec-driven-workflow` in this repository.
+
+## Deployment Policy
+
+- For this repository, production and shared-environment CD must always run through the configured GitHub Workflow.
+- Do not perform production or shared-environment deployments directly from a local agent session with `azd deploy`, `azd up`, `az containerapp update`, or equivalent Azure CLI commands unless the user explicitly asks to change this policy.
+- When deployment is requested, prepare or validate the change locally as needed, then direct the release through the repository's GitHub Workflow path.

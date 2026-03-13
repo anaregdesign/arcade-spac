@@ -35,3 +35,9 @@ Use them deliberately and combine them by concern.
 - Independent spec and planning skill: `.github/skills/spec-driven-workflow/`
 
 Keep the two SPA skills as sibling directories so the Azure skill's relative links into `../enforce-react-spa-architecture/` remain valid.
+
+## Deployment Policy
+
+- Treat GitHub Workflow based release automation as the only approved CD path for production and shared Azure environments in this repository.
+- Do not run direct local-environment production deploy commands such as `azd deploy`, `azd up`, `az containerapp update`, or similar Azure CLI/CD commands when the goal is to release to a shared or production environment.
+- If a user asks to deploy, validate readiness locally when useful, but route the actual CD step through the repository's GitHub Workflow.
