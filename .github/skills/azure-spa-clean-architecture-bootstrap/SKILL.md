@@ -9,7 +9,7 @@ description: "Own Azure platform, identity, secretless config, IaC, and GitHub r
 
 Use this skill to layer Azure hosting, identity, and GitHub delivery decisions onto the base React Router clean architecture owned by `enforce-react-spa-architecture`. Preserve SPA-style navigation, but switch to a server runtime whenever OAuth callbacks, Prisma, server-only secrets, or Azure SQL access make a static-only SPA the wrong abstraction.
 This skill owns Azure platform, `Microsoft Entra ID`, secretless config, IaC, and release workflow guidance. Keep code structure, UI guardrails, and general verification rules in the companion skill, and repeat them here only when they are critical to protect Azure-specific boundaries.
-This skill does not own `/doc/spec`, `/doc/plan.md`, commit-log workflow, branch naming workflow, or PR management; use a repository workflow skill for those concerns and keep this skill focused on platform deltas.
+This skill does not own `/docs/spec`, `/docs/plans/plan.md`, commit-log workflow, branch naming workflow, or PR management; use a repository workflow skill for those concerns and keep this skill focused on platform deltas.
 Treat requests for "Microsoft auth" as `Microsoft Entra ID` only when the app actually needs user authentication. If the app does not need auth, skip the app registration and auth guidance.
 Prefer a secretless configuration model: do not introduce `.env` or `.env.example` for Azure-hosted apps. Put non-secret runtime configuration in Azure App Configuration, put secrets in Key Vault, use local `DefaultAzureCredential` during development, and use `ManagedIdentityCredential` for deployed app-to-Azure and Azure SQL authentication.
 Keeping the same database engine across environments is usually safer. When this skill adopts SQLite for developer speed, treat it as local-development-only storage and require Azure SQL Database for every Azure-hosted environment that persists relational data.
@@ -19,7 +19,7 @@ When the app requires user authentication, prefer a real local sign-in path with
 ## Companion Skill Requirement
 
 - Install `enforce-react-spa-architecture` together with this skill. Do not use this skill as a standalone replacement for the base architecture skill.
-- If the companion skill is missing, install it before continuing from [https://github.com/anaregdesign/hiroki/tree/main/develop/skills/enforce-react-spa-architecture](https://github.com/anaregdesign/hiroki/tree/main/develop/skills/enforce-react-spa-architecture).
+- If the companion skill is missing, install it before continuing from [https://github.com/anaregdesign/hiroki/tree/main/engineer/development/create-single-page-application/enforce-react-spa-architecture](https://github.com/anaregdesign/hiroki/tree/main/engineer/development/create-single-page-application/enforce-react-spa-architecture).
 - Prefer `$skill-installer` for the install step when another Codex instance needs to fetch the published skill from GitHub.
 - Continue only after the sibling references under `../enforce-react-spa-architecture/references/` are locally available.
 
@@ -36,7 +36,7 @@ When the app requires user authentication, prefer a real local sign-in path with
    - request these prerequisites at project start instead of waiting for release hardening
 3. Confirm the companion skill is installed:
    - required skill: `enforce-react-spa-architecture`
-   - published URL: `https://github.com/anaregdesign/hiroki/tree/main/develop/skills/enforce-react-spa-architecture`
+   - published URL: `https://github.com/anaregdesign/hiroki/tree/main/engineer/development/create-single-page-application/enforce-react-spa-architecture`
    - if missing, install it with `$skill-installer` before reading the sibling references
 4. Read the base architecture references from the sibling skill:
    - full architecture overview index for multi-boundary changes: [`../enforce-react-spa-architecture/references/layout-and-dependency-rules.md`](../enforce-react-spa-architecture/references/layout-and-dependency-rules.md)

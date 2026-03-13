@@ -1,10 +1,10 @@
 # Plan Documentation
 
-Use this reference when creating or updating `/doc/plan.md` for a development request.
+Use this reference when creating or updating `/docs/plans/plan.md` for a development request.
 
 ## Goal
 
-Turn the request into a temporary execution tracker that can be executed from top to bottom, keeps related work grouped, and can be deleted cleanly once the work is done.
+Turn the request into a temporary execution tracker that can be executed from top to bottom, keeps related work grouped, and can be archived cleanly once the work is done.
 
 ## Hierarchical Model
 
@@ -24,7 +24,7 @@ Use only the levels the work actually needs.
 # Execution Plan
 
 ## Links
-- Spec: /doc/spec/<name>.md
+- Spec: /docs/spec/<name>.md
 
 ## Section 1 - <phase or workstream>
 ### Subsection 1.1 - <reviewable slice>
@@ -48,7 +48,7 @@ Use only the levels the work actually needs.
 ## Good Examples
 
 - `## Section 1 - Bootstrap`
-  - `[ ] Write or update /doc/spec/<name>.md`
+  - `[ ] Write or update /docs/spec/<name>.md`
 - `### Subsection 1.1 - First reviewed slice`
   - `[ ] Add or update the route or API surface for the new behavior`
   - `[ ] Implement the UI or server slice`
@@ -74,10 +74,10 @@ Use only the levels the work actually needs.
 - Preserve true constraints and required sequencing, but do not turn every repeated instruction into its own checkbox.
 - Rewrite the plan when the execution path changes instead of appending stale history.
 - If technical investigation reveals a better execution path, revise the plan to match the current best approach instead of preserving the original guess.
-- Update the spec only when accepted user-visible behavior changes; technical replanning by itself belongs in `/doc/plan.md`.
+- Update the spec only when accepted user-visible behavior changes; technical replanning by itself belongs in `/docs/plans/plan.md`.
 
 ## Completion Rule
 
 - Check a box only when the corresponding step is actually done.
 - Remove or rewrite obsolete checkboxes instead of leaving misleading stale tasks behind.
-- When all remaining checkboxes are complete and no tracked execution work remains, delete `/doc/plan.md`.
+- When all remaining checkboxes are complete and no tracked execution work remains, archive `/docs/plans/plan.md` as `/docs/plans/plan.YYYYMMDD-HHMMSS.md`.

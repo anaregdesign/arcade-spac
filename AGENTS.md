@@ -11,8 +11,8 @@
 ## Spec Workflow
 
 - Keep durable user-facing requirements under `/docs/spec/`.
-- Use `/docs/plan.md` as a temporary execution tracker while work is active.
-- Delete `/docs/plan.md` after all tracked work is complete.
+- Use `/docs/plans/plan.md` as a temporary execution tracker while work is active.
+- Archive completed execution plans as `/docs/plans/plan.YYYYMMDD-HHMMSS.md` when tracked work is finished.
 
 ## Documentation Consistency
 

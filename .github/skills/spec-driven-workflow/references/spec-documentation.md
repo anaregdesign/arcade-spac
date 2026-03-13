@@ -1,6 +1,6 @@
 # Spec Documentation
 
-Use this reference when writing or updating `/doc/spec/` for a development request.
+Use this reference when writing or updating `/docs/spec/` for a development request.
 
 ## Goal
 
@@ -54,8 +54,8 @@ If no relevant spec exists yet, start by creating the first spec document before
 
 ## Starting From Nothing
 
-- If `/doc/spec/` does not exist, create it first.
-- If `/doc/spec/` exists but the requested work has no matching document yet, create a new initial spec file before drafting the main implementation.
+- If `/docs/spec/` does not exist, create it first.
+- If `/docs/spec/` exists but the requested work has no matching document yet, create a new initial spec file before drafting the main implementation.
 - The initial spec does not need to predict every implementation detail, but it should already cover user goals, visible behavior, acceptance criteria, and non-goals.
 - If the original request is a long list of detailed instructions, show a condensed goal-and-constraints framing to the instruction giver and get review on that framing before you expand it into a plan.
 
@@ -63,7 +63,7 @@ If no relevant spec exists yet, start by creating the first spec document before
 
 - Do not start with folder layout, classes, Hook names, or schema details.
 - Do not let implementation notes replace acceptance criteria.
-- Do not let `/doc/plan.md` replace the user-facing requirement document.
+- Do not let `/docs/plans/plan.md` replace the user-facing requirement document.
 - Do not leave the spec as a vague problem statement without concrete behavior.
 - Do not silently replace long step-by-step instructions with your own abstraction; show the proposed higher-level goal and ask for review first.
 - Do not keep stale behavior in the spec after the implementation direction changes.
