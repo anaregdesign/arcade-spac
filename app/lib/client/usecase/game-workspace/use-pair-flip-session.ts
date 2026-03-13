@@ -26,10 +26,10 @@ const symbols = [
 ] as const;
 
 const difficultyConfig: Record<Difficulty, { columns: number; pairCount: number; rows: number; timeLimitSeconds: number }> = {
-  EASY: { columns: 4, pairCount: 6, rows: 3, timeLimitSeconds: 40 },
-  NORMAL: { columns: 4, pairCount: 8, rows: 4, timeLimitSeconds: 55 },
-  HARD: { columns: 5, pairCount: 10, rows: 4, timeLimitSeconds: 70 },
-  EXPERT: { columns: 6, pairCount: 12, rows: 4, timeLimitSeconds: 85 },
+  EASY: { columns: 4, pairCount: 6, rows: 3, timeLimitSeconds: 55 },
+  NORMAL: { columns: 4, pairCount: 8, rows: 4, timeLimitSeconds: 75 },
+  HARD: { columns: 5, pairCount: 10, rows: 4, timeLimitSeconds: 95 },
+  EXPERT: { columns: 6, pairCount: 12, rows: 4, timeLimitSeconds: 120 },
 };
 
 function chunkCards(cards: Card[], columns: number) {
