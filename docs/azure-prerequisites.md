@@ -89,6 +89,12 @@ The current production deployment is verified on:
 - `AzureADMultipleOrgs` app registration with `organizations` authority for hosted sign-in
 - Azure SQL server `sql-arcade-qddhfw4moexbm.database.windows.net`
 
+## Repository Rename Note
+
+- The canonical GitHub repository slug is `anaregdesign/arcade-spec`.
+- Future release workflows should publish GHCR images under `ghcr.io/anaregdesign/arcade-spec` because the workflow derives the image name from `${{ github.repository }}`.
+- The historical baseline above still references `ghcr.io/anaregdesign/arcade-spac` until a post-rename release is actually deployed.
+
 ## Ongoing Operational Concerns
 
 These are no longer bootstrap blockers, but they still need active operational discipline:

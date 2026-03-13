@@ -108,6 +108,7 @@ Before a real hosted deployment, prepare all of the following:
 See `docs/azure-prerequisites.md` for the detailed checklist and current gaps.
 See `docs/production-data-path.md` for the current database cutover contract.
 See `docs/production-operations.md` for the current production baseline, smoke test procedure, rollback target, and observability entry points.
+See `docs/repository-rename-runbook.md` for repository rename, GHCR namespace, and Azure OIDC follow-up steps.
 
 ## Next Steps
 

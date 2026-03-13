@@ -11,6 +11,12 @@ This runbook records the verified production baseline for Arcade on Azure and th
 - Public app URL: `https://ca-arcade.bravepond-f695129a.japaneast.azurecontainerapps.io`
 - Resource group: `rg-arcade-spec-dev`
 
+## Repository Rename Note
+
+- The canonical repository slug is now `anaregdesign/arcade-spec`.
+- The current production baseline still points at the historical GHCR image namespace `ghcr.io/anaregdesign/arcade-spac` because that is the image path of the live release recorded here.
+- After the first successful release published from the renamed repository, update this runbook so the baseline image and rollback target reflect `ghcr.io/anaregdesign/arcade-spec:<tag>`.
+
 ## Rollback Target
 
 - Previous healthy revision: `ca-arcade--0000017`
