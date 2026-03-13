@@ -1,4 +1,6 @@
 import { prisma } from "../prisma.server";
+import type { GameKey, StoredGameKey } from "../../../domain/entities/game-catalog";
+import { toStoredGameKey } from "../../../domain/entities/game-catalog";
 import {
   getThemePreferenceByUserIdFixture,
   getProfileRecordFixture,
@@ -9,8 +11,8 @@ import {
 } from "./dev-fixtures.server";
 
 type RankingPeriod = "SEASON" | "LIFETIME";
-type RankingScope = "overall" | "minesweeper" | "sudoku";
-type FavoriteGame = "MINESWEEPER" | "SUDOKU" | null;
+type RankingScope = "overall" | GameKey;
+type FavoriteGame = StoredGameKey | null;
 type VisibilityScope = "TENANT_ONLY" | "PRIVATE";
 
 export async function listRankingGames() {
@@ -32,7 +34,7 @@ export async function listLeaderboardEntries(periodType: RankingPeriod, scope: R
         user: {
           visibilityScope: "TENANT_ONLY",
         },
-        ...(scope === "overall" ? { gameId: null } : { game: { key: scope.toUpperCase() as "MINESWEEPER" | "SUDOKU" } }),
+        ...(scope === "overall" ? { gameId: null } : { game: { key: toStoredGameKey(scope) } }),
       },
       include: {
         user: true,

@@ -1,9 +1,11 @@
 import { Link } from "react-router";
 
+import type { GameKey } from "../lib/domain/entities/game-catalog";
+
 type RankingsScreenProps = {
   filter: {
     period: "SEASON" | "LIFETIME";
-    scope: "overall" | "minesweeper" | "sudoku";
+    scope: "overall" | GameKey;
   };
   boardMeta: {
     boardLabel: string;
@@ -42,7 +44,7 @@ type RankingsScreenProps = {
 
 type RankingScope = RankingsScreenProps["filter"]["scope"];
 
-function buildRankingsHref(period: "SEASON" | "LIFETIME", scope: "overall" | "minesweeper" | "sudoku") {
+function buildRankingsHref(period: "SEASON" | "LIFETIME", scope: "overall" | GameKey) {
   return `/rankings?period=${period.toLowerCase()}&scope=${scope}`;
 }
 

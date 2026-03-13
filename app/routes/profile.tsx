@@ -3,6 +3,7 @@ import { redirect, useLoaderData } from "react-router";
 import { AppShell } from "../components/app-shell";
 import { ProfileScreen } from "../components/profile-screen";
 import { buildSharedHelpSections } from "../components/shared/help-content";
+import { isGameKey, toStoredGameKey } from "../lib/domain/entities/game-catalog";
 import { requireCurrentUserId } from "../lib/server/infrastructure/auth/session.server";
 import { updateProfileRecord } from "../lib/server/infrastructure/repositories/rankings-profile.repository.server";
 import { getHomeDashboard } from "../lib/server/usecase/get-home-dashboard.server";
@@ -44,7 +45,7 @@ export async function action({ request }: { request: Request }) {
     displayName,
     visibilityScope,
     tagline: typeof tagline === "string" ? tagline : "",
-    favoriteGame: favoriteGame === "MINESWEEPER" || favoriteGame === "SUDOKU" ? favoriteGame : null,
+    favoriteGame: typeof favoriteGame === "string" && isGameKey(favoriteGame) ? toStoredGameKey(favoriteGame) : null,
     themePreference,
   });
 

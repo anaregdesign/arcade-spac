@@ -7,6 +7,7 @@ import {
   updatePlayResultShareToken,
   updatePlayResultStatus,
 } from "../../infrastructure/repositories/gameplay.repository.server";
+import { formatPrimaryMetric, getDropLineHitRating } from "../../../domain/services/game-metrics";
 import { rebuildAggregates } from "./rebuild-aggregates.server";
 
 const difficultyBasePoints = {
@@ -21,7 +22,13 @@ function computeMetrics(gameKey: string, difficulty: keyof typeof difficultyBase
   const modifier = outcome === "clean" ? 1 : outcome === "steady" ? 0.82 : 0.58;
   const primaryMetric = gameKey === "minesweeper"
     ? Math.max(160, Math.round((base / 3) * modifier))
-    : Math.max(220, Math.round((base / 2.4) * modifier));
+    : gameKey === "sudoku"
+      ? Math.max(220, Math.round((base / 2.4) * modifier))
+      : outcome === "clean"
+        ? 6
+        : outcome === "steady"
+          ? 16
+          : 34;
 
   return {
     primaryMetric,
@@ -42,34 +49,32 @@ function computeActualMetrics(input: {
   const base = difficultyBasePoints[input.difficulty];
   const primaryMetric = Math.max(1, Math.round(input.primaryMetric));
   const hintCount = input.gameKey === "sudoku" ? Math.max(0, Math.round(input.hintCount ?? 0)) : null;
-  const mistakeCount = Math.max(0, Math.round(input.mistakeCount ?? 0));
+  const mistakeCount = input.gameKey === "minesweeper" || input.gameKey === "sudoku"
+    ? Math.max(0, Math.round(input.mistakeCount ?? 0))
+    : null;
 
   if (input.outcome === "failed") {
     return {
       primaryMetric,
       competitivePoints: 0,
       hintCount,
-      mistakeCount: input.gameKey === "minesweeper" || input.gameKey === "sudoku" ? mistakeCount : null,
+      mistakeCount,
     };
   }
 
   const penalty = input.gameKey === "minesweeper"
     ? Math.round(primaryMetric * 1.35) + (mistakeCount ?? 0) * 120
-    : Math.round(primaryMetric * 0.9) + (hintCount ?? 0) * 90 + mistakeCount * 45;
+    : input.gameKey === "sudoku"
+      ? Math.round(primaryMetric * 0.9) + (hintCount ?? 0) * 90 + (mistakeCount ?? 0) * 45
+      : Math.round(primaryMetric * 12);
   const pendingModifier = input.outcome === "pending" ? 0.72 : 1;
 
   return {
     primaryMetric,
     competitivePoints: Math.max(Math.round(base * 0.25), Math.round((base - penalty) * pendingModifier)),
     hintCount,
-    mistakeCount: input.gameKey === "minesweeper" || input.gameKey === "sudoku" ? mistakeCount : null,
+    mistakeCount,
   };
-}
-
-function formatMetric(seconds: number) {
-  const minutes = Math.floor(seconds / 60);
-  const remainingSeconds = seconds % 60;
-  return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
 }
 
 function buildResultSummary(input: {
@@ -81,7 +86,19 @@ function buildResultSummary(input: {
   outcome: "clean" | "steady" | "pending" | "failed";
   primaryMetric: number;
 }) {
-  const baseSummary = `${input.gameName} ${input.difficulty.toLowerCase()} ${input.outcome === "failed" ? "ended after" : "cleared in"} ${formatMetric(input.primaryMetric)}`;
+  const formattedMetric = formatPrimaryMetric(input.gameKey, input.primaryMetric);
+
+  if (input.gameKey === "drop-line") {
+    if (input.outcome === "failed") {
+      return `${input.gameName} ${input.difficulty.toLowerCase()} missed the line after ${formattedMetric} offset. Result saved for history only and excluded from rankings.`;
+    }
+
+    const rating = getDropLineHitRating(input.primaryMetric, "COMPLETED");
+    const baseSummary = `${input.gameName} ${input.difficulty.toLowerCase()} hit landed at ${formattedMetric} offset with a ${rating.value.toLowerCase()} rating`;
+    return input.outcome === "pending" ? `${baseSummary}, save pending.` : `${baseSummary}.`;
+  }
+
+  const baseSummary = `${input.gameName} ${input.difficulty.toLowerCase()} ${input.outcome === "failed" ? "ended after" : "cleared in"} ${formattedMetric}`;
 
   if (input.outcome === "failed") {
     const detailParts: string[] = [];
@@ -187,12 +204,14 @@ export async function recordGameplayResult(input: {
     await rebuildAggregates();
   } catch {
     if (status === "COMPLETED") {
+      const preservedResultLabel = input.gameKey === "drop-line" ? "hit" : "clear";
+
       await updatePlayResultStatus(result.id, {
         status: "PENDING_SAVE",
         leaderboardEligible: false,
         totalPointsDelta: 0,
         rankDelta: null,
-        summaryText: `${game.name} clear was preserved, but publish failed. Retry save to add it to rankings and total points.`,
+        summaryText: `${game.name} ${preservedResultLabel} was preserved, but publish failed. Retry save to add it to rankings and total points.`,
       });
     }
   }

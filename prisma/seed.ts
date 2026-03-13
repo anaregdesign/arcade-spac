@@ -7,6 +7,7 @@ const userIds = {
 } as const;
 
 const gameIds = {
+  dropLine: "game-drop-line",
   minesweeper: "game-minesweeper",
   sudoku: "game-sudoku",
 } as const;
@@ -22,6 +23,14 @@ async function main() {
 
   await prisma.game.createMany({
     data: [
+      {
+        id: gameIds.dropLine,
+        key: "DROP_LINE",
+        name: "Drop Line",
+        shortDescription: "Tap when the falling ball overlaps the target line to keep the offset tiny.",
+        accentColor: "#f97316",
+        rulesSummary: "A smaller hit offset scores better. Missed drops stay in history only and do not enter rankings.",
+      },
       {
         id: gameIds.minesweeper,
         key: "MINESWEEPER",

@@ -146,7 +146,7 @@ export function ProfileScreen({ profile, activity, overall, games, breakdown, gr
                 <select className="field-select" name="favoriteGame" defaultValue={profile.favoriteGame || ""}>
                   <option value="">No preference yet</option>
                   {games.map((game) => (
-                    <option key={game.key} value={game.key.toUpperCase()}>
+                    <option key={game.key} value={game.key}>
                       {game.name}
                     </option>
                   ))}

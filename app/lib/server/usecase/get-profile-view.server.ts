@@ -1,4 +1,6 @@
-import { getProfileRecord } from "../infrastructure/repositories/rankings-profile.repository.server";
+import { toRouteGameKey } from "../../domain/entities/game-catalog";
+import { formatOptionalPrimaryMetric } from "../../domain/services/game-metrics";
+import { getProfileRecord, listRankingGames } from "../infrastructure/repositories/rankings-profile.repository.server";
 
 export type ProfileView = {
   profile: {
@@ -59,33 +61,31 @@ export type ProfileView = {
   }>;
 };
 
-function formatDuration(totalSeconds: number | null) {
-  if (totalSeconds === null) {
-    return "No record yet";
-  }
-
-  const minutes = Math.floor(totalSeconds / 60);
-  const seconds = totalSeconds % 60;
-  return `${minutes}:${seconds.toString().padStart(2, "0")}`;
-}
-
 export async function getProfileView(userId: string): Promise<ProfileView> {
-  const record = await getProfileRecord(userId);
+  const [record, games] = await Promise.all([
+    getProfileRecord(userId),
+    listRankingGames(),
+  ]);
 
   if (!record) {
     throw new Response("User not found", { status: 404 });
   }
 
-  const gameSummaries = record.gameSummaries.map((summary) => ({
-    key: summary.game.key.toLowerCase(),
-    name: summary.game.name,
-    currentRank: summary.currentRank,
-    bestCompetitivePoints: summary.bestCompetitivePoints,
-    personalBestMetric: formatDuration(summary.personalBestMetric),
-    playCount: summary.playCount,
-    completedCount: summary.completedCount,
-    recommendationText: summary.recommendationText ?? "Keep pushing this game to improve your overall position.",
-  }));
+  const summaryByGameId = new Map(record.gameSummaries.map((summary) => [summary.gameId, summary]));
+  const gameSummaries = games.map((game) => {
+    const summary = summaryByGameId.get(game.id);
+
+    return {
+      key: toRouteGameKey(game.key),
+      name: game.name,
+      currentRank: summary?.currentRank ?? null,
+      bestCompetitivePoints: summary?.bestCompetitivePoints ?? 0,
+      personalBestMetric: formatOptionalPrimaryMetric(game.key, summary?.personalBestMetric ?? null),
+      playCount: summary?.playCount ?? 0,
+      completedCount: summary?.completedCount ?? 0,
+      recommendationText: summary?.recommendationText ?? "Finish a ranked run to add this game to your overall score.",
+    };
+  });
   const totalPoints = gameSummaries.reduce((sum, game) => sum + game.bestCompetitivePoints, 0);
   const breakdownItems = gameSummaries.map((game) => ({
     ...game,
@@ -106,7 +106,7 @@ export async function getProfileView(userId: string): Promise<ProfileView> {
       displayName: record.displayName,
       visibilityScope: record.visibilityScope === "PRIVATE" ? "PRIVATE" : "TENANT_ONLY",
       tagline: record.profile?.tagline ?? "",
-      favoriteGame: record.profile?.favoriteGame?.toLowerCase() ?? "",
+      favoriteGame: record.profile?.favoriteGame ? toRouteGameKey(record.profile.favoriteGame) : "",
       themePreference: record.profile?.themePreference === "DARK" ? "DARK" : "LIGHT",
       sharePreviewName: record.displayName,
       visibilitySummary: record.visibilityScope === "PRIVATE" ? "Private profiles stay out of rankings until visibility is changed." : "Rankings and in-app views use this display name inside the tenant.",

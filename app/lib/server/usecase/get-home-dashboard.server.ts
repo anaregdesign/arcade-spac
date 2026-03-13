@@ -1,10 +1,6 @@
+import { toRouteGameKey } from "../../domain/entities/game-catalog";
+import { formatOptionalPrimaryMetric, getBestMetricLabel } from "../../domain/services/game-metrics";
 import { getHomeDashboardRecord, getGameRecord, listGameRecords } from "../infrastructure/repositories/arcade-dashboard.repository.server";
-
-function formatDuration(totalSeconds: number) {
-  const minutes = Math.floor(totalSeconds / 60);
-  const seconds = totalSeconds % 60;
-  return `${minutes}:${seconds.toString().padStart(2, "0")}`;
-}
 
 function normalizeRecentResultSummary(gameName: string, summaryText: string) {
   if (!summaryText) {
@@ -55,7 +51,7 @@ export async function getHomeDashboard(userId: string) {
       const summary = summaryByGameId.get(game.id);
 
       return {
-        key: game.key.toLowerCase(),
+        key: toRouteGameKey(game.key),
         name: game.name,
         shortDescription: game.shortDescription,
         accentColor: game.accentColor,
@@ -65,8 +61,8 @@ export async function getHomeDashboard(userId: string) {
         playCount: summary?.playCount ?? 0,
         completedCount: summary?.completedCount ?? 0,
         recommendationText: summary?.recommendationText ?? null,
-        metricLabel: game.key === "MINESWEEPER" ? "Best clear time" : "Best solve time",
-        metricValue: summary?.personalBestMetric ? formatDuration(summary.personalBestMetric) : "No record yet",
+        metricLabel: getBestMetricLabel(game.key),
+        metricValue: formatOptionalPrimaryMetric(game.key, summary?.personalBestMetric ?? null),
       };
     }),
     recentResults: record.playResults.map((result) => ({
@@ -89,7 +85,7 @@ export async function getGameWorkspace(gameKey: string) {
   }
 
   return {
-    key: game.key.toLowerCase(),
+    key: toRouteGameKey(game.key),
     name: game.name,
     shortDescription: game.shortDescription,
     rulesSummary: game.rulesSummary,

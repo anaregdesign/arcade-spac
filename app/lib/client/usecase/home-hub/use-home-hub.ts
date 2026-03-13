@@ -42,6 +42,10 @@ function getTagSetForGame(game: HomeGame) {
     tags.push("logic");
   }
 
+  if (game.key === "drop-line") {
+    tags.push("timing");
+  }
+
   return tags;
 }
 
@@ -112,6 +116,7 @@ export function useHomeHub(games: HomeGame[]) {
     { label: "All games", value: "all" },
     { label: "Fast start", value: "fast-start" },
     { label: "Logic", value: "logic" },
+    { label: "Timing", value: "timing" },
     { label: "Played", value: "played" },
     { label: "Unplayed", value: "unplayed" },
     { label: "Ranked", value: "ranked" },

@@ -29,7 +29,7 @@ export function LoginScreen({ authMode, errorMessage, entraSignInHref, returnTo,
           {authMode === "entra" ? <span className="status-badge status-badge-neutral">Tenant sign-in</span> : <span className="status-badge status-badge-neutral">Seeded players</span>}
         </div>
         <p className="hero-copy">
-          Arcade is a tenant-scoped game hub for quick Minesweeper and Sudoku runs, shared rankings, and result review.
+          Arcade is a tenant-scoped game hub for quick game runs, shared rankings, and result review.
           Sign-in is required for Home, Game, Result, Rankings, and Profile.
         </p>
         <div className="help-inline-grid compact-copy login-context-grid">

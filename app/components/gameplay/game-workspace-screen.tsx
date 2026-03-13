@@ -1,5 +1,6 @@
 import { Form, Link } from "react-router";
 
+import { buildAlternateGameLinks } from "../../lib/domain/entities/game-catalog";
 import { getGameInstructions, getGameWorkspaceComponent } from "../games/game-workspace-registry";
 import { useGameWorkspace } from "../../lib/client/usecase/game-workspace/use-game-workspace";
 
@@ -23,18 +24,14 @@ type GameWorkspaceScreenProps = {
 
 export function GameWorkspaceScreen({ game }: GameWorkspaceScreenProps) {
   const workspace = useGameWorkspace();
-  const alternateGame = game.key === "minesweeper"
-    ? { href: "/games/sudoku", label: "Play Sudoku" }
-    : game.key === "sudoku"
-      ? { href: "/games/minesweeper", label: "Play Minesweeper" }
-      : null;
+  const alternateGames = buildAlternateGameLinks(game.key);
   const GameWorkspaceComponent = getGameWorkspaceComponent(game.key);
   const instructions = getGameInstructions(game.key);
 
   return (
     <div className="dashboard-stack workspace-stack">
       {GameWorkspaceComponent && instructions ? (
-        <GameWorkspaceComponent alternateGame={alternateGame} instructions={instructions} workspace={workspace} />
+        <GameWorkspaceComponent alternateGames={alternateGames} instructions={instructions} workspace={workspace} />
       ) : (
         <section className="feature-card workspace-card confirm-card">
           <p className="eyebrow">Game setup</p>

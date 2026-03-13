@@ -1,4 +1,5 @@
 import { prisma } from "../prisma.server";
+import { toStoredGameKey } from "../../../domain/entities/game-catalog";
 import {
   createPlayResultRecordFixture,
   getPlayResultByIdFixture,
@@ -38,7 +39,7 @@ type UpsertOverallSummaryInput = {
 export async function getGameByKey(gameKey: string) {
   return withDevelopmentFixtures(
     () => prisma.game.findFirst({
-      where: { key: gameKey.toUpperCase() as "MINESWEEPER" | "SUDOKU" },
+      where: { key: toStoredGameKey(gameKey) },
     }),
     () => getGameRecordFixture(gameKey),
   );

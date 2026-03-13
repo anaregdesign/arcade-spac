@@ -2,9 +2,12 @@ import { listLeaderboardEntries } from "../../infrastructure/repositories/rankin
 import { getHomeDashboard } from "../get-home-dashboard.server";
 import { getPlayResultById } from "../../infrastructure/repositories/gameplay.repository.server";
 import type { PendingResultDraft } from "../../infrastructure/auth/session.server";
+import type { GameKey } from "../../../domain/entities/game-catalog";
+import { toRouteGameKey } from "../../../domain/entities/game-catalog";
+import { formatPrimaryMetric, getDropLineHitRating, getResultPrimaryMetricLabel } from "../../../domain/services/game-metrics";
 
 type PersistedPlayResult = NonNullable<Awaited<ReturnType<typeof getPlayResultById>>>;
-type RankingScope = "minesweeper" | "sudoku";
+type RankingScope = GameKey;
 type ResultViewerMode = "owner" | "shared";
 
 export type ResultViewModel = {
@@ -14,9 +17,10 @@ export type ResultViewModel = {
   statusLabel: string;
   difficulty: string;
   summaryText: string;
+  primaryMetricLabel: string;
   primaryMetric: string;
   supportMetricLabel: string;
-  supportMetricValue: number;
+  supportMetricValue: string;
   supportMetricNote: string;
   selfBestBadge: string;
   selfBestDeltaLabel: string;
@@ -46,12 +50,6 @@ export type ResultViewModel = {
   rankingsHref: string;
 };
 
-function formatDuration(totalSeconds: number) {
-  const minutes = Math.floor(totalSeconds / 60);
-  const seconds = totalSeconds % 60;
-  return `${minutes}:${seconds.toString().padStart(2, "0")}`;
-}
-
 function formatRank(rank: number | null) {
   return rank ? `#${rank}` : "Unranked";
 }
@@ -76,22 +74,65 @@ function getStatusLabel(status: string) {
 }
 
 function getSupportMetric(result: PersistedPlayResult) {
-  if (result.game.key === "MINESWEEPER") {
+  const gameKey = toRouteGameKey(result.game.key);
+
+  if (gameKey === "minesweeper") {
     return {
       label: "Mistakes",
-      value: result.mistakeCount ?? 0,
+      value: String(result.mistakeCount ?? 0),
       note: result.mistakeCount === 0 ? "Clean board" : `${pluralize(result.mistakeCount ?? 0, "mistake")} recorded`,
     };
   }
 
+  if (gameKey === "sudoku") {
+    return {
+      label: "Hints used",
+      value: String(result.hintCount ?? 0),
+      note: result.hintCount === 0 ? "No hints needed" : `${pluralize(result.hintCount ?? 0, "hint")} used`,
+    };
+  }
+
+  const rating = getDropLineHitRating(result.primaryMetric, result.status);
+
   return {
-    label: "Hints used",
-    value: result.hintCount ?? 0,
-    note: result.hintCount === 0 ? "No hints needed" : `${pluralize(result.hintCount ?? 0, "hint")} used`,
+    label: "Hit rating",
+    value: rating.value,
+    note: rating.note,
   };
 }
 
+function describeBestDelta(gameKey: GameKey, delta: number, direction: "better" | "worse") {
+  const formattedDelta = formatPrimaryMetric(gameKey, delta);
+
+  if (gameKey === "drop-line") {
+    return direction === "better"
+      ? {
+          deltaLabel: `-${formattedDelta}`,
+          detail: `${formattedDelta} tighter than your previous best hit.`,
+          shareLine: `this tightened the previous best by ${formattedDelta}`,
+        }
+      : {
+          deltaLabel: `+${formattedDelta}`,
+          detail: `${formattedDelta} wider than your best hit offset.`,
+          shareLine: `the best hit is still ${formattedDelta} tighter`,
+        };
+  }
+
+  return direction === "better"
+    ? {
+        deltaLabel: `-${formattedDelta}`,
+        detail: `${formattedDelta} faster than your previous best clear time.`,
+        shareLine: `this beat the previous best by ${formattedDelta}`,
+      }
+    : {
+        deltaLabel: `+${formattedDelta}`,
+        detail: `${formattedDelta} slower than your best clear time.`,
+        shareLine: `the best clear is still ${formattedDelta} faster`,
+      };
+}
+
 function getSelfBestSummary(result: PersistedPlayResult) {
+  const gameKey = toRouteGameKey(result.game.key) as GameKey;
   const previousResults = result.user.playResults
     .filter((entry) => entry.id !== result.id && entry.gameId === result.gameId && entry.status === "COMPLETED" && entry.cleared)
     .sort((left, right) => left.primaryMetric - right.primaryMetric);
@@ -127,11 +168,13 @@ function getSelfBestSummary(result: PersistedPlayResult) {
   const metricDelta = previousBestMetric - result.primaryMetric;
 
   if (metricDelta > 0) {
+    const bestDelta = describeBestDelta(gameKey, metricDelta, "better");
+
     return {
       badge: "Personal best",
-      deltaLabel: `-${formatDuration(metricDelta)}`,
-      detail: `${formatDuration(metricDelta)} faster than your previous best clear time.`,
-      shareLine: `this beat the previous best by ${formatDuration(metricDelta)}`,
+      deltaLabel: bestDelta.deltaLabel,
+      detail: bestDelta.detail,
+      shareLine: bestDelta.shareLine,
     };
   }
 
@@ -139,16 +182,18 @@ function getSelfBestSummary(result: PersistedPlayResult) {
     return {
       badge: "Matched best",
       deltaLabel: "Even",
-      detail: "You matched your best clear time in this game.",
+      detail: gameKey === "drop-line" ? "You matched your best hit offset in this game." : "You matched your best clear time in this game.",
       shareLine: "this matched the current personal best",
     };
   }
 
+  const bestDelta = describeBestDelta(gameKey, Math.abs(metricDelta), "worse");
+
   return {
     badge: "Chasing best",
-    deltaLabel: `+${formatDuration(Math.abs(metricDelta))}`,
-    detail: `${formatDuration(Math.abs(metricDelta))} slower than your best clear time.`,
-    shareLine: `the best clear is still ${formatDuration(Math.abs(metricDelta))} faster`,
+    deltaLabel: bestDelta.deltaLabel,
+    detail: bestDelta.detail,
+    shareLine: bestDelta.shareLine,
   };
 }
 
@@ -249,10 +294,10 @@ export async function buildPersistedResultView(input: {
   viewerMode: ResultViewerMode;
 }) {
   const ownerDashboard = await getHomeDashboard(input.result.userId);
-  const primaryMetricText = formatDuration(input.result.primaryMetric);
+  const gameScope = toRouteGameKey(input.result.game.key) as RankingScope;
+  const primaryMetricText = formatPrimaryMetric(gameScope, input.result.primaryMetric);
   const supportMetric = getSupportMetric(input.result);
   const selfBest = getSelfBestSummary(input.result);
-  const gameScope = input.result.game.key.toLowerCase() as RankingScope;
   const isTenantVisible = input.result.user.visibilityScope === "TENANT_ONLY";
   const boardEligible = input.result.leaderboardEligible && isTenantVisible;
   const [overallEntries, gameEntries] = await Promise.all([
@@ -267,7 +312,9 @@ export async function buildPersistedResultView(input: {
   const shareUrl = sharePath ? `${input.publicBaseUrl}${sharePath}` : `${input.publicBaseUrl}/results/${input.result.id}`;
   const canShare = input.viewerMode === "owner" && input.result.status === "COMPLETED" && isTenantVisible && Boolean(input.result.shareToken);
   const shareText = [
-    `Arcade: ${input.result.game.name} ${input.result.difficulty.toLowerCase()} in ${primaryMetricText}.`,
+    gameScope === "drop-line"
+      ? `Arcade: ${input.result.game.name} ${input.result.difficulty.toLowerCase()} at ${primaryMetricText} offset.`
+      : `Arcade: ${input.result.game.name} ${input.result.difficulty.toLowerCase()} in ${primaryMetricText}.`,
     `${selfBest.shareLine}.`,
     `Season total ${currentOverallPoints} pts, overall ${currentOverallRank ? formatRank(currentOverallRank) : "unranked"}.`,
     `View result: ${shareUrl}`,
@@ -280,6 +327,7 @@ export async function buildPersistedResultView(input: {
     statusLabel: getStatusLabel(input.result.status),
     difficulty: input.result.difficulty,
     summaryText: input.result.summaryText,
+    primaryMetricLabel: getResultPrimaryMetricLabel(gameScope, input.result.status),
     primaryMetric: primaryMetricText,
     supportMetricLabel: supportMetric.label,
     supportMetricValue: supportMetric.value,
@@ -327,18 +375,34 @@ export function buildPendingResultDraftView(input: {
   draft: PendingResultDraft;
   gameName: string;
 }) {
-  const primaryMetricText = formatDuration(input.draft.actualMetrics.primaryMetric);
-  const isMinesweeper = input.draft.gameKey === "minesweeper";
-  const supportMetricValue = isMinesweeper ? input.draft.actualMetrics.mistakeCount ?? 0 : input.draft.actualMetrics.hintCount ?? 0;
-  const supportMetricLabel = isMinesweeper ? "Mistakes" : "Hints used";
-  const supportMetricNote = isMinesweeper
-    ? supportMetricValue === 0 ? "Clean board kept in recovery." : `${pluralize(supportMetricValue, "mistake")} kept in recovery.`
-    : supportMetricValue === 0 ? "No hints recorded in recovery." : `${pluralize(supportMetricValue, "hint")} kept in recovery.`;
+  const gameKey = input.draft.gameKey as GameKey;
+  const primaryMetricText = formatPrimaryMetric(gameKey, input.draft.actualMetrics.primaryMetric);
+  const supportMetric = input.draft.gameKey === "minesweeper"
+    ? {
+        label: "Mistakes",
+        value: String(input.draft.actualMetrics.mistakeCount ?? 0),
+        note: (input.draft.actualMetrics.mistakeCount ?? 0) === 0
+          ? "Clean board kept in recovery."
+          : `${pluralize(input.draft.actualMetrics.mistakeCount ?? 0, "mistake")} kept in recovery.`,
+      }
+    : input.draft.gameKey === "sudoku"
+      ? {
+          label: "Hints used",
+          value: String(input.draft.actualMetrics.hintCount ?? 0),
+          note: (input.draft.actualMetrics.hintCount ?? 0) === 0
+            ? "No hints recorded in recovery."
+            : `${pluralize(input.draft.actualMetrics.hintCount ?? 0, "hint")} kept in recovery.`,
+        }
+      : {
+          label: "Hit rating",
+          ...getDropLineHitRating(input.draft.actualMetrics.primaryMetric, input.draft.outcome === "failed" ? "FAILED" : "COMPLETED"),
+        };
   const willPublishToLeaderboard = input.draft.outcome !== "failed";
+  const savedResultLabel = input.draft.outcome === "failed" ? "run" : input.draft.gameKey === "drop-line" ? "hit" : "clear";
   const stateExplanation = input.draft.recoveryReason === "session_expired"
-    ? `Your session ended while Arcade was saving this ${input.draft.outcome === "failed" ? "run" : "clear"}. Sign in again, then retry once to publish it.`
+    ? `Your session ended while Arcade was saving this ${savedResultLabel}. Sign in again, then retry once to publish it.`
     : willPublishToLeaderboard
-      ? `Arcade kept this clear after a save problem. Retry once to publish it to rankings and total points.`
+      ? `Arcade kept this ${savedResultLabel} after a save problem. Retry once to publish it to rankings and total points.`
       : "Arcade kept this failed run after a save problem. Retry once to publish it to history.";
 
   return {
@@ -347,14 +411,15 @@ export function buildPendingResultDraftView(input: {
     status: "PENDING_SAVE",
     statusLabel: "Pending save",
     difficulty: input.draft.difficulty,
-    summaryText: `${input.gameName} ${input.draft.difficulty.toLowerCase()} ${input.draft.outcome === "failed" ? "run" : "clear"} was preserved for recovery.`,
+    summaryText: `${input.gameName} ${input.draft.difficulty.toLowerCase()} ${savedResultLabel} was preserved for recovery.`,
+    primaryMetricLabel: getResultPrimaryMetricLabel(gameKey, "PENDING_SAVE"),
     primaryMetric: primaryMetricText,
-    supportMetricLabel,
-    supportMetricValue,
-    supportMetricNote,
+    supportMetricLabel: supportMetric.label,
+    supportMetricValue: supportMetric.value,
+    supportMetricNote: supportMetric.note,
     selfBestBadge: "Recovery pending",
     selfBestDeltaLabel: "Retry required",
-    selfBestDetail: "The clear is preserved locally until a retry publishes it.",
+    selfBestDetail: `The ${savedResultLabel} is preserved locally until a retry publishes it.`,
     competitivePoints: 0,
     impact: {
       gameRank: {
@@ -371,7 +436,7 @@ export function buildPendingResultDraftView(input: {
       },
     },
     stateExplanation,
-    gameKey: input.draft.gameKey as "minesweeper" | "sudoku",
+    gameKey,
     gameName: input.gameName,
     shareUrl: "",
     shareText: "",

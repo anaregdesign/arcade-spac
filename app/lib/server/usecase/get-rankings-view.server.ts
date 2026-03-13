@@ -1,7 +1,8 @@
 import { listLeaderboardEntries, listRankingGames } from "../infrastructure/repositories/rankings-profile.repository.server";
+import type { GameKey } from "../../domain/entities/game-catalog";
 
 type RankingPeriod = "SEASON" | "LIFETIME";
-type RankingScope = "overall" | "minesweeper" | "sudoku";
+type RankingScope = "overall" | GameKey;
 
 function formatGapPoints(points: number | null) {
   return points === null ? "No nearby rival yet" : `${points} pts`;

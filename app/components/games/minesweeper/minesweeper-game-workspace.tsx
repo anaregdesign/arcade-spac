@@ -10,7 +10,7 @@ function formatDuration(totalSeconds: number) {
   return `${Math.floor(totalSeconds / 60)}:${(totalSeconds % 60).toString().padStart(2, "0")}`;
 }
 
-export function MinesweeperGameWorkspace({ alternateGame, instructions, workspace }: GameWorkspaceComponentProps) {
+export function MinesweeperGameWorkspace({ alternateGames, instructions, workspace }: GameWorkspaceComponentProps) {
   const navigation = useNavigation();
   const submit = useSubmit();
   const submittedOutcomeRef = useRef<"cleared" | "failed" | null>(null);
@@ -116,19 +116,19 @@ export function MinesweeperGameWorkspace({ alternateGame, instructions, workspac
                 Go home
               </Link>
             )}
-            {alternateGame
-              ? isLiveRun
+            {alternateGames.map((game) =>
+              isLiveRun
                 ? (
-                  <button className="action-link action-link-secondary" type="button" onClick={() => workspace.openLeaveConfirm(alternateGame.href)}>
-                    {alternateGame.label}
+                  <button className="action-link action-link-secondary" key={game.key} type="button" onClick={() => workspace.openLeaveConfirm(game.href)}>
+                    {game.label}
                   </button>
                 )
                 : (
-                  <Link className="action-link action-link-secondary" to={alternateGame.href}>
-                    {alternateGame.label}
+                  <Link className="action-link action-link-secondary" key={game.key} to={game.href}>
+                    {game.label}
                   </Link>
-                )
-              : null}
+                ),
+            )}
           </div>
         </div>
       </section>

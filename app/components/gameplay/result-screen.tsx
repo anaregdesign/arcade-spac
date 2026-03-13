@@ -1,5 +1,7 @@
 import { Form, Link } from "react-router";
 
+import { buildAlternateGameLinks } from "../../lib/domain/entities/game-catalog";
+
 type ResultScreenProps = {
   result: {
     id: string;
@@ -8,9 +10,10 @@ type ResultScreenProps = {
     statusLabel: string;
     difficulty: string;
     summaryText: string;
+    primaryMetricLabel: string;
     primaryMetric: string;
     supportMetricLabel: string;
-    supportMetricValue: number;
+    supportMetricValue: string;
     supportMetricNote: string;
     selfBestBadge: string;
     selfBestDeltaLabel: string;
@@ -48,11 +51,7 @@ export function ResultScreen({ result }: ResultScreenProps) {
     : result.status === "PENDING_SAVE"
       ? "status-badge status-badge-pending"
       : "status-badge status-badge-neutral";
-  const alternateGame = result.gameKey === "minesweeper"
-    ? { href: "/games/sudoku", label: "Play Sudoku" }
-    : result.gameKey === "sudoku"
-      ? { href: "/games/minesweeper", label: "Play Minesweeper" }
-      : null;
+  const alternateGames = buildAlternateGameLinks(result.gameKey);
 
   return (
     <div className="dashboard-stack">
@@ -71,7 +70,7 @@ export function ResultScreen({ result }: ResultScreenProps) {
         {result.stateExplanation ? <p className="workspace-note">{result.stateExplanation}</p> : null}
         <dl className="stat-grid compact-stat-grid">
           <div>
-            <dt>{result.status === "FAILED" || result.status === "ABANDONED" ? "Run time" : "Clear time"}</dt>
+            <dt>{result.primaryMetricLabel}</dt>
             <dd>{result.primaryMetric}</dd>
           </div>
           <div>
@@ -129,11 +128,11 @@ export function ResultScreen({ result }: ResultScreenProps) {
               </span>
             )
             : null}
-          {alternateGame ? (
-            <Link className="action-link action-link-secondary" to={alternateGame.href}>
-              {alternateGame.label}
+          {alternateGames.map((game) => (
+            <Link key={game.key} className="action-link action-link-secondary" to={game.href}>
+              {game.label}
             </Link>
-          ) : null}
+          ))}
           <Link className="action-link action-link-secondary" to="/home">
             Back to home
           </Link>

@@ -3,11 +3,12 @@ import type { GameInstructions } from "./game-instructions-dialog";
 
 export type AlternateGameLink = {
   href: string;
+  key: string;
   label: string;
-} | null;
+};
 
 export type GameWorkspaceComponentProps = {
-  alternateGame: AlternateGameLink;
+  alternateGames: AlternateGameLink[];
   instructions: GameInstructions;
   workspace: GameWorkspaceController;
 };

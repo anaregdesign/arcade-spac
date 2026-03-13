@@ -1,8 +1,10 @@
 import { getRuntimeConfig } from "../config/runtime-config.server";
+import type { GameKey, StoredGameKey } from "../../../domain/entities/game-catalog";
+import { toStoredGameKey } from "../../../domain/entities/game-catalog";
 
 type RankingPeriod = "SEASON" | "LIFETIME";
-type RankingScope = "overall" | "minesweeper" | "sudoku";
-type FavoriteGame = "MINESWEEPER" | "SUDOKU" | null;
+type RankingScope = "overall" | GameKey;
+type FavoriteGame = StoredGameKey | null;
 type VisibilityScope = "TENANT_ONLY" | "PRIVATE";
 
 type DevUser = {
@@ -27,7 +29,7 @@ type DevUserProfile = {
 
 type DevGame = {
   id: string;
-  key: "MINESWEEPER" | "SUDOKU";
+  key: StoredGameKey;
   name: string;
   shortDescription: string;
   accentColor: string;
@@ -168,7 +170,7 @@ function createInitialState(): DevState {
       },
       {
         userId: "user-mio",
-        tagline: "New challenger learning both games.",
+        tagline: "New challenger learning the full lineup.",
         favoriteGame: "SUDOKU",
         themePreference: "DARK",
         streakDays: 1,
@@ -186,6 +188,14 @@ function createInitialState(): DevState {
       },
     ],
     games: [
+      {
+        id: "game-drop-line",
+        key: "DROP_LINE",
+        name: "Drop Line",
+        shortDescription: "Tap when the falling ball overlaps the target line to keep the offset tiny.",
+        accentColor: "#f97316",
+        rulesSummary: "A smaller hit offset scores better. Missed drops stay in history only and do not enter rankings.",
+      },
       {
         id: "game-minesweeper",
         key: "MINESWEEPER",
@@ -453,7 +463,7 @@ function createInitialState(): DevState {
         totalPoints: 5820,
         currentRank: 1,
         trendDelta: 0,
-        recentPlaySummary: "Holding the all-time lead across both games.",
+        recentPlaySummary: "Holding the all-time lead across the current lineup.",
         updatedAt: now,
       },
       {
@@ -775,7 +785,7 @@ export function getProfileRecordFixture(userId: string) {
 }
 
 export function getGameRecordFixture(gameKey: string) {
-  const game = devState.games.find((entry) => entry.key === gameKey.toUpperCase());
+  const game = devState.games.find((entry) => entry.key === toStoredGameKey(gameKey));
   return game ? clone(game) : null;
 }
 
@@ -960,7 +970,7 @@ export function listLeaderboardEntriesFixture(periodType: RankingPeriod, scope: 
         return false;
       }
 
-      return requireGame(entry.gameId).key === scope.toUpperCase();
+      return requireGame(entry.gameId).key === toStoredGameKey(scope);
     })
     .filter((entry) => requireUser(entry.userId).visibilityScope === "TENANT_ONLY")
     .sort((left, right) => left.rank - right.rank)

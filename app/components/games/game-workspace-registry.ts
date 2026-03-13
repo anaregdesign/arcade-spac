@@ -1,5 +1,6 @@
 import type { ComponentType } from "react";
 
+import { DropLineGameWorkspace } from "./drop-line/drop-line-game-workspace";
 import { MinesweeperGameWorkspace } from "./minesweeper/minesweeper-game-workspace";
 import type { GameInstructions } from "./shared/game-instructions-dialog";
 import { SudokuGameWorkspace } from "./sudoku/sudoku-game-workspace";
@@ -18,6 +19,35 @@ type GameDefinition = {
 };
 
 const gameDefinitionByKey: Record<string, GameDefinition> = {
+  "drop-line": {
+    instructions: {
+      summary: "Start a drop, watch the ball fall, and tap once when it overlaps the line to keep the hit offset as small as possible.",
+      sections: [
+        {
+          title: "Run flow",
+          items: [
+            { label: "Start run", detail: "Choose a difficulty and press Start run to drop a new ball from a random height." },
+            { label: "Hit", detail: "Tap anywhere in the lane when the ball overlaps the line. The Result screen opens automatically after the hit." },
+            { label: "Miss", detail: "If the ball falls past the lane before the hit lands, the run is recorded as missed and excluded from rankings." },
+          ],
+        },
+        {
+          title: "Board controls",
+          items: [
+            { label: "Tap to score", detail: "The lane accepts one click or tap during a live run." },
+            { label: "Read the score", detail: "The smaller the hit offset in px, the better the result." },
+            { label: "Leave", detail: "Go home or switch games during a live drop to record the run as abandoned." },
+          ],
+        },
+      ],
+      title: "Drop Line controls",
+    },
+    presentation: {
+      previewAlt: "Falling ball above a target line in a vertical lane",
+      previewSrc: "/images/games/drop-line-preview.svg",
+    },
+    workspace: DropLineGameWorkspace,
+  },
   minesweeper: {
     instructions: {
       summary: "Use a single tap to open cells and open the guide any time you need the core board controls again.",
