@@ -7,6 +7,8 @@ type ProfileScreenProps = {
     tagline: string;
     favoriteGame: string;
     sharePreviewName: string;
+    visibilitySummary: string;
+    teamsShareSummary: string;
   };
   activity: {
     streakDays: number;
@@ -29,7 +31,23 @@ type ProfileScreenProps = {
     playCount: number;
     completedCount: number;
     recommendationText: string;
+    contributionShare: number;
   }>;
+  breakdown: {
+    totalPoints: number;
+    items: Array<{
+      key: string;
+      name: string;
+      points: number;
+      contributionShare: number;
+      rankLabel: string;
+      recommendationText: string;
+    }>;
+  };
+  growthGuidance: {
+    title: string;
+    detail: string;
+  };
   trend: Array<{
     index: number;
     gameName: string;
@@ -59,7 +77,7 @@ function buildTrendPath(points: ProfileScreenProps["trend"]) {
     .join(" ");
 }
 
-export function ProfileScreen({ profile, activity, overall, games, trend }: ProfileScreenProps) {
+export function ProfileScreen({ profile, activity, overall, games, breakdown, growthGuidance, trend }: ProfileScreenProps) {
   const trendPath = buildTrendPath(trend);
   const recentTrend = trend.slice(-3).reverse();
 
@@ -80,11 +98,13 @@ export function ProfileScreen({ profile, activity, overall, games, trend }: Prof
             <p className="eyebrow">🏷️ Public name</p>
             <h3 className="card-title">{profile.sharePreviewName}</h3>
             <p className="compact-copy">{profile.visibilityScope === "TENANT_ONLY" ? "Visible inside the tenant" : "Private"}</p>
+            <p className="compact-copy">{profile.visibilitySummary}</p>
           </article>
           <article className="profile-preview-card feature-card">
             <p className="eyebrow">💬 Tagline</p>
             <h3 className="card-title">{profile.tagline || "No tagline yet"}</h3>
             <p className="compact-copy">Favorite: {profile.favoriteGame || "No preference yet"}</p>
+            <p className="compact-copy">{profile.teamsShareSummary}</p>
           </article>
         </div>
         <details className="disclosure-card profile-edit-disclosure">
@@ -153,6 +173,32 @@ export function ProfileScreen({ profile, activity, overall, games, trend }: Prof
               <h2 className="section-title">Per-game performance</h2>
             </div>
           </div>
+          <div className="profile-breakdown-card">
+            <div className="section-heading">
+              <div>
+                <p className="eyebrow">🧮 Total points</p>
+                <h3 className="card-title">How your overall score is built</h3>
+              </div>
+              <span className="status-badge status-badge-neutral">{breakdown.totalPoints} pts total</span>
+            </div>
+            <div className="breakdown-list">
+              {breakdown.items.map((item) => (
+                <article key={item.key} className="breakdown-row">
+                  <div>
+                    <strong>{item.name}</strong>
+                    <p className="compact-copy">{item.rankLabel} · {item.recommendationText}</p>
+                  </div>
+                  <div className="breakdown-metric-block">
+                    <strong>{item.points} pts</strong>
+                    <span>{item.contributionShare}%</span>
+                  </div>
+                  <div className="breakdown-bar" aria-hidden="true">
+                    <span style={{ width: `${item.contributionShare}%` }} />
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
           <div className="game-grid">
             {games.map((game) => (
               <article key={game.key} className="game-card">
@@ -170,6 +216,10 @@ export function ProfileScreen({ profile, activity, overall, games, trend }: Prof
                     <dt>Completed</dt>
                     <dd>{game.completedCount} / {game.playCount}</dd>
                   </div>
+                  <div>
+                    <dt>Total share</dt>
+                    <dd>{game.contributionShare}%</dd>
+                  </div>
                 </dl>
                 <p className="recommendation-copy">{game.recommendationText}</p>
                 <Link className="action-link action-link-secondary" to={`/games/${game.key}`}>
@@ -186,6 +236,10 @@ export function ProfileScreen({ profile, activity, overall, games, trend }: Prof
               <p className="eyebrow">📈 Growth trend</p>
               <h2 className="section-title">Recent score movement</h2>
             </div>
+          </div>
+          <div className="profile-growth-note">
+            <strong>{growthGuidance.title}</strong>
+            <p className="compact-copy">{growthGuidance.detail}</p>
           </div>
           {trendPath ? (
             <div className="trend-chart-shell">
