@@ -101,7 +101,7 @@ export function ProfileScreen({ profile, activity, overall, games, breakdown, gr
       <section className="feature-card profile-shell-card">
         <div className="section-heading">
           <div>
-            <p className="eyebrow">🪪 Identity</p>
+            <p className="eyebrow">Identity</p>
             <h2 className="section-title">Identity and visibility</h2>
           </div>
           <Link className="action-link action-link-secondary" to="/rankings">
@@ -110,13 +110,13 @@ export function ProfileScreen({ profile, activity, overall, games, breakdown, gr
         </div>
         <div className="profile-overview-grid">
           <article className="profile-preview-card feature-card">
-            <p className="eyebrow">🏷️ Public name</p>
+            <p className="eyebrow">Public name</p>
             <h3 className="card-title">{profile.sharePreviewName}</h3>
             <p className="compact-copy">{profile.visibilityScope === "TENANT_ONLY" ? "Visible inside the tenant" : "Private"}</p>
             <p className="compact-copy">{profile.visibilitySummary}</p>
           </article>
           <article className="profile-preview-card feature-card">
-            <p className="eyebrow">💬 Tagline</p>
+            <p className="eyebrow">Tagline</p>
             <h3 className="card-title">{profile.tagline || "No tagline yet"}</h3>
             <p className="compact-copy">Favorite: {profile.favoriteGame || "No preference yet"}</p>
             <p className="compact-copy">{profile.teamsShareSummary}</p>
@@ -179,13 +179,13 @@ export function ProfileScreen({ profile, activity, overall, games, breakdown, gr
 
       <section className="summary-grid">
         <article className="summary-card warm-card">
-          <p className="eyebrow">🔥 Activity</p>
+          <p className="eyebrow">Activity</p>
           <h2 className="section-title">{activity.streakDays} day streak</h2>
           <p>{activity.totalPlayCount} recorded plays</p>
         </article>
         {overall.map((summary) => (
           <article key={summary.period} className="summary-card cool-card">
-            <p className="eyebrow">{summary.period === "SEASON" ? "🏆 Season" : "📚 Lifetime"}</p>
+            <p className="eyebrow">{summary.period === "SEASON" ? "Season" : "Lifetime"}</p>
             <h2 className="section-title">{summary.totalPoints} pts</h2>
             <p>{summary.currentRank ? `Rank #${summary.currentRank}` : "Unranked"} · {summary.recentPlaySummary}</p>
           </article>
@@ -196,14 +196,14 @@ export function ProfileScreen({ profile, activity, overall, games, breakdown, gr
         <article className="feature-card span-two">
           <div className="section-heading">
             <div>
-              <p className="eyebrow">🎯 Best records</p>
+              <p className="eyebrow">Best records</p>
               <h2 className="section-title">Per-game performance</h2>
             </div>
           </div>
           <div className="profile-breakdown-card">
             <div className="section-heading">
               <div>
-                <p className="eyebrow">🧮 Total points</p>
+                <p className="eyebrow">Total points</p>
                 <h3 className="card-title">How your overall score is built</h3>
               </div>
               <span className="status-badge status-badge-neutral">{breakdown.totalPoints} pts total</span>

@@ -61,7 +61,7 @@ export function RankingsScreen({ filter, boardMeta, games, currentUserEntry, ent
       <section className="feature-card workspace-card rankings-shell-card">
         <div className="section-heading">
           <div>
-            <p className="eyebrow">🎛️ Board switch</p>
+            <p className="eyebrow">Board switch</p>
             <h2 className="section-title">Standings</h2>
           </div>
           <Link className="action-link action-link-secondary" to="/home">
@@ -100,17 +100,17 @@ export function RankingsScreen({ filter, boardMeta, games, currentUserEntry, ent
 
       <section className="summary-grid">
         <article className="summary-card warm-card">
-          <p className="eyebrow">🏁 You</p>
+          <p className="eyebrow">You</p>
           <h2 className="section-title">{currentUserEntry ? `#${currentUserEntry.rank}` : "Unranked"}</h2>
           <p>{currentUserEntry ? `${currentUserEntry.points} pts on ${boardMeta.boardLabel}` : "No rank yet"}</p>
         </article>
         <article className="summary-card cool-card">
-          <p className="eyebrow">👑 Leader gap</p>
+          <p className="eyebrow">Leader gap</p>
           <h2 className="section-title">{currentUserEntry?.deltaToLeader ?? 0}</h2>
           <p>{currentUserEntry ? currentUserEntry.leaderGapCopy : "No comparison yet."}</p>
         </article>
         <article className="summary-card neutral-card">
-          <p className="eyebrow">⚡ Next gap</p>
+          <p className="eyebrow">Next gap</p>
           <h2 className="section-title">{currentUserEntry?.deltaToNext ?? 0}</h2>
           <p>{currentUserEntry ? currentUserEntry.rivalGapCopy : "No rival yet"}</p>
         </article>
@@ -119,7 +119,7 @@ export function RankingsScreen({ filter, boardMeta, games, currentUserEntry, ent
       <section className="feature-card rankings-shell-card">
         <div className="section-heading">
           <div>
-            <p className="eyebrow">🏆 Leaderboard</p>
+            <p className="eyebrow">Leaderboard</p>
             <h2 className="section-title">{filter.scope === "overall" ? "Overall ranking" : "Game ranking"}</h2>
           </div>
         </div>

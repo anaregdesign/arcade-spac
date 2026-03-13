@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link } from "react-router";
+import { useEffect, useId, useState } from "react";
+import { Link, useLocation } from "react-router";
 
 import { AppHelpDialog } from "./shared/AppHelpDialog";
 import type { AppHelpSection } from "./shared/help-content";
@@ -7,10 +7,8 @@ import type { AppHelpSection } from "./shared/help-content";
 type AppShellProps = {
   children: React.ReactNode;
   currentPath: "home" | "rankings" | "profile" | "games";
-  titleEmoji: string;
   sectionLabel: string;
   title: string;
-  subtitle?: string;
   user: {
     displayName: string;
     avatarUrl?: string | null;
@@ -27,36 +25,55 @@ type AppShellProps = {
 };
 
 const navItems = [
-  { key: "home", label: "Home", emoji: "🎮", to: "/home" },
-  { key: "rankings", label: "Rankings", emoji: "🏆", to: "/rankings" },
-  { key: "profile", label: "Profile", emoji: "🪪", to: "/profile" },
+  { key: "home", label: "Home", to: "/home" },
+  { key: "rankings", label: "Rankings", to: "/rankings" },
+  { key: "profile", label: "Profile", to: "/profile" },
 ] as const;
 
-export function AppShell({ children, currentPath, titleEmoji, sectionLabel, title, subtitle, user, help }: AppShellProps) {
+export function AppShell({ children, currentPath, sectionLabel, title, user, help }: AppShellProps) {
   const [isHelpOpen, setHelpOpen] = useState(Boolean(help?.defaultOpen));
+  const [isMenuOpen, setMenuOpen] = useState(false);
+  const location = useLocation();
+  const navPanelId = useId();
+
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [location.pathname, location.search]);
 
   return (
     <div className="page-shell">
       <header className="app-shell-header">
-        <div className="app-shell-title-block">
-          <p className="eyebrow shell-kicker">
-            <span className="shell-kicker-emoji" aria-hidden="true">{titleEmoji}</span>
-            <span>{sectionLabel}</span>
-          </p>
-          <div className="page-title-row">
+        <div className="app-shell-bar">
+          <div className="app-shell-brand">
+            <p className="eyebrow shell-kicker app-shell-kicker">
+              <span>{sectionLabel}</span>
+            </p>
             <h1 className="page-title">{title}</h1>
           </div>
-          {subtitle ? <p className="page-subtitle">{subtitle}</p> : null}
+          <button
+            aria-controls={navPanelId}
+            aria-expanded={isMenuOpen}
+            className={isMenuOpen ? "menu-toggle menu-toggle-open" : "menu-toggle"}
+            type="button"
+            onClick={() => setMenuOpen((currentValue) => !currentValue)}
+          >
+            <span className="menu-toggle-label">{isMenuOpen ? "Close menu" : "Open menu"}</span>
+            <span className="menu-toggle-icon" aria-hidden="true">
+              <span className="menu-toggle-bar" />
+              <span className="menu-toggle-bar" />
+              <span className="menu-toggle-bar" />
+            </span>
+          </button>
         </div>
-        <div className="app-shell-user">
+        <div className={isMenuOpen ? "app-shell-panel app-shell-panel-open" : "app-shell-panel"} id={navPanelId}>
           <nav className="app-shell-nav" aria-label="Primary">
             {navItems.map((item) => (
               <Link
                 key={item.key}
                 className={item.key === currentPath ? "nav-pill nav-pill-active" : "nav-pill"}
+                onClick={() => setMenuOpen(false)}
                 to={item.to}
               >
-                <span aria-hidden="true">{item.emoji}</span>
                 <span>{item.label}</span>
               </Link>
             ))}
@@ -67,16 +84,25 @@ export function AppShell({ children, currentPath, titleEmoji, sectionLabel, titl
             </span>
             <span>{user.displayName}</span>
           </div>
-          {help ? (
-            <button className="action-link action-link-secondary" type="button" onClick={() => setHelpOpen(true)}>
-              {help.triggerLabel ?? "Help"}
-            </button>
-          ) : null}
-          <form method="post" action="/logout">
-            <button className="action-link action-link-secondary" type="submit">
-              Sign out
-            </button>
-          </form>
+          <div className="app-shell-actions">
+            {help ? (
+              <button
+                className="action-link action-link-secondary"
+                type="button"
+                onClick={() => {
+                  setHelpOpen(true);
+                  setMenuOpen(false);
+                }}
+              >
+                {help.triggerLabel ?? "Help"}
+              </button>
+            ) : null}
+            <form method="post" action="/logout">
+              <button className="action-link action-link-secondary" type="submit">
+                Sign out
+              </button>
+            </form>
+          </div>
         </div>
       </header>
       <div className="page-content">{children}</div>

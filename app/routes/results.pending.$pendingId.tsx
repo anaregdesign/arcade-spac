@@ -99,7 +99,6 @@ export default function PendingResultRoute() {
         title: "Pending result help",
         triggerLabel: "Help",
       }}
-      titleEmoji="⏳"
       sectionLabel="Pending result"
       title={`${result.gameName} pending result`}
       user={dashboard.user}

@@ -142,18 +142,17 @@ export default function GameWorkspace() {
     <AppShell
       currentPath="games"
       help={{
-        intro: "The game screen keeps the live board primary, while the support panel tells you whether this run is ahead of your own best and how it could affect rankings.",
+        intro: "The game screen keeps the live board primary. Rules, recovery details, and cross-game guidance stay in this shared help layer so the board can stay clear.",
         sections: buildSharedHelpSections([
           {
-            eyebrow: "5. Live target",
-            title: "Use self-best and rank context while the board stays active",
-            body: "The decision-support block shows your current best pace, current board rank, and overall total so you can decide whether to push for a faster clear or reset quickly.",
+            eyebrow: "5. Stay focused",
+            title: "Keep only the board and core actions in view",
+            body: "Use the board, run status, difficulty, and finish action as the main controls. Open Help only when you need rules or recovery details.",
           },
         ]),
         title: "Game help",
         triggerLabel: "Help",
       }}
-      titleEmoji="🕹️"
       sectionLabel="Game room"
       title={`${game.name}`}
       user={dashboard.user}

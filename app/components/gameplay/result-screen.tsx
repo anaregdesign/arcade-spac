@@ -54,7 +54,7 @@ export function ResultScreen({ result }: ResultScreenProps) {
       <section className="feature-card workspace-card">
         <div className="section-heading">
           <div>
-            <p className="eyebrow">✨ Result</p>
+            <p className="eyebrow">Result</p>
             <h2 className="section-title">{result.gameName} {result.difficulty.toLowerCase()}</h2>
           </div>
           <div className="result-badge-row">
@@ -87,24 +87,24 @@ export function ResultScreen({ result }: ResultScreenProps) {
 
       <section className="summary-grid result-impact-grid" aria-label="Impact summary">
         <article className="summary-card warm-card">
-          <p className="eyebrow">🏁 Game rank</p>
+          <p className="eyebrow">Game rank</p>
           <h2 className="section-title">{result.impact.gameRank.value}</h2>
           <p>{result.impact.gameRank.note}</p>
         </article>
         <article className="summary-card cool-card">
-          <p className="eyebrow">➕ Total points</p>
+          <p className="eyebrow">Total points</p>
           <h2 className="section-title">{result.impact.totalPoints.value}</h2>
           <p>{result.impact.totalPoints.note}</p>
         </article>
         <article className="summary-card neutral-card">
-          <p className="eyebrow">🌍 Overall rank</p>
+          <p className="eyebrow">Overall rank</p>
           <h2 className="section-title">{result.impact.overallRank.value}</h2>
           <p>{result.impact.overallRank.note}</p>
         </article>
       </section>
 
       <section className="feature-card workspace-card">
-        <p className="eyebrow">⚡ Next action</p>
+        <p className="eyebrow">Next action</p>
         <h2 className="section-title">Choose what to do next</h2>
         <div className="hero-actions compact-action-strip">
           <Link className="action-link action-link-primary" to={`/games/${result.gameKey}`}>
@@ -161,7 +161,7 @@ export function ResultScreen({ result }: ResultScreenProps) {
 
       {result.status === "PENDING_SAVE" && result.viewerMode === "owner" ? (
         <section className="feature-card workspace-card">
-          <p className="eyebrow">⏳ Pending save</p>
+          <p className="eyebrow">Pending save</p>
           <h2 className="section-title">Retry save</h2>
           <p className="compact-copy">This result stays provisional until the save retry succeeds. Rankings and total points will update only after confirmation.</p>
           <Form method="post" className="hero-actions">

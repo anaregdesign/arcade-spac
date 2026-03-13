@@ -39,7 +39,6 @@ export default function Rankings() {
         title: "Rankings help",
         triggerLabel: "Help",
       }}
-      titleEmoji="🏆"
       sectionLabel="Leaderboard"
       title="Rankings"
       user={dashboard.user}

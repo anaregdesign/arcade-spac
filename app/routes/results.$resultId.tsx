@@ -65,7 +65,6 @@ export default function ResultRoute() {
         title: "Result help",
         triggerLabel: "Help",
       }}
-      titleEmoji="✨"
       sectionLabel="Run result"
       title={`${result.gameName} result`}
       user={dashboard.user}

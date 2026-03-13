@@ -1,6 +1,8 @@
 import { useState } from "react";
 
-export function useGameWorkspace(initialDifficulty: "EASY" | "NORMAL" | "HARD" | "EXPERT" = "NORMAL") {
+export type GameDifficulty = "EASY" | "NORMAL" | "HARD" | "EXPERT";
+
+export function useGameWorkspace(initialDifficulty: GameDifficulty = "NORMAL") {
   const [difficulty, setDifficulty] = useState(initialDifficulty);
   const [isPlaying, setIsPlaying] = useState(false);
   const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
@@ -14,7 +16,7 @@ export function useGameWorkspace(initialDifficulty: "EASY" | "NORMAL" | "HARD" |
     beginRun() {
       setIsPlaying(true);
     },
-    changeDifficulty(nextDifficulty: "EASY" | "NORMAL" | "HARD" | "EXPERT") {
+    changeDifficulty(nextDifficulty: GameDifficulty) {
       setDifficulty(nextDifficulty);
     },
     openLeaveConfirm(destination: string) {
@@ -40,3 +42,5 @@ export function useGameWorkspace(initialDifficulty: "EASY" | "NORMAL" | "HARD" |
     },
   };
 }
+
+export type GameWorkspaceController = ReturnType<typeof useGameWorkspace>;

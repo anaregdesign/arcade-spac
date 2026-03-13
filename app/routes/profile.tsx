@@ -69,7 +69,6 @@ export default function Profile() {
         title: "Profile help",
         triggerLabel: "Help",
       }}
-      titleEmoji="🪪"
       sectionLabel="Player card"
       title="Profile"
       user={dashboard.user}

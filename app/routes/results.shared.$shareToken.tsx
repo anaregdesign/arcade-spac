@@ -52,7 +52,6 @@ export default function SharedResultRoute() {
         title: "Result help",
         triggerLabel: "Help",
       }}
-      titleEmoji="🔗"
       sectionLabel="Shared result"
       title={`${result.gameName} shared result`}
       user={dashboard.user}
