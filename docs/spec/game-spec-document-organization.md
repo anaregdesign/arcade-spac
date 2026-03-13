@@ -2,7 +2,7 @@
 
 ## Summary
 
-`docs/spec/` 内の個別ゲーム仕様を、ゲームごとに独立したファイルへ整理する。cross-game の要求は共通仕様に残し、各ゲームのルール、結果指標、ランキング対象条件はそのゲーム専用の spec から辿れる状態にする。
+`docs/spec/games/` 配下に個別ゲーム仕様を、ゲームごとに独立したファイルとして整理する。cross-game の要求は共通仕様に残し、各ゲームのルール、結果指標、ランキング対象条件はそのゲーム専用の spec から辿れる状態にする。
 
 ## User Problem
 
@@ -18,7 +18,7 @@
 
 ## Scope
 
-- phase 1 lineup の 6 ゲームすべてについて、`docs/spec/` に専用の game spec を揃える
+- phase 1 lineup の 6 ゲームすべてについて、`docs/spec/games/` に専用の game spec を揃える
 - shared spec から個別ゲーム固有の結果指標一覧や representative metric 例を引き上げ、個別 game spec への参照へ置き換える
 - `product-requirements.md` を cross-game requirement の source of truth として残し、game-specific behavior は各 game spec へ委譲する
 
@@ -30,7 +30,7 @@
 
 ## User-Visible Behavior
 
-- `docs/spec/` を開くと、phase 1 lineup の各ゲームについて 1 ファイルずつ専用 spec を辿れる
+- `docs/spec/games/` を開くと、phase 1 lineup の各ゲームについて 1 ファイルずつ専用 spec を辿れる
 - shared spec は cross-game rule と導線定義に集中し、個別ゲームの代表記録や support metric 一覧を長く内包しない
 - 個別ゲームの primary metric、support metric、失敗時の扱い、ランキング対象条件は、そのゲーム専用 spec にまとまっている
 
@@ -52,6 +52,6 @@
 
 ## Links
 
-- Plan Archive: [../plans/plan.20260313-210636.md](../plans/plan.20260313-210636.md)
+- Plan Archive: [../plans/plan.20260313-210932.md](../plans/plan.20260313-210932.md)
 - Requirements: [product-requirements.md](./product-requirements.md)
 - Flow: [screen-flow.md](./screen-flow.md)

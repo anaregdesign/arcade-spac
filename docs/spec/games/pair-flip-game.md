@@ -57,5 +57,5 @@
 
 ## Links
 
-- Related: [game-catalog-expansion.md](./game-catalog-expansion.md)
-- Related: [product-requirements.md](./product-requirements.md)
+- Related: [../game-catalog-expansion.md](../game-catalog-expansion.md)
+- Related: [../product-requirements.md](../product-requirements.md)

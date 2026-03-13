@@ -67,5 +67,5 @@
 
 ## Links
 
-- Related: [product-requirements.md](./product-requirements.md)
-- Flow: [screen-flow.md](./screen-flow.md)
+- Related: [../product-requirements.md](../product-requirements.md)
+- Flow: [../screen-flow.md](../screen-flow.md)
