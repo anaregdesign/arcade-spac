@@ -1,5 +1,7 @@
 import { data } from "react-router";
+import { getHealthStatus } from "../lib/server/usecase/get-health-status.server";
 
 export async function loader() {
-  return data({ ok: true, service: "arcade", timestamp: new Date().toISOString() });
+  const { payload, status } = await getHealthStatus();
+  return data(payload, { status });
 }
