@@ -25,7 +25,6 @@ type AppShellProps = {
 };
 
 const navItems = [
-  { key: "home", label: "Home", to: "/home" },
   { key: "rankings", label: "Rankings", to: "/rankings" },
   { key: "profile", label: "Profile", to: "/profile" },
 ] as const;
@@ -45,10 +44,14 @@ export function AppShell({ children, currentPath, sectionLabel, title, user, hel
       <header className="app-shell-header">
         <div className="app-shell-bar">
           <div className="app-shell-brand">
-            <p className="eyebrow shell-kicker app-shell-kicker">
+            <Link className="app-shell-home-link" to="/home">
+              <h1 className="page-title">The Arcade</h1>
+            </Link>
+            <p className="eyebrow shell-kicker app-shell-kicker" title={`${sectionLabel}: ${title}`}>
               <span>{sectionLabel}</span>
+              <span className="app-shell-context-separator" aria-hidden="true">/</span>
+              <span>{title}</span>
             </p>
-            <h1 className="page-title">{title}</h1>
           </div>
           <button
             aria-controls={navPanelId}

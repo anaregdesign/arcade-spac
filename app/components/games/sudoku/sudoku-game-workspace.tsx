@@ -3,13 +3,14 @@ import { Form, Link, useNavigation } from "react-router";
 
 import type { GameDifficulty } from "../../../lib/client/usecase/game-workspace/use-game-workspace";
 import { useSudokuSession } from "../../../lib/client/usecase/game-workspace/use-sudoku-session";
+import { GameInstructionsDialog } from "../shared/game-instructions-dialog";
 import type { GameWorkspaceComponentProps } from "../shared/game-workspace-types";
 
 function formatDuration(totalSeconds: number) {
   return `${Math.floor(totalSeconds / 60)}:${(totalSeconds % 60).toString().padStart(2, "0")}`;
 }
 
-export function SudokuGameWorkspace({ alternateGame, workspace }: GameWorkspaceComponentProps) {
+export function SudokuGameWorkspace({ alternateGame, instructions, workspace }: GameWorkspaceComponentProps) {
   const navigation = useNavigation();
   const sudoku = useSudokuSession(workspace.difficulty);
   const isLiveRun = sudoku.state === "playing";
@@ -19,7 +20,7 @@ export function SudokuGameWorkspace({ alternateGame, workspace }: GameWorkspaceC
   const startActionLabel = isLiveRun ? "Running" : isRunCleared ? "Start another puzzle" : "Start run";
   const saveStatusLabel = navigation.state === "submitting"
     ? "Saving"
-    : isRunCleared ? "Ready to save" : "Solve to save";
+    : isRunCleared ? "Ready to save" : isLiveRun ? "Finish or solve" : "Solve to save";
 
   useEffect(() => {
     workspace.setPlaying(sudoku.state === "playing");
@@ -61,6 +62,7 @@ export function SudokuGameWorkspace({ alternateGame, workspace }: GameWorkspaceC
             >
               {startActionLabel}
             </button>
+            <GameInstructionsDialog instructions={instructions} />
             {isLiveRun ? (
               <button className="action-link action-link-secondary" type="button" onClick={() => workspace.openLeaveConfirm("home")}>
                 Go home
@@ -142,7 +144,13 @@ export function SudokuGameWorkspace({ alternateGame, workspace }: GameWorkspaceC
         <div className="workspace-finish-row">
           <div className="workspace-finish-copy">
             <strong>{saveStatusLabel}</strong>
-            <span>{isRunCleared ? "Record this clear when you are done." : "Solve the puzzle, then record the clear."}</span>
+            <span>
+              {isRunCleared
+                ? "Record this clear when you are done."
+                : isLiveRun
+                  ? "Solve the puzzle for a ranked clear, or finish now to open a not-cleared result."
+                  : "Solve the puzzle, then record the clear."}
+            </span>
           </div>
           <div className="hero-actions compact-actions compact-action-strip">
             <Form method="post" onSubmit={() => workspace.finishRun()}>
@@ -155,6 +163,18 @@ export function SudokuGameWorkspace({ alternateGame, workspace }: GameWorkspaceC
                 Record current clear
               </button>
             </Form>
+            {isLiveRun ? (
+              <Form method="post" onSubmit={() => workspace.finishRun()}>
+                <input type="hidden" name="intent" value="fail" />
+                <input type="hidden" name="difficulty" value={workspace.difficulty} />
+                <input type="hidden" name="primaryMetric" value={String(sudoku.elapsedSeconds)} />
+                <input type="hidden" name="mistakeCount" value={String(sudoku.mistakeCount)} />
+                <input type="hidden" name="hintCount" value={String(sudoku.hintCount)} />
+                <button className="action-link action-link-secondary" type="submit">
+                  Finish run
+                </button>
+              </Form>
+            ) : null}
           </div>
         </div>
       </section>

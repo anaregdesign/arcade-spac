@@ -1,6 +1,6 @@
 import { Form, Link } from "react-router";
 
-import { getGameWorkspaceComponent } from "../games/game-workspace-registry";
+import { getGameInstructions, getGameWorkspaceComponent } from "../games/game-workspace-registry";
 import { useGameWorkspace } from "../../lib/client/usecase/game-workspace/use-game-workspace";
 
 type GameWorkspaceScreenProps = {
@@ -29,11 +29,12 @@ export function GameWorkspaceScreen({ game }: GameWorkspaceScreenProps) {
       ? { href: "/games/minesweeper", label: "Play Minesweeper" }
       : null;
   const GameWorkspaceComponent = getGameWorkspaceComponent(game.key);
+  const instructions = getGameInstructions(game.key);
 
   return (
     <div className="dashboard-stack workspace-stack">
-      {GameWorkspaceComponent ? (
-        <GameWorkspaceComponent alternateGame={alternateGame} workspace={workspace} />
+      {GameWorkspaceComponent && instructions ? (
+        <GameWorkspaceComponent alternateGame={alternateGame} instructions={instructions} workspace={workspace} />
       ) : (
         <section className="feature-card workspace-card confirm-card">
           <p className="eyebrow">Game setup</p>

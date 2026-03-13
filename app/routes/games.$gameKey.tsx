@@ -46,11 +46,11 @@ export async function action({ request, params }: Route.ActionArgs) {
     throw new Response("Difficulty is required", { status: 400 });
   }
 
-  if (intent === "completeClean" || intent === "completeSteady" || intent === "completePending") {
+  if (intent === "completeClean" || intent === "completeSteady" || intent === "completePending" || intent === "fail") {
     const primaryMetric = typeof primaryMetricInput === "string" && primaryMetricInput ? Number(primaryMetricInput) : undefined;
     const mistakeCount = typeof mistakeCountInput === "string" && mistakeCountInput ? Number(mistakeCountInput) : undefined;
     const hintCount = typeof hintCountInput === "string" && hintCountInput ? Number(hintCountInput) : undefined;
-    const actualMetrics = primaryMetric && Number.isFinite(primaryMetric)
+    const actualMetrics = primaryMetric !== undefined && Number.isFinite(primaryMetric)
       ? {
           primaryMetric,
           mistakeCount: mistakeCount !== undefined && Number.isFinite(mistakeCount) ? mistakeCount : undefined,
@@ -69,7 +69,7 @@ export async function action({ request, params }: Route.ActionArgs) {
         actualMetrics,
         difficulty: difficulty as "EASY" | "NORMAL" | "HARD" | "EXPERT",
         gameKey: params.gameKey,
-        outcome: intent === "completeClean" ? "clean" : "steady",
+        outcome: intent === "completeClean" ? "clean" : intent === "fail" ? "failed" : "steady",
         ownerUserId: null,
         recoveryReason: "session_expired",
       });
@@ -89,7 +89,13 @@ export async function action({ request, params }: Route.ActionArgs) {
         userId,
         gameKey: params.gameKey,
         difficulty: difficulty as "EASY" | "NORMAL" | "HARD" | "EXPERT",
-        outcome: intent === "completeClean" ? "clean" : intent === "completeSteady" ? "steady" : "pending",
+        outcome: intent === "completeClean"
+          ? "clean"
+          : intent === "completeSteady"
+            ? "steady"
+            : intent === "fail"
+              ? "failed"
+              : "pending",
         actualMetrics,
       });
 
@@ -100,7 +106,7 @@ export async function action({ request, params }: Route.ActionArgs) {
         actualMetrics,
         difficulty: difficulty as "EASY" | "NORMAL" | "HARD" | "EXPERT",
         gameKey: params.gameKey,
-        outcome: intent === "completeClean" ? "clean" : "steady",
+        outcome: intent === "completeClean" ? "clean" : intent === "fail" ? "failed" : "steady",
         ownerUserId: userId,
         recoveryReason: "save_failed",
       });

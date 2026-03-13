@@ -64,6 +64,8 @@ function getStatusLabel(status: string) {
   switch (status) {
     case "COMPLETED":
       return "Cleared";
+    case "FAILED":
+      return "Not cleared";
     case "PENDING_SAVE":
       return "Pending save";
     case "ABANDONED":
@@ -96,6 +98,15 @@ function getSelfBestSummary(result: PersistedPlayResult) {
   const previousBestMetric = previousResults[0]?.primaryMetric ?? null;
 
   if (result.status !== "COMPLETED") {
+    if (result.status === "FAILED") {
+      return {
+        badge: "Retry run",
+        deltaLabel: "No leaderboard entry",
+        detail: "This run ended without a clear, so it stays in history only and does not change rankings or total points.",
+        shareLine: "this run did not clear the board",
+      };
+    }
+
     return {
       badge: "Provisional",
       deltaLabel: "Wait for save",
@@ -176,6 +187,62 @@ function getShareAvailabilityNote(result: PersistedPlayResult, canShare: boolean
   return "Only completed results can be shared.";
 }
 
+function getExcludedBoardValue(result: PersistedPlayResult, isTenantVisible: boolean) {
+  if (result.status === "PENDING_SAVE") {
+    return {
+      value: "Pending",
+      note: "This result is visible but does not enter the board until save retry succeeds.",
+    };
+  }
+
+  if (result.status === "FAILED") {
+    return {
+      value: "Excluded",
+      note: "Uncleared runs stay in history only and do not enter the game board.",
+    };
+  }
+
+  if (isTenantVisible) {
+    return {
+      value: "Excluded",
+      note: "Abandoned or unconfirmed runs do not enter the game board.",
+    };
+  }
+
+  return {
+    value: "Private",
+    note: "Private visibility keeps this result out of the shared game board.",
+  };
+}
+
+function getExcludedOverallValue(result: PersistedPlayResult, currentOverallRank: number | null, isTenantVisible: boolean) {
+  if (result.status === "PENDING_SAVE") {
+    return {
+      value: formatRank(currentOverallRank),
+      note: "Overall ranking stays provisional until the save is confirmed.",
+    };
+  }
+
+  if (result.status === "FAILED") {
+    return {
+      value: formatRank(currentOverallRank),
+      note: "Overall ranking does not change for uncleared runs.",
+    };
+  }
+
+  if (isTenantVisible) {
+    return {
+      value: formatRank(currentOverallRank),
+      note: "Overall ranking does not change for abandoned or excluded runs.",
+    };
+  }
+
+  return {
+    value: formatRank(currentOverallRank),
+    note: "Private visibility keeps overall ranking hidden from shared boards until the profile becomes tenant-visible.",
+  };
+}
+
 export async function buildPersistedResultView(input: {
   publicBaseUrl: string;
   result: PersistedPlayResult;
@@ -227,14 +294,7 @@ export async function buildPersistedResultView(input: {
             value: formatRank(gameShift.currentRank),
             note: gameShift.delta && gameShift.delta > 0 ? `Up ${pluralize(gameShift.delta, "spot")} on the ${input.result.game.name} board.` : "No board movement from this result.",
           }
-        : {
-            value: input.result.status === "PENDING_SAVE" ? "Pending" : isTenantVisible ? "Excluded" : "Private",
-            note: input.result.status === "PENDING_SAVE"
-              ? "This result is visible but does not enter the board until save retry succeeds."
-              : isTenantVisible
-                ? "Abandoned or unconfirmed runs do not enter the game board."
-                : "Private visibility keeps this result out of the shared game board.",
-          },
+        : getExcludedBoardValue(input.result, isTenantVisible),
       totalPoints: {
         value: `${input.result.totalPointsDelta >= 0 ? "+" : ""}${input.result.totalPointsDelta} pts`,
         note: `Season total is now ${currentOverallPoints} pts.`,
@@ -244,17 +304,12 @@ export async function buildPersistedResultView(input: {
             value: formatRank(currentOverallRank),
             note: overallShift.delta && overallShift.delta > 0 ? `Up ${pluralize(overallShift.delta, "spot")} on the overall board.` : currentOverallRank ? "No overall rank movement from this result." : "You still need another ranked result to enter the overall board.",
           }
-        : {
-            value: formatRank(currentOverallRank),
-            note: input.result.status === "PENDING_SAVE"
-              ? "Overall ranking stays provisional until the save is confirmed."
-              : isTenantVisible
-                ? "Overall ranking does not change for abandoned or excluded runs."
-                : "Private visibility keeps overall ranking hidden from shared boards until the profile becomes tenant-visible.",
-          },
+        : getExcludedOverallValue(input.result, currentOverallRank, isTenantVisible),
     },
     stateExplanation: input.result.status === "PENDING_SAVE"
       ? "This run is stored locally, but rankings and total points stay provisional until the retry succeeds."
+      : input.result.status === "FAILED"
+        ? "This run ended without a clear, so it stays in history without changing rankings or total points."
       : input.result.status === "ABANDONED"
         ? "This run was recorded as abandoned, so it stays in history without changing rankings or total points."
         : null,
@@ -279,9 +334,12 @@ export function buildPendingResultDraftView(input: {
   const supportMetricNote = isMinesweeper
     ? supportMetricValue === 0 ? "Clean board kept in recovery." : `${pluralize(supportMetricValue, "mistake")} kept in recovery.`
     : supportMetricValue === 0 ? "No hints recorded in recovery." : `${pluralize(supportMetricValue, "hint")} kept in recovery.`;
+  const willPublishToLeaderboard = input.draft.outcome !== "failed";
   const stateExplanation = input.draft.recoveryReason === "session_expired"
-    ? "Your session ended while Arcade was saving this clear. Sign in again, then retry once to publish it."
-    : "Arcade kept the clear after a save problem. Retry once to publish it to rankings and total points.";
+    ? `Your session ended while Arcade was saving this ${input.draft.outcome === "failed" ? "run" : "clear"}. Sign in again, then retry once to publish it.`
+    : willPublishToLeaderboard
+      ? `Arcade kept this clear after a save problem. Retry once to publish it to rankings and total points.`
+      : "Arcade kept this failed run after a save problem. Retry once to publish it to history.";
 
   return {
     id: input.draft.id,
@@ -289,7 +347,7 @@ export function buildPendingResultDraftView(input: {
     status: "PENDING_SAVE",
     statusLabel: "Pending save",
     difficulty: input.draft.difficulty,
-    summaryText: `${input.gameName} ${input.draft.difficulty.toLowerCase()} clear was preserved for recovery.`,
+    summaryText: `${input.gameName} ${input.draft.difficulty.toLowerCase()} ${input.draft.outcome === "failed" ? "run" : "clear"} was preserved for recovery.`,
     primaryMetric: primaryMetricText,
     supportMetricLabel,
     supportMetricValue,
@@ -301,15 +359,15 @@ export function buildPendingResultDraftView(input: {
     impact: {
       gameRank: {
         value: "Pending",
-        note: "Board rank will update only after the retry succeeds.",
+        note: willPublishToLeaderboard ? "Board rank will update only after the retry succeeds." : "Failed runs stay outside the game board even after the retry succeeds.",
       },
       totalPoints: {
         value: "Pending",
-        note: "Total points stay unchanged until publish succeeds.",
+        note: willPublishToLeaderboard ? "Total points stay unchanged until publish succeeds." : "Total points will remain unchanged for a failed run.",
       },
       overallRank: {
         value: "Pending",
-        note: "Overall rank stays unchanged until publish succeeds.",
+        note: willPublishToLeaderboard ? "Overall rank stays unchanged until publish succeeds." : "Overall rank will remain unchanged for a failed run.",
       },
     },
     stateExplanation,

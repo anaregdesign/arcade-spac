@@ -43,6 +43,11 @@ type ResultScreenProps = {
 
 export function ResultScreen({ result }: ResultScreenProps) {
   const teamsShareHref = `https://teams.microsoft.com/share?href=${encodeURIComponent(result.shareUrl)}&msgText=${encodeURIComponent(result.shareText)}`;
+  const statusBadgeClass = result.status === "COMPLETED"
+    ? "status-badge status-badge-success"
+    : result.status === "PENDING_SAVE"
+      ? "status-badge status-badge-pending"
+      : "status-badge status-badge-neutral";
   const alternateGame = result.gameKey === "minesweeper"
     ? { href: "/games/sudoku", label: "Play Sudoku" }
     : result.gameKey === "sudoku"
@@ -58,7 +63,7 @@ export function ResultScreen({ result }: ResultScreenProps) {
             <h2 className="section-title">{result.gameName} {result.difficulty.toLowerCase()}</h2>
           </div>
           <div className="result-badge-row">
-            <span className={result.status === "PENDING_SAVE" ? "status-badge status-badge-pending" : "status-badge status-badge-success"}>{result.statusLabel}</span>
+            <span className={statusBadgeClass}>{result.statusLabel}</span>
             <span className="status-badge status-badge-neutral">{result.selfBestBadge}</span>
           </div>
         </div>
@@ -66,7 +71,7 @@ export function ResultScreen({ result }: ResultScreenProps) {
         {result.stateExplanation ? <p className="workspace-note">{result.stateExplanation}</p> : null}
         <dl className="stat-grid compact-stat-grid">
           <div>
-            <dt>Clear time</dt>
+            <dt>{result.status === "FAILED" || result.status === "ABANDONED" ? "Run time" : "Clear time"}</dt>
             <dd>{result.primaryMetric}</dd>
           </div>
           <div>

@@ -88,12 +88,12 @@ export default function PendingResultRoute() {
     <AppShell
       currentPath="games"
       help={{
-        intro: "Pending recovery keeps a clear available until the app can publish it to rankings and total points again.",
+        intro: "Pending recovery keeps the latest run available until Arcade can publish it again.",
         sections: buildSharedHelpSections([
           {
             eyebrow: "5. Recovery flow",
             title: "Retry publishing after a save problem or session expiry",
-            body: "The run detail stays visible here, but leaderboard impact and Teams sharing remain locked until retry succeeds.",
+            body: "The run detail stays visible here. Retry once to publish the final result state, then Home and Result screens will reflect it correctly.",
           },
         ]),
         title: "Pending result help",

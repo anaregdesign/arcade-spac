@@ -10,7 +10,7 @@ type Cell = {
   isRevealed: boolean;
 };
 
-type SessionState = "idle" | "playing" | "cleared";
+type SessionState = "idle" | "playing" | "cleared" | "failed";
 
 const difficultyConfig: Record<Difficulty, { columns: number; mines: number; rows: number }> = {
   EASY: { columns: 8, mines: 10, rows: 8 },
@@ -117,6 +117,16 @@ function isBoardCleared(board: Cell[][]) {
   return board.every((row) => row.every((cell) => cell.hasMine || cell.isRevealed));
 }
 
+function revealAllMines(board: Cell[][]) {
+  board.forEach((row) => {
+    row.forEach((cell) => {
+      if (cell.hasMine) {
+        cell.isRevealed = true;
+      }
+    });
+  });
+}
+
 export function useMinesweeperSession(difficulty: Difficulty) {
   const config = useMemo(() => difficultyConfig[difficulty], [difficulty]);
   const [board, setBoard] = useState<Cell[][]>(() => createEmptyBoard(config.rows, config.columns));
@@ -176,6 +186,8 @@ export function useMinesweeperSession(difficulty: Difficulty) {
     if (cell.hasMine) {
       cell.isExploded = true;
       cell.isRevealed = true;
+      revealAllMines(nextBoard);
+      setState("failed");
       setMistakeCount((value) => value + 1);
       setBoard(nextBoard);
       return;

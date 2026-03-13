@@ -16,7 +16,7 @@ const difficultyBasePoints = {
   EXPERT: 1450,
 } as const;
 
-function computeMetrics(gameKey: string, difficulty: keyof typeof difficultyBasePoints, outcome: "clean" | "steady" | "pending") {
+function computeMetrics(gameKey: string, difficulty: keyof typeof difficultyBasePoints, outcome: "clean" | "steady" | "pending" | "failed") {
   const base = difficultyBasePoints[difficulty];
   const modifier = outcome === "clean" ? 1 : outcome === "steady" ? 0.82 : 0.58;
   const primaryMetric = gameKey === "minesweeper"
@@ -36,13 +36,23 @@ function computeActualMetrics(input: {
   gameKey: string;
   hintCount?: number;
   mistakeCount?: number;
-  outcome: "clean" | "steady" | "pending";
+  outcome: "clean" | "steady" | "pending" | "failed";
   primaryMetric: number;
 }) {
   const base = difficultyBasePoints[input.difficulty];
   const primaryMetric = Math.max(1, Math.round(input.primaryMetric));
   const hintCount = input.gameKey === "sudoku" ? Math.max(0, Math.round(input.hintCount ?? 0)) : null;
   const mistakeCount = Math.max(0, Math.round(input.mistakeCount ?? 0));
+
+  if (input.outcome === "failed") {
+    return {
+      primaryMetric,
+      competitivePoints: 0,
+      hintCount,
+      mistakeCount: input.gameKey === "minesweeper" || input.gameKey === "sudoku" ? mistakeCount : null,
+    };
+  }
+
   const penalty = input.gameKey === "minesweeper"
     ? Math.round(primaryMetric * 1.35) + (mistakeCount ?? 0) * 120
     : Math.round(primaryMetric * 0.9) + (hintCount ?? 0) * 90 + mistakeCount * 45;
@@ -68,12 +78,32 @@ function buildResultSummary(input: {
   gameKey: string;
   hintCount: number | null;
   mistakeCount: number | null;
-  outcome: "clean" | "steady" | "pending";
+  outcome: "clean" | "steady" | "pending" | "failed";
   primaryMetric: number;
 }) {
-  const detailParts = [
-    `${input.gameName} ${input.difficulty.toLowerCase()} cleared in ${formatMetric(input.primaryMetric)}`,
-  ];
+  const baseSummary = `${input.gameName} ${input.difficulty.toLowerCase()} ${input.outcome === "failed" ? "ended after" : "cleared in"} ${formatMetric(input.primaryMetric)}`;
+
+  if (input.outcome === "failed") {
+    const detailParts: string[] = [];
+
+    if (input.gameKey === "minesweeper") {
+      detailParts.push(input.mistakeCount === 1 ? "one mine triggered" : `${input.mistakeCount ?? 0} mines triggered`);
+    }
+
+    if (input.gameKey === "sudoku") {
+      detailParts.push(input.hintCount === 0 ? "no hints used" : `${input.hintCount ?? 0} hints used`);
+
+      if ((input.mistakeCount ?? 0) > 0) {
+        detailParts.push(`${input.mistakeCount} mistake${input.mistakeCount === 1 ? "" : "s"}`);
+      }
+    }
+
+    return detailParts.length > 0
+      ? `${baseSummary} with ${detailParts.join(" and ")}. Result saved for history only and excluded from rankings.`
+      : `${baseSummary}. Result saved for history only and excluded from rankings.`;
+  }
+
+  const detailParts: string[] = [];
 
   if (input.gameKey === "minesweeper") {
     detailParts.push(input.mistakeCount === 0 ? "no mistakes" : `${input.mistakeCount} mistake${input.mistakeCount === 1 ? "" : "s"}`);
@@ -87,7 +117,9 @@ function buildResultSummary(input: {
     }
   }
 
-  const sentence = `${detailParts.join(" with ")}`;
+  const sentence = detailParts.length > 0
+    ? `${baseSummary} with ${detailParts.join(" and ")}`
+    : baseSummary;
   return input.outcome === "pending" ? `${sentence}, save pending.` : `${sentence}.`;
 }
 
@@ -100,7 +132,7 @@ export async function recordGameplayResult(input: {
   userId: string;
   gameKey: string;
   difficulty: "EASY" | "NORMAL" | "HARD" | "EXPERT";
-  outcome: "clean" | "steady" | "pending";
+  outcome: "clean" | "steady" | "pending" | "failed";
 }) {
   const game = await getGameByKey(input.gameKey);
 
@@ -118,7 +150,7 @@ export async function recordGameplayResult(input: {
         primaryMetric: input.actualMetrics.primaryMetric,
       })
     : computeMetrics(input.gameKey, input.difficulty, input.outcome);
-  const status = input.outcome === "pending" ? "PENDING_SAVE" : "COMPLETED";
+  const status = input.outcome === "pending" ? "PENDING_SAVE" : input.outcome === "failed" ? "FAILED" : "COMPLETED";
   const leaderboardEligible = status === "COMPLETED";
   const resultId = `play-${randomUUID()}`;
   const shareToken = status === "COMPLETED" ? `share-${randomUUID()}` : null;
@@ -129,7 +161,7 @@ export async function recordGameplayResult(input: {
     gameId: game.id,
     difficulty: input.difficulty,
     status,
-    cleared: true,
+    cleared: status !== "FAILED",
     leaderboardEligible,
     primaryMetric: metrics.primaryMetric,
     hintCount: metrics.hintCount,

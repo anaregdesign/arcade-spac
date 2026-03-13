@@ -139,9 +139,16 @@ a {
 .app-shell-brand {
   min-width: 0;
   display: flex;
-  align-items: center;
+  align-items: baseline;
   gap: 10px;
   overflow: hidden;
+}
+
+.app-shell-home-link {
+  color: inherit;
+  text-decoration: none;
+  flex: 0 0 auto;
+  min-width: 0;
 }
 
 .shell-kicker {
@@ -152,8 +159,15 @@ a {
 
 .app-shell-kicker {
   margin: 0;
-  flex: 0 0 auto;
+  min-width: 0;
   color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.app-shell-context-separator {
+  color: var(--text-tertiary);
 }
 
 .app-shell-panel {
@@ -656,6 +670,10 @@ a {
   overflow: auto;
 }
 
+.game-instructions-dialog {
+  width: min(760px, 100%);
+}
+
 .help-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -667,6 +685,46 @@ a {
   padding: 16px;
   border-radius: 18px;
   background: var(--card-muted);
+}
+
+.game-instructions-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.game-instructions-panel {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 18px;
+  background: var(--card-muted);
+  min-width: 0;
+}
+
+.game-instructions-list {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+}
+
+.game-instructions-row {
+  display: grid;
+  gap: 4px;
+}
+
+.game-instructions-row dt {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.game-instructions-row dd {
+  margin: 0;
+  color: var(--text-secondary);
+  overflow-wrap: anywhere;
 }
 
 .home-hub-card {
@@ -1392,11 +1450,12 @@ a {
   }
 
   .app-shell-brand {
-    gap: 10px;
+    align-items: center;
+    gap: 8px;
   }
 
   .app-shell-kicker {
-    max-width: max-content;
+    max-width: 100%;
   }
 
   .menu-toggle {
@@ -1482,6 +1541,10 @@ a {
 
   .home-hub-search {
     grid-column: auto;
+  }
+
+  .game-instructions-grid {
+    grid-template-columns: 1fr;
   }
 
   .game-preview-overlay {

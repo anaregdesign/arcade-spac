@@ -46,7 +46,7 @@ export type PendingResultDraft = {
   };
   difficulty: "EASY" | "NORMAL" | "HARD" | "EXPERT";
   gameKey: string;
-  outcome: "clean" | "steady";
+  outcome: "clean" | "steady" | "failed";
   ownerUserId: string | null;
   recoveryReason: "save_failed" | "session_expired";
 };
@@ -127,7 +127,7 @@ export function getPendingResultDraft(session: Awaited<ReturnType<typeof getSess
     typeof candidate.id !== "string"
     || typeof candidate.gameKey !== "string"
     || (candidate.difficulty !== "EASY" && candidate.difficulty !== "NORMAL" && candidate.difficulty !== "HARD" && candidate.difficulty !== "EXPERT")
-    || (candidate.outcome !== "clean" && candidate.outcome !== "steady")
+    || (candidate.outcome !== "clean" && candidate.outcome !== "steady" && candidate.outcome !== "failed")
     || (candidate.ownerUserId !== null && typeof candidate.ownerUserId !== "string" && candidate.ownerUserId !== undefined)
     || (candidate.recoveryReason !== "save_failed" && candidate.recoveryReason !== "session_expired")
     || !actualMetrics

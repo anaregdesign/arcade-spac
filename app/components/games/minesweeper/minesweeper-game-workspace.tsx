@@ -1,29 +1,54 @@
-import { useEffect } from "react";
-import { Form, Link, useNavigation } from "react-router";
+import { useEffect, useRef } from "react";
+import { Form, Link, useNavigation, useSubmit } from "react-router";
 
 import type { GameDifficulty } from "../../../lib/client/usecase/game-workspace/use-game-workspace";
 import { useMinesweeperSession } from "../../../lib/client/usecase/game-workspace/use-minesweeper-session";
+import { GameInstructionsDialog } from "../shared/game-instructions-dialog";
 import type { GameWorkspaceComponentProps } from "../shared/game-workspace-types";
 
 function formatDuration(totalSeconds: number) {
   return `${Math.floor(totalSeconds / 60)}:${(totalSeconds % 60).toString().padStart(2, "0")}`;
 }
 
-export function MinesweeperGameWorkspace({ alternateGame, workspace }: GameWorkspaceComponentProps) {
+export function MinesweeperGameWorkspace({ alternateGame, instructions, workspace }: GameWorkspaceComponentProps) {
   const navigation = useNavigation();
+  const submit = useSubmit();
+  const didSubmitFailedRunRef = useRef(false);
   const minesweeper = useMinesweeperSession(workspace.difficulty);
   const isLiveRun = minesweeper.state === "playing";
   const isRunCleared = minesweeper.state === "cleared";
+  const isRunFailed = minesweeper.state === "failed";
   const resultIntent = minesweeper.mistakeCount === 0 ? "completeClean" : "completeSteady";
-  const runStatusLabel = isRunCleared ? "Clear ready" : isLiveRun ? "Live" : "Ready";
-  const startActionLabel = isLiveRun ? "Running" : isRunCleared ? "Start another board" : "Start run";
+  const runStatusLabel = isRunCleared ? "Clear ready" : isRunFailed ? "Failed" : isLiveRun ? "Live" : "Ready";
+  const startActionLabel = isLiveRun ? "Running" : isRunCleared || isRunFailed ? "Start another board" : "Start run";
   const saveStatusLabel = navigation.state === "submitting"
     ? "Saving"
-    : isRunCleared ? "Ready to save" : "Clear to save";
+    : isRunFailed ? "Opening result" : isRunCleared ? "Ready to save" : "Clear to save";
 
   useEffect(() => {
     workspace.setPlaying(minesweeper.state === "playing");
   }, [minesweeper.state, workspace]);
+
+  useEffect(() => {
+    if (minesweeper.state !== "failed") {
+      didSubmitFailedRunRef.current = false;
+      return;
+    }
+
+    if (didSubmitFailedRunRef.current) {
+      return;
+    }
+
+    didSubmitFailedRunRef.current = true;
+    workspace.finishRun();
+
+    const formData = new FormData();
+    formData.set("intent", "fail");
+    formData.set("difficulty", workspace.difficulty);
+    formData.set("primaryMetric", String(minesweeper.elapsedSeconds));
+    formData.set("mistakeCount", String(minesweeper.mistakeCount));
+    submit(formData, { method: "post" });
+  }, [minesweeper.elapsedSeconds, minesweeper.mistakeCount, minesweeper.state, submit, workspace]);
 
   return (
     <>
@@ -62,6 +87,7 @@ export function MinesweeperGameWorkspace({ alternateGame, workspace }: GameWorks
             >
               {startActionLabel}
             </button>
+            <GameInstructionsDialog instructions={instructions} />
             {isLiveRun ? (
               <button className="action-link action-link-secondary" type="button" onClick={() => workspace.openLeaveConfirm("home")}>
                 Go home
@@ -130,7 +156,13 @@ export function MinesweeperGameWorkspace({ alternateGame, workspace }: GameWorks
         <div className="workspace-finish-row">
           <div className="workspace-finish-copy">
             <strong>{saveStatusLabel}</strong>
-            <span>{isRunCleared ? "Record this clear when you are done." : "Clear the board, then record the run."}</span>
+            <span>
+              {isRunFailed
+                ? "The result screen opens automatically after a failed board."
+                : isRunCleared
+                  ? "Record this clear when you are done."
+                  : "Clear the board, then record the run."}
+            </span>
           </div>
           <div className="hero-actions compact-actions compact-action-strip">
             <Form method="post" onSubmit={() => workspace.finishRun()}>
