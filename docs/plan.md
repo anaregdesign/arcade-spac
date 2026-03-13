@@ -25,9 +25,9 @@
 
 ## Section 4 - Implement Number Chain
 ### Subsection 4.1 - Game workspace and session flow
-- [ ] Add the `Number Chain` session Hook and workspace React Component
-- [ ] Register `Number Chain` presentation, instructions, tags, and metadata in the shared catalog
-- [ ] Add responsive styling for the numbered grid
+- [x] Add the `Number Chain` session Hook and workspace React Component
+- [x] Register `Number Chain` presentation, instructions, tags, and metadata in the shared catalog
+- [x] Add responsive styling for the numbered grid
 
 ## Section 5 - Implement Pair Flip
 ### Subsection 5.1 - Game workspace and session flow

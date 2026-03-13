@@ -3,6 +3,7 @@ import type { ComponentType } from "react";
 import { ColorSweepGameWorkspace } from "./color-sweep/color-sweep-game-workspace";
 import { DropLineGameWorkspace } from "./drop-line/drop-line-game-workspace";
 import { MinesweeperGameWorkspace } from "./minesweeper/minesweeper-game-workspace";
+import { NumberChainGameWorkspace } from "./number-chain/number-chain-game-workspace";
 import type { GameInstructions } from "./shared/game-instructions-dialog";
 import { SudokuGameWorkspace } from "./sudoku/sudoku-game-workspace";
 import type { GameWorkspaceComponentProps } from "./shared/game-workspace-types";
@@ -106,6 +107,35 @@ const gameDefinitionByKey: Record<string, GameDefinition> = {
       previewSrc: "/images/games/minesweeper-preview.png",
     },
     workspace: MinesweeperGameWorkspace,
+  },
+  "number-chain": {
+    instructions: {
+      summary: "Tap the numbered tiles in ascending order, keep mistakes low, and finish the whole chain before the timer expires.",
+      sections: [
+        {
+          title: "Run flow",
+          items: [
+            { label: "Start run", detail: "Choose a difficulty and press Start run to shuffle the numbered board and arm the timer." },
+            { label: "Clear", detail: "Tap every number in ascending order. The Result screen opens automatically after the last number." },
+            { label: "Timeout", detail: "If the timer ends before the chain is complete, the run is saved as not cleared and opens the Result screen automatically." },
+          ],
+        },
+        {
+          title: "Board controls",
+          items: [
+            { label: "Follow the chain", detail: "The current next number stays visible above the board and in the status row." },
+            { label: "Tap carefully", detail: "Only the correct next number advances the chain. Wrong taps raise the support metric but do not stop the board." },
+            { label: "Replay quickly", detail: "The board resets with a fresh shuffle every time a new run starts." },
+          ],
+        },
+      ],
+      title: "Number Chain controls",
+    },
+    presentation: {
+      previewAlt: "Number Chain board with numbered tiles that must be tapped in order",
+      previewSrc: "/images/games/number-chain-preview.svg",
+    },
+    workspace: NumberChainGameWorkspace,
   },
   sudoku: {
     instructions: {

@@ -213,6 +213,14 @@ function createInitialState(): DevState {
         rulesSummary: "Reveal all safe tiles. Mistakes cost quality score and leaderboard points.",
       },
       {
+        id: "game-number-chain",
+        key: "NUMBER_CHAIN",
+        name: "Number Chain",
+        shortDescription: "Tap the shuffled numbers in ascending order before the timer expires.",
+        accentColor: "#3b82f6",
+        rulesSummary: "Only the next number advances the chain. Wrong taps lower quality, and timeouts stay in history only.",
+      },
+      {
         id: "game-sudoku",
         key: "SUDOKU",
         name: "Sudoku",

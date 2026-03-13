@@ -10,6 +10,7 @@ const gameIds = {
   colorSweep: "game-color-sweep",
   dropLine: "game-drop-line",
   minesweeper: "game-minesweeper",
+  numberChain: "game-number-chain",
   sudoku: "game-sudoku",
 } as const;
 
@@ -47,6 +48,14 @@ async function main() {
         shortDescription: "Clear the board quickly while keeping mistakes low.",
         accentColor: "#ea580c",
         rulesSummary: "Reveal all safe tiles. Mistakes cost quality score and leaderboard points.",
+      },
+      {
+        id: gameIds.numberChain,
+        key: "NUMBER_CHAIN",
+        name: "Number Chain",
+        shortDescription: "Tap the shuffled numbers in ascending order before the timer expires.",
+        accentColor: "#3b82f6",
+        rulesSummary: "Only the next number advances the chain. Wrong taps lower quality, and timeouts stay in history only.",
       },
       {
         id: gameIds.sudoku,
