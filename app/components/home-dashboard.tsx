@@ -1,14 +1,22 @@
 import { Link } from "react-router";
 
-function getGameEmoji(gameKey: string) {
-  switch (gameKey) {
-    case "minesweeper":
-      return "MS";
-    case "sudoku":
-      return "SU";
-    default:
-      return "AR";
+import { getGamePresentation } from "./games/game-workspace-registry";
+
+function getGameStatusLabel(game: {
+  currentRank: number | null;
+  playCount: number;
+}) {
+  if (game.currentRank) {
+    return `Rank #${game.currentRank}`;
   }
+
+  return game.playCount > 0 ? "Played" : "New";
+}
+
+function getGameRecordLabel(game: {
+  metricValue: string;
+}) {
+  return game.metricValue === "No record yet" ? "No record" : `Best ${game.metricValue}`;
 }
 
 type HomeDashboardProps = {
@@ -79,7 +87,7 @@ export function HomeDashboard({
           <input
             className="field-input"
             onChange={(event) => setSearch(event.currentTarget.value)}
-            placeholder="Find a game, style, or recommendation"
+            placeholder="Find a game or style"
             value={search}
           />
         </label>
@@ -110,30 +118,48 @@ export function HomeDashboard({
         <span className="status-badge status-badge-neutral">{games.filter((game) => game.currentRank).length} visible ranked</span>
       </div>
       <div className="game-grid home-game-grid home-primary-grid">
-        {games.map((game) => (
-          <article key={game.key} className="game-card home-game-card">
-            <div className="game-card-top">
-              <span className="game-icon-chip" aria-hidden="true">{getGameEmoji(game.key)}</span>
-              <span className="status-badge status-badge-neutral">
-                {game.currentRank ? `Rank #${game.currentRank}` : game.playCount > 0 ? "Played" : "New"}
-              </span>
-            </div>
-            <div>
-              <h3 className="card-title">{game.name}</h3>
-              <p className="compact-copy">{game.shortDescription}</p>
-            </div>
-            <div className="home-card-meta">
-              <span>{game.metricLabel}: {game.metricValue}</span>
-              <span>{game.playCount > 0 ? `${game.playCount} runs` : "First run ready"}</span>
-            </div>
-            <div className="game-card-footer home-card-footer">
-              <p className="recommendation-copy">{game.recommendationText ?? "Open and start immediately."}</p>
-              <Link className="action-link action-link-primary" to={`/games/${game.key}`}>
-                Play {game.name}
+        {games.map((game) => {
+          const presentation = getGamePresentation(game.key);
+
+          return (
+            <article key={game.key} className="game-card home-game-card">
+              <Link
+                aria-label={`Open ${game.name}`}
+                className="game-preview-link"
+                to={`/games/${game.key}`}
+              >
+                <div className="game-preview-frame">
+                  {presentation ? (
+                    <img
+                      alt={presentation.previewAlt}
+                      className="game-preview-image"
+                      loading="lazy"
+                      src={presentation.previewSrc}
+                      style={{ objectPosition: presentation.previewObjectPosition ?? "center center" }}
+                    />
+                  ) : (
+                    <div className="game-preview-fallback" aria-hidden="true">
+                      <span>{game.name.slice(0, 2).toUpperCase()}</span>
+                    </div>
+                  )}
+                </div>
               </Link>
-            </div>
-          </article>
-        ))}
+              <div className="home-card-body">
+                <div className="home-card-status-row">
+                  <span className="status-badge status-badge-neutral">{getGameStatusLabel(game)}</span>
+                  <span className="status-badge status-badge-neutral">{getGameRecordLabel(game)}</span>
+                </div>
+                <div className="home-card-heading">
+                  <h3 className="card-title">{game.name}</h3>
+                  <span className="home-card-kicker">{game.playCount > 0 ? `${game.playCount} runs` : "First run"}</span>
+                </div>
+                <Link className="action-link action-link-primary home-card-action" to={`/games/${game.key}`}>
+                  Play
+                </Link>
+              </div>
+            </article>
+          );
+        })}
       </div>
       {games.length === 0 ? (
         <article className="latest-result-card home-empty-state">
