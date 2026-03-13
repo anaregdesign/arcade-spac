@@ -4,12 +4,13 @@ This runbook records the verified production baseline for Arcade on Azure and th
 
 ## Current Production Baseline
 
-- Release tag: `v2026.03.13.9`
-- Image: `ghcr.io/anaregdesign/arcade-spec:v2026.03.13.9`
+- Release tag: `v2026.03.13.10`
+- Image: `ghcr.io/anaregdesign/arcade-spec:v2026.03.13.10`
 - Container App: `ca-arcade`
-- Latest ready revision: `ca-arcade--0000020`
+- Latest ready revision: `ca-arcade--0000021`
 - Public app URL: `https://ca-arcade.bravepond-f695129a.japaneast.azurecontainerapps.io`
 - Resource group: `rg-arcade-spec-dev`
+- Azure SQL public network access contract: `Enabled`
 
 ## Repository Rename Note
 
@@ -66,8 +67,12 @@ If local verification is no longer needed, remove the workstation-specific rule 
 - Log Analytics workspace: `law-arcade`
 - Runtime health route: `/health`
 - Smoke script: `scripts/azure/smoke-test.sh`
+- Runtime verification script: `scripts/azure/verify-production-runtime.sh`
+- Scheduled verification workflow: `.github/workflows/verify-production-runtime.yml`
 
 The Container App runtime exports `APPLICATIONINSIGHTS_CONNECTION_STRING`, so first-line verification can start from the live app health endpoint and then move to the Application Insights resource and linked Log Analytics workspace. The hosted `/health` route now also verifies database compatibility by executing the same `UserProfile.themePreference` select path used by authenticated app loaders, so schema drift is expected to surface there before users hit `/home`.
+
+The current hosted architecture still depends on the Azure SQL public endpoint plus the `AllowAzureServices` firewall rule. If `publicNetworkAccess` is changed to `Disabled` before private networking is introduced, the hosted `/health` route and authenticated loaders are expected to fail with SQL login errors.
 
 ## Post-Release Smoke Procedure
 
@@ -76,6 +81,7 @@ The Container App runtime exports `APPLICATIONINSIGHTS_CONNECTION_STRING`, so fi
 3. Run the health endpoint check.
 4. Run the scripted smoke test.
 5. Verify hosted sign-in, gameplay, result, rankings, and profile screens in a browser.
+6. Run the production runtime verification script or workflow when SQL or Container App configuration changed.
 
 Commands:
 
@@ -84,6 +90,10 @@ curl -sS https://ca-arcade.bravepond-f695129a.japaneast.azurecontainerapps.io/he
 
 APP_URL="https://ca-arcade.bravepond-f695129a.japaneast.azurecontainerapps.io" \
   ./scripts/azure/smoke-test.sh
+
+AZURE_RESOURCE_GROUP="rg-arcade-spec-dev" \
+AZURE_CONTAINER_APP_NAME="ca-arcade" \
+  ./scripts/azure/verify-production-runtime.sh
 
 az containerapp show \
   -g rg-arcade-spec-dev \
@@ -113,6 +123,15 @@ az containerapp show -g rg-arcade-spec-dev -n ca-arcade -o json
 az sql server firewall-rule list -g rg-arcade-spec-dev -s sql-arcade-qddhfw4moexbm -o table
 ```
 
+- SQL public network access drift:
+
+```bash
+az sql server show \
+  -g rg-arcade-spec-dev \
+  -n sql-arcade-qddhfw4moexbm \
+  --query '{publicNetworkAccess:publicNetworkAccess}'
+```
+
 - Schema drift confirmation for the `themePreference` and `shareToken` production repair:
 
 ```bash
@@ -126,3 +145,5 @@ sqlcmd -S sql-arcade-qddhfw4moexbm.database.windows.net -d arcade -G -Q "SELECT 
 The outage recovered on March 13, 2026 by adding the missing `UserProfile.themePreference` column and `PlayResult.shareToken` column plus index to the production Azure SQL database. The live symptom was `/home` returning `500` after sign-in while `/health` still returned `200`, which is why the health route now includes a database compatibility check.
 
 The hosted sign-in contract was expanded later on March 13, 2026 to accept organization accounts from other Microsoft Entra tenants. Production now stores Entra identities as `tenantId + objectId`, and the hosted `/auth/start` flow is expected to redirect to the `organizations` authorization endpoint.
+
+An additional outage occurred on March 14, 2026 when the Azure SQL server public endpoint drifted to `Disabled` while the hosted runtime still depended on public network access. The recovery path was to restore `publicNetworkAccess=Enabled`, verify the `AllowAzureServices` firewall rule, and add repository automation that checks the SQL network contract together with the live smoke path.

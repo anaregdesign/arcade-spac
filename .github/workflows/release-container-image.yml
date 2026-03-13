@@ -127,11 +127,5 @@ jobs:
         uses: azure/cli@v2
         with:
           inlineScript: |
-            FQDN="$(az containerapp show \
-              --resource-group "$AZURE_RESOURCE_GROUP" \
-              --name "$AZURE_CONTAINER_APP_NAME" \
-              --query properties.configuration.ingress.fqdn \
-              -o tsv)"
-
-            chmod +x ./scripts/azure/smoke-test.sh
-            APP_URL="https://${FQDN}" ./scripts/azure/smoke-test.sh
+            chmod +x ./scripts/azure/verify-production-runtime.sh
+            ./scripts/azure/verify-production-runtime.sh
