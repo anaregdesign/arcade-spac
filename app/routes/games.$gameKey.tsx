@@ -3,8 +3,8 @@ import { randomUUID } from "node:crypto";
 import { redirect, useLoaderData } from "react-router";
 
 import type { Route } from "./+types/games.$gameKey";
-import { AppShell } from "../components/app-shell";
-import { GameWorkspaceScreen } from "../components/gameplay/game-workspace-screen";
+import { AppShell } from "../components/AppShell";
+import { GameWorkspaceScreen } from "../components/gameplay/GameWorkspaceScreen";
 import { buildSharedHelpSections } from "../components/shared/help-content";
 import { resolveGameKey } from "../lib/domain/entities/game-catalog";
 import { commitSession, getCurrentUserId, getSession, requireCurrentUserId, setPendingResultDraft } from "../lib/server/infrastructure/auth/session.server";

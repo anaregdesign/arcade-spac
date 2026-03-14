@@ -1,7 +1,7 @@
 import { useLoaderData } from "react-router";
 
-import { AppShell } from "../components/app-shell";
-import { RankingsScreen } from "../components/rankings-screen";
+import { AppShell } from "../components/AppShell";
+import { RankingsScreen } from "../components/RankingsScreen";
 import { buildSharedHelpSections } from "../components/shared/help-content";
 import { resolveGameKey } from "../lib/domain/entities/game-catalog";
 import { requireCurrentUserId } from "../lib/server/infrastructure/auth/session.server";

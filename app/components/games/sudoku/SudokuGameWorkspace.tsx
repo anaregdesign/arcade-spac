@@ -3,7 +3,7 @@ import sharedStyles from "../shared/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../shared/GameWorkspaceBoardOverlay";
 import { GameWorkspaceControlsCard } from "../shared/GameWorkspaceControlsCard";
 import { GameWorkspaceFinishCard } from "../shared/GameWorkspaceFinishCard";
-import { GameInstructionsDialog } from "../shared/game-instructions-dialog";
+import { GameInstructionsDialog } from "../shared/GameInstructionsDialog";
 import type { GameWorkspaceComponentProps } from "../shared/game-workspace-types";
 import styles from "./sudoku-game-workspace.module.css";
 

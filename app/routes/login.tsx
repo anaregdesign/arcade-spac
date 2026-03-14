@@ -1,6 +1,6 @@
 import { redirect, useLoaderData } from "react-router";
 
-import { LoginScreen } from "../components/login-screen";
+import { LoginScreen } from "../components/LoginScreen";
 import { isEntraAuthEnabled, getEntraAuthStartHref } from "../lib/server/infrastructure/auth/entra-auth.server";
 import { createUserSession, getCurrentUserId, sanitizeReturnToPath } from "../lib/server/infrastructure/auth/session.server";
 import { getLoginOptions } from "../lib/server/usecase/get-login-options.server";

@@ -1,8 +1,8 @@
 import { redirect, useLoaderData } from "react-router";
 
 import type { Route } from "./+types/results.$resultId";
-import { AppShell } from "../components/app-shell";
-import { ResultScreen } from "../components/gameplay/result-screen";
+import { AppShell } from "../components/AppShell";
+import { ResultScreen } from "../components/gameplay/ResultScreen";
 import { buildSharedHelpSections } from "../components/shared/help-content";
 import { requireCurrentUserId } from "../lib/server/infrastructure/auth/session.server";
 import { getRuntimeConfig } from "../lib/server/infrastructure/config/runtime-config.server";

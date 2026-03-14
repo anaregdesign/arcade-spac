@@ -1,13 +1,13 @@
 import type { ComponentType } from "react";
 
-import { ColorSweepGameWorkspace } from "./color-sweep/color-sweep-game-workspace";
-import { MinesweeperGameWorkspace } from "./minesweeper/minesweeper-game-workspace";
-import { NumberChainGameWorkspace } from "./number-chain/number-chain-game-workspace";
-import { PairFlipGameWorkspace } from "./pair-flip/pair-flip-game-workspace";
-import { PatternEchoGameWorkspace } from "./pattern-echo/pattern-echo-game-workspace";
-import { PrecisionDropGameWorkspace } from "./precision-drop/precision-drop-game-workspace";
-import type { GameInstructions } from "./shared/game-instructions-dialog";
-import { SudokuGameWorkspace } from "./sudoku/sudoku-game-workspace";
+import { ColorSweepGameWorkspace } from "./color-sweep/ColorSweepGameWorkspace";
+import { MinesweeperGameWorkspace } from "./minesweeper/MinesweeperGameWorkspace";
+import { NumberChainGameWorkspace } from "./number-chain/NumberChainGameWorkspace";
+import { PairFlipGameWorkspace } from "./pair-flip/PairFlipGameWorkspace";
+import { PatternEchoGameWorkspace } from "./pattern-echo/PatternEchoGameWorkspace";
+import { PrecisionDropGameWorkspace } from "./precision-drop/PrecisionDropGameWorkspace";
+import type { GameInstructions } from "./shared/GameInstructionsDialog";
+import { SudokuGameWorkspace } from "./sudoku/SudokuGameWorkspace";
 import type { GameWorkspaceComponentProps } from "./shared/game-workspace-types";
 
 type GamePresentation = {

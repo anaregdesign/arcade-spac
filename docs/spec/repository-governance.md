@@ -251,6 +251,65 @@ Repository-scoped Copilot agent skills are vendored under `.github/skills/` so t
 - Related: [../../.github/skills/react-router-prisma-app-architecture/references/verification-gates.md](../../.github/skills/react-router-prisma-app-architecture/references/verification-gates.md)
 - Related: [../../.github/skills/react-router-prisma-app-architecture/references/view-state-and-handler-patterns.md](../../.github/skills/react-router-prisma-app-architecture/references/view-state-and-handler-patterns.md)
 
+## Component TSX File Naming
+
+### Summary
+
+route module と framework entrypoint の例外を除き、component-oriented な `.tsx` file は `UpperCamel` file name に統一する。
+
+### User Problem
+
+- component file が `kebab-case` と `UpperCamel` で混在すると、React component file と route module の naming rule が曖昧になる
+- export 名と file 名がずれると、component import をたどるときに search と rename がやりづらい
+- route 由来の lowercase naming を component directory に持ち込むと、framework convention と component convention の境界が崩れる
+
+### Users and Scenarios
+
+- 開発者は `app/components/` 配下の `.tsx` を見たとき、file 名だけで React component file だと判別したい
+- 開発者は export component 名と file 名が一致した状態で rename と import update を行いたい
+- レビュアーは route module の FlatRoute naming と component file の naming が混線していないことを確認したい
+
+### Scope
+
+- `app/components/` 配下の component-oriented `.tsx` file を `UpperCamel` file name に統一する
+- rename 後の import path を repository 全体で整合させる
+- route module と framework entrypoint の lowercase naming は例外として明示する
+
+### Non-Goals
+
+- React Router FlatRoute file naming の変更
+- `app/root.tsx` や framework-owned entry file の rename
+- `.ts` module や CSS Module file の naming policy 変更
+
+### User-Visible Behavior
+
+- 画面表示、route path、loader / action wiring、component behavior は rename 前後で変わらない
+- `app/components/` 配下の `.tsx` file は `UpperCamel` に揃い、component export 名と file 名が対応する
+- `app/routes/` 配下の `.tsx` file は FlatRoute naming を維持し、framework convention を壊さない
+
+### Acceptance Criteria
+
+- route module と framework entrypoint を除く `app/components/` 配下の `.tsx` file に lowercase / kebab-case file name が残らない
+- rename 対象 component の import path は全て更新される
+- `app/routes/` 配下の file naming は existing FlatRoute convention のまま維持される
+- build と typecheck が通る
+
+### Edge Cases
+
+- shared component でも `app/components/` 配下なら `UpperCamel` file name を使う
+- component file が game-specific directory の下にあっても、route module でない限り `UpperCamel` を使う
+- CSS Module file や `game-workspace-types.ts` のような non-TSX file はこの rule の対象外とする
+
+### Constraints and Dependencies
+
+- React Router route module は framework convention を優先し、FlatRoute naming を維持する
+- `app/root.tsx` は framework entrypoint として existing naming を維持する
+- component file rename は import path の整合を同じ change set で完結させる
+
+### Links
+
+- Related: [../../.github/skills/react-router-prisma-app-architecture/references/layout-and-module-placement.md](../../.github/skills/react-router-prisma-app-architecture/references/layout-and-module-placement.md)
+
 ## Repository Rename And Integration Retargeting
 
 ### Summary

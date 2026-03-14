@@ -1,7 +1,7 @@
 import { redirect, useLoaderData } from "react-router";
 
-import { AppShell } from "../components/app-shell";
-import { ProfileScreen } from "../components/profile-screen";
+import { AppShell } from "../components/AppShell";
+import { ProfileScreen } from "../components/ProfileScreen";
 import { buildSharedHelpSections } from "../components/shared/help-content";
 import { resolveGameKey, toStoredGameKey } from "../lib/domain/entities/game-catalog";
 import { requireCurrentUserId } from "../lib/server/infrastructure/auth/session.server";

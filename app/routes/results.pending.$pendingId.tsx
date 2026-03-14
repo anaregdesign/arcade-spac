@@ -1,8 +1,8 @@
 import { redirect, useLoaderData } from "react-router";
 
 import type { Route } from "./+types/results.pending.$pendingId";
-import { AppShell } from "../components/app-shell";
-import { ResultScreen } from "../components/gameplay/result-screen";
+import { AppShell } from "../components/AppShell";
+import { ResultScreen } from "../components/gameplay/ResultScreen";
 import { buildSharedHelpSections } from "../components/shared/help-content";
 import { clearPendingResultDraft, commitSession, getPendingResultDraft, getSession, requireCurrentUserId } from "../lib/server/infrastructure/auth/session.server";
 import { getHomeDashboard, getGameWorkspace } from "../lib/server/usecase/get-home-dashboard.server";
