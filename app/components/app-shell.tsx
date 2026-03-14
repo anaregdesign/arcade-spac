@@ -1,6 +1,7 @@
 import { useEffect, useId, useState } from "react";
 import { Link, useLocation } from "react-router";
 
+import { useSoundMute } from "../lib/client/usecase/sound/use-sound-mute";
 import { AppHelpDialog } from "./shared/AppHelpDialog";
 import type { AppHelpSection } from "./shared/help-content";
 
@@ -32,6 +33,7 @@ const navItems = [
 export function AppShell({ children, currentPath, sectionLabel, title, user, help }: AppShellProps) {
   const [isHelpOpen, setHelpOpen] = useState(Boolean(help?.defaultOpen));
   const [isMenuOpen, setMenuOpen] = useState(false);
+  const { muted, toggleMute } = useSoundMute();
   const location = useLocation();
   const navPanelId = useId();
 
@@ -53,6 +55,15 @@ export function AppShell({ children, currentPath, sectionLabel, title, user, hel
               <span>{title}</span>
             </p>
           </div>
+          <button
+            aria-label={muted ? "Unmute sounds" : "Mute sounds"}
+            aria-pressed={muted}
+            className="mute-toggle"
+            type="button"
+            onClick={toggleMute}
+          >
+            <span aria-hidden="true">{muted ? "🔇" : "🔊"}</span>
+          </button>
           <button
             aria-controls={navPanelId}
             aria-expanded={isMenuOpen}

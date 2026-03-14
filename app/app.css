@@ -242,6 +242,20 @@ a {
   display: flex;
 }
 
+.mute-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--card-muted);
+  color: var(--text-primary);
+  flex: 0 0 auto;
+  font-size: 1rem;
+  line-height: 1;
+}
+
 .menu-toggle {
   position: relative;
   display: none;

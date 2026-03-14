@@ -125,3 +125,78 @@ Production must always show the full phase 1 game lineup on Home, Profile, Ranki
 
 - Related: [product-specs.md#arcade-app-requirements](./product-specs.md#arcade-app-requirements)
 - Related: [product-specs.md#game-catalog-expansion](./product-specs.md#game-catalog-expansion)
+
+## Sound Effects
+
+### Summary
+
+各ゲームの操作に対して、Web Audio API による合成音の効果音を追加する。外部音声ファイルは使用せず、すべての音はブラウザ上でリアルタイムに合成する。
+
+### User Problem
+
+- 操作のフィードバックが視覚のみであり、正誤や状態変化が直感的に伝わりにくい
+- 音がないと、正しい tap をしたか、ゲームが終了したか、確認に時間がかかる
+- 効果音があることで、ゲームのリズム感と没入感が向上する
+
+### Users and Scenarios
+
+- ユーザが pad を tap すると、正解・誤答で異なる音でフィードバックを受けたい
+- ユーザが run を開始・クリア・失敗したとき、音で状態変化をすぐに認識したい
+- Pattern Echo では、watch phase 中に pad flash と同時に音階のトーンを聞くことで記憶を補助したい
+
+### Scope
+
+- 全 7 ゲームの主要操作に合成効果音を追加する
+- run 開始・クリア・失敗の共通サウンドイベントを実装する
+- 各ゲーム固有の操作サウンドを実装する
+  - Pattern Echo: pad flash に音階トーン、correct/wrong tap
+  - Pair Flip: card flip、card match、card mismatch
+  - Color Sweep: correct tile tap、wrong tile tap
+  - Minesweeper: cell reveal、mine explosion、flag on/off
+  - Number Chain: correct tap、wrong tap
+  - Sudoku: correct digit、wrong digit、hint use
+  - Precision Drop: ball capture
+
+### Non-Goals
+
+- 音声ファイル（.mp3/.wav/.ogg）の追加
+- BGM やアンビエント音の追加
+- 音量調整 UI や ミュート設定の追加
+- バイブレーションフィードバックの追加
+
+### User-Visible Behavior
+
+- run 開始ボタンを押すと短い上昇トーンが鳴る
+- run クリア時に上昇アルペジオの勝利音が鳴る
+- run 失敗時に下降トーンが鳴る
+- Pattern Echo の watch phase で、pad が flash するたびに対応する音階のトーンが鳴る
+- Pattern Echo の input phase で、正しい pad を tap すると軽快な音が、間違えると低い buzz 音が鳴る
+- Pair Flip でカードを flip すると短い click 音が鳴り、match 成立で快音、mismatch でこもった音が鳴る
+- Color Sweep で target tile を tap すると正解音、wrong tile で誤答音が鳴る
+- Minesweeper で safe cell を reveal すると soft pop 音、mine を踏むと爆発音が鳴り、flag を立てる/外すと click 音が鳴る
+- Number Chain で正しい数字を tap すると正解音、間違えると誤答音が鳴る
+- Sudoku でキーパッドまたはキーボードから正しい数字を入力すると正解音、間違えると誤答音が鳴り、hint 使用時に別の音が鳴る
+- Precision Drop でボールを capture すると impact 音が鳴る
+
+### Acceptance Criteria
+
+- 全 7 ゲームで主要操作に対応する効果音が再生される
+- AudioContext が利用できない環境（SSR、一部ブラウザ）では音が鳴らないがゲームは正常に動作する
+- 新規 npm パッケージへの依存がない
+- TypeScript 型検査が通る
+
+### Edge Cases
+
+- AudioContext が suspended 状態のとき（ブラウザの autoplay policy）、最初のユーザ操作で resume されてから音が鳴る
+- SSR 環境では window が存在しないため AudioContext は作成されない
+- 同じ効果音が連続して短時間に重なっても互いを妨げない
+
+### Constraints and Dependencies
+
+- Web Audio API（ブラウザ標準）のみを使用し、外部音声ライブラリは追加しない
+- 全音は OscillatorNode と GainNode による合成で生成する
+
+### Links
+
+- Related: [games/pattern-echo-game.md](./games/pattern-echo-game.md)
+- Related: [product-specs.md#arcade-app-requirements](./product-specs.md#arcade-app-requirements)

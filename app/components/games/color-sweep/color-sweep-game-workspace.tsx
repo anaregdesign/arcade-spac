@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { useNavigation, useSubmit } from "react-router";
 
 import { useColorSweepSession } from "../../../lib/client/usecase/game-workspace/use-color-sweep-session";
+import { playRunClear, playRunFail, playRunStart, playTapCorrect, playTapWrong } from "../../../lib/client/sound-effects";
 import sharedStyles from "../shared/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../shared/GameWorkspaceBoardOverlay";
 import { GameWorkspaceControlsCard } from "../shared/GameWorkspaceControlsCard";
@@ -45,6 +46,14 @@ export function ColorSweepGameWorkspace({ instructions, workspace }: GameWorkspa
   useEffect(() => {
     workspace.setPlaying(colorSweep.state === "playing");
   }, [colorSweep.state, workspace]);
+
+  useEffect(() => {
+    if (colorSweep.state === "cleared") {
+      playRunClear();
+    } else if (colorSweep.state === "failed") {
+      playRunFail();
+    }
+  }, [colorSweep.state]);
 
   useEffect(() => {
     if (colorSweep.state !== "cleared" && colorSweep.state !== "failed") {
@@ -116,7 +125,19 @@ export function ColorSweepGameWorkspace({ instructions, workspace }: GameWorkspa
                       cell.isCleared ? styles["color-sweep-tile-cleared"] : "",
                     ].filter(Boolean).join(" ")}
                     key={cell.id}
-                    onClick={() => colorSweep.tapCell(rowIndex, columnIndex)}
+                    onClick={() => {
+                      if (colorSweep.state === "playing") {
+                        if (!cell.isCleared) {
+                          if (cell.isTarget) {
+                            playTapCorrect();
+                          } else {
+                            playTapWrong();
+                          }
+                        }
+                      }
+
+                      colorSweep.tapCell(rowIndex, columnIndex);
+                    }}
                     type="button"
                   >
                     <span className={styles["color-sweep-tile-core"]} />
@@ -130,6 +151,7 @@ export function ColorSweepGameWorkspace({ instructions, workspace }: GameWorkspa
             detail="Clear every tile that matches the target color before the timer runs out."
             isVisible={isRunIdle}
             onAction={() => {
+              playRunStart();
               workspace.beginRun();
               colorSweep.beginRun();
             }}

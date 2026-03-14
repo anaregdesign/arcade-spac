@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { useNavigation, useSubmit } from "react-router";
 
 import { usePairFlipSession } from "../../../lib/client/usecase/game-workspace/use-pair-flip-session";
+import { playCardFlip, playCardMatch, playCardMismatch, playRunClear, playRunFail, playRunStart } from "../../../lib/client/sound-effects";
 import sharedStyles from "../shared/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../shared/GameWorkspaceBoardOverlay";
 import { GameWorkspaceControlsCard } from "../shared/GameWorkspaceControlsCard";
@@ -36,6 +37,31 @@ export function PairFlipGameWorkspace({ instructions, workspace }: GameWorkspace
   useEffect(() => {
     workspace.setPlaying(pairFlip.state === "playing");
   }, [pairFlip.state, workspace]);
+
+  const prevMatchedPairCountRef = useRef(pairFlip.matchedPairCount);
+  const prevMismatchCountRef = useRef(pairFlip.mismatchCount);
+
+  useEffect(() => {
+    const currentMatched = pairFlip.matchedPairCount;
+    const currentMismatch = pairFlip.mismatchCount;
+
+    if (currentMatched > prevMatchedPairCountRef.current) {
+      playCardMatch();
+    } else if (currentMismatch > prevMismatchCountRef.current) {
+      playCardMismatch();
+    }
+
+    prevMatchedPairCountRef.current = currentMatched;
+    prevMismatchCountRef.current = currentMismatch;
+  }, [pairFlip.matchedPairCount, pairFlip.mismatchCount]);
+
+  useEffect(() => {
+    if (pairFlip.state === "cleared") {
+      playRunClear();
+    } else if (pairFlip.state === "failed") {
+      playRunFail();
+    }
+  }, [pairFlip.state]);
 
   useEffect(() => {
     if (pairFlip.state !== "cleared" && pairFlip.state !== "failed") {
@@ -104,7 +130,15 @@ export function PairFlipGameWorkspace({ instructions, workspace }: GameWorkspace
                       card.isMatched ? styles["pair-flip-card-matched"] : "",
                     ].filter(Boolean).join(" ")}
                     key={card.id}
-                    onClick={() => pairFlip.tapCard(rowIndex, columnIndex)}
+                    onClick={() => {
+                      const card = pairFlip.board[rowIndex]?.[columnIndex];
+
+                      if (card && !card.isMatched && !card.isOpen && pairFlip.state === "playing") {
+                        playCardFlip();
+                      }
+
+                      pairFlip.tapCard(rowIndex, columnIndex);
+                    }}
                     type="button"
                   >
                     <span className={styles["pair-flip-card-face"]}>
@@ -120,6 +154,7 @@ export function PairFlipGameWorkspace({ instructions, workspace }: GameWorkspace
             detail="Start the board, then flip pairs and remember their positions before the timer expires."
             isVisible={isRunIdle}
             onAction={() => {
+              playRunStart();
               workspace.beginRun();
               pairFlip.beginRun();
             }}
