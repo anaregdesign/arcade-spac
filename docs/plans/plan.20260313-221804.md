@@ -1,7 +1,7 @@
 # Execution Plan
 
 ## Links
-- Spec: /docs/spec/game-panel-preview-simplification.md
+- Spec: /docs/spec/ui-specs.md#game-panel-preview-simplification
 
 ## Section 1 - Simplify game preview headers
 - [x] Capture the preview simplification requirement in spec form

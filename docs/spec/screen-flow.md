@@ -1,11 +1,11 @@
 # Arcade App 画面遷移図
 
-このドキュメントは、[product-requirements.md](./product-requirements.md) を補完する画面遷移図である。
+このドキュメントは、[product-specs.md](./product-specs.md#arcade-app-requirements) を補完する画面遷移図である。
 ユーザ視点の主要導線、初回利用時の最短導線、ゲーム横断導線を整理する。
 
 ## Links
 
-- Requirements: [product-requirements.md](./product-requirements.md)
+- Requirements: [product-specs.md#arcade-app-requirements](./product-specs.md#arcade-app-requirements)
 
 ## 1. 主要画面
 

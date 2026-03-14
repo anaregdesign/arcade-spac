@@ -1,7 +1,7 @@
 # Execution Plan
 
 ## Links
-- Spec: /docs/spec/spec-document-ideal-state-only.md
+- Spec: /docs/spec/repository-governance.md#spec-document-ideal-state-only
 
 ## Section 1 - Define Cleanup Target
 - [x] Add a durable spec for repository-wide spec-document hygiene.

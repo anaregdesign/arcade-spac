@@ -1,7 +1,7 @@
 # Execution Plan
 
 ## Links
-- Spec: /docs/spec/product-requirements.md
+- Spec: /docs/spec/product-specs.md#arcade-app-requirements
 - Spec: /docs/spec/screen-flow.md
 
 ## Section 1 - Remove redundant home intro block

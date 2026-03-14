@@ -1,10 +1,10 @@
 # Execution Plan
 
 ## Links
-- Spec: /docs/spec/agent-skill-bootstrap.md
+- Spec: /docs/spec/repository-governance.md#agent-skill-bootstrap
 
 ## Section 1 - Align Skill Inventory
-- [x] Rewrite `docs/spec/agent-skill-bootstrap.md` to describe the current supported local skill set.
+- [x] Rewrite the repository-governance skill-inventory section to describe the current supported local skill set.
 - [x] Remove the obsolete local skill directory from the repository.
 
 ## Section 2 - Remove Obsolete References

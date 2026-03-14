@@ -1,7 +1,7 @@
 # Execution Plan
 
 ## Links
-- Spec: /docs/spec/repository-rename-and-integration-retargeting.md
+- Spec: /docs/spec/repository-governance.md#repository-rename-and-integration-retargeting
 
 ## Section 1 - Remove Legacy Repository Names
 - [x] Replace legacy repository name references in tracked operational and spec documents.

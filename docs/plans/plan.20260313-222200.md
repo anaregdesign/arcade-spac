@@ -1,7 +1,7 @@
 # Execution Plan
 
 ## Links
-- Spec: /docs/spec/game-panel-preview-simplification.md
+- Spec: /docs/spec/ui-specs.md#game-panel-preview-simplification
 
 ## Section 1 - Adjust preview frame sizing
 - [x] Update the preview simplification spec for frame sizing instead of fill removal

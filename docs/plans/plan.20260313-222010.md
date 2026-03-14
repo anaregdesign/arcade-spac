@@ -1,7 +1,7 @@
 # Execution Plan
 
 ## Links
-- Spec: /docs/spec/game-panel-preview-simplification.md
+- Spec: /docs/spec/ui-specs.md#game-panel-preview-simplification
 
 ## Section 1 - Remove preview panel fills
 - [x] Update the preview simplification spec for inner panel fill removal

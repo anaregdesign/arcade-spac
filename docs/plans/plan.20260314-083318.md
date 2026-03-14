@@ -2,7 +2,7 @@
 
 ## Links
 
-- Spec: `/docs/spec/production-recovery-and-redeploy.md`
+- Spec: `/docs/spec/operations-specs.md#production-recovery-and-redeploy`
 
 ## Section 1 - Local Verification
 

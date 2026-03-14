@@ -1,8 +1,8 @@
 # Execution Plan
 
 ## Links
-- Spec: `/docs/spec/production-recovery-and-redeploy.md`
-- Related: `/docs/spec/azure-private-sql-and-entra-hardening.md`
+- Spec: `/docs/spec/operations-specs.md#production-recovery-and-redeploy`
+- Related: `/docs/spec/operations-specs.md#azure-private-sql-and-entra-hardening`
 
 ## Section 1 - Confirm live Azure drift
 - [x] Capture the current production-like Azure resource drift beyond the failing SQL public network check.

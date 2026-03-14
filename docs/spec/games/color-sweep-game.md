@@ -57,5 +57,5 @@
 
 ## Links
 
-- Related: [../game-catalog-expansion.md](../game-catalog-expansion.md)
-- Related: [../product-requirements.md](../product-requirements.md)
+- Related: [../product-specs.md#game-catalog-expansion](../product-specs.md#game-catalog-expansion)
+- Related: [../product-specs.md#arcade-app-requirements](../product-specs.md#arcade-app-requirements)

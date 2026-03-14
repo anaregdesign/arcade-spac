@@ -64,5 +64,5 @@
 
 ## Links
 
-- Related: [../product-requirements.md](../product-requirements.md)
+- Related: [../product-specs.md#arcade-app-requirements](../product-specs.md#arcade-app-requirements)
 - Flow: [../screen-flow.md](../screen-flow.md)

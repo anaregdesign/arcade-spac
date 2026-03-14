@@ -1,7 +1,7 @@
 # Execution Plan
 
 ## Links
-- Spec: /docs/spec/product-requirements.md
+- Spec: /docs/spec/product-specs.md#arcade-app-requirements
 - Spec: /docs/spec/games/drop-line-game.md
 
 ## Section 1 - Rename and retune Drop Ball

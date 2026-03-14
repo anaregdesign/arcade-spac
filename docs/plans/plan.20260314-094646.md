@@ -1,7 +1,7 @@
 # Execution Plan
 
 ## Links
-- Spec: `/docs/spec/azure-private-sql-and-entra-hardening.md`
+- Spec: `/docs/spec/operations-specs.md#azure-private-sql-and-entra-hardening`
 
 ## Section 1 - Capture the hardened Azure contract
 - [x] Add the hardening spec for Azure private SQL connectivity and Entra runtime expectations.

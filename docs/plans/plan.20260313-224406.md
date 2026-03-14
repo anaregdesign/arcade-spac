@@ -1,7 +1,7 @@
 # Execution Plan
 
 ## Links
-- Spec: /docs/spec/css-module-adoption.md
+- Spec: /docs/spec/ui-specs.md#css-module-adoption
 
 ## Section 1 - Prepare the CSS module migration
 - [x] Capture the requirement in the active spec and keep a current execution tracker

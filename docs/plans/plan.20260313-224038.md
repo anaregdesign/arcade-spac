@@ -1,7 +1,7 @@
 # Execution Plan
 
 ## Links
-- Spec: /docs/spec/production-game-catalog-synchronization.md
+- Spec: /docs/spec/feature-specs.md#production-game-catalog-synchronization
 
 ## Section 1 - Restore the full production game lineup
 - [x] Capture the production catalog drift issue in a dedicated spec and replace the broken active plan with a current tracker

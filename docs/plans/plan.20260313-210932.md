@@ -2,7 +2,7 @@
 
 ## Links
 
-- Spec: /docs/spec/game-spec-document-organization.md
+- Spec: /docs/spec/repository-governance.md#game-spec-document-organization
 
 ## Section 1 - Move game specs into docs/spec/games
 

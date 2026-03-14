@@ -1,7 +1,7 @@
 # Execution Plan
 
 ## Links
-- Spec: `/docs/spec/azure-private-sql-and-entra-hardening.md`
+- Spec: `/docs/spec/operations-specs.md#azure-private-sql-and-entra-hardening`
 
 ## Section 1 - Re-open the remaining hardening slice
 - [x] Confirm the remaining repo-side tasks after the private-network IaC change and keep this plan current.

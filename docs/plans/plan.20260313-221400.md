@@ -1,7 +1,7 @@
 # Execution Plan
 
 ## Links
-- Spec: /docs/spec/result-screen-share-action-labels.md
+- Spec: /docs/spec/ui-specs.md#result-screen-share-action-labels
 
 ## Section 1 - Result screen action label cleanup
 - [x] Update the result-screen spec for the shared action wording and icon-only affordances

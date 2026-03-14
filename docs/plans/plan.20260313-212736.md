@@ -1,7 +1,7 @@
 # Execution Plan
 
 ## Links
-- Spec: /docs/spec/repository-rename-and-integration-retargeting.md
+- Spec: /docs/spec/repository-governance.md#repository-rename-and-integration-retargeting
 - Runbook: /docs/repository-rename-runbook.md
 
 ## Section 1 - Record Post-Rename Audit Findings
