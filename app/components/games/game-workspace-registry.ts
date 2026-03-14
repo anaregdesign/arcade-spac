@@ -1,6 +1,7 @@
 import type { ComponentType } from "react";
 
 import { ColorSweepGameWorkspace } from "./color-sweep/ColorSweepGameWorkspace";
+import { HiddenFindGameWorkspace } from "./hidden-find/HiddenFindGameWorkspace";
 import { MinesweeperGameWorkspace } from "./minesweeper/MinesweeperGameWorkspace";
 import { NumberChainGameWorkspace } from "./number-chain/NumberChainGameWorkspace";
 import { OrbitTapGameWorkspace } from "./orbit-tap/OrbitTapGameWorkspace";
@@ -149,6 +150,35 @@ const gameDefinitionByKey: Record<string, GameDefinition> = {
       previewSrc: "/images/games/minesweeper-preview.png",
     },
     workspace: MinesweeperGameWorkspace,
+  },
+  "hidden-find": {
+    instructions: {
+      summary: "Study the target motif, scan the crowded scene, and tap the one exact match before time runs out.",
+      sections: [
+        {
+          title: "Run flow",
+          items: [
+            { label: "Start run", detail: "Choose a difficulty and press Start run to load the first crowded scene." },
+            { label: "Clear scenes", detail: "Each correct tap advances immediately to the next scene until the full set is complete." },
+            { label: "Timeout", detail: "If the timer ends before every scene target is found, the run is saved as not cleared and opens the Result screen automatically." },
+          ],
+        },
+        {
+          title: "Board controls",
+          items: [
+            { label: "Read the target", detail: "The exact motif to find stays visible above the board." },
+            { label: "Tap once", detail: "Only one tile in the scene is the true match. Correct taps advance the run immediately." },
+            { label: "Miss pressure", detail: "Wrong taps add to the support metric and cost time, but the scene stays active." },
+          ],
+        },
+      ],
+      title: "Hidden Find controls",
+    },
+    presentation: {
+      previewAlt: "Hidden Find scene filled with lookalike symbols and one highlighted target motif",
+      previewSrc: "/images/games/hidden-find-preview.svg",
+    },
+    workspace: HiddenFindGameWorkspace,
   },
   "target-trail": {
     instructions: {
