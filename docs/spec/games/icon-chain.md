@@ -12,14 +12,14 @@
 ## Users and Scenarios
 
 - 利用者は Home から `Icon Chain` を開き、brief reveal で icon order を覚えた後、partial clue から sequence を再構築したい
-- 利用者は workspace で current position、revealed clue、wrong picks を見ながら chain を伸ばしたい
-- 利用者は Result、profile、rankings で `longest chain` と `wrong picks` を確認したい
+- 利用者は workspace で current position、revealed clue、wrong picks、best live chain を見ながら chain を伸ばしたい
+- 利用者は Result、profile、rankings で `clear time` と `wrong picks` を確認したい
 
 ## Scope
 
 - `Icon Chain` を home、workspace、result、rankings、profile に統合する
-- primary metric は `longest chain`、support metric は `wrong picks` とする
-- workspace では clue board、selection progress、current chain length、wrong pick count を visible にする
+- primary metric は `clear time`、support metric は `wrong picks` とする
+- workspace では clue board、selection progress、current chain length、best live chain、wrong pick count を visible にする
 
 ## Non-Goals
 
@@ -32,9 +32,9 @@
 - idle overlay から run を開始すると、icon sequence が短時間だけ reveal され、その後 clue board に切り替わる
 - clue board には first icon、last icon、adjacent pair、color family、position relation など partial clue が残る
 - 利用者は icon candidates を first-to-last の順で選び、正しい選択で chain が伸びる
-- wrong pick は `wrong picks` を増やし、current chain を止めるか quality を大きく下げる
+- wrong pick は `wrong picks` を増やし、current chain を anchored start まで戻す
 - round が進むほど icon count と clue ambiguity が上がる
-- target chain length に達すると clear となり Result に遷移する
+- current round を最後まで再構築すると次の round に進み、全 round を完了すると clear となり Result に遷移する
 
 ## Acceptance Criteria
 
@@ -42,7 +42,7 @@
 - 1 run は 2 分以内に clear または fail が確定する
 - reveal phase と clue reconstruction phase が明確に分かれている
 - pure pair matching ではなく、order recall と clue inference の両方が必要になる
-- Result、profile、rankings では `longest chain` と `wrong picks` が保存される
+- Result、profile、rankings では `clear time` と `wrong picks` が保存される
 
 ## Edge Cases
 

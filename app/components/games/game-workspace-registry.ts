@@ -8,6 +8,7 @@ import { FlipMatchGameWorkspace } from "./flip-match/FlipMatchGameWorkspace";
 import { GlowCycleGameWorkspace } from "./glow-cycle/GlowCycleGameWorkspace";
 import { HiddenFindGameWorkspace } from "./hidden-find/HiddenFindGameWorkspace";
 import { HueDriftGameWorkspace } from "./hue-drift/HueDriftGameWorkspace";
+import { IconChainGameWorkspace } from "./icon-chain/IconChainGameWorkspace";
 import { MinesweeperGameWorkspace } from "./minesweeper/MinesweeperGameWorkspace";
 import { NumberChainGameWorkspace } from "./number-chain/NumberChainGameWorkspace";
 import { OrbitTapGameWorkspace } from "./orbit-tap/OrbitTapGameWorkspace";
@@ -112,6 +113,35 @@ const gameDefinitionByKey: Record<string, GameDefinition> = {
       previewSrc: "/images/games/chain-trigger-preview.svg",
     },
     workspace: ChainTriggerGameWorkspace,
+  },
+  "icon-chain": {
+    instructions: {
+      summary: "Memorize the reveal order, keep the first icon anchored, then rebuild the hidden chain from the clue board without letting wrong picks reset your progress.",
+      sections: [
+        {
+          title: "Run flow",
+          items: [
+            { label: "Start run", detail: "Choose a difficulty and press Start run to open the first watch phase." },
+            { label: "Watch then infer", detail: "Each round starts with a short full-order reveal, then unlocks the clue board and candidate tray." },
+            { label: "Finish or fail", detail: "Clear every clue round before the timer expires. A timeout saves the run for history only." },
+          ],
+        },
+        {
+          title: "Board controls",
+          items: [
+            { label: "Read the anchors", detail: "The first and last icons stay visible in the clue board, so the middle order is the real puzzle." },
+            { label: "Use clue cards", detail: "Adjacent-pair, slot, family, and before-after clues stay visible while you rebuild the chain." },
+            { label: "Tap the next icon", detail: "Only the next correct icon extends the chain. A wrong pick resets the current chain back to the anchored start." },
+          ],
+        },
+      ],
+      title: "Icon Chain controls",
+    },
+    presentation: {
+      previewAlt: "Icon Chain clue board with a revealed icon strip and card-like order clues",
+      previewSrc: "/images/games/icon-chain-preview.svg",
+    },
+    workspace: IconChainGameWorkspace,
   },
   "color-sweep": {
     instructions: {

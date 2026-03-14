@@ -26,6 +26,10 @@ const previewByGameKey: Record<string, Pick<HomeGameCard, "previewAlt" | "previe
     previewAlt: "Chain Trigger graph board with a source node, armed helper node, and propagation links",
     previewSrc: "/images/games/chain-trigger-preview.svg",
   },
+  "icon-chain": {
+    previewAlt: "Icon Chain clue board with a revealed icon strip and card-like order clues",
+    previewSrc: "/images/games/icon-chain-preview.svg",
+  },
   "color-sweep": {
     previewAlt: "Color Sweep board showing a target swatch and a grid of colored tiles",
     previewSrc: "/images/games/color-sweep-preview.svg",
