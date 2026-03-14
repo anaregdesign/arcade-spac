@@ -1,4 +1,5 @@
 import { useLineConnectWorkspace } from "../../../lib/client/usecase/game-workspace/use-line-connect-workspace";
+import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
 import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
 import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
@@ -52,22 +53,13 @@ export function LineConnectGameWorkspace({ instructions, workspace }: GameWorksp
           data-solution-next-slot={screen.lineConnect.solutionNextSlot}
           data-state={screen.lineConnect.state}
         >
-          <div className={styles["line-summary-grid"]}>
-            <article className={styles["line-summary-card"]}>
-              <span className={styles["line-summary-label"]}>Board</span>
-              <strong className={styles["line-summary-value"]}>{screen.lineConnect.currentPuzzleName}</strong>
-            </article>
-            <article className={styles["line-summary-card"]}>
-              <span className={styles["line-summary-label"]}>Last action</span>
-              <strong className={styles["line-summary-value"]}>{screen.lineConnect.lastActionLabel}</strong>
-            </article>
-            <article className={styles["line-summary-card"]}>
-              <span className={styles["line-summary-label"]}>Next segment</span>
-              <strong className={styles["line-summary-value"]}>
-                {screen.lineConnect.solutionNextSlot >= 0 ? `S${screen.lineConnect.solutionNextSlot + 1}` : "Finish pair"}
-              </strong>
-            </article>
-          </div>
+          <GameplayContextCue
+            className={styles["line-connect-copy"]}
+            detail={`Active pair ${screen.lineConnect.activePairLabel}.`}
+            phase={screen.isLiveRun ? "Route" : "Ready"}
+            title="Extend only the active pair"
+            tone="logic"
+          />
 
           <div className={styles["pair-token-row"]}>
             {screen.lineConnect.pairTokens.map((pair) => (
@@ -87,7 +79,7 @@ export function LineConnectGameWorkspace({ instructions, workspace }: GameWorksp
 
           <div className={styles["action-row"]}>
             <button className={styles["utility-button"]} disabled={!screen.isLiveRun} onClick={screen.handleUndoStep} type="button">
-              Undo step
+              Undo
             </button>
             <button className={styles["utility-button"]} disabled={!screen.isLiveRun} onClick={screen.handleResetPair} type="button">
               Reset pair
@@ -131,13 +123,9 @@ export function LineConnectGameWorkspace({ instructions, workspace }: GameWorksp
             ))}
           </div>
 
-          <p className={styles["line-copy"]}>
-            Extend the active pair one segment at a time. Only the active pair may touch its target node, and locked paths cannot be crossed later.
-          </p>
-
           <GameWorkspaceBoardOverlay
             actionLabel={screen.startActionLabel}
-            detail="Tap the next adjacent segment to extend the active pair. Undo backs up one step, Reset pair restarts the current route, and Reset board clears the current puzzle."
+            detail="Route one pair at a time until every node is linked."
             isVisible={screen.isRunIdle}
             onAction={screen.handleStartRun}
             title="Route board ready"

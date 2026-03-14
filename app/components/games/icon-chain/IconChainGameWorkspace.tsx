@@ -26,6 +26,72 @@ function IconPill({
   );
 }
 
+function getIconPill(token: { accentColor: string; id: string; label: string } | undefined, key: string) {
+  return token ? <IconPill accentColor={token.accentColor} label={token.label} /> : <span className={styles["icon-chain-clue-chip"]} key={key}>?</span>;
+}
+
+function getSlotNumber(detail: string) {
+  const match = detail.match(/Slot\s+(\d+)/i);
+
+  return match?.[1] ?? "?";
+}
+
+function renderClueSummary(
+  clue: { detail: string; iconIds: string[]; id: string; type: "adjacent" | "anchor-first" | "anchor-last" | "before" | "family" | "slot" },
+  iconTokensById: Record<string, { accentColor: string; family: string; id: string; label: string }>,
+) {
+  const [firstId, secondId] = clue.iconIds;
+  const firstToken = iconTokensById[firstId];
+  const secondToken = iconTokensById[secondId];
+
+  if (clue.type === "anchor-first") {
+    return (
+      <>
+        <span className={styles["icon-chain-clue-chip"]}>1</span>
+        <span className={styles["icon-chain-clue-symbol"]}>=</span>
+        {getIconPill(firstToken, `${clue.id}-first`)}
+      </>
+    );
+  }
+
+  if (clue.type === "anchor-last") {
+    return (
+      <>
+        <span className={styles["icon-chain-clue-chip"]}>Last</span>
+        <span className={styles["icon-chain-clue-symbol"]}>=</span>
+        {getIconPill(firstToken, `${clue.id}-last`)}
+      </>
+    );
+  }
+
+  if (clue.type === "slot") {
+    return (
+      <>
+        <span className={styles["icon-chain-clue-chip"]}>{getSlotNumber(clue.detail)}</span>
+        <span className={styles["icon-chain-clue-symbol"]}>=</span>
+        {getIconPill(firstToken, `${clue.id}-slot`)}
+      </>
+    );
+  }
+
+  if (clue.type === "family") {
+    return (
+      <>
+        {getIconPill(firstToken, `${clue.id}-family`)}
+        <span className={styles["icon-chain-clue-chip"]}>{firstToken?.family ?? "family"}</span>
+      </>
+    );
+  }
+
+  return (
+    <>
+      {getIconPill(firstToken, `${clue.id}-left`)}
+      <span className={styles["icon-chain-clue-symbol"]}>{clue.type === "adjacent" ? "→" : "<"}</span>
+      {getIconPill(secondToken, `${clue.id}-right`)}
+    </>
+  );
+}
+
 export function IconChainGameWorkspace({ instructions, workspace }: GameWorkspaceComponentProps) {
   const screen = useIconChainWorkspace(workspace);
 
@@ -79,10 +145,7 @@ export function IconChainGameWorkspace({ instructions, workspace }: GameWorkspac
           <GameplaySidecarLayout className={styles["icon-chain-columns"]} desktopMain="1.35fr" desktopSide="0.95fr" desktopSideMin="16rem" mobileSideMax="8.6rem" mobileSideMin="7.8rem">
             <div className={styles["icon-chain-board-column"]}>
               <article className={styles["icon-chain-panel"]}>
-                <header className={styles["icon-chain-panel-header"]}>
-                  <p className="eyebrow">{screen.isWatching ? "Full reveal" : "Progress chain"}</p>
-                  <strong>{screen.isWatching ? "Read the complete order now" : "Confirmed picks stay locked in place"}</strong>
-                </header>
+                <p className={styles["icon-chain-panel-title"]}>{screen.isWatching ? "Reveal chain" : "Chain"}</p>
                 <div
                   className={styles["icon-chain-sequence-strip"]}
                   style={{ gridTemplateColumns: `repeat(${screen.iconChain.currentRoundLength}, minmax(0, 1fr))` }}
@@ -105,17 +168,11 @@ export function IconChainGameWorkspace({ instructions, workspace }: GameWorkspac
                         data-sequence-index={index}
                         key={`${token.id}-${index}`}
                       >
-                        <span className={styles["icon-chain-slot-order"]}>Slot {index + 1}</span>
+                        <span className={styles["icon-chain-slot-order"]}>{index + 1}</span>
                         {isHidden ? (
-                          <>
-                            <span className={styles["icon-chain-slot-label"]}>Hidden</span>
-                            <span className={styles["icon-chain-slot-family"]}>Use the clues</span>
-                          </>
+                          <span className={styles["icon-chain-slot-label"]}>?</span>
                         ) : (
-                          <>
-                            <IconPill accentColor={token.accentColor} label={token.label} />
-                            <span className={styles["icon-chain-slot-family"]}>{token.family}</span>
-                          </>
+                          <IconPill accentColor={token.accentColor} label={token.label} />
                         )}
                       </div>
                     );
@@ -124,10 +181,7 @@ export function IconChainGameWorkspace({ instructions, workspace }: GameWorkspac
               </article>
 
               <article className={styles["icon-chain-panel"]}>
-                <header className={styles["icon-chain-panel-header"]}>
-                  <p className="eyebrow">Clue board</p>
-                  <strong>Read clues before tapping</strong>
-                </header>
+                <p className={styles["icon-chain-panel-title"]}>Clues</p>
                 <div className={styles["icon-chain-clue-grid"]}>
                   {screen.iconChain.clueCards.map((clue) => (
                     <article
@@ -136,14 +190,9 @@ export function IconChainGameWorkspace({ instructions, workspace }: GameWorkspac
                       data-icon-chain-clue="true"
                       key={clue.id}
                     >
-                      <strong>{clue.title}</strong>
-                      <p>{clue.detail}</p>
+                      <span className={styles["icon-chain-clue-title"]}>{clue.title}</span>
                       <div className={styles["icon-chain-clue-icons"]}>
-                        {clue.iconIds.map((iconId) => {
-                          const token = screen.iconChain.iconTokensById[iconId];
-
-                          return token ? <IconPill accentColor={token.accentColor} key={`${clue.id}-${iconId}`} label={token.label} /> : null;
-                        })}
+                        {renderClueSummary(clue, screen.iconChain.iconTokensById)}
                       </div>
                     </article>
                   ))}
@@ -153,15 +202,7 @@ export function IconChainGameWorkspace({ instructions, workspace }: GameWorkspac
 
             <div className={styles["icon-chain-side-column"]}>
               <article className={styles["icon-chain-panel"]}>
-                <header className={styles["icon-chain-panel-header"]}>
-                  <p className="eyebrow">Candidate tray</p>
-                  <strong>{screen.isInputting ? "Tap the next icon" : "Unlocks after reveal"}</strong>
-                </header>
-                <p className={styles["icon-chain-live-copy"]}>
-                  {screen.isInputting && screen.iconChain.nextExpectedIconId
-                    ? "The next slot is active now. Correct picks extend the chain, and wrong picks reset the chain back to the start icon."
-                    : "The tray stays visible so the board shape does not jump between phases."}
-                </p>
+                <p className={styles["icon-chain-panel-title"]}>{screen.isInputting ? "Pick next" : "Candidate tray"}</p>
                 <div className={styles["icon-chain-candidate-grid"]}>
                   {screen.iconChain.candidateTokens.map((token) => {
                     const confirmedIndex = screen.iconChain.confirmedIds.indexOf(token.id);
@@ -187,8 +228,6 @@ export function IconChainGameWorkspace({ instructions, workspace }: GameWorkspac
                       >
                         {isConfirmed ? <span className={styles["icon-chain-candidate-order"]}>{confirmedIndex + 1}</span> : null}
                         <IconPill accentColor={token.accentColor} label={token.label} />
-                        <span className={styles["icon-chain-candidate-label"]}>{token.label}</span>
-                        <span className={styles["icon-chain-candidate-family"]}>{token.family}</span>
                       </button>
                     );
                   })}
@@ -199,7 +238,7 @@ export function IconChainGameWorkspace({ instructions, workspace }: GameWorkspac
 
           <GameWorkspaceBoardOverlay
             actionLabel={screen.startActionLabel}
-            detail="Memorize the full icon order during the watch phase, then rebuild the chain from the clue board without letting wrong picks reset your progress."
+            detail="Memorize the reveal, then rebuild the chain from the clues."
             isVisible={screen.isRunIdle}
             onAction={screen.handleStartRun}
             title="Clue sprint ready"

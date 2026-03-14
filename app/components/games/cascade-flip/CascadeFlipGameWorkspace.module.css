@@ -7,23 +7,11 @@
   gap: 1rem;
 }
 
-.summary-grid {
-  display: grid;
-  gap: 0.75rem;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+.cascade-flip-copy {
+  margin-inline: auto;
+  max-width: 34rem;
 }
 
-.summary-card {
-  background:
-    linear-gradient(145deg, rgb(250 245 255 / 0.98), rgb(255 255 255 / 0.98));
-  border: 1px solid rgb(168 85 247 / 0.16);
-  border-radius: 1rem;
-  display: grid;
-  gap: 0.2rem;
-  padding: 0.9rem 1rem;
-}
-
-.summary-label,
 .panel-title {
   color: rgb(107 33 168 / 0.82);
   font-size: 0.76rem;
@@ -31,12 +19,6 @@
   letter-spacing: 0.08em;
   margin: 0;
   text-transform: uppercase;
-}
-
-.summary-value {
-  color: rgb(46 16 101);
-  font-size: 1.12rem;
-  font-weight: 800;
 }
 
 .workspace-grid {
@@ -114,12 +96,6 @@
   font-size: 1.05rem;
 }
 
-.panel-copy {
-  color: rgb(88 28 135 / 0.82);
-  font-size: 0.9rem;
-  margin: 0;
-}
-
 .theme-amber {
   background: rgb(254 243 199);
   color: rgb(146 64 14);
@@ -162,22 +138,12 @@
     gap: 0.8rem;
   }
 
-  .summary-grid {
-    gap: 0.55rem;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+  .cascade-flip-copy {
+    max-width: 18rem;
   }
 
-  .summary-card {
-    padding: 0.65rem 0.7rem;
-  }
-
-  .summary-label,
   .panel-title {
     font-size: 0.68rem;
-  }
-
-  .summary-value {
-    font-size: 0.94rem;
   }
 
   .workspace-grid {
@@ -211,9 +177,5 @@
 
   .stream-card-label {
     font-size: 0.88rem;
-  }
-
-  .panel-copy {
-    font-size: 0.82rem;
   }
 }

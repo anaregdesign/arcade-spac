@@ -1,4 +1,5 @@
 import { useBoxFillWorkspace } from "../../../lib/client/usecase/game-workspace/use-box-fill-workspace";
+import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
 import { GameplaySidecarLayout } from "../../gameplay/GameplayLayoutVariants";
 import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
@@ -61,39 +62,32 @@ export function BoxFillGameWorkspace({ instructions, workspace }: GameWorkspaceC
           data-selected-rotation={screen.boxFill.selectedRotation}
           data-state={screen.boxFill.state}
         >
-          <div className={styles["summary-grid"]}>
-            <article className={styles["summary-card"]}>
-              <span className={styles["summary-label"]}>Board</span>
-              <strong className={styles["summary-value"]}>{screen.boxFill.currentPuzzleName}</strong>
-            </article>
-            <article className={styles["summary-card"]}>
-              <span className={styles["summary-label"]}>Last action</span>
-              <strong className={styles["summary-value"]}>{screen.boxFill.lastActionLabel}</strong>
-            </article>
-            <article className={styles["summary-card"]}>
-              <span className={styles["summary-label"]}>Remaining cells</span>
-              <strong className={styles["summary-value"]}>{screen.boxFill.remainingCellCount}</strong>
-            </article>
-          </div>
+          <GameplayContextCue
+            className={styles["box-fill-copy"]}
+            detail={screen.boxFill.selectedPieceId ? "Preview one anchor, then place." : "Pick a tray piece first."}
+            phase={screen.isLiveRun ? "Fit" : "Ready"}
+            title="Place each tray piece into the open box"
+            tone="logic"
+          />
 
           <div className={styles["action-row"]}>
             <button className={styles["utility-button"]} disabled={!screen.isLiveRun || !screen.boxFill.selectedPieceId} onClick={screen.handleRotatePiece} type="button">
-              Rotate 90°
+              Rotate
             </button>
             <button className={styles["utility-button"]} disabled={!screen.isLiveRun || !screen.boxFill.selectedPieceId || screen.boxFill.previewAnchorSlot === null} onClick={screen.handlePlacePiece} type="button">
-              Place piece
+              Place
             </button>
             <button className={styles["utility-button"]} disabled={!screen.isLiveRun} onClick={screen.boxFill.undoLastPlacement} type="button">
-              Undo piece
+              Undo
             </button>
             <button className={styles["utility-button"]} disabled={!screen.isLiveRun} onClick={screen.boxFill.resetBoard} type="button">
-              Reset board
+              Reset
             </button>
           </div>
 
           <GameplaySidecarLayout className={styles["workspace-grid"]} desktopMain="1fr" desktopSide="220px" desktopSideMin="180px" mobileSideMax="7.4rem" mobileSideMin="6.8rem">
             <div className={styles["board-panel"]}>
-              <p className={styles["panel-title"]}>Target box</p>
+              <p className={styles["panel-title"]}>Board</p>
               <div className={styles["board-grid"]} style={{ gridTemplateColumns: `repeat(${screen.boxFill.columnCount}, minmax(0, 1fr))` }}>
                 {screen.boxFill.boardCells.map((cell) => (
                   <button
@@ -124,7 +118,7 @@ export function BoxFillGameWorkspace({ instructions, workspace }: GameWorkspaceC
             </div>
 
             <div className={styles["tray-panel"]}>
-              <p className={styles["panel-title"]}>Piece tray</p>
+              <p className={styles["panel-title"]}>Tray</p>
               <div className={styles["tray-grid"]}>
                 {screen.boxFill.pieces.map((piece) => (
                   <button
@@ -149,13 +143,9 @@ export function BoxFillGameWorkspace({ instructions, workspace }: GameWorkspaceC
             </div>
           </GameplaySidecarLayout>
 
-          <p className={styles["board-copy"]}>
-            Select a tray piece, rotate it if needed, tap one board anchor to preview the fit, then place it into the open box.
-          </p>
-
           <GameWorkspaceBoardOverlay
             actionLabel={screen.startActionLabel}
-            detail="Rotate the selected piece before you commit it. Invalid fits do not place and count as placement errors, while Undo piece removes the last committed shape."
+            detail="Rotate, preview one anchor, then place each piece."
             isVisible={screen.isRunIdle}
             onAction={screen.handleStartRun}
             title="Packing board ready"

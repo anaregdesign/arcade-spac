@@ -291,36 +291,40 @@
   }
 
   .glow-cycle-shell {
-    gap: 0.8rem;
+    gap: 0.7rem;
   }
 
   .glow-cycle-copy strong {
-    font-size: 0.95rem;
+    font-size: 0.9rem;
   }
 
   .glow-cycle-legend {
-    gap: 0.45rem;
+    gap: 0.35rem;
   }
 
   .glow-cycle-legend-target,
   .glow-cycle-legend-window,
   .glow-cycle-legend-status {
     font-size: 0.72rem;
-    padding: 0.38rem 0.62rem;
+    padding: 0.34rem 0.56rem;
+  }
+
+  .glow-cycle-legend-status {
+    display: none;
   }
 
   .glow-cycle-meter {
-    height: 2.4rem;
+    height: 2rem;
   }
 
   .glow-cycle-grid {
-    gap: 0.7rem;
+    gap: 0.6rem;
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .glow-cycle-node-card {
-    gap: 0.55rem;
-    padding: 0.75rem 0.55rem;
+    gap: 0.45rem;
+    padding: 0.65rem 0.45rem;
     border-radius: 1rem;
   }
 
@@ -341,7 +345,7 @@
 
   .glow-cycle-node-button {
     border-radius: 0.95rem;
-    min-height: 6.3rem;
+    min-height: 5.8rem;
   }
 
   .glow-cycle-node-stage {
@@ -360,11 +364,11 @@
   }
 
   .glow-cycle-node-button-label {
-    margin-top: 3.1rem;
+    margin-top: 2.9rem;
     font-size: 0.72rem;
   }
 
   .glow-cycle-node-button-copy {
-    font-size: 0.66rem;
+    display: none;
   }
 }

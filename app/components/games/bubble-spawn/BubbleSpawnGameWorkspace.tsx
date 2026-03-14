@@ -1,4 +1,5 @@
 import { useBubbleSpawnWorkspace } from "../../../lib/client/usecase/game-workspace/use-bubble-spawn-workspace";
+import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
 import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
 import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
@@ -59,29 +60,18 @@ export function BubbleSpawnGameWorkspace({ instructions, workspace }: GameWorksp
           data-state={screen.bubbleSpawn.state}
           data-target-stability={screen.bubbleSpawn.targetStability}
         >
-          <div className={styles["bubble-summary-grid"]}>
-            <article className={styles["bubble-summary-card"]}>
-              <span className={styles["bubble-summary-label"]}>Last burst</span>
-              <strong className={styles["bubble-summary-value"]}>{screen.bubbleSpawn.lastBurstLabel}</strong>
-            </article>
-            <article className={styles["bubble-summary-card"]}>
-              <span className={styles["bubble-summary-label"]}>Largest threat</span>
-              <strong className={styles["bubble-summary-value"]}>{screen.bubbleSpawn.largestThreatLabel}</strong>
-            </article>
-            <article className={styles["bubble-summary-card"]}>
-              <span className={styles["bubble-summary-label"]}>Next spawn</span>
-              <strong className={styles["bubble-summary-value"]}>{screen.bubbleSpawn.nextSpawnLabel}</strong>
-            </article>
-            <article className={styles["bubble-summary-card"]}>
-              <span className={styles["bubble-summary-label"]}>Last chain</span>
-              <strong className={styles["bubble-summary-value"]}>{screen.bubbleSpawn.lastChainCount}</strong>
-            </article>
-          </div>
+          <GameplayContextCue
+            className={styles["bubble-spawn-copy"]}
+            detail="Best burst target is marked."
+            phase={screen.isLiveRun ? "Burst" : "Ready"}
+            title="Pop the biggest pressure cluster"
+            tone="target"
+          />
 
           <div className={styles["meter-grid"]}>
             <article className={styles["meter-card"]}>
               <div className={styles["meter-header"]}>
-                <span className={styles["meter-label"]}>Stability meter</span>
+                <span className={styles["meter-label"]}>Stability</span>
                 <strong>{stabilityPercent}%</strong>
               </div>
               <div className={styles["meter-track"]}>
@@ -91,7 +81,7 @@ export function BubbleSpawnGameWorkspace({ instructions, workspace }: GameWorksp
 
             <article className={styles["meter-card"]}>
               <div className={styles["meter-header"]}>
-                <span className={styles["meter-label"]}>Saturation meter</span>
+                <span className={styles["meter-label"]}>Saturation</span>
                 <strong>{saturationPercent}%</strong>
               </div>
               <div className={styles["meter-track"]}>
@@ -136,13 +126,9 @@ export function BubbleSpawnGameWorkspace({ instructions, workspace }: GameWorksp
             ))}
           </div>
 
-          <p className={styles["bubble-copy"]}>
-            Let clusters swell before you burst them. Big bubbles or connected color groups spread the chain further and buy back field stability.
-          </p>
-
           <GameWorkspaceBoardOverlay
             actionLabel={screen.startActionLabel}
-            detail="Burst the largest pressure cluster before the next growth pulse lands. The field clears once stability fills, and fails when saturation crosses the limit."
+            detail="Burst the biggest cluster before saturation tops out."
             isVisible={screen.isRunIdle}
             onAction={screen.handleStartRun}
             title="Pressure field ready"

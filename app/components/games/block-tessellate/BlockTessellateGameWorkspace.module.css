@@ -7,10 +7,9 @@
   gap: 1rem;
 }
 
-.summary-grid {
-  display: grid;
-  gap: 0.75rem;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+.block-copy {
+  margin-inline: auto;
+  max-width: 34rem;
 }
 
 .summary-card,
@@ -24,7 +23,6 @@
   padding: 0.9rem 1rem;
 }
 
-.summary-label,
 .piece-label,
 .panel-title {
   color: rgb(146 64 14 / 0.82);
@@ -35,7 +33,6 @@
   text-transform: uppercase;
 }
 
-.summary-value,
 .piece-value {
   color: rgb(67 20 7);
   font-size: 1.18rem;
@@ -128,13 +125,6 @@
   width: 0.9rem;
 }
 
-.board-copy,
-.control-note {
-  color: rgb(120 53 15 / 0.82);
-  font-size: 0.9rem;
-  margin: 0;
-}
-
 .piece-grid {
   display: grid;
   gap: 0.75rem;
@@ -211,9 +201,8 @@
     gap: 0.8rem;
   }
 
-  .summary-grid {
-    gap: 0.55rem;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+  .block-copy {
+    max-width: 18rem;
   }
 
   .summary-card,
@@ -221,13 +210,11 @@
     padding: 0.65rem 0.7rem;
   }
 
-  .summary-label,
   .piece-label,
   .panel-title {
     font-size: 0.68rem;
   }
 
-  .summary-value,
   .piece-value {
     font-size: 0.98rem;
   }
@@ -235,6 +222,10 @@
   .workspace-grid,
   .control-panel {
     gap: 0.65rem;
+  }
+
+  .control-panel {
+    align-self: end;
   }
 
   .board-grid {
@@ -263,13 +254,5 @@
 
   .piece-meta {
     font-size: 0.72rem;
-  }
-
-  .control-note {
-    display: none;
-  }
-
-  .board-copy {
-    font-size: 0.76rem;
   }
 }

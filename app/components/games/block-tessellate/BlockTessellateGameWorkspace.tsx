@@ -1,4 +1,5 @@
 import { useBlockTessellateWorkspace } from "../../../lib/client/usecase/game-workspace/use-block-tessellate-workspace";
+import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
 import { GameplaySidecarLayout } from "../../gameplay/GameplayLayoutVariants";
 import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
@@ -77,20 +78,13 @@ export function BlockTessellateGameWorkspace({ instructions, workspace }: GameWo
           data-solution-rotation={screen.blockTessellate.solutionRotation}
           data-state={screen.blockTessellate.state}
         >
-          <div className={styles["summary-grid"]}>
-            <article className={styles["summary-card"]}>
-              <span className={styles["summary-label"]}>Silhouette</span>
-              <strong className={styles["summary-value"]}>{screen.blockTessellate.currentPuzzleName}</strong>
-            </article>
-            <article className={styles["summary-card"]}>
-              <span className={styles["summary-label"]}>Last action</span>
-              <strong className={styles["summary-value"]}>{screen.blockTessellate.lastActionLabel}</strong>
-            </article>
-            <article className={styles["summary-card"]}>
-              <span className={styles["summary-label"]}>Next piece</span>
-              <strong className={styles["summary-value"]}>{screen.blockTessellate.nextPieceLabel ?? "Final lock"}</strong>
-            </article>
-          </div>
+          <GameplayContextCue
+            className={styles["block-copy"]}
+            detail={screen.blockTessellate.activePieceLabel ? `${screen.blockTessellate.activePieceLabel} is live. Ghost shows the lock.` : "Final lock."}
+            phase={screen.isLiveRun ? "Fit" : "Ready"}
+            title="Guide the queue into the silhouette"
+            tone="logic"
+          />
 
           <GameplaySidecarLayout className={styles["workspace-grid"]} desktopMain="1.45fr" desktopSide="1fr" desktopSideMin="16rem" mobileSideMin="7.6rem" mobileSideMax="8.4rem">
             <div className={styles["board-panel"]}>
@@ -115,9 +109,6 @@ export function BlockTessellateGameWorkspace({ instructions, workspace }: GameWo
                   </div>
                 ))}
               </div>
-              <p className={styles["board-copy"]}>
-                Ghost cells show the current hard-drop landing. A misdrop resets the current silhouette, so plan the rotation before you commit.
-              </p>
             </div>
 
             <div className={styles["control-panel"]}>
@@ -174,16 +165,12 @@ export function BlockTessellateGameWorkspace({ instructions, workspace }: GameWo
                   Hard drop
                 </button>
               </div>
-
-              <p className={styles["control-note"]}>
-                Use lateral moves to line up the piece, Rotate when the footprint needs a new orientation, then Hard drop to lock it immediately.
-              </p>
             </div>
           </GameplaySidecarLayout>
 
           <GameWorkspaceBoardOverlay
             actionLabel={screen.startActionLabel}
-            detail="Every board uses a fixed queue and deterministic gravity, so the puzzle is about fitting the right orientation into the silhouette under time pressure."
+            detail="Fixed queue. Fit each drop before time runs out."
             isVisible={screen.isRunIdle}
             onAction={screen.handleStartRun}
             title="Silhouette ready"

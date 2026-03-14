@@ -9,31 +9,9 @@
   gap: 1rem;
 }
 
-.line-summary-grid {
-  display: grid;
-  gap: 0.75rem;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-}
-
-.line-summary-card {
-  background: rgba(15, 23, 42, 0.7);
-  border: 1px solid rgba(148, 163, 184, 0.24);
-  border-radius: 1rem;
-  display: grid;
-  gap: 0.35rem;
-  padding: 0.9rem 1rem;
-}
-
-.line-summary-label {
-  color: rgba(226, 232, 240, 0.72);
-  font-size: 0.72rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.line-summary-value {
-  color: #f8fafc;
-  font-size: 1rem;
+.line-connect-copy {
+  margin-inline: auto;
+  max-width: 32rem;
 }
 
 .pair-token-row {
@@ -171,28 +149,9 @@
   background: linear-gradient(180deg, rgba(221, 214, 254, 0.94), rgba(109, 40, 217, 0.92));
 }
 
-.line-copy {
-  color: rgba(226, 232, 240, 0.8);
-  margin: 0;
-  text-align: center;
-}
-
 @media (max-width: 720px) {
-  .line-summary-grid {
-    gap: 0.55rem;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
-  .line-summary-card {
-    padding: 0.65rem 0.7rem;
-  }
-
-  .line-summary-label {
-    font-size: 0.66rem;
-  }
-
-  .line-summary-value {
-    font-size: 0.92rem;
+  .line-connect-copy {
+    max-width: 17rem;
   }
 
   .pair-token {
@@ -230,10 +189,5 @@
     height: 1.5rem;
     width: 1.5rem;
     font-size: 0.82rem;
-  }
-
-  .line-copy {
-    font-size: 0.8rem;
-    order: 5;
   }
 }

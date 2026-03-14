@@ -1,4 +1,5 @@
 import { useCascadeFlipWorkspace } from "../../../lib/client/usecase/game-workspace/use-cascade-flip-workspace";
+import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
 import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
 import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
@@ -50,20 +51,13 @@ export function CascadeFlipGameWorkspace({ instructions, workspace }: GameWorksp
           data-solution-card-id={screen.cascadeFlip.solutionCardId ?? ""}
           data-state={screen.cascadeFlip.state}
         >
-          <div className={styles["summary-grid"]}>
-            <article className={styles["summary-card"]}>
-              <span className={styles["summary-label"]}>Stream board</span>
-              <strong className={styles["summary-value"]}>{screen.cascadeFlip.currentRoundName}</strong>
-            </article>
-            <article className={styles["summary-card"]}>
-              <span className={styles["summary-label"]}>Current target</span>
-              <strong className={styles["summary-value"]}>{screen.cascadeFlip.currentTargetLabel ?? "Reveal"}</strong>
-            </article>
-            <article className={styles["summary-card"]}>
-              <span className={styles["summary-label"]}>Last action</span>
-              <strong className={styles["summary-value"]}>{screen.cascadeFlip.lastActionLabel}</strong>
-            </article>
-          </div>
+          <GameplayContextCue
+            className={styles["cascade-flip-copy"]}
+            detail={screen.isRevealPhase ? "Watch the full order." : "Tap the next unresolved card."}
+            phase={screen.isRevealPhase ? "Watch" : "Tap"}
+            title={screen.isRevealPhase ? "Memorize the reveal strip" : "Follow the target order in the stream"}
+            tone={screen.isRevealPhase ? "memory" : "tap"}
+          />
 
           <div className={styles["workspace-grid"]}>
             <div className={styles["sequence-panel"]}>
@@ -83,11 +77,6 @@ export function CascadeFlipGameWorkspace({ instructions, workspace }: GameWorksp
                   </span>
                 ))}
               </div>
-              <p className={styles["panel-copy"]}>
-                {screen.isRevealPhase
-                  ? "Memorize the full order now. Input unlocks only after the reveal ends."
-                  : "Tap only the next unresolved card in the strip while the stream shifts beneath it."}
-              </p>
             </div>
 
             <div className={styles["stream-panel"]}>
@@ -115,15 +104,12 @@ export function CascadeFlipGameWorkspace({ instructions, workspace }: GameWorksp
                   </button>
                 ))}
               </div>
-              <p className={styles["panel-copy"]}>
-                The stream advances one row at a time. Correct cards mark themselves, but the grid keeps moving until the round ends.
-              </p>
             </div>
           </div>
 
           <GameWorkspaceBoardOverlay
             actionLabel={screen.startActionLabel}
-            detail="Watch the reveal strip first. Once the stream goes live, only the next correct card in the order will advance the chain."
+            detail="Watch the strip, then tap the same order out of the moving stream."
             isVisible={screen.isRunIdle}
             onAction={screen.handleStartRun}
             title="Memory stream ready"

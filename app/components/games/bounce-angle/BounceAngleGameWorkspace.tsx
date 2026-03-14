@@ -1,4 +1,5 @@
 import { useBounceAngleWorkspace } from "../../../lib/client/usecase/game-workspace/use-bounce-angle-workspace";
+import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
 import { GameplaySidecarLayout } from "../../gameplay/GameplayLayoutVariants";
 import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
@@ -55,20 +56,13 @@ export function BounceAngleGameWorkspace({ instructions, workspace }: GameWorksp
           data-solution-angle={screen.bounceAngle.solutionAngleId}
           data-state={screen.bounceAngle.state}
         >
-          <div className={styles["summary-grid"]}>
-            <article className={styles["summary-card"]}>
-              <span className={styles["summary-label"]}>Ricochet board</span>
-              <strong className={styles["summary-value"]}>{screen.bounceAngle.currentPuzzleName}</strong>
-            </article>
-            <article className={styles["summary-card"]}>
-              <span className={styles["summary-label"]}>Selected angle</span>
-              <strong className={styles["summary-value"]}>{screen.bounceAngle.selectedAngleLabel ?? "None"}</strong>
-            </article>
-            <article className={styles["summary-card"]}>
-              <span className={styles["summary-label"]}>Last action</span>
-              <strong className={styles["summary-value"]}>{screen.bounceAngle.lastActionLabel}</strong>
-            </article>
-          </div>
+          <GameplayContextCue
+            className={styles["bounce-angle-copy"]}
+            detail={`Goal pocket ${screen.bounceAngle.targetPocketLabel}.`}
+            phase={screen.isLiveRun ? "Aim" : "Ready"}
+            title="Choose one angle, then launch"
+            tone="target"
+          />
 
           <GameplaySidecarLayout className={styles["workspace-grid"]} desktopMain="1.22fr" desktopSide="0.92fr" desktopSideMin="16rem" mobileSideMin="7.8rem" mobileSideMax="8.6rem">
             <div className={styles["board-panel"]}>
@@ -110,10 +104,6 @@ export function BounceAngleGameWorkspace({ instructions, workspace }: GameWorksp
                   Requires {screen.bounceAngle.requiredBounces} bank{screen.bounceAngle.requiredBounces === 1 ? "" : "s"}
                 </span>
               </div>
-
-              <p className={styles["board-copy"]}>
-                The trace stays on the board after every launch, so use the last rebound to narrow the next angle without needing continuous drag aim.
-              </p>
             </div>
 
             <div className={styles["control-panel"]}>
@@ -143,16 +133,12 @@ export function BounceAngleGameWorkspace({ instructions, workspace }: GameWorksp
               >
                 Launch
               </button>
-
-              <p className={styles["control-note"]}>
-                Wide angles can return across the full board after two side-wall contacts. Hazards count as wasted shots, so use the pocket layout instead of guessing.
-              </p>
             </div>
           </GameplaySidecarLayout>
 
           <GameWorkspaceBoardOverlay
             actionLabel={screen.startActionLabel}
-            detail="Choose one of the fixed angle pads, read where the rebound should land, and launch only when the top pocket layout makes sense."
+            detail="Read the bank shot, then launch into the goal pocket."
             isVisible={screen.isRunIdle}
             onAction={screen.handleStartRun}
             title="Ricochet board ready"
