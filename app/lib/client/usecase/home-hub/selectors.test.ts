@@ -260,6 +260,15 @@ describe("home-hub selectors", () => {
       recommendationText: "Segment-first path builder",
       shortDescription: "Connect node pairs with touch-safe segments, using undo and resets when a route blocks the board",
     },
+    {
+      currentRank: null,
+      key: "block-tessellate",
+      metricValue: "1:09",
+      name: "Block Tessellate",
+      playCount: 2,
+      recommendationText: "Gravity placement sprint",
+      shortDescription: "Rotate and slide a falling piece queue so each silhouette is sealed without resetting the board",
+    },
   ];
 
   it("counts ranked and unplayed games from visible cards", () => {
@@ -518,6 +527,15 @@ describe("home-hub selectors", () => {
         previewObjectPosition: undefined,
         previewSrc: "/images/games/line-connect-preview.svg",
         recordLabel: "Best 1:11",
+        runLabel: "2 runs",
+        statusLabel: "Played",
+      },
+      {
+        ...games[28],
+        previewAlt: "Block Tessellate silhouette board with a falling piece queue, ghost landing cells, and hard-drop controls",
+        previewObjectPosition: undefined,
+        previewSrc: "/images/games/block-tessellate-preview.svg",
+        recordLabel: "Best 1:09",
         runLabel: "2 runs",
         statusLabel: "Played",
       },

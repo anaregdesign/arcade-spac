@@ -22,6 +22,10 @@ const previewByGameKey: Record<string, Pick<HomeGameCard, "previewAlt" | "previe
     previewAlt: "Beat Match lane board with a center hit zone and three rhythm lanes",
     previewSrc: "/images/games/beat-match-preview.svg",
   },
+  "block-tessellate": {
+    previewAlt: "Block Tessellate silhouette board with a falling piece queue, ghost landing cells, and hard-drop controls",
+    previewSrc: "/images/games/block-tessellate-preview.svg",
+  },
   "box-fill": {
     previewAlt: "Box Fill tray-and-board puzzle with selected polyomino pieces and a highlighted anchor preview",
     previewSrc: "/images/games/box-fill-preview.svg",

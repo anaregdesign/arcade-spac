@@ -32,7 +32,7 @@
 - idle overlay から run を開始すると、target silhouette を持つ compact board と最初の falling piece が表示される
 - 利用者は rotate、left、right、drop の touch-safe controls で piece を動かし、silhouette の空きに合わせて lock する
 - piece が正しい位置で lock されると silhouette coverage が進み、次の piece が spawn する
-- piece が silhouette 外や不正な cell に lock された場合は `misdrops` が増え、current pattern はそのまま続くか、overflow 時は current pattern が reset される
+- piece が silhouette 外や不正な cell に lock された場合は `misdrops` が増え、current pattern 全体が deterministic に reset される
 - pattern を埋め切ると次の silhouette に進み、規定 pattern 数を完了すると Result に遷移する
 - timer が切れた場合は fail として Result に遷移し、workspace では current pattern の充填率と misdrops を確認できる
 
@@ -42,6 +42,7 @@
 - 1 run は 2 分以内に clear または timeout が確定する
 - piece rotation、lateral move、gravity lock の 3 要素が visible に機能する
 - silhouette shape と piece set に variation があり、単純な同型反復にならない
+- ghost landing preview と hidden verification selectors が current piece state を deterministic に expose する
 - Result、profile、rankings では `clear time` と `misdrops` が保存される
 
 ## Edge Cases

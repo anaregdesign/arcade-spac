@@ -1,6 +1,7 @@
 import type { ComponentType } from "react";
 
 import { BeatMatchGameWorkspace } from "./beat-match/BeatMatchGameWorkspace";
+import { BlockTessellateGameWorkspace } from "./block-tessellate/BlockTessellateGameWorkspace";
 import { BoxFillGameWorkspace } from "./box-fill/BoxFillGameWorkspace";
 import { BubbleSpawnGameWorkspace } from "./bubble-spawn/BubbleSpawnGameWorkspace";
 import { CascadeClearGameWorkspace } from "./cascade-clear/CascadeClearGameWorkspace";
@@ -90,6 +91,35 @@ const gameDefinitionByKey: Record<string, GameDefinition> = {
       previewSrc: "/images/games/beat-match-preview.svg",
     },
     workspace: BeatMatchGameWorkspace,
+  },
+  "block-tessellate": {
+    instructions: {
+      summary: "Guide each falling piece with Left, Rotate, Right, and Hard drop so the full queue seals the silhouette before the timer expires.",
+      sections: [
+        {
+          title: "Run flow",
+          items: [
+            { label: "Start run", detail: "Choose a difficulty and press Start run to load the first silhouette with a fixed falling queue." },
+            { label: "Place under gravity", detail: "Every piece falls on its own timer, so lateral moves and rotations need to happen before the hard drop lock." },
+            { label: "Clear or fail", detail: "Seal every silhouette in the set before the timer expires. A misdrop resets the current silhouette and increases the result metric." },
+          ],
+        },
+        {
+          title: "Placement controls",
+          items: [
+            { label: "Move left or right", detail: "Use the lane buttons to slide the active piece across the compact board without leaving the current silhouette." },
+            { label: "Rotate before drop", detail: "Rotate changes the footprint and clamps it back inside the board when the edge would be crossed." },
+            { label: "Read the ghost", detail: "Preview cells show where Hard drop will lock the current piece, so you can confirm the footprint before you commit." },
+          ],
+        },
+      ],
+      title: "Block Tessellate controls",
+    },
+    presentation: {
+      previewAlt: "Block Tessellate silhouette board with a falling piece queue, ghost landing cells, and hard-drop controls",
+      previewSrc: "/images/games/block-tessellate-preview.svg",
+    },
+    workspace: BlockTessellateGameWorkspace,
   },
   "box-fill": {
     instructions: {

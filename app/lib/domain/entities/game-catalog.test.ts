@@ -33,6 +33,7 @@ describe("game-catalog", () => {
     expect(isGameKey("COLOR_SWEEP")).toBe(false);
 
     expect(resolveGameKey("BEAT_MATCH")).toBe("beat-match");
+    expect(resolveGameKey("BLOCK_TESSELLATE")).toBe("block-tessellate");
     expect(resolveGameKey("BOX_FILL")).toBe("box-fill");
     expect(resolveGameKey("BUBBLE_SPAWN")).toBe("bubble-spawn");
     expect(resolveGameKey("CASCADE_CLEAR")).toBe("cascade-clear");
@@ -64,6 +65,7 @@ describe("game-catalog", () => {
     expect(resolveGameKey("unknown-mode")).toBeNull();
 
     expect(toStoredGameKey("beat-match")).toBe("BEAT_MATCH");
+    expect(toStoredGameKey("block-tessellate")).toBe("BLOCK_TESSELLATE");
     expect(toStoredGameKey("box-fill")).toBe("BOX_FILL");
     expect(toStoredGameKey("bubble-spawn")).toBe("BUBBLE_SPAWN");
     expect(toStoredGameKey("cascade-clear")).toBe("CASCADE_CLEAR");
@@ -94,6 +96,7 @@ describe("game-catalog", () => {
     expect(toStoredGameKey("custom-mode")).toBe("CUSTOM_MODE");
 
     expect(toRouteGameKey("BEAT_MATCH")).toBe("beat-match");
+    expect(toRouteGameKey("BLOCK_TESSELLATE")).toBe("block-tessellate");
     expect(toRouteGameKey("BOX_FILL")).toBe("box-fill");
     expect(toRouteGameKey("BUBBLE_SPAWN")).toBe("bubble-spawn");
     expect(toRouteGameKey("CASCADE_CLEAR")).toBe("cascade-clear");
@@ -126,6 +129,7 @@ describe("game-catalog", () => {
 
   it("returns definitions and fallback metadata", () => {
     expect(getGameDefinition("BEAT_MATCH")?.name).toBe("Beat Match");
+    expect(getGameDefinition("BLOCK_TESSELLATE")?.name).toBe("Block Tessellate");
     expect(getGameDefinition("BOX_FILL")?.name).toBe("Box Fill");
     expect(getGameDefinition("BUBBLE_SPAWN")?.name).toBe("Bubble Spawn");
     expect(getGameDefinition("CASCADE_CLEAR")?.name).toBe("Cascade Clear");
@@ -158,6 +162,7 @@ describe("game-catalog", () => {
     expect(getGameName("custom-mode")).toBe("custom-mode");
 
     expect(getGameHomeTags("BEAT_MATCH")).toEqual(["timing", "rhythm"]);
+    expect(getGameHomeTags("BLOCK_TESSELLATE")).toEqual(["logic", "spatial"]);
     expect(getGameHomeTags("BOX_FILL")).toEqual(["logic", "spatial"]);
     expect(getGameHomeTags("BUBBLE_SPAWN")).toEqual(["reflex", "logic"]);
     expect(getGameHomeTags("CASCADE_CLEAR")).toEqual(["logic", "perception"]);
@@ -187,6 +192,7 @@ describe("game-catalog", () => {
     expect(getGameHomeTags("custom-mode")).toEqual([]);
 
     expect(getGameSuccessfulResultLabel("BEAT_MATCH")).toBe("clear");
+    expect(getGameSuccessfulResultLabel("BLOCK_TESSELLATE")).toBe("clear");
     expect(getGameSuccessfulResultLabel("BOX_FILL")).toBe("clear");
     expect(getGameSuccessfulResultLabel("BUBBLE_SPAWN")).toBe("clear");
     expect(getGameSuccessfulResultLabel("CASCADE_CLEAR")).toBe("clear");
