@@ -1,0 +1,28 @@
+<svg width="640" height="360" viewBox="0 0 640 360" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="640" height="360" rx="32" fill="#0F172A"/>
+  <rect x="24" y="24" width="360" height="312" rx="28" fill="#111827"/>
+  <rect x="52" y="52" width="84" height="84" rx="18" fill="#0EA5E9" fill-opacity="0.28" stroke="#7DD3FC" stroke-width="2"/>
+  <rect x="146" y="52" width="84" height="84" rx="18" fill="#F59E0B" fill-opacity="0.24" stroke="#FCD34D" stroke-width="2"/>
+  <rect x="240" y="52" width="84" height="84" rx="18" fill="#0EA5E9" fill-opacity="0.18" stroke="#7DD3FC" stroke-width="2"/>
+  <rect x="52" y="146" width="84" height="84" rx="18" fill="#10B981" fill-opacity="0.24" stroke="#6EE7B7" stroke-width="2"/>
+  <rect x="146" y="146" width="84" height="84" rx="18" fill="#334155" stroke="#CBD5E1" stroke-width="2"/>
+  <rect x="240" y="146" width="84" height="84" rx="18" fill="#F43F5E" fill-opacity="0.24" stroke="#FDA4AF" stroke-width="2"/>
+  <rect x="52" y="240" width="84" height="84" rx="18" fill="#A855F7" fill-opacity="0.2" stroke="#D8B4FE" stroke-width="2"/>
+  <rect x="146" y="240" width="84" height="84" rx="18" fill="#0EA5E9" fill-opacity="0.18" stroke="#7DD3FC" stroke-width="2"/>
+  <rect x="240" y="240" width="84" height="84" rx="18" fill="#A855F7" fill-opacity="0.26" stroke="#D8B4FE" stroke-width="2"/>
+  <circle cx="94" cy="94" r="18" fill="#E0F2FE"/>
+  <circle cx="188" cy="188" r="18" fill="#E0F2FE"/>
+  <circle cx="282" cy="282" r="18" fill="#E0F2FE"/>
+  <rect x="412" y="44" width="192" height="58" rx="18" fill="#172554" stroke="#7DD3FC" stroke-width="2"/>
+  <text x="436" y="67" fill="#93C5FD" font-family="Arial, sans-serif" font-size="14" font-weight="700">Northwest block</text>
+  <text x="436" y="88" fill="#E2E8F0" font-family="Arial, sans-serif" font-size="20" font-weight="700">Target 2  Current 2</text>
+  <rect x="412" y="114" width="192" height="58" rx="18" fill="#3F2A11" stroke="#FCD34D" stroke-width="2"/>
+  <text x="436" y="137" fill="#FCD34D" font-family="Arial, sans-serif" font-size="14" font-weight="700">Corner ring</text>
+  <text x="436" y="158" fill="#E2E8F0" font-family="Arial, sans-serif" font-size="20" font-weight="700">Target 3  Current 2</text>
+  <rect x="412" y="184" width="192" height="58" rx="18" fill="#123B33" stroke="#6EE7B7" stroke-width="2"/>
+  <text x="436" y="207" fill="#6EE7B7" font-family="Arial, sans-serif" font-size="14" font-weight="700">Southwest block</text>
+  <text x="436" y="228" fill="#E2E8F0" font-family="Arial, sans-serif" font-size="20" font-weight="700">Target 1  Current 1</text>
+  <rect x="412" y="254" width="192" height="58" rx="18" fill="#3B1023" stroke="#FDA4AF" stroke-width="2"/>
+  <text x="436" y="277" fill="#FDA4AF" font-family="Arial, sans-serif" font-size="14" font-weight="700">Southeast block</text>
+  <text x="436" y="298" fill="#E2E8F0" font-family="Arial, sans-serif" font-size="20" font-weight="700">Target 1  Current 1</text>
+</svg>

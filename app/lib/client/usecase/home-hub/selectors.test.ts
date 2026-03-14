@@ -161,6 +161,15 @@ describe("home-hub selectors", () => {
       recommendationText: "Flash reconstruction sprint",
       shortDescription: "Memorize the board, then swap the live tiles back into the same arrangement",
     },
+    {
+      currentRank: null,
+      key: "zone-lock",
+      metricValue: "0:58",
+      name: "Zone Lock",
+      playCount: 2,
+      recommendationText: "Overlapping zone puzzle",
+      shortDescription: "Toggle shared cells until every zone card reaches its target lock count",
+    },
   ];
 
   it("counts ranked and unplayed games from visible cards", () => {
@@ -320,6 +329,15 @@ describe("home-hub selectors", () => {
         previewObjectPosition: undefined,
         previewSrc: "/images/games/tile-instant-preview.svg",
         recordLabel: "Best 1:07",
+        runLabel: "2 runs",
+        statusLabel: "Played",
+      },
+      {
+        ...games[17],
+        previewAlt: "Zone Lock puzzle board with overlapping zone cards and lock-count targets",
+        previewObjectPosition: undefined,
+        previewSrc: "/images/games/zone-lock-preview.svg",
+        recordLabel: "Best 0:58",
         runLabel: "2 runs",
         statusLabel: "Played",
       },

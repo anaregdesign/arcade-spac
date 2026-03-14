@@ -135,6 +135,10 @@ const previewByGameKey: Record<string, Pick<HomeGameCard, "previewAlt" | "previe
     previewAlt: "Tile Instant target memory board next to a shuffled live reconstruction board",
     previewSrc: "/images/games/tile-instant-preview.svg",
   },
+  "zone-lock": {
+    previewAlt: "Zone Lock puzzle board with overlapping zone cards and lock-count targets",
+    previewSrc: "/images/games/zone-lock-preview.svg",
+  },
   "stack-sort": {
     previewAlt: "Stack Sort puzzle with colored token columns",
     previewSrc: "/images/games/stack-sort-preview.svg",

@@ -2,31 +2,31 @@
 
 ## Links
 - Program spec: /docs/spec/game-catalog-50-expansion-program.md
-- Current game spec: /docs/spec/games/zone-lock.md
+- Current game spec: /docs/spec/games/tempo-weave.md
 
 ## Section 1 - Catalog Recovery Audit
 - [x] Confirm the durable game-spec inventory covers 50 game specs plus 2 meta specs (`two-minute-expansion-wave`, expansion program support docs).
-- [x] Confirm the current app implementation exposes 35 playable games in `supportedGames` and `game-workspace-registry`.
+- [x] Confirm the current app implementation exposes 36 playable games in `supportedGames` and `game-workspace-registry`.
 - [x] Choose the next reviewable slice as one low-risk unimplemented game that fits the current shared result and UI architecture.
 
-## Section 2 - Current Slice: Zone Lock
+## Section 2 - Current Slice: Tempo Weave
 ### Subsection 2.1 - Spec and planning alignment
-- [ ] Rewrite `/docs/spec/games/zone-lock.md` so the user-visible behavior, result metrics, and touch-safe zone editing flow are explicit.
+- [ ] Rewrite `/docs/spec/games/tempo-weave.md` so the user-visible behavior, result metrics, and touch-safe dual-lane rhythm controls are explicit.
 - [x] Keep this active plan focused on the current slice and append new implementation tasks only when they become concrete.
 
 ### Subsection 2.2 - App integration
-- [ ] Add `Zone Lock` to the game catalog metadata and Home preview mapping.
+- [ ] Add `Tempo Weave` to the game catalog metadata and Home preview mapping.
 - [ ] Add the game registry entry, help content, and preview asset.
-- [ ] Implement the `Zone Lock` session and workspace Hook under `app/lib/client/usecase/game-workspace/`.
-- [ ] Implement the `Zone Lock` workspace Component and CSS under `app/components/games/zone-lock/`.
-- [ ] Add deterministic Playwright hooks for zone state, selected token placement, and puzzle completion without changing the visible UI.
-- [ ] Keep the zone board readable and touch-safe on narrow viewports.
+- [ ] Implement the `Tempo Weave` session and workspace Hook under `app/lib/client/usecase/game-workspace/`.
+- [ ] Implement the `Tempo Weave` workspace Component and CSS under `app/components/games/tempo-weave/`.
+- [ ] Add deterministic Playwright hooks for left and right lane timing state, hit progression, and run completion without changing the visible UI.
+- [ ] Keep the dual-lane controls readable and touch-safe on narrow viewports.
 - [ ] Update the touched catalog and Home selector tests for the new game metadata.
 
 ### Subsection 2.3 - Verification and slice closeout
 - [ ] Run targeted automated verification for the touched catalog and gameplay modules.
-- [ ] Run Playwright UI verification for `/games/zone-lock` and the Home card.
-- [ ] Commit the `Zone Lock` slice in one reviewable unit.
+- [ ] Run Playwright UI verification for `/games/tempo-weave` and the Home card.
+- [ ] Commit the `Tempo Weave` slice in one reviewable unit.
 
 ## Section 3 - Named Backlog
 - [x] `Spot Change` - implementation, automated verification, Playwright UI verification, and commit are complete.
@@ -58,4 +58,4 @@
 - [x] `Tempo Hold` - implementation, automated verification, Playwright UI verification, and commit are complete.
 - [ ] `Tempo Weave` - keep the game unchecked until implementation, automated verification, and Playwright UI verification are complete.
 - [x] `Tile Instant` - implementation, automated verification, Playwright UI verification, and commit are complete.
-- [ ] `Zone Lock` - keep the game unchecked until implementation, automated verification, and Playwright UI verification are complete.
+- [x] `Zone Lock` - implementation, automated verification, Playwright UI verification, and commit are complete.

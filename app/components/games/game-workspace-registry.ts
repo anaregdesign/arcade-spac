@@ -26,6 +26,7 @@ import { SyncPulseGameWorkspace } from "./sync-pulse/SyncPulseGameWorkspace";
 import { TapSafeGameWorkspace } from "./tap-safe/TapSafeGameWorkspace";
 import { TempoHoldGameWorkspace } from "./tempo-hold/TempoHoldGameWorkspace";
 import { TileInstantGameWorkspace } from "./tile-instant/TileInstantGameWorkspace";
+import { ZoneLockGameWorkspace } from "./zone-lock/ZoneLockGameWorkspace";
 import type { GameInstructions } from "./shared/GameInstructionsDialog";
 import { SwapSolveGameWorkspace } from "./swap-solve/SwapSolveGameWorkspace";
 import { SumGridGameWorkspace } from "./sum-grid/SumGridGameWorkspace";
@@ -979,6 +980,35 @@ const gameDefinitionByKey: Record<string, GameDefinition> = {
       previewSrc: "/images/games/tile-instant-preview.svg",
     },
     workspace: TileInstantGameWorkspace,
+  },
+  "zone-lock": {
+    instructions: {
+      summary: "Toggle shared cells until every overlapping zone reaches its target lock count at the same time.",
+      sections: [
+        {
+          title: "Run flow",
+          items: [
+            { label: "Start run", detail: "Choose a difficulty and press Start run to open the first empty zone board." },
+            { label: "Read every zone", detail: "Each zone card shows its target lock count and current count, and one cell can affect multiple cards." },
+            { label: "Advance rounds", detail: "When every zone card locks, the next puzzle loads automatically until the full set is cleared." },
+          ],
+        },
+        {
+          title: "Board controls",
+          items: [
+            { label: "Toggle cells", detail: "Tap any cell to switch it between open and locked." },
+            { label: "Track overlap", detail: "Each cell shows the zone labels it belongs to, so you can see which rules a tap will affect." },
+            { label: "Reset carefully", detail: "Reset board clears the current puzzle and adds one reset to the result summary." },
+          ],
+        },
+      ],
+      title: "Zone Lock controls",
+    },
+    presentation: {
+      previewAlt: "Zone Lock puzzle board with overlapping zone cards and lock-count targets",
+      previewSrc: "/images/games/zone-lock-preview.svg",
+    },
+    workspace: ZoneLockGameWorkspace,
   },
   "stack-sort": {
     instructions: {
