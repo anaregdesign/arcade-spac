@@ -18,7 +18,7 @@
 - [x] Review desktop tall-board false positives with Playwright snapshots and confirm whether they are real layout regressions or metric noise.
 - [x] Detect text overflow / obvious layout break outliers across the catalog and fix them in shared or game-specific CSS.
 - [x] Audit `GameplayContextCue` presence, height, and empty-space consistency across all 50 games, then normalize missing or malformed cue strips.
-- [ ] Create reviewable commits for the shared variant expansion, barrel removal, workspace migrations, and plan archive.
+- [x] Create reviewable commits for the shared variant expansion, barrel removal, workspace migrations, and plan archive.
 
 ### Subsection 1.1 - `board-core` adoption
 - [x] Migrate `Bubble Spawn`
@@ -66,3 +66,11 @@
 - [x] Add shared `GameplayContextCue` audit hooks and compact baseline styling for catalog-wide Playwright checks.
 - [x] Migrate the remaining cue-less workspaces: `Gap Rush`, `Light Grid`, `Mirror Match`, `Swap Solve`, and `Tile Shift`.
 - [x] Run a full mobile and desktop Playwright pass for missing cue strips, oversized cue strips, and cue-to-board empty-space outliers, then fix the remaining regressions.
+
+## Section 2 - Controls card density
+- [x] Replace the shared controls chip row with a compact structured status summary that wastes less space on mobile.
+- [x] Keep the controls card API backward-compatible for existing game workspaces while normalizing common status label/value parsing in shared code.
+- [x] Verify the shared controls summary across representative games in mobile and desktop Playwright, then record the result in a reviewable commit.
+- [x] Omit redundant idle state and placeholder status values from the shared controls summary so the card only shows play-relevant metadata.
+- [x] Collapse the visible `Difficulty` label into a compact accessible field treatment and hide the summary row entirely when no status remains.
+- [x] Re-run representative mobile and desktop Playwright checks after the extra controls-card compaction.

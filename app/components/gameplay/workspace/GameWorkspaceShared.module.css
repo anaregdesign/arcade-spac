@@ -10,8 +10,8 @@
 
 .workspace-controls-card,
 .workspace-finish-card {
-  padding-top: 14px;
-  padding-bottom: 14px;
+  padding-top: 10px;
+  padding-bottom: 10px;
 }
 
 .workspace-finish-card {
@@ -38,29 +38,64 @@
 }
 
 .workspace-toolbar-minimal {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: end;
-  justify-content: space-between;
-  gap: 12px;
+  display: grid;
+  grid-template-columns: minmax(0, 188px) auto;
+  gap: 8px 10px;
+  align-items: center;
 }
 
 .workspace-toolbar-minimal .workspace-toolbar-field {
-  flex: 0 0 180px;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: center;
+  gap: 0;
 }
 
-.workspace-chip-row {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  flex: 1 1 320px;
+.workspace-status-grid {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(128px, 1fr));
+  gap: 2px 12px;
+  margin: 0;
+  padding: 2px 0 0;
+  border-top: 1px solid var(--border-color);
 }
 
-.workspace-chip-row :global(.status-badge) {
-  min-height: 30px;
-  padding: 0 10px;
-  font-size: 0.74rem;
-  letter-spacing: 0.035em;
+.workspace-status-item {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: baseline;
+  gap: 3px 6px;
+  padding: 2px 0;
+}
+
+.workspace-status-item dt,
+.workspace-status-item dd {
+  margin: 0;
+  min-width: 0;
+}
+
+.workspace-status-item dt {
+  color: var(--text-tertiary);
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.workspace-status-item dd {
+  color: var(--text-primary);
+  font-size: 0.84rem;
+  font-weight: 800;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.workspace-status-item[data-kind="state"] dt {
+  color: var(--text-secondary);
 }
 
 .workspace-primary-actions,
@@ -70,12 +105,26 @@
 
 .workspace-primary-actions {
   justify-content: flex-end;
+  justify-self: end;
 }
 
 .workspace-primary-actions :global(.action-link) {
-  min-height: 34px;
-  padding: 0 10px;
-  border-radius: 10px;
+  min-height: 30px;
+  padding: 0 9px;
+  border-radius: 9px;
+  font-size: 0.8rem;
+}
+
+.workspace-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .workspace-finish-row {
@@ -208,10 +257,6 @@
     grid-template-columns: 1fr;
   }
 
-  .workspace-chip-row {
-    align-items: stretch;
-  }
-
   .workspace-toolbar-minimal,
   .workspace-finish-row {
     align-items: stretch;
@@ -219,11 +264,12 @@
 
   .workspace-toolbar-minimal .workspace-toolbar-field,
   .workspace-primary-actions {
-    flex: 1 1 100%;
+    min-width: 0;
   }
 
   .workspace-primary-actions {
     justify-content: flex-start;
+    justify-self: start;
   }
 
   .game-board-overlay {
@@ -248,21 +294,16 @@
 
   .workspace-controls-card,
   .workspace-finish-card {
-    padding-top: 12px;
-    padding-bottom: 12px;
+    padding-top: 8px;
+    padding-bottom: 8px;
   }
 
   .workspace-toolbar-minimal {
-    justify-content: flex-start;
-    gap: 8px 10px;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 6px 8px;
   }
 
   .workspace-toolbar-minimal .workspace-toolbar-field {
-    flex: 1 1 170px;
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr);
-    align-items: center;
-    gap: 6px 8px;
     order: 1;
   }
 
@@ -273,35 +314,42 @@
   }
 
   .workspace-toolbar-field :global(.field-select) {
-    min-height: 38px;
-    padding: 0 10px;
+    min-height: 34px;
+    padding: 0 8px;
     border-radius: 9px;
   }
 
   .workspace-primary-actions {
     order: 2;
-    flex: 0 1 auto;
     min-width: 0;
     justify-content: flex-end;
     gap: 6px;
   }
 
   .workspace-primary-actions :global(.action-link) {
-    min-height: 38px;
-    padding: 0 10px;
-    font-size: 0.86rem;
-  }
-
-  .workspace-chip-row {
-    order: 3;
-    flex: 1 0 100%;
-    gap: 6px;
-  }
-
-  .workspace-chip-row :global(.status-badge) {
-    min-height: 27px;
+    min-height: 34px;
     padding: 0 8px;
-    font-size: 0.68rem;
-    letter-spacing: 0.025em;
+    font-size: 0.78rem;
+  }
+
+  .workspace-status-grid {
+    order: 3;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1px 8px;
+    padding-top: 1px;
+  }
+
+  .workspace-status-item {
+    gap: 2px 5px;
+    padding: 2px 0;
+  }
+
+  .workspace-status-item dt {
+    font-size: 0.58rem;
+    letter-spacing: 0.08em;
+  }
+
+  .workspace-status-item dd {
+    font-size: 0.76rem;
   }
 }
