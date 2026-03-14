@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="60 0 200 200" role="img" aria-labelledby="title desc">
   <title id="title">Orbit Tap preview</title>
   <desc id="desc">A ring with a highlighted gate and a bright marker orbiting near it.</desc>
   <rect width="320" height="200" rx="28" fill="#0f172a"/>

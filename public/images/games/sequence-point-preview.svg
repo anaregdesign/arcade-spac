@@ -1,4 +1,4 @@
-<svg width="1200" height="720" viewBox="0 0 1200 720" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg width="720" height="720" viewBox="240 0 720 720" fill="none" xmlns="http://www.w3.org/2000/svg">
   <rect width="1200" height="720" rx="40" fill="#0F172A"/>
   <rect x="116" y="96" width="968" height="528" rx="36" fill="#111827" stroke="#334155" stroke-width="2"/>
   <text x="160" y="158" fill="#E2E8F0" font-family="sans-serif" font-size="30" font-weight="700">Sequence Point</text>
