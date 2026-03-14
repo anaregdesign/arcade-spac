@@ -191,6 +191,66 @@ Repository-scoped Copilot agent skills are vendored under `.github/skills/` so t
 - Related: [../../.github/copilot-instructions.md](../../.github/copilot-instructions.md)
 - Related: [../../AGENTS.md](../../AGENTS.md)
 
+## Unit Test Coverage Scope
+
+### Summary
+
+`unit test coverage` は repository 全体へ機械的に 100% を要求するのではなく、pure で deterministic な module scope に対して 100% を要求し、route / component / browser / persistence flow は higher-level verification で担保する。
+
+### User Problem
+
+- blanket な repository-wide 100% coverage target は、value の低い mock-heavy test を増やしやすく、保守性を下げる
+- route、browser side effect、React component、Playwright 向きの flow まで unit test に押し込むと、test owner が曖昧になりやすい
+- coverage gate の scope が曖昧だと、どの層を unit test で守るべきか判断しづらい
+
+### Users and Scenarios
+
+- 開発者は pure な domain / usecase helper を unit test で素早く守りたい
+- 開発者は component や route flow を brittle な unit test で無理に 100% 化するのではなく、適切な higher-level test へ回したい
+- レビュアーは coverage report を見て、何が unit scope で、何が integration / UI verification owner かを判断したい
+
+### Scope
+
+- deterministic な domain utility、formatting helper、selector、view-model mapper を unit coverage scope として定義する
+- unit coverage scope に対しては 100% coverage gate を要求する
+- route module、component rendering、browser API 連携、network / persistence orchestration は unit coverage scope から外し、別 verification owner として扱う
+
+### Non-Goals
+
+- repository 全体に blanket な 100% coverage を要求すること
+- Playwright や route-level verification を unit test で置き換えること
+- persistence / browser side effect を heavy mock 前提の unit test へ無理に押し込むこと
+
+### User-Visible Behavior
+
+- pure で deterministic な unit scope は、常に 100% coverage gate を満たした状態で維持される
+- component、route、browser side effect、server orchestration の品質は、それぞれに合った verification 方法で確認される
+- coverage report を見ると、unit scope の owner が明確で、coverage 数値の意味を誤解しにくい
+
+### Acceptance Criteria
+
+- repository に unit test runner と coverage config があり、unit scope を明示して実行できる
+- configured unit scope は 100% statement / branch / function / line coverage を要求する
+- coverage config は deterministic module を対象にし、route / component / browser / persistence flow を blanket に含めない
+- unit coverage gate を通すために value の低い snapshot-heavy test や integration-mock test を追加しない
+
+### Edge Cases
+
+- `use` prefix を持つ pure view-model helper でも React runtime に依存しないなら unit scope に含めてよい
+- browser / React Router hook を直接使う module は deterministic helper を分離できるなら分離した helper だけを unit scope に含める
+- 新しい deterministic helper を追加した場合は、同じ unit scope に取り込んで coverage gate を維持する
+
+### Constraints and Dependencies
+
+- unit coverage gate は repository-wide 100% target ではなく deterministic unit scope の 100% target として扱う
+- UI-affecting flow と route flow は、引き続き architecture skill が要求する higher-level verification と併用する
+- test tooling は current TypeScript / Vite repository と整合する必要がある
+
+### Links
+
+- Related: [../../.github/skills/react-router-prisma-app-architecture/references/verification-gates.md](../../.github/skills/react-router-prisma-app-architecture/references/verification-gates.md)
+- Related: [../../.github/skills/react-router-prisma-app-architecture/references/view-state-and-handler-patterns.md](../../.github/skills/react-router-prisma-app-architecture/references/view-state-and-handler-patterns.md)
+
 ## Repository Rename And Integration Retargeting
 
 ### Summary
