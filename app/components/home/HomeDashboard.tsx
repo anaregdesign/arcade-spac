@@ -115,20 +115,17 @@ export function HomeDashboard({
                     </div>
                   )}
                 </div>
+                <div className={styles["home-card-body"]}>
+                  <div className={styles["home-card-status-row"]}>
+                    <span className="status-badge status-badge-neutral">{game.statusLabel}</span>
+                    <span className="status-badge status-badge-neutral">{game.recordLabel}</span>
+                  </div>
+                  <div className={styles["home-card-heading"]}>
+                    <h3 className="card-title">{game.name}</h3>
+                    <span className={styles["home-card-kicker"]}>{game.runLabel}</span>
+                  </div>
+                </div>
               </Link>
-              <div className={styles["home-card-body"]}>
-                <div className={styles["home-card-status-row"]}>
-                  <span className="status-badge status-badge-neutral">{game.statusLabel}</span>
-                  <span className="status-badge status-badge-neutral">{game.recordLabel}</span>
-                </div>
-                <div className={styles["home-card-heading"]}>
-                  <h3 className="card-title">{game.name}</h3>
-                  <span className={styles["home-card-kicker"]}>{game.runLabel}</span>
-                </div>
-                <Link className={["action-link", "action-link-primary", styles["home-card-action"]].join(" ")} to={`/games/${game.key}`}>
-                  Play
-                </Link>
-              </div>
             </article>
           );
         })}
