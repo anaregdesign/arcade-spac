@@ -26,6 +26,15 @@
 
 .workspace-toolbar-field {
   min-width: 0;
+  margin-top: 0;
+}
+
+.workspace-toolbar-field :global(.field-label) {
+  margin: 0;
+}
+
+.workspace-toolbar-field :global(.field-select) {
+  width: 100%;
 }
 
 .workspace-toolbar-minimal {
@@ -47,6 +56,13 @@
   flex: 1 1 320px;
 }
 
+.workspace-chip-row :global(.status-badge) {
+  min-height: 30px;
+  padding: 0 10px;
+  font-size: 0.74rem;
+  letter-spacing: 0.035em;
+}
+
 .workspace-primary-actions,
 .workspace-utility-actions {
   margin-top: 0;
@@ -54,6 +70,12 @@
 
 .workspace-primary-actions {
   justify-content: flex-end;
+}
+
+.workspace-primary-actions :global(.action-link) {
+  min-height: 34px;
+  padding: 0 10px;
+  border-radius: 10px;
 }
 
 .workspace-finish-row {
@@ -210,5 +232,70 @@
   .game-board-overlay-card {
     width: min(100%, 280px);
     padding: 16px 16px 14px;
+  }
+}
+
+@media (max-width: 640px) {
+  .workspace-stack {
+    gap: 10px;
+  }
+
+  .workspace-controls-card,
+  .workspace-finish-card {
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+
+  .workspace-toolbar-minimal {
+    justify-content: flex-start;
+    gap: 8px 10px;
+  }
+
+  .workspace-toolbar-minimal .workspace-toolbar-field {
+    flex: 1 1 170px;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: 6px 8px;
+    order: 1;
+  }
+
+  .workspace-toolbar-field :global(.field-label) {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    white-space: nowrap;
+  }
+
+  .workspace-toolbar-field :global(.field-select) {
+    min-height: 38px;
+    padding: 0 10px;
+    border-radius: 9px;
+  }
+
+  .workspace-primary-actions {
+    order: 2;
+    flex: 0 1 auto;
+    min-width: 0;
+    justify-content: flex-end;
+    gap: 6px;
+  }
+
+  .workspace-primary-actions :global(.action-link) {
+    min-height: 38px;
+    padding: 0 10px;
+    font-size: 0.86rem;
+  }
+
+  .workspace-chip-row {
+    order: 3;
+    flex: 1 0 100%;
+    gap: 6px;
+  }
+
+  .workspace-chip-row :global(.status-badge) {
+    min-height: 27px;
+    padding: 0 8px;
+    font-size: 0.68rem;
+    letter-spacing: 0.025em;
   }
 }
