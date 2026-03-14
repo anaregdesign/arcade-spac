@@ -38,6 +38,10 @@ const previewByGameKey: Record<string, Pick<HomeGameCard, "previewAlt" | "previe
     previewAlt: "Icon Chain clue board with a revealed icon strip and card-like order clues",
     previewSrc: "/images/games/icon-chain-preview.svg",
   },
+  "line-connect": {
+    previewAlt: "Line Connect grid with labeled node pairs, an active route, and a step-by-step path build",
+    previewSrc: "/images/games/line-connect-preview.svg",
+  },
   "merge-climb": {
     previewAlt: "Merge Climb number board with directional controls, a goal tile, and a next spawn panel",
     previewSrc: "/images/games/merge-climb-preview.svg",

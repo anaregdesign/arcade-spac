@@ -242,6 +242,15 @@ describe("home-hub selectors", () => {
       recommendationText: "Growth-pressure field loop",
       shortDescription: "Manage a live bubble field where growth pulses and chain bursts compete for space and stability",
     },
+    {
+      currentRank: null,
+      key: "line-connect",
+      metricValue: "1:11",
+      name: "Line Connect",
+      playCount: 2,
+      recommendationText: "Segment-first path builder",
+      shortDescription: "Connect node pairs with touch-safe segments, using undo and resets when a route blocks the board",
+    },
   ];
 
   it("counts ranked and unplayed games from visible cards", () => {
@@ -482,6 +491,15 @@ describe("home-hub selectors", () => {
         previewObjectPosition: undefined,
         previewSrc: "/images/games/bubble-spawn-preview.svg",
         recordLabel: "Best 0:48",
+        runLabel: "2 runs",
+        statusLabel: "Played",
+      },
+      {
+        ...games[26],
+        previewAlt: "Line Connect grid with labeled node pairs, an active route, and a step-by-step path build",
+        previewObjectPosition: undefined,
+        previewSrc: "/images/games/line-connect-preview.svg",
+        recordLabel: "Best 1:11",
         runLabel: "2 runs",
         statusLabel: "Played",
       },

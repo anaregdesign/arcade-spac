@@ -11,6 +11,7 @@ import { GlowCycleGameWorkspace } from "./glow-cycle/GlowCycleGameWorkspace";
 import { HiddenFindGameWorkspace } from "./hidden-find/HiddenFindGameWorkspace";
 import { HueDriftGameWorkspace } from "./hue-drift/HueDriftGameWorkspace";
 import { IconChainGameWorkspace } from "./icon-chain/IconChainGameWorkspace";
+import { LineConnectGameWorkspace } from "./line-connect/LineConnectGameWorkspace";
 import { MergeClimbGameWorkspace } from "./merge-climb/MergeClimbGameWorkspace";
 import { MinesweeperGameWorkspace } from "./minesweeper/MinesweeperGameWorkspace";
 import { NumberChainGameWorkspace } from "./number-chain/NumberChainGameWorkspace";
@@ -204,6 +205,35 @@ const gameDefinitionByKey: Record<string, GameDefinition> = {
       previewSrc: "/images/games/icon-chain-preview.svg",
     },
     workspace: IconChainGameWorkspace,
+  },
+  "line-connect": {
+    instructions: {
+      summary: "Extend the active pair one segment at a time, keep every route off the locked lanes, and finish each compact board before the timer expires.",
+      sections: [
+        {
+          title: "Run flow",
+          items: [
+            { label: "Start run", detail: "Choose a difficulty and press Start run to open the first route board with the first pair already armed." },
+            { label: "Build one pair at a time", detail: "Only the active pair can reach its own target. When that route locks, the next pair becomes active immediately." },
+            { label: "Clear or fail", detail: "Finish every board in the set before the timer expires. Invalid taps, pair resets, and board resets all count as path corrections." },
+          ],
+        },
+        {
+          title: "Board controls",
+          items: [
+            { label: "Tap adjacent cells", detail: "Every segment extends by tapping the next adjacent slot. Tapping the previous slot backs the path up by one step." },
+            { label: "Use reset actions", detail: "Reset pair restarts only the active route, while Reset board clears the current puzzle if your locked paths trap the later pairs." },
+            { label: "Read the next segment", detail: "The board shows the active pair, the last action, and a hidden verification step can expose the next route segment without changing the visible UI." },
+          ],
+        },
+      ],
+      title: "Line Connect controls",
+    },
+    presentation: {
+      previewAlt: "Line Connect grid with labeled node pairs, an active route, and a step-by-step path build",
+      previewSrc: "/images/games/line-connect-preview.svg",
+    },
+    workspace: LineConnectGameWorkspace,
   },
   "merge-climb": {
     instructions: {

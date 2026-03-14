@@ -2,7 +2,7 @@
 
 ## Summary
 
-`Arcade` に `Line Connect` を追加する。paired node 同士を path でつなぎ、交差を避けながら board を完成させる connection-construction puzzle とする。
+`Arcade` に `Line Connect` を追加する。paired node 同士を segment-by-segment path でつなぎ、交差を避けながら複数 board を連続で完成させる connection-construction puzzle とする。
 
 ## User Problem
 
@@ -13,13 +13,13 @@
 
 - 利用者は Home から `Line Connect` を開き、paired node を交差なく結びたい
 - 利用者は workspace で completed pairs、crossing errors、current path state を見ながら puzzle を解きたい
-- 利用者は Result、profile、rankings で `puzzles solved` と `path corrections` を確認したい
+- 利用者は Result、profile、rankings で `clear time` と `path corrections` を確認したい
 
 ## Scope
 
 - `Line Connect` を home、workspace、result、rankings、profile に統合する
-- primary metric は `puzzles solved`、support metric は `path corrections` とする
-- workspace では board node、drawn path、crossing state、remaining pair count を visible にする
+- primary metric は `clear time`、support metric は `path corrections` とする
+- workspace では board node、drawn path、active pair、remaining pair count を visible にする
 
 ## Non-Goals
 
@@ -30,24 +30,24 @@
 ## User-Visible Behavior
 
 - idle overlay から run を開始すると、pair markers が置かれた compact board が表示される
-- 利用者は drag または touch-friendly segment drawing で path を描き、same-mark pair を接続する
+- 利用者は touch-friendly segment drawing で path を描き、same-mark pair を接続する
 - path が交差したり invalid cell を通ると correction が必要になり、`path corrections` が増える
 - all pairs connected かつ no-cross state になると current puzzle が clear され、次の board に進む
-- quick overwrite、undo、path reset が軽快に機能する
-- 規定 puzzle 数を完了すると Result に遷移し、Result、profile、rankings では `puzzles solved` と `path corrections` を確認できる
+- undo、pair reset、puzzle reset が軽快に機能する
+- 規定 board 数を完了すると Result に遷移し、Result、profile、rankings では `clear time` と `path corrections` を確認できる
 
 ## Acceptance Criteria
 
 - `Line Connect` card が Home に表示され、game route を開ける
 - 1 run は 2 分以内で clear または timeout が確定する
-- path drawing、crossing validation、overwrite or undo が visible に機能する
-- workspace 上で remaining pair count、crossing state、path correction count が更新される
-- Result、profile、rankings では `puzzles solved` と `path corrections` が保存される
+- path drawing、crossing validation、undo or reset が visible に機能する
+- workspace 上で remaining pair count、active pair、path correction count が更新される
+- Result、profile、rankings では `clear time` と `path corrections` が保存される
 
 ## Edge Cases
 
 - run 中以外の drawing input は state を変えない
-- touch device では drag unavailable な場合でも segment-by-segment path input fallback がある
+- touch device では drag を前提にせず、segment-by-segment path input だけで完結できる
 - same path state に対して validation outcome は deterministic である
 - narrow viewport でも board が horizontal overflow を起こさず、node touch target が十分大きい
 
