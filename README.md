@@ -4,10 +4,9 @@ Arcade is a React Router server-rendered web app for two competitive puzzle game
 
 ## Current State
 
-- Local development is working against Azure SQL with SSR, cookie session auth, real Minesweeper and Sudoku gameplay, rankings, result flows, and profile editing.
-- Production is running on Azure Container Apps with GitHub Release driven CD, Microsoft Entra ID sign-in, Azure SQL, Application Insights, and Log Analytics.
-- The current production baseline is release `v2026.03.13.1` on Container App revision `ca-arcade--0000011`.
-- Operational notes for rollback, smoke checks, SQL firewall state, and observability now live in `docs/production-operations.md`.
+- Local development is working against SQL Server compatible paths with SSR, cookie session auth, real Minesweeper and Sudoku gameplay, rankings, result flows, and profile editing.
+- The repository target for hosted environments is Azure Container Apps with GitHub Release driven CD, `Microsoft Entra ID` sign-in, Azure SQL over `Private Endpoint`, private App Configuration and Key Vault access, Application Insights, and Log Analytics.
+- Operational notes for rollback, smoke checks, private-network verification, and observability live in `docs/production-operations.md`.
 
 ## Local Development
 
@@ -28,7 +27,7 @@ npm install
 npm run dev
 ```
 
-If `DATABASE_URL` is not configured or the local SQL login is unavailable, the development server now falls back to in-memory fixture data for browser-based UI review on `/login`, `/home`, `/games/:gameKey`, `/results/:resultId`, `/rankings`, and `/profile`.
+If `DATABASE_URL` is not configured or the local SQL path is unavailable, the development server falls back to in-memory fixture data for browser-based UI review on `/login`, `/home`, `/games/:gameKey`, `/results/:resultId`, `/rankings`, and `/profile`.
 
 ### Useful Commands
 
@@ -41,6 +40,7 @@ npm run db:migrate:deploy
 npm run db:migrate:status
 npm run db:seed
 npm run azure:check:production-data
+npm run azure:sync:runtime-config
 ```
 
 ## Verified Local Flows
@@ -54,39 +54,64 @@ npm run azure:check:production-data
 
 ## Runtime Configuration
 
-The current runtime reads these environment variables:
+The hosted runtime now boots from Azure App Configuration plus Key Vault references through `@azure/app-configuration-provider`.
 
-- `ARCADE_AUTH_MODE`
-- `DATABASE_URL`
-- `ARCADE_SESSION_SECRET`
+Hosted bootstrap environment values:
+
 - `NODE_ENV`
-- `PUBLIC_APP_URL`
-- `ENTRA_TENANT_ID`
-- `ENTRA_CLIENT_ID`
-- `ENTRA_CLIENT_SECRET`
+- `AZURE_APPCONFIG_ENDPOINT`
+- `AZURE_APPCONFIG_LABEL` when labeled App Configuration values are used
+- `AZURE_KEY_VAULT_URI`
 
-For local development, the app falls back to SQLite and a local session secret. For Azure hosting, move these values to managed configuration instead of storing them in repo files.
+Azure App Configuration keys use the `Arcade:` prefix and hold non-secret settings such as:
 
-For the current local workflow in this repository, the app is verified against Azure SQL rather than SQLite.
+- `Arcade:ARCADE_AUTH_MODE`
+- `Arcade:PUBLIC_APP_URL`
+- `Arcade:ENTRA_TENANT_ID`
+- `Arcade:ENTRA_AUTHORITY_TENANT`
+- `Arcade:ENTRA_CLIENT_ID`
+
+Azure Key Vault remains the source of truth for secrets:
+
+- `arcade-session-secret`
+- `database-url`
+- `entra-client-secret`
+
+Azure App Configuration should reference those Key Vault secrets for:
+
+- `Arcade:ARCADE_SESSION_SECRET`
+- `Arcade:DATABASE_URL`
+- `Arcade:ENTRA_CLIENT_SECRET`
+
+For local development, the app still supports shell-based fallback when `AZURE_APPCONFIG_ENDPOINT` is intentionally unset or when the signed-in Azure path is unavailable. Do not add `.env` files to this repository.
+
+`npm run azure:sync:runtime-config` is the repository-supported sync path for those keys and secrets. Run it only from a host that can reach the private App Configuration and Key Vault data plane.
 
 ## Azure Deployment Assets
 
 The repository now includes these Azure-oriented assets:
 
 - `azure.yaml` for `azd` service wiring
-- `infra/main.bicep` for Azure Container Apps, App Configuration, Key Vault, Log Analytics, and Application Insights
-- `infra/main.bicep` also defines an optional Azure SQL serverless database path and a separate user-assigned migration identity
+- `infra/main.bicep` for VNet-integrated Azure Container Apps, private-endpoint subnets, Azure SQL, App Configuration, Key Vault, Log Analytics, and Application Insights
+- `infra/main.bicep` also defines the Azure SQL serverless database path, `Private Endpoint` resources, private DNS links, Container App `/health` probes, and a separate user-assigned migration identity
 - `.github/workflows/release-container-image.yml` for GitHub Releases to GHCR and Azure deployment
 - `scripts/azure/postprovision.sh` for post-provision registry wiring
+- `scripts/azure/sync-runtime-config.sh` for App Configuration and Key Vault runtime config synchronization
 - `scripts/azure/smoke-test.sh` for post-deploy smoke checks
+- `scripts/azure/verify-production-runtime.sh` for private-network and runtime verification
 - `app/routes/health.ts` for smoke checks
 
 ## Azure Prerequisites
 
 Before a real hosted deployment, prepare all of the following:
 
-- An Azure subscription, resource group, and deployment region that support Azure Container Apps
-- A Microsoft Entra ID tenant and app registration for the production sign-in flow
+- An Azure subscription, resource group, and deployment region that support Azure Container Apps, Azure SQL, private DNS, and `Private Endpoint`
+- A Microsoft Entra ID tenant and `web` app registration for the production sign-in flow
+- A virtual network plan that includes a delegated Container Apps infrastructure subnet and a separate private-endpoint subnet
+- Private DNS ownership or approval for:
+  - `privatelink.database.windows.net`
+  - `privatelink.azconfig.io`
+  - `privatelink.vaultcore.azure.net`
 - GitHub Environment variables for Azure OIDC deployment:
 	- `AZURE_CLIENT_ID`
 	- `AZURE_TENANT_ID`
@@ -97,8 +122,9 @@ Before a real hosted deployment, prepare all of the following:
 - GitHub Environment secret:
 	- `GHCR_PULL_TOKEN`
 - Azure App Configuration values for non-secret runtime settings
-- Azure Key Vault secrets for secret runtime values such as `ARCADE_SESSION_SECRET`
-- A confidential client secret for the Microsoft Entra ID web app registration
+- Azure Key Vault secrets for secret runtime values such as `ARCADE_SESSION_SECRET` and the Entra confidential client secret
+- A private-network-reachable operator path for `npm run azure:sync:runtime-config`
+- A dev or test `Microsoft Entra ID` app registration for local sign-in verification if the team wants production-like auth locally
 - Azure SQL bootstrap inputs if `deploySql=true` is enabled in the Bicep template:
 	- `sqlAdministratorLogin`
 	- `sqlAdministratorPassword`
@@ -107,11 +133,11 @@ Before a real hosted deployment, prepare all of the following:
 
 See `docs/azure-prerequisites.md` for the detailed checklist and current gaps.
 See `docs/production-data-path.md` for the current database cutover contract.
-See `docs/production-operations.md` for the current production baseline, smoke test procedure, rollback target, and observability entry points.
+See `docs/production-operations.md` for the current repository target contract, smoke test procedure, rollback target, and observability entry points.
 See `docs/repository-rename-runbook.md` for repository rename, GHCR namespace, and Azure OIDC follow-up steps.
 
 ## Next Steps
 
-- Tighten SQL local-access handling after the current UX pass is complete, including pruning workstation-specific firewall rules when they are no longer needed.
+- Sync App Configuration and Key Vault from a host that can reach the private data plane, then roll out the new private-network contract through the repository GitHub Workflow path.
 - Keep release notes, rollback data, and smoke verification steps synchronized with `docs/production-operations.md` after each production release.
-- Continue refining player-facing copy and seeded data so older legacy result summaries do not leak into the current UX.
+- Keep local auth verification aligned with a documented dev or test Entra registration when production-like sign-in coverage is required.

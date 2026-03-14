@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "azure:check:production-data": "./scripts/azure/check-production-data-path.sh",
+    "azure:sync:runtime-config": "./scripts/azure/sync-runtime-config.sh",
     "build": "react-router build",
     "dev": "react-router dev",
     "db:generate": "prisma generate",
@@ -16,6 +17,10 @@
     "typecheck": "react-router typegen && tsc"
   },
   "dependencies": {
+    "@azure/app-configuration": "^1.11.0",
+    "@azure/app-configuration-provider": "^2.4.0",
+    "@azure/identity": "^4.13.0",
+    "@azure/keyvault-secrets": "^4.10.0",
     "@fluentui/react-components": "^9.73.3",
     "@fluentui/react-icons": "^2.0.320",
     "@prisma/adapter-mssql": "^7.5.0",

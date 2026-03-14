@@ -1,52 +1,57 @@
 # Production Data Path
 
-This document records the current production data-path contract for Arcade and the gap between the local SQLite implementation and a real Azure-hosted rollout.
+This document records the repository contract for Arcade's hosted relational path and the checks that must pass before an Azure deployment is treated as production-ready.
 
 ## Current Local State
 
-- Local development uses SQLite via `DATABASE_URL=file:./prisma/dev.db`.
-- The current runtime can seed and verify local gameplay, rankings, and profile flows against SQLite.
-- The hosted runtime must not reuse this file-based path.
+- The Prisma datasource is `sqlserver`, so local development should use either a local SQL Server compatible target or an Azure SQL path supplied through `DATABASE_URL`.
+- The app can still fall back to in-memory fixture data for UI review when no database path is available.
+- Hosted environments must not use a local file database or SQL login/password runtime auth.
 
-## Production Contract
+## Hosted Production Contract
 
 Before Azure deployment is treated as production-ready, all of the following must be true:
 
-1. `DATABASE_URL` points to a non-file relational database.
-2. Database migrations can be applied through a production-safe command path.
-3. The hosted runtime receives `ARCADE_SESSION_SECRET`, `PUBLIC_APP_URL`, and Entra auth values together with the database connection.
-4. Deployment validation rejects SQLite-based settings before rollout.
-5. Runtime database permissions stay separate from migration permissions.
+1. `DATABASE_URL` points to Azure SQL or another hosted SQL Server compatible endpoint and does not use a SQLite-style `file:` URL.
+2. The hosted Azure SQL path uses `Microsoft Entra ID` authentication, with `authentication=ActiveDirectoryManagedIdentity` for the Bicep-managed runtime path.
+3. Azure SQL public network access is `Disabled`, and the runtime reaches `<server>.database.windows.net` through `Private Endpoint` plus private DNS.
+4. The hosted runtime resolves `Arcade:*` App Configuration keys and the Key Vault-backed `ARCADE_SESSION_SECRET`, `DATABASE_URL`, and `ENTRA_CLIENT_SECRET` values through a managed configuration path rather than repo files.
+5. Database migrations can be applied through a production-safe command path that is separate from app startup.
+6. Runtime database permissions stay separate from migration permissions.
 
 ## Repo Support Added
 
+- `infra/main.bicep`
 - `npm run db:migrate:deploy`
 - `npm run db:migrate:status`
 - `npm run azure:check:production-data`
+- `npm run azure:sync:runtime-config`
 - `scripts/azure/check-production-data-path.sh`
+- `scripts/azure/init-sql.mjs`
+- `scripts/azure/verify-production-runtime.sh`
 
-These commands do not complete the production database migration by themselves. They establish the command surface and preflight checks that the final Azure data cutover will use.
+These assets establish the repository-side contract for the hosted data path. They do not by themselves complete a cloud rollout.
 
-The Azure infrastructure template now also defines an optional Azure SQL serverless path plus a separate user-assigned migration identity. That infrastructure does not complete the Prisma cutover by itself, but it makes the target Azure resource and identity split explicit.
+## Runtime and Migration Identity Split
 
-## Current Limitation
-
-The repository still uses a Prisma schema whose datasource provider is `sqlite`. That means:
-
-- local development is supported
-- production relational cutover is not complete yet
-- Azure deployment should be treated as incomplete until the Prisma provider and migration path are updated for the chosen hosted database
+- Container App system-assigned managed identity: runtime reads and writes only, typically `db_datareader` and `db_datawriter`
+- User-assigned migration identity: controlled schema changes and elevated migration work
+- SQL administrator login/password: bootstrap-only or break-glass, never runtime auth
 
 ## Recommended Cutover Sequence
 
-1. Enable the Azure SQL path in `infra/main.bicep` and provision the serverless database together with the migration identity.
-2. Set the Azure SQL Entra administrator, then grant runtime access to the Container App identity and elevated migration access only to the migration identity.
-3. Update the Prisma datasource provider and migration path for that database.
+1. Provision the VNet-integrated Container Apps environment, Azure SQL serverless database, private DNS zones, and `Private Endpoint` resources from `infra/main.bicep`.
+2. Confirm Azure SQL `publicNetworkAccess=Disabled`, `Entra-only` authentication, and the intended Entra administrator.
+3. Create database principals from external provider identities for the runtime and migration identities, then grant least privilege roles.
 4. Run `npm run db:migrate:status` against the target environment.
-5. Apply `npm run db:migrate:deploy` with the production connection.
-6. Run `npm run azure:check:production-data` before rollout.
-7. Deploy the app and run the hosted smoke test.
+5. Apply `npm run db:migrate:deploy` with the migration identity path.
+6. Run `npm run azure:check:production-data` against the intended App Configuration and Key Vault inputs.
+7. Run `npm run azure:sync:runtime-config` from a host that can reach the private App Configuration and Key Vault data plane.
+8. Deploy the app through the GitHub release workflow.
+9. Run `scripts/azure/verify-production-runtime.sh` and the hosted smoke test.
 
-## Why This Remains In Progress
+## Remaining Verification
 
-The final database choice and its Azure resource values are external to the current workspace. Until those values exist, the repository can prepare the command and validation path, but it cannot complete the production database cutover end to end.
+- This repository change does not itself prove that the live Azure environment has already moved to the private path.
+- The GitHub release workflow does not populate private App Configuration or Key Vault data-plane values.
+- After the next GitHub-workflow deployment, verify the hosted Container Apps path resolves Azure SQL through private DNS and that the runtime no longer depends on `AllowAzureServices`.

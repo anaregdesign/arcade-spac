@@ -1,27 +1,40 @@
 # Production Operations
 
-This runbook records the verified production baseline for Arcade on Azure and the minimum commands needed for smoke checks, rollback, and first-line troubleshooting.
+This runbook records the repository-side production contract for Arcade on Azure and the minimum commands needed for smoke checks, rollback, and first-line troubleshooting after a GitHub-workflow deployment.
 
-## Current Production Baseline
+## Repository Target Contract
 
-- Release tag: `v2026.03.13.10`
-- Image: `ghcr.io/anaregdesign/arcade-spec:v2026.03.13.10`
 - Container App: `ca-arcade`
-- Latest ready revision: `ca-arcade--0000021`
-- Public app URL: `https://ca-arcade.bravepond-f695129a.japaneast.azurecontainerapps.io`
 - Resource group: `rg-arcade-spec-dev`
-- Azure SQL public network access contract: `Enabled`
+- App ingress: public
+- Container Apps environment: VNet-integrated through a delegated infrastructure subnet
+- Azure SQL: `Microsoft Entra ID` only auth, `publicNetworkAccess=Disabled`, `Private Endpoint`, and `privatelink.database.windows.net`
+- App Configuration and Key Vault: private endpoint backed hosted access
+- Runtime bootstrap: `AZURE_APPCONFIG_ENDPOINT` and `AZURE_KEY_VAULT_URI` env values, `Arcade:` App Configuration keys, and Key Vault references for secrets
+- Health route: `/health`
+- Verification scripts:
+  - `scripts/azure/sync-runtime-config.sh`
+  - `scripts/azure/smoke-test.sh`
+  - `scripts/azure/verify-production-runtime.sh`
+
+## Current Verification Status
+
+- The repository contract was updated on March 14, 2026 to prefer Azure SQL private connectivity and `Entra-only` auth.
+- The repository contract now expects runtime config to be synced into private App Configuration and Key Vault before image rollout.
+- This workspace did not perform a production or shared-environment deployment.
+- After the next GitHub release deployment, refresh this file with the exact live image tag, revision, and any cloud-side deviations from the target contract.
 
 ## Repository Rename Note
 
-- The canonical repository slug is now `anaregdesign/arcade-spec`.
-- The first successful release published from the renamed repository is now live, so the current production baseline uses `ghcr.io/anaregdesign/arcade-spec`.
-- The next rollback target should be refreshed from the most recent known-good release after each production deployment.
+- The canonical repository slug is `anaregdesign/arcade-spec`.
+- Release workflows publish GHCR images under `ghcr.io/anaregdesign/arcade-spec`.
+- Keep rollback metadata aligned with the latest successful release after each deployment.
 
-## Rollback Target
+## Rollback Guidance
 
-- Previous healthy revision: not yet recorded under the current image namespace
-- Previous healthy image: establish this after the next successful production release
+- Roll back by redeploying the previous known-good immutable release tag through the existing Container App image update path.
+- Do not restore Azure SQL public access or the `AllowAzureServices` firewall rule as a rollback shortcut.
+- Keep the private-network contract intact while restoring the previous application image.
 
 Rollback command:
 
@@ -32,60 +45,41 @@ az containerapp update \
   --image ghcr.io/anaregdesign/arcade-spec:<known-good-tag>
 ```
 
-After rollback, confirm the ready revision and health endpoint again.
-
-## Runtime Identity
-
-- Container App identity type: `SystemAssigned`
-- Runtime principal ID: `ed42b2bc-ba63-4860-a3be-605e14bfae93`
-
-## Entra Sign-In Contract
-
-- App registration client ID: `8bcae5fd-ef3c-4eba-9471-43970e5f08ad`
-- App registration audience: `AzureADMultipleOrgs`
-- Runtime authority tenant segment: `organizations`
-- Personal Microsoft accounts: `disabled`
-
-## Azure SQL Recovery Notes
-
-- SQL server: `sql-arcade-qddhfw4moexbm.database.windows.net`
-- Microsoft Entra only authentication: `true`
-- Entra admin: `hmizukami@MngEnvMCAP321368.onmicrosoft.com`
-- Public network access: `Enabled`
-
-Current firewall rules:
-
-- `AllowAzureServices`: `0.0.0.0 - 0.0.0.0`
-- `AllowHirokiMac`: `39.111.131.252 - 39.111.131.252`
-
-If local verification is no longer needed, remove the workstation-specific rule after the next development pass.
-
-## Observability
-
-- Application Insights resource: `appi-arcade`
-- Application Insights app ID: `ca32253a-ad31-4062-bdb4-4866a0c12cff`
-- Log Analytics workspace: `law-arcade`
-- Runtime health route: `/health`
-- Smoke script: `scripts/azure/smoke-test.sh`
-- Runtime verification script: `scripts/azure/verify-production-runtime.sh`
-- Scheduled verification workflow: `.github/workflows/verify-production-runtime.yml`
-
-The Container App runtime exports `APPLICATIONINSIGHTS_CONNECTION_STRING`, so first-line verification can start from the live app health endpoint and then move to the Application Insights resource and linked Log Analytics workspace. The hosted `/health` route now also verifies database compatibility by executing the same `UserProfile.themePreference` select path used by authenticated app loaders, so schema drift is expected to surface there before users hit `/home`.
-
-The current hosted architecture still depends on the Azure SQL public endpoint plus the `AllowAzureServices` firewall rule. If `publicNetworkAccess` is changed to `Disabled` before private networking is introduced, the hosted `/health` route and authenticated loaders are expected to fail with SQL login errors.
+After rollback, re-run the health endpoint, smoke test, and private-network verification.
 
 ## Post-Release Smoke Procedure
+
+Pre-release requirement:
+
+1. Run `npm run azure:check:production-data`.
+2. Run `npm run azure:sync:runtime-config` from a host that can reach the private App Configuration and Key Vault data plane.
+3. Publish the release so the GitHub workflow deploys the image.
+
+Post-release checks:
 
 1. Confirm the GitHub release workflow completed successfully.
 2. Confirm the Container App image and latest ready revision match the intended release.
 3. Run the health endpoint check.
-4. Run the scripted smoke test.
-5. Verify hosted sign-in, gameplay, result, rankings, and profile screens in a browser.
-6. Run the production runtime verification script or workflow when SQL or Container App configuration changed.
+4. Run `scripts/azure/verify-production-runtime.sh`.
+5. Run the scripted smoke test.
+6. Verify hosted sign-in, gameplay, result, rankings, and profile screens in a browser.
 
 Commands:
 
 ```bash
+npm run azure:check:production-data
+
+AZURE_APPCONFIG_ENDPOINT="https://<app-config-name>.azconfig.io" \
+AZURE_KEY_VAULT_URI="https://<key-vault-name>.vault.azure.net/" \
+PUBLIC_APP_URL="https://ca-arcade.bravepond-f695129a.japaneast.azurecontainerapps.io" \
+ARCADE_AUTH_MODE="entra" \
+ENTRA_TENANT_ID="<tenant-id>" \
+ENTRA_CLIENT_ID="<client-id>" \
+ENTRA_CLIENT_SECRET="<client-secret>" \
+ARCADE_SESSION_SECRET="<session-secret>" \
+AZURE_RESOURCE_GROUP="rg-arcade-spec-dev" \
+  npm run azure:sync:runtime-config
+
 curl -sS https://ca-arcade.bravepond-f695129a.japaneast.azurecontainerapps.io/health
 
 APP_URL="https://ca-arcade.bravepond-f695129a.japaneast.azurecontainerapps.io" \
@@ -117,22 +111,63 @@ az containerapp revision list -g rg-arcade-spec-dev -n ca-arcade -o table
 az containerapp show -g rg-arcade-spec-dev -n ca-arcade -o json
 ```
 
-- SQL firewall state:
+- Container Apps environment VNet integration:
 
 ```bash
-az sql server firewall-rule list -g rg-arcade-spec-dev -s sql-arcade-qddhfw4moexbm -o table
+managed_env_name="$(az containerapp show -g rg-arcade-spec-dev -n ca-arcade --query properties.managedEnvironmentId -o tsv | awk -F/ '{print $NF}')"
+
+az containerapp env show \
+  -g rg-arcade-spec-dev \
+  -n "${managed_env_name}" \
+  --query '{infrastructureSubnetId:properties.vnetConfiguration.infrastructureSubnetId}'
 ```
 
-- SQL public network access drift:
+- Azure SQL `Entra-only` auth and admin state:
+
+```bash
+az sql server ad-only-auth get \
+  -g rg-arcade-spec-dev \
+  -s sql-arcade-qddhfw4moexbm
+
+az sql server ad-admin list \
+  -g rg-arcade-spec-dev \
+  -s sql-arcade-qddhfw4moexbm
+```
+
+- Azure SQL network contract:
 
 ```bash
 az sql server show \
   -g rg-arcade-spec-dev \
   -n sql-arcade-qddhfw4moexbm \
   --query '{publicNetworkAccess:publicNetworkAccess}'
+
+az resource list \
+  -g rg-arcade-spec-dev \
+  --resource-type Microsoft.Network/privateEndpoints \
+  --query "[?contains(properties.privateLinkServiceConnections[0].properties.privateLinkServiceId, '/providers/Microsoft.Sql/servers/sql-arcade-qddhfw4moexbm')].name"
+
+az network private-dns record-set a list \
+  -g rg-arcade-spec-dev \
+  -z privatelink.database.windows.net \
+  --query "[?name=='sql-arcade-qddhfw4moexbm'].arecords[].ipv4Address"
 ```
 
-- Schema drift confirmation for the `themePreference` and `shareToken` production repair:
+- App Configuration and Key Vault private-access contract:
+
+```bash
+az resource list \
+  -g rg-arcade-spec-dev \
+  --resource-type Microsoft.AppConfiguration/configurationStores \
+  --query '[].{name:name,publicNetworkAccess:properties.publicNetworkAccess}'
+
+az resource list \
+  -g rg-arcade-spec-dev \
+  --resource-type Microsoft.KeyVault/vaults \
+  --query '[].{name:name,publicNetworkAccess:properties.publicNetworkAccess}'
+```
+
+- Schema drift confirmation:
 
 ```bash
 sqlcmd -S sql-arcade-qddhfw4moexbm.database.windows.net -d arcade -G -Q "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'UserProfile' ORDER BY ORDINAL_POSITION;"
@@ -140,10 +175,9 @@ sqlcmd -S sql-arcade-qddhfw4moexbm.database.windows.net -d arcade -G -Q "SELECT 
 sqlcmd -S sql-arcade-qddhfw4moexbm.database.windows.net -d arcade -G -Q "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'PlayResult' AND COLUMN_NAME = 'shareToken';"
 ```
 
-- Recovery note:
+## Operational Notes
 
-The outage recovered on March 13, 2026 by adding the missing `UserProfile.themePreference` column and `PlayResult.shareToken` column plus index to the production Azure SQL database. The live symptom was `/home` returning `500` after sign-in while `/health` still returned `200`, which is why the health route now includes a database compatibility check.
-
-The hosted sign-in contract was expanded later on March 13, 2026 to accept organization accounts from other Microsoft Entra tenants. Production now stores Entra identities as `tenantId + objectId`, and the hosted `/auth/start` flow is expected to redirect to the `organizations` authorization endpoint.
-
-An additional outage occurred on March 14, 2026 when the Azure SQL server public endpoint drifted to `Disabled` while the hosted runtime still depended on public network access. The recovery path was to restore `publicNetworkAccess=Enabled`, verify the `AllowAzureServices` firewall rule, and add repository automation that checks the SQL network contract together with the live smoke path.
+- A previous outage on March 14, 2026 was caused by drift between the runtime's dependency on the Azure SQL public endpoint and the server's `publicNetworkAccess` setting.
+- The repository contract now removes that dependency instead of teaching operators to restore public access.
+- The GitHub release workflow updates the Container App image but does not populate private App Configuration or Key Vault data-plane values.
+- If the hosted rollout has not happened yet, treat any live public SQL dependency as configuration drift that still needs to be remediated through the GitHub workflow path.
