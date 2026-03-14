@@ -21,6 +21,7 @@ import { SequencePointGameWorkspace } from "./sequence-point/SequencePointGameWo
 import { ShapeMorphGameWorkspace } from "./shape-morph/ShapeMorphGameWorkspace";
 import { SpinnerAimGameWorkspace } from "./spinner-aim/SpinnerAimGameWorkspace";
 import { SpotChangeGameWorkspace } from "./spot-change/SpotChangeGameWorkspace";
+import { SyncPulseGameWorkspace } from "./sync-pulse/SyncPulseGameWorkspace";
 import { TapSafeGameWorkspace } from "./tap-safe/TapSafeGameWorkspace";
 import type { GameInstructions } from "./shared/GameInstructionsDialog";
 import { SwapSolveGameWorkspace } from "./swap-solve/SwapSolveGameWorkspace";
@@ -278,6 +279,35 @@ const gameDefinitionByKey: Record<string, GameDefinition> = {
       previewSrc: "/images/games/phase-lock-preview.svg",
     },
     workspace: PhaseLockGameWorkspace,
+  },
+  "sync-pulse": {
+    instructions: {
+      summary: "Read the dual pulse rhythm, tap while both rings overlap tightly, and chain every wave before the timer expires.",
+      sections: [
+        {
+          title: "Run flow",
+          items: [
+            { label: "Start run", detail: "Choose a difficulty and press Start run to arm the first pulse wave." },
+            { label: "Advance waves", detail: "Perfect and good sync taps both clear the current wave and move directly into the next one." },
+            { label: "Read misses", detail: "Misses do not stop the run, but the same wave stays active until you sync it or the timer expires." },
+          ],
+        },
+        {
+          title: "Board controls",
+          items: [
+            { label: "Watch both rings", detail: "Pulse A and Pulse B expand and contract at different rates, so the overlap window keeps drifting." },
+            { label: "Tap one sync pad", detail: "Use the large central pad to judge the current pulse overlap and commit the sync." },
+            { label: "Read the judgment", detail: "The board reports perfect, good, or miss immediately after every tap." },
+          ],
+        },
+      ],
+      title: "Sync Pulse controls",
+    },
+    presentation: {
+      previewAlt: "Sync Pulse dual ring board with two pulse circles collapsing into a shared sync pad",
+      previewSrc: "/images/games/sync-pulse-preview.svg",
+    },
+    workspace: SyncPulseGameWorkspace,
   },
   "precision-drop": {
     instructions: {

@@ -45,6 +45,7 @@ describe("game-catalog", () => {
     expect(resolveGameKey("POSITION_LOCK")).toBe("position-lock");
     expect(resolveGameKey("ROTATE_ALIGN")).toBe("rotate-align");
     expect(resolveGameKey("SPINNER_AIM")).toBe("spinner-aim");
+    expect(resolveGameKey("SYNC_PULSE")).toBe("sync-pulse");
     expect(resolveGameKey("TAP_SAFE")).toBe("tap-safe");
     expect(resolveGameKey("unknown-mode")).toBeNull();
 
@@ -55,6 +56,7 @@ describe("game-catalog", () => {
     expect(toStoredGameKey("position-lock")).toBe("POSITION_LOCK");
     expect(toStoredGameKey("rotate-align")).toBe("ROTATE_ALIGN");
     expect(toStoredGameKey("spinner-aim")).toBe("SPINNER_AIM");
+    expect(toStoredGameKey("sync-pulse")).toBe("SYNC_PULSE");
     expect(toStoredGameKey("tap-safe")).toBe("TAP_SAFE");
     expect(toStoredGameKey("drop-ball")).toBe("DROP_LINE");
     expect(toStoredGameKey("orbit-tap")).toBe("ORBIT_TAP");
@@ -75,6 +77,7 @@ describe("game-catalog", () => {
     expect(toRouteGameKey("POSITION_LOCK")).toBe("position-lock");
     expect(toRouteGameKey("ROTATE_ALIGN")).toBe("rotate-align");
     expect(toRouteGameKey("SPINNER_AIM")).toBe("spinner-aim");
+    expect(toRouteGameKey("SYNC_PULSE")).toBe("sync-pulse");
     expect(toRouteGameKey("TAP_SAFE")).toBe("tap-safe");
     expect(toRouteGameKey("CUSTOM_MODE")).toBe("custom-mode");
   });
@@ -88,6 +91,7 @@ describe("game-catalog", () => {
     expect(getGameDefinition("POSITION_LOCK")?.name).toBe("Position Lock");
     expect(getGameDefinition("ROTATE_ALIGN")?.name).toBe("Rotate Align");
     expect(getGameDefinition("SPINNER_AIM")?.name).toBe("Spinner Aim");
+    expect(getGameDefinition("SYNC_PULSE")?.name).toBe("Sync Pulse");
     expect(getGameDefinition("TAP_SAFE")?.name).toBe("Tap Safe");
     expect(getGameDefinition("SPOT_CHANGE")?.name).toBe("Spot Change");
     expect(getGameDefinition("SEQUENCE_POINT")?.name).toBe("Sequence Point");
@@ -105,6 +109,7 @@ describe("game-catalog", () => {
     expect(getGameHomeTags("POSITION_LOCK")).toEqual(["memory", "spatial"]);
     expect(getGameHomeTags("ROTATE_ALIGN")).toEqual(["logic", "spatial"]);
     expect(getGameHomeTags("SPINNER_AIM")).toEqual(["timing", "reflex"]);
+    expect(getGameHomeTags("SYNC_PULSE")).toEqual(["timing", "rhythm"]);
     expect(getGameHomeTags("TAP_SAFE")).toEqual(["reflex", "perception"]);
     expect(getGameHomeTags("SPOT_CHANGE")).toEqual(["perception", "logic"]);
     expect(getGameHomeTags("SEQUENCE_POINT")).toEqual(["memory", "fast-start"]);
@@ -118,6 +123,7 @@ describe("game-catalog", () => {
     expect(getGameSuccessfulResultLabel("POSITION_LOCK")).toBe("clear");
     expect(getGameSuccessfulResultLabel("ROTATE_ALIGN")).toBe("clear");
     expect(getGameSuccessfulResultLabel("SPINNER_AIM")).toBe("clear");
+    expect(getGameSuccessfulResultLabel("SYNC_PULSE")).toBe("clear");
     expect(getGameSuccessfulResultLabel("TAP_SAFE")).toBe("clear");
     expect(getGameSuccessfulResultLabel("SPOT_CHANGE")).toBe("clear");
     expect(getGameSuccessfulResultLabel("SEQUENCE_POINT")).toBe("clear");

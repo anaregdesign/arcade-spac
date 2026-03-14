@@ -91,6 +91,15 @@ describe("home-hub selectors", () => {
     },
     {
       currentRank: null,
+      key: "sync-pulse",
+      metricValue: "0:49",
+      name: "Sync Pulse",
+      playCount: 2,
+      recommendationText: "Dual-ring rhythm sync",
+      shortDescription: "Tap when both pulse rings collapse into the same beat",
+    },
+    {
+      currentRank: null,
       key: "tap-safe",
       metricValue: "0:44",
       name: "Tap Safe",
@@ -217,6 +226,15 @@ describe("home-hub selectors", () => {
       },
       {
         ...games[9],
+        previewAlt: "Sync Pulse dual ring board with two pulse circles collapsing into a shared sync pad",
+        previewObjectPosition: undefined,
+        previewSrc: "/images/games/sync-pulse-preview.svg",
+        recordLabel: "Best 0:49",
+        runLabel: "2 runs",
+        statusLabel: "Played",
+      },
+      {
+        ...games[10],
         previewAlt: "Tap Safe wave board mixing safe targets and hazard objects with short-lived badges",
         previewObjectPosition: undefined,
         previewSrc: "/images/games/tap-safe-preview.svg",
@@ -225,7 +243,7 @@ describe("home-hub selectors", () => {
         statusLabel: "Played",
       },
       {
-        ...games[10],
+        ...games[11],
         previewAlt: "Spinner Aim ring with a rotating launcher, target arc, and hazard arc",
         previewObjectPosition: undefined,
         previewSrc: "/images/games/spinner-aim-preview.svg",
@@ -234,7 +252,7 @@ describe("home-hub selectors", () => {
         statusLabel: "Played",
       },
       {
-        ...games[11],
+        ...games[12],
         previewAlt: "Sequence Point grid showing a fast memory sequence across lit points",
         previewObjectPosition: undefined,
         previewSrc: "/images/games/sequence-point-preview.svg",
@@ -243,7 +261,7 @@ describe("home-hub selectors", () => {
         statusLabel: "Played",
       },
       {
-        ...games[12],
+        ...games[13],
         previewAlt: "Hue Drift gradient row with a missing color step and answer swatches",
         previewObjectPosition: undefined,
         previewSrc: "/images/games/hue-drift-preview.svg",

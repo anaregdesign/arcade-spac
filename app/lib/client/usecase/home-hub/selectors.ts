@@ -38,6 +38,10 @@ const previewByGameKey: Record<string, Pick<HomeGameCard, "previewAlt" | "previe
     previewAlt: "Phase Lock wheel stack with rotating markers and glowing target bands",
     previewSrc: "/images/games/phase-lock-preview.svg",
   },
+  "sync-pulse": {
+    previewAlt: "Sync Pulse dual ring board with two pulse circles collapsing into a shared sync pad",
+    previewSrc: "/images/games/sync-pulse-preview.svg",
+  },
   "tap-safe": {
     previewAlt: "Tap Safe wave board mixing safe targets and hazard objects with short-lived badges",
     previewSrc: "/images/games/tap-safe-preview.svg",
