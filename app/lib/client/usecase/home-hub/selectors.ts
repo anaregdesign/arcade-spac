@@ -30,6 +30,10 @@ const previewByGameKey: Record<string, Pick<HomeGameCard, "previewAlt" | "previe
     previewAlt: "Bounce Angle ricochet board with a traced bank shot, target pocket, and fixed angle chooser",
     previewSrc: "/images/games/bounce-angle-preview.svg",
   },
+  "cascade-flip": {
+    previewAlt: "Cascade Flip stream with a target order strip above a shifting memory board",
+    previewSrc: "/images/games/cascade-flip-preview.svg",
+  },
   "box-fill": {
     previewAlt: "Box Fill tray-and-board puzzle with selected polyomino pieces and a highlighted anchor preview",
     previewSrc: "/images/games/box-fill-preview.svg",

@@ -5,6 +5,7 @@ import { BlockTessellateGameWorkspace } from "./block-tessellate/BlockTessellate
 import { BounceAngleGameWorkspace } from "./bounce-angle/BounceAngleGameWorkspace";
 import { BoxFillGameWorkspace } from "./box-fill/BoxFillGameWorkspace";
 import { BubbleSpawnGameWorkspace } from "./bubble-spawn/BubbleSpawnGameWorkspace";
+import { CascadeFlipGameWorkspace } from "./cascade-flip/CascadeFlipGameWorkspace";
 import { CascadeClearGameWorkspace } from "./cascade-clear/CascadeClearGameWorkspace";
 import { ChainTriggerGameWorkspace } from "./chain-trigger/ChainTriggerGameWorkspace";
 import { ColorCensusGameWorkspace } from "./color-census/ColorCensusGameWorkspace";
@@ -150,6 +151,35 @@ const gameDefinitionByKey: Record<string, GameDefinition> = {
       previewSrc: "/images/games/bounce-angle-preview.svg",
     },
     workspace: BounceAngleGameWorkspace,
+  },
+  "cascade-flip": {
+    instructions: {
+      summary: "Memorize the revealed card order, then tap the same order out of the moving stream without letting misses pile up.",
+      sections: [
+        {
+          title: "Run flow",
+          items: [
+            { label: "Start run", detail: "Choose a difficulty and press Start run to open the first reveal phase." },
+            { label: "Reveal then track", detail: "The target order shows first, then the live stream starts shifting row by row and input unlocks." },
+            { label: "Clear or fail", detail: "Resolve every target card across the full stream set before the timer expires. Wrong cards add misses but the stream keeps moving." },
+          ],
+        },
+        {
+          title: "Stream controls",
+          items: [
+            { label: "Read the order strip", detail: "Resolved cards dim out, the current target stays highlighted, and upcoming cards remain visible for the rest of the round." },
+            { label: "Tap only live cards", detail: "Only the live stream accepts input. Reveal phase taps do nothing, and resolved cards are locked until they slide away." },
+            { label: "Use the last shift", detail: "The stream moves in fixed row steps, so you can time the next tap from the visible drift rather than chase free animation." },
+          ],
+        },
+      ],
+      title: "Cascade Flip controls",
+    },
+    presentation: {
+      previewAlt: "Cascade Flip stream with a target order strip above a shifting memory board",
+      previewSrc: "/images/games/cascade-flip-preview.svg",
+    },
+    workspace: CascadeFlipGameWorkspace,
   },
   "box-fill": {
     instructions: {

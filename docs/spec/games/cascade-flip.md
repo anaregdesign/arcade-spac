@@ -13,12 +13,12 @@
 
 - 利用者は Home から `Cascade Flip` を開き、brief reveal で order を覚えた後、moving stream から正しい card を探したい
 - 利用者は current target order、resolved cards、misses を見ながら stream を追いたい
-- 利用者は Result、profile、rankings で `cards resolved` と `misses` を確認したい
+- 利用者は Result、profile、rankings で `clear time` と `misses` を確認したい
 
 ## Scope
 
 - `Cascade Flip` を home、workspace、result、rankings、profile に統合する
-- primary metric は `cards resolved`、support metric は `misses` とする
+- primary metric は `clear time`、support metric は `misses` とする
 - workspace では reveal state、current target index、moving card stream、miss count を live 表示する
 
 ## Non-Goals
@@ -42,7 +42,7 @@
 - 1 run は 2 分以内に clear または fail が確定する
 - reveal phase と moving stream phase の 2 段が明確に分かれている
 - workspace 上で current target、resolved count、misses、stream speed が更新される
-- Result、profile、rankings では `cards resolved` と `misses` が保存される
+- Result、profile、rankings では `clear time` と `misses` が保存される
 
 ## Edge Cases
 

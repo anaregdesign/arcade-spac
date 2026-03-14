@@ -37,6 +37,7 @@ describe("game-catalog", () => {
     expect(resolveGameKey("BOUNCE_ANGLE")).toBe("bounce-angle");
     expect(resolveGameKey("BOX_FILL")).toBe("box-fill");
     expect(resolveGameKey("BUBBLE_SPAWN")).toBe("bubble-spawn");
+    expect(resolveGameKey("CASCADE_FLIP")).toBe("cascade-flip");
     expect(resolveGameKey("CASCADE_CLEAR")).toBe("cascade-clear");
     expect(resolveGameKey("CHAIN_TRIGGER")).toBe("chain-trigger");
     expect(resolveGameKey("COLOR_SWEEP")).toBe("color-sweep");
@@ -70,6 +71,7 @@ describe("game-catalog", () => {
     expect(toStoredGameKey("bounce-angle")).toBe("BOUNCE_ANGLE");
     expect(toStoredGameKey("box-fill")).toBe("BOX_FILL");
     expect(toStoredGameKey("bubble-spawn")).toBe("BUBBLE_SPAWN");
+    expect(toStoredGameKey("cascade-flip")).toBe("CASCADE_FLIP");
     expect(toStoredGameKey("cascade-clear")).toBe("CASCADE_CLEAR");
     expect(toStoredGameKey("chain-trigger")).toBe("CHAIN_TRIGGER");
     expect(toStoredGameKey("color-sweep")).toBe("COLOR_SWEEP");
@@ -102,6 +104,7 @@ describe("game-catalog", () => {
     expect(toRouteGameKey("BOUNCE_ANGLE")).toBe("bounce-angle");
     expect(toRouteGameKey("BOX_FILL")).toBe("box-fill");
     expect(toRouteGameKey("BUBBLE_SPAWN")).toBe("bubble-spawn");
+    expect(toRouteGameKey("CASCADE_FLIP")).toBe("cascade-flip");
     expect(toRouteGameKey("CASCADE_CLEAR")).toBe("cascade-clear");
     expect(toRouteGameKey("CHAIN_TRIGGER")).toBe("chain-trigger");
     expect(toRouteGameKey("COLOR_SWEEP")).toBe("color-sweep");
@@ -136,6 +139,7 @@ describe("game-catalog", () => {
     expect(getGameDefinition("BOUNCE_ANGLE")?.name).toBe("Bounce Angle");
     expect(getGameDefinition("BOX_FILL")?.name).toBe("Box Fill");
     expect(getGameDefinition("BUBBLE_SPAWN")?.name).toBe("Bubble Spawn");
+    expect(getGameDefinition("CASCADE_FLIP")?.name).toBe("Cascade Flip");
     expect(getGameDefinition("CASCADE_CLEAR")?.name).toBe("Cascade Clear");
     expect(getGameDefinition("CHAIN_TRIGGER")?.name).toBe("Chain Trigger");
     expect(getGameDefinition("DROP_LINE")?.name).toBe("Precision Drop");
@@ -170,6 +174,7 @@ describe("game-catalog", () => {
     expect(getGameHomeTags("BOUNCE_ANGLE")).toEqual(["logic", "spatial"]);
     expect(getGameHomeTags("BOX_FILL")).toEqual(["logic", "spatial"]);
     expect(getGameHomeTags("BUBBLE_SPAWN")).toEqual(["reflex", "logic"]);
+    expect(getGameHomeTags("CASCADE_FLIP")).toEqual(["memory", "timing"]);
     expect(getGameHomeTags("CASCADE_CLEAR")).toEqual(["logic", "perception"]);
     expect(getGameHomeTags("CHAIN_TRIGGER")).toEqual(["logic", "spatial"]);
     expect(getGameHomeTags("DROP_LINE")).toEqual(["timing", "fast-start"]);
@@ -201,6 +206,7 @@ describe("game-catalog", () => {
     expect(getGameSuccessfulResultLabel("BOUNCE_ANGLE")).toBe("clear");
     expect(getGameSuccessfulResultLabel("BOX_FILL")).toBe("clear");
     expect(getGameSuccessfulResultLabel("BUBBLE_SPAWN")).toBe("clear");
+    expect(getGameSuccessfulResultLabel("CASCADE_FLIP")).toBe("clear");
     expect(getGameSuccessfulResultLabel("CASCADE_CLEAR")).toBe("clear");
     expect(getGameSuccessfulResultLabel("CHAIN_TRIGGER")).toBe("clear");
     expect(getGameSuccessfulResultLabel("DROP_LINE")).toBe("hit");

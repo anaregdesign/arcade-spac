@@ -278,6 +278,15 @@ describe("home-hub selectors", () => {
       recommendationText: "Ricochet geometry sprint",
       shortDescription: "Choose one fixed angle and let the side-wall ricochet carry the ball into the correct pocket",
     },
+    {
+      currentRank: null,
+      key: "cascade-flip",
+      metricValue: "1:00",
+      name: "Cascade Flip",
+      playCount: 2,
+      recommendationText: "Moving memory stream",
+      shortDescription: "Watch a short reveal, then flip the same order out of a shifting card stream",
+    },
   ];
 
   it("counts ranked and unplayed games from visible cards", () => {
@@ -555,6 +564,15 @@ describe("home-hub selectors", () => {
         previewSrc: "/images/games/bounce-angle-preview.svg",
         recordLabel: "Best 0:57",
         runLabel: "3 runs",
+        statusLabel: "Played",
+      },
+      {
+        ...games[30],
+        previewAlt: "Cascade Flip stream with a target order strip above a shifting memory board",
+        previewObjectPosition: undefined,
+        previewSrc: "/images/games/cascade-flip-preview.svg",
+        recordLabel: "Best 1:00",
+        runLabel: "2 runs",
         statusLabel: "Played",
       },
     ]);
