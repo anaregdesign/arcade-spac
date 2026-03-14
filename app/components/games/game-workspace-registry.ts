@@ -1,5 +1,6 @@
 import type { ComponentType } from "react";
 
+import { BeatMatchGameWorkspace } from "./beat-match/BeatMatchGameWorkspace";
 import { ColorCensusGameWorkspace } from "./color-census/ColorCensusGameWorkspace";
 import { ColorSweepGameWorkspace } from "./color-sweep/ColorSweepGameWorkspace";
 import { FlipMatchGameWorkspace } from "./flip-match/FlipMatchGameWorkspace";
@@ -49,6 +50,35 @@ type GameDefinition = {
 };
 
 const gameDefinitionByKey: Record<string, GameDefinition> = {
+  "beat-match": {
+    instructions: {
+      summary: "Read the active lane, wait for the timing marker to cross the center zone, and tap the matching lane to keep the combo alive.",
+      sections: [
+        {
+          title: "Run flow",
+          items: [
+            { label: "Start run", detail: "Choose a difficulty and press Start run to arm the beat stream." },
+            { label: "Build hits", detail: "Perfect and good taps both raise the hit goal. Misses break combo and move the stream onward." },
+            { label: "Finish or fail", detail: "The run clears once the hit goal is reached. If the stream ends or the timer expires first, the run fails." },
+          ],
+        },
+        {
+          title: "Board controls",
+          items: [
+            { label: "Read the active lane", detail: "Only one lane is active at a time, and the upcoming queue previews the next beats." },
+            { label: "Watch the center zone", detail: "Tap while the timing marker crosses the center zone for a perfect or good hit." },
+            { label: "Stay touch-safe", detail: "All three lane buttons stay large and evenly spaced on desktop and mobile." },
+          ],
+        },
+      ],
+      title: "Beat Match controls",
+    },
+    presentation: {
+      previewAlt: "Beat Match lane board with a center hit zone and three rhythm lanes",
+      previewSrc: "/images/games/beat-match-preview.svg",
+    },
+    workspace: BeatMatchGameWorkspace,
+  },
   "color-sweep": {
     instructions: {
       summary: "Find the target color, tap only those tiles, and clear the whole set before the timer expires.",

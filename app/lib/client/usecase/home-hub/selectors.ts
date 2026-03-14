@@ -18,6 +18,10 @@ export type HomeGameCard = HomeGame & {
 };
 
 const previewByGameKey: Record<string, Pick<HomeGameCard, "previewAlt" | "previewObjectPosition" | "previewSrc">> = {
+  "beat-match": {
+    previewAlt: "Beat Match lane board with a center hit zone and three rhythm lanes",
+    previewSrc: "/images/games/beat-match-preview.svg",
+  },
   "color-sweep": {
     previewAlt: "Color Sweep board showing a target swatch and a grid of colored tiles",
     previewSrc: "/images/games/color-sweep-preview.svg",

@@ -2,35 +2,35 @@
 
 ## Links
 - Program spec: /docs/spec/game-catalog-50-expansion-program.md
-- Current game spec: /docs/spec/games/beat-match.md
+- Current game spec: /docs/spec/games/tile-instant.md
 
 ## Section 1 - Catalog Recovery Audit
 - [x] Confirm the durable game-spec inventory covers 50 game specs plus 2 meta specs (`two-minute-expansion-wave`, expansion program support docs).
-- [x] Confirm the current app implementation exposes 33 playable games in `supportedGames` and `game-workspace-registry`.
+- [x] Confirm the current app implementation exposes 34 playable games in `supportedGames` and `game-workspace-registry`.
 - [x] Choose the next reviewable slice as one low-risk unimplemented game that fits the current shared result and UI architecture.
 
-## Section 2 - Current Slice: Beat Match
+## Section 2 - Current Slice: Tile Instant
 ### Subsection 2.1 - Spec and planning alignment
-- [ ] Rewrite `/docs/spec/games/beat-match.md` so the user-visible behavior, result metrics, and touch-safe lane readability are explicit.
+- [ ] Rewrite `/docs/spec/games/tile-instant.md` so the user-visible behavior, result metrics, and touch-safe reconstruction readability are explicit.
 - [x] Keep this active plan focused on the current slice and append new implementation tasks only when they become concrete.
 
 ### Subsection 2.2 - App integration
-- [ ] Add `Beat Match` to the game catalog metadata and Home preview mapping.
+- [ ] Add `Tile Instant` to the game catalog metadata and Home preview mapping.
 - [ ] Add the game registry entry, help content, and preview asset.
-- [ ] Implement the `Beat Match` session and workspace Hook under `app/lib/client/usecase/game-workspace/`.
-- [ ] Implement the `Beat Match` workspace Component and CSS under `app/components/games/beat-match/`.
-- [ ] Add deterministic Playwright hooks for active lane, current timing window, and combo state without changing the visible UI.
-- [ ] Keep three-lane timing input readable and touch-safe on narrow viewports.
+- [ ] Implement the `Tile Instant` session and workspace Hook under `app/lib/client/usecase/game-workspace/`.
+- [ ] Implement the `Tile Instant` workspace Component and CSS under `app/components/games/tile-instant/`.
+- [ ] Add deterministic Playwright hooks for watch phase, active tile selection, and reconstruction completion without changing the visible UI.
+- [ ] Keep the reconstruction board readable and touch-safe on narrow viewports.
 - [ ] Update the touched catalog and Home selector tests for the new game metadata.
 
 ### Subsection 2.3 - Verification and slice closeout
 - [ ] Run targeted automated verification for the touched catalog and gameplay modules.
-- [ ] Run Playwright UI verification for `/games/beat-match` and the Home card.
-- [ ] Commit the `Beat Match` slice in one reviewable unit.
+- [ ] Run Playwright UI verification for `/games/tile-instant` and the Home card.
+- [ ] Commit the `Tile Instant` slice in one reviewable unit.
 
 ## Section 3 - Named Backlog
 - [x] `Spot Change` - implementation, automated verification, Playwright UI verification, and commit are complete.
-- [ ] `Beat Match` - keep the game unchecked until implementation, automated verification, and Playwright UI verification are complete.
+- [x] `Beat Match` - implementation, automated verification, Playwright UI verification, and commit are complete.
 - [ ] `Block Tessellate` - keep the game unchecked until implementation, automated verification, and Playwright UI verification are complete.
 - [ ] `Bounce Angle` - keep the game unchecked until implementation, automated verification, and Playwright UI verification are complete.
 - [ ] `Box Fill` - keep the game unchecked until implementation, automated verification, and Playwright UI verification are complete.

@@ -1,0 +1,177 @@
+.beat-match-board-card {
+  min-height: 27rem;
+}
+
+.beat-match-shell {
+  min-height: 27rem;
+  display: grid;
+  gap: 1rem;
+}
+
+.beat-match-copy {
+  display: grid;
+  gap: 0.35rem;
+  justify-items: center;
+  text-align: center;
+  max-width: 38rem;
+  margin-inline: auto;
+}
+
+.beat-match-copy strong {
+  color: #f8fafc;
+  font-size: 1.08rem;
+}
+
+.beat-match-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.beat-match-legend-target,
+.beat-match-legend-perfect,
+.beat-match-legend-status {
+  padding: 0.5rem 0.8rem;
+  border-radius: 999px;
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+.beat-match-legend-target {
+  background: rgba(56, 189, 248, 0.18);
+  color: #7dd3fc;
+}
+
+.beat-match-legend-perfect {
+  background: rgba(244, 114, 182, 0.18);
+  color: #f9a8d4;
+}
+
+.beat-match-legend-status {
+  background: rgba(148, 163, 184, 0.14);
+  color: #cbd5e1;
+}
+
+.beat-match-board {
+  display: grid;
+  gap: 1rem;
+}
+
+.beat-match-track {
+  position: relative;
+  min-height: 5rem;
+  padding-top: 1.2rem;
+}
+
+.beat-match-track-line,
+.beat-match-good-zone,
+.beat-match-perfect-zone {
+  position: absolute;
+  top: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 999px;
+}
+
+.beat-match-track-line {
+  width: 100%;
+  height: 0.8rem;
+  background: rgba(51, 65, 85, 0.9);
+}
+
+.beat-match-good-zone {
+  height: 1.1rem;
+  background: rgba(56, 189, 248, 0.24);
+}
+
+.beat-match-perfect-zone {
+  height: 1.3rem;
+  background: rgba(244, 114, 182, 0.38);
+}
+
+.beat-match-marker {
+  position: absolute;
+  top: 1.3rem;
+  width: 1.25rem;
+  height: 2.2rem;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #f8fafc, #38bdf8 55%, #ec4899);
+  box-shadow: 0 0 1rem rgba(56, 189, 248, 0.28);
+  transform: translateX(-50%);
+}
+
+.beat-match-queue {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem;
+}
+
+.beat-match-queue-chip {
+  padding: 0.42rem 0.72rem;
+  border-radius: 999px;
+  background: rgba(30, 41, 59, 0.92);
+  color: #cbd5e1;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.beat-match-queue-chip-active {
+  background: rgba(56, 189, 248, 0.18);
+  color: #7dd3fc;
+}
+
+.beat-match-lanes {
+  display: grid;
+  gap: 0.9rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.beat-match-lane {
+  display: grid;
+  gap: 0.35rem;
+  min-height: 9rem;
+  align-content: center;
+  justify-items: center;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 1.35rem;
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.88));
+  color: #e2e8f0;
+  cursor: pointer;
+}
+
+.beat-match-lane:disabled {
+  cursor: default;
+}
+
+.beat-match-lane-active {
+  border-color: rgba(56, 189, 248, 0.46);
+  box-shadow:
+    inset 0 0 0 0.14rem rgba(56, 189, 248, 0.12),
+    0 0 1rem rgba(56, 189, 248, 0.14);
+}
+
+.beat-match-lane-label {
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.beat-match-lane-copy {
+  color: #94a3b8;
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+@media (max-width: 720px) {
+  .beat-match-board-card,
+  .beat-match-shell {
+    min-height: 24rem;
+  }
+
+  .beat-match-lane {
+    min-height: 7.5rem;
+  }
+}
