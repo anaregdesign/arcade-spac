@@ -1,5 +1,5 @@
 import { useLoginScreen } from "../lib/client/usecase/login-screen/use-login-screen";
-import styles from "./login-screen.module.css";
+import styles from "./LoginScreen.module.css";
 
 type LoginOption = {
   id: string;

@@ -2,7 +2,7 @@ import { Form, Link } from "react-router";
 
 import { useResultScreen } from "../../lib/client/usecase/result-screen/use-result-screen";
 import sharedStyles from "../games/shared/GameWorkspaceShared.module.css";
-import styles from "./result-screen.module.css";
+import styles from "./ResultScreen.module.css";
 
 type ResultScreenProps = {
   result: {

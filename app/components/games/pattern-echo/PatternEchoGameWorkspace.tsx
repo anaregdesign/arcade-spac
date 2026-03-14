@@ -5,7 +5,7 @@ import { GameWorkspaceControlsCard } from "../shared/GameWorkspaceControlsCard";
 import { GameWorkspaceFinishCard } from "../shared/GameWorkspaceFinishCard";
 import { GameInstructionsDialog } from "../shared/GameInstructionsDialog";
 import type { GameWorkspaceComponentProps } from "../shared/game-workspace-types";
-import styles from "./pattern-echo-game-workspace.module.css";
+import styles from "./PatternEchoGameWorkspace.module.css";
 
 export function PatternEchoGameWorkspace({ instructions, workspace }: GameWorkspaceComponentProps) {
   const screen = usePatternEchoWorkspace(workspace);

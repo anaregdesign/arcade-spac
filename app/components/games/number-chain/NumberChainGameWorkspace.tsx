@@ -5,7 +5,7 @@ import { GameWorkspaceControlsCard } from "../shared/GameWorkspaceControlsCard";
 import { GameWorkspaceFinishCard } from "../shared/GameWorkspaceFinishCard";
 import { GameInstructionsDialog } from "../shared/GameInstructionsDialog";
 import type { GameWorkspaceComponentProps } from "../shared/game-workspace-types";
-import styles from "./number-chain-game-workspace.module.css";
+import styles from "./NumberChainGameWorkspace.module.css";
 
 export function NumberChainGameWorkspace({ instructions, workspace }: GameWorkspaceComponentProps) {
   const screen = useNumberChainWorkspace(workspace);

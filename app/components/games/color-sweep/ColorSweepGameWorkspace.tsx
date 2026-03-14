@@ -5,7 +5,7 @@ import { GameWorkspaceControlsCard } from "../shared/GameWorkspaceControlsCard";
 import { GameWorkspaceFinishCard } from "../shared/GameWorkspaceFinishCard";
 import { GameInstructionsDialog } from "../shared/GameInstructionsDialog";
 import type { GameWorkspaceComponentProps } from "../shared/game-workspace-types";
-import styles from "./color-sweep-game-workspace.module.css";
+import styles from "./ColorSweepGameWorkspace.module.css";
 export function ColorSweepGameWorkspace({ instructions, workspace }: GameWorkspaceComponentProps) {
   const screen = useColorSweepWorkspace(workspace);
 

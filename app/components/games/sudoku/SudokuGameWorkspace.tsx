@@ -5,7 +5,7 @@ import { GameWorkspaceControlsCard } from "../shared/GameWorkspaceControlsCard";
 import { GameWorkspaceFinishCard } from "../shared/GameWorkspaceFinishCard";
 import { GameInstructionsDialog } from "../shared/GameInstructionsDialog";
 import type { GameWorkspaceComponentProps } from "../shared/game-workspace-types";
-import styles from "./sudoku-game-workspace.module.css";
+import styles from "./SudokuGameWorkspace.module.css";
 
 export function SudokuGameWorkspace({ instructions, workspace }: GameWorkspaceComponentProps) {
   const screen = useSudokuWorkspace(workspace);

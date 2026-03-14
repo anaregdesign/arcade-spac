@@ -1,7 +1,7 @@
 import { Form, Link } from "react-router";
 
 import { useProfileScreen } from "../lib/client/usecase/profile-screen/use-profile-screen";
-import styles from "./profile-screen.module.css";
+import styles from "./ProfileScreen.module.css";
 
 type ProfileScreenProps = {
   profile: {

@@ -5,7 +5,7 @@ import { GameWorkspaceControlsCard } from "../shared/GameWorkspaceControlsCard";
 import { GameWorkspaceFinishCard } from "../shared/GameWorkspaceFinishCard";
 import { GameInstructionsDialog } from "../shared/GameInstructionsDialog";
 import type { GameWorkspaceComponentProps } from "../shared/game-workspace-types";
-import styles from "./minesweeper-game-workspace.module.css";
+import styles from "./MinesweeperGameWorkspace.module.css";
 
 export function MinesweeperGameWorkspace({ instructions, workspace }: GameWorkspaceComponentProps) {
   const screen = useMinesweeperWorkspace(workspace);

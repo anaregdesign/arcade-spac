@@ -2,7 +2,7 @@ import { Link } from "react-router";
 
 import { useRankingsScreen } from "../lib/client/usecase/rankings-screen/use-rankings-screen";
 import type { GameKey } from "../lib/domain/entities/game-catalog";
-import styles from "./rankings-screen.module.css";
+import styles from "./RankingsScreen.module.css";
 
 type RankingsScreenProps = {
   filter: {

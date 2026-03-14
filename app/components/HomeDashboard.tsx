@@ -1,6 +1,6 @@
 import { Link } from "react-router";
 
-import styles from "./home-dashboard.module.css";
+import styles from "./HomeDashboard.module.css";
 
 type HomeDashboardProps = {
   games: Array<{
