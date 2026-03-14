@@ -6,6 +6,7 @@
 app/
   routes/
   components/
+    <feature>/
     shared/
   lib/
     client/
@@ -34,6 +35,32 @@ app/
 ```
 
 Use these directories by responsibility, not by team preference or historical drift.
+
+## Mandatory Placement Preflight
+
+Before implementing, list every file you expect to create, move, or extract and assign its exact target path.
+
+Use this rule:
+
+1. every file must have one canonical owner before code is written
+2. if a file has no clear owner, revise the placement plan first
+3. do not create a new directory just because the first idea does not fit the layout
+
+Treat convenience directories such as `app/features/`, `app/modules/`, `app/hooks/`, `app/services/`, `app/utils/`, `app/types/`, or `app/store/` as layout drift unless an explicit migration plan says otherwise.
+
+## Feature Presentational Component Placement
+
+Keep feature-specific presentational components in `app/components/<feature>/`.
+
+Preferred shape:
+
+```text
+app/components/profile-editor/
+  ProfileEditorForm.tsx
+  ProfileSummaryCard.tsx
+```
+
+Use `app/components/shared/` only when the component is feature-agnostic, reusable across features, and expressed in generic UI language instead of product vocabulary.
 
 ## State Module Placement
 
@@ -112,7 +139,7 @@ For component files:
 
 - make the primary exported component name match the file name
 - use `.tsx` only when the file renders JSX
-- keep feature views near their owning feature until they prove to be generic
+- keep feature-specific views under `app/components/<feature>/` until they prove to be generic enough for `app/components/shared/`
 
 Inside a feature directory, short file names such as `state.ts`, `reducer.ts`, `selectors.ts`, `handlers.ts`, and `types.ts` are acceptable because the directory already provides the feature context.
 

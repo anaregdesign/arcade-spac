@@ -17,7 +17,12 @@ If a companion hosting skill explicitly overrides runtime mode or config bootstr
 
 ## Quick Start
 
-1. Classify the requested change:
+1. Always read [`references/layout-and-module-placement.md`](references/layout-and-module-placement.md) before deciding where code should live.
+2. Run a placement preflight before implementing:
+   - list every new file, moved file, and extracted file
+   - assign the exact canonical target path for each file before writing code
+   - if a file does not fit the canonical layout, stop and revise the placement plan before creating a new directory
+3. Classify the requested change:
    - route composition
    - presentational UI
    - client interaction flow
@@ -25,9 +30,9 @@ If a companion hosting skill explicitly overrides runtime mode or config bootstr
    - persistence or external integration
    - domain rule
    - cross-boundary contract or utility
-2. Place code in the canonical layout:
+4. Place code in the canonical layout:
    - `app/routes/`
-   - `app/components/`
+   - `app/components/<feature>/`
    - `app/components/shared/`
    - `app/lib/client/usecase/`
    - `app/lib/client/usecase/<feature>/use-<feature>.ts`
@@ -48,10 +53,9 @@ If a companion hosting skill explicitly overrides runtime mode or config bootstr
    - `app/lib/domain/policies/`
    - `app/lib/domain/services/`
    - `app/lib/domain/repositories/`
-3. Read the matching reference file before implementing:
+5. Read the narrowest additional reference file after the layout reference:
    - project bootstrap and dependency install: [`references/project-bootstrap.md`](references/project-bootstrap.md)
    - architecture overview index for multi-boundary changes: [`references/layout-and-dependency-rules.md`](references/layout-and-dependency-rules.md)
-   - layout and module placement: [`references/layout-and-module-placement.md`](references/layout-and-module-placement.md)
    - client layer responsibilities: [`references/client-layer-responsibilities.md`](references/client-layer-responsibilities.md)
    - server and domain layer responsibilities: [`references/server-and-domain-layer-responsibilities.md`](references/server-and-domain-layer-responsibilities.md)
    - boundary, contract, and validation rules: [`references/boundary-and-contract-rules.md`](references/boundary-and-contract-rules.md)
@@ -75,6 +79,8 @@ If a companion hosting skill explicitly overrides runtime mode or config bootstr
   - `app/lib/server/usecase` depends on `domain` and repository ports
   - `app/lib/server/infrastructure` implements repository ports and external integrations
   - `app/lib/domain/*` depends only on other domain modules
+- Lock file placement before coding. Name the exact target file paths first, then implement.
+- Keep feature-local presentational components in `app/components/<feature>/`. Use `app/components/shared/` only for feature-agnostic UI that is already reused or clearly about to be reused across features.
 - Keep Prisma imports inside `app/lib/server/infrastructure/`.
 - Keep `app/components/` presentational. Allow only ephemeral UI state there, such as local input focus or disclosure toggles.
 - Prefer Fluent UI React v9 (`@fluentui/react-components`) for new UI work unless the repository already has a clear design-system standard or an approved migration plan says otherwise.
@@ -109,9 +115,26 @@ If a companion hosting skill explicitly overrides runtime mode or config bootstr
 - Build business behavior around domain models and domain language, but do not force UI state, DTOs, or infrastructure concerns into `domain`.
 - Keep constants in the narrowest owning module or feature. Extract repeated stable literals into `constants.ts` only when they have one clear owner; do not build a global constants dump.
 - Do not create a generic common bucket. Keep code in the narrowest owning layer, and duplicate small utilities until a stable abstraction is obvious.
+- Do not create alternate top-level buckets such as `app/features/`, `app/modules/`, `app/hooks/`, `app/services/`, `app/utils/`, `app/types/`, or `app/store/` unless an explicit migration plan or companion skill requires them.
+- If a file does not fit the canonical layout, revise the plan before implementation instead of inventing a convenience directory.
 - Prefer direct replacement over compatibility aliases when renaming architecture terms.
 
 ## Implementation Workflow
+
+### Placement Preflight For Every Change
+
+- Read [`references/layout-and-module-placement.md`](references/layout-and-module-placement.md) first.
+- Write the exact target paths for every created or moved file before touching code.
+- Confirm that each target path matches one canonical owner:
+  - route HTTP composition: `app/routes/`
+  - feature-local presentational UI: `app/components/<feature>/`
+  - shared presentational UI: `app/components/shared/`
+  - client orchestration and state: `app/lib/client/usecase/<feature>/`
+  - client adapters: `app/lib/client/infrastructure/`
+  - server orchestration: `app/lib/server/usecase/`
+  - server integrations and Prisma: `app/lib/server/infrastructure/`
+  - domain concepts and ports: `app/lib/domain/`
+- If any planned file lacks a clear owner, fix the placement plan before implementing.
 
 ### 0. Bootstrap new projects correctly
 
@@ -138,7 +161,7 @@ If a companion hosting skill explicitly overrides runtime mode or config bootstr
 
 - Build a custom Hook, controller, or view-model module in `app/lib/client/usecase/` for each non-trivial screen or interaction flow.
 - When the interaction has enough complexity to need submodules, create a feature directory and keep the use case internals there.
-- Keep feature components near the feature by default. Promote a component to `app/components/shared/` only after it proves to be truly feature-agnostic.
+- Keep feature-specific presentational components in `app/components/<feature>/` by default. Promote a component to `app/components/shared/` only after it proves to be truly feature-agnostic.
 - Prefer composing views from Fluent UI primitives before introducing custom low-level controls.
 - Keep on-screen copy terse. Put optional elaboration behind Tooltip, InfoLabel, Popover, or a similar secondary affordance only when the extra detail is not required for task completion.
 - Keep purely presentational responsive adaptation in CSS, layout primitives, and presentational components. Move breakpoint-aware state into `usecase` only when it changes interaction flow or data loading behavior.
@@ -149,7 +172,7 @@ If a companion hosting skill explicitly overrides runtime mode or config bootstr
   - derived screen state
   - event handlers
   - error and pending mapping
-- Pass view-ready props into `app/components/`.
+- Pass view-ready props into `app/components/<feature>/` or `app/components/shared/` when the component is genuinely cross-feature.
 
 ### 3. Use React Router primitives before inventing new state containers
 
@@ -221,7 +244,7 @@ If a companion hosting skill explicitly overrides runtime mode or config bootstr
 
 ## Placement Guide
 
-- Need pure rendering and markup: `app/components/`
+- Need feature-local pure rendering and markup: `app/components/<feature>/`
 - Need reusable pure UI primitives or shared Fluent UI composition wrappers: `app/components/shared/`
 - Need route composition or loader/action bridging: `app/routes/`
 - Need client-side state, handlers, reducers, selectors, or orchestration: `app/lib/client/usecase/<feature>/`
@@ -244,7 +267,7 @@ If a companion hosting skill explicitly overrides runtime mode or config bootstr
 
 - project bootstrap and baseline dependency install: [`references/project-bootstrap.md`](references/project-bootstrap.md)
 - overview index for placement and dependency rules: [`references/layout-and-dependency-rules.md`](references/layout-and-dependency-rules.md)
-- layout and module placement: [`references/layout-and-module-placement.md`](references/layout-and-module-placement.md)
+- layout and module placement, always read first: [`references/layout-and-module-placement.md`](references/layout-and-module-placement.md)
 - client layer responsibilities: [`references/client-layer-responsibilities.md`](references/client-layer-responsibilities.md)
 - server and domain layer responsibilities: [`references/server-and-domain-layer-responsibilities.md`](references/server-and-domain-layer-responsibilities.md)
 - boundary and contract rules: [`references/boundary-and-contract-rules.md`](references/boundary-and-contract-rules.md)

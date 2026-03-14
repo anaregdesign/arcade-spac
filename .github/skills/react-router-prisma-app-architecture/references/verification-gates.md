@@ -23,7 +23,9 @@ Confirm all of the following:
 - no server imports inside `app/components/` or `app/lib/client/*`
 - no React or browser imports inside `app/lib/domain/*`
 - no generic catch-all common directory reintroduced
+- no convenience top-level buckets such as `app/features/`, `app/modules/`, `app/hooks/`, `app/services/`, `app/utils/`, `app/types/`, or `app/store/` introduced without an explicit migration plan
 - no horizontal `state`, `reducers`, `stores`, or `handlers` directories introduced under `app/`
+- no feature-specific presentational component placed outside `app/components/<feature>/` without a deliberate reason
 - no feature-specific logic imported into `app/components/shared/`
 - no component moved into `shared` only for convenience while still carrying feature vocabulary
 - no client adapter pretending to return server-side live instances across the network
@@ -54,6 +56,7 @@ rg -n "prisma" app
 rg -n "lib/server" app/routes app/components app/lib/client
 rg -n "from ['\"][^'\"]*react" app/lib/domain
 find app/lib -maxdepth 2 -type d | sort
+find app -type d \\( -name features -o -name modules -o -name hooks -o -name services -o -name utils -o -name types -o -name store \\) | sort
 find app -type d \\( -name state -o -name states -o -name reducer -o -name reducers -o -name store -o -name stores -o -name handler -o -name handlers \\) | sort
 rg -n "lib/client/usecase|lib/server|routes/" app/components/shared
 rg -n "Thread|Chat|Billing|Project|Profile|Order|Invoice|Session" app/components/shared
@@ -75,8 +78,9 @@ Before `git push`, be able to state all of the following:
 
 - the use case layer owns the interaction logic
 - the view layer is mostly props plus rendering
+- feature-local presentational components live under `app/components/<feature>/`
 - `components/shared` stays presentational and feature-agnostic
-- components started life near their feature unless they proved to be generic
+- components started life under `app/components/<feature>/` unless they proved to be generic
 - reducer and state modules live with their owning feature use case
 - client data access returns DTOs unless a real local-first repository abstraction is justified
 - transport contracts still live near their boundary unless they have become true domain concepts

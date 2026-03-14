@@ -9,7 +9,7 @@
 
 Do not call Prisma directly, hide business rules in route files, or let route modules become the main state container for reusable interactions.
 
-## `app/components/`
+## `app/components/<feature>/`
 
 - Render UI from props.
 - Hold tiny UI-local state only when it is truly view-local, such as popover open state, active tab index, focused element, or an uncontrolled input bridge.

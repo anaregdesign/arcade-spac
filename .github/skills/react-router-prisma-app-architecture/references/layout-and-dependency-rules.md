@@ -9,4 +9,4 @@ This topic outgrew a single reference. Use the split references below instead of
 - [`domain-modeling-and-type-rules.md`](domain-modeling-and-type-rules.md): concept ownership, domain-centered modeling, `class` vs `type`, `interface`, and `unknown`
 - [`dependency-injection-lifetime-and-side-effects.md`](dependency-injection-lifetime-and-side-effects.md): DI, runtime safety, side effects, lifetime, and migration workflow
 
-Read the narrowest matching reference for the task instead of loading the whole architecture catalog.
+Always read `layout-and-module-placement.md` first, then read the narrowest additional matching reference for the task instead of loading the whole architecture catalog.

@@ -2,7 +2,7 @@
 
 ## Goal
 
-Keep `app/components/` close to pure rendering. Move state transitions, async work, and handler composition into `app/lib/client/usecase/`.
+Keep `app/components/<feature>/` and `app/components/shared/` close to pure rendering. Move state transitions, async work, and handler composition into `app/lib/client/usecase/`.
 
 ## Core Rules
 
@@ -17,7 +17,7 @@ Keep `app/components/` close to pure rendering. Move state transitions, async wo
 Split each non-trivial screen into two parts:
 
 1. A use case Hook or controller in `app/lib/client/usecase/`
-2. A presentational component in `app/components/`
+2. A feature-local presentational component in `app/components/<feature>/`
 
 When the use case needs multiple files, prefer this feature directory shape:
 
@@ -189,7 +189,7 @@ export function useProfileEditor(apiClient: ProfileApiClient) {
 ```
 
 ```tsx
-// app/components/profile/ProfileEditorView.tsx
+// app/components/profile-editor/ProfileEditorView.tsx
 type Props = {
   name: string;
   bio: string;
