@@ -1,5 +1,6 @@
 import type { ComponentType } from "react";
 
+import { ColorCensusGameWorkspace } from "./color-census/ColorCensusGameWorkspace";
 import { ColorSweepGameWorkspace } from "./color-sweep/ColorSweepGameWorkspace";
 import { HiddenFindGameWorkspace } from "./hidden-find/HiddenFindGameWorkspace";
 import { HueDriftGameWorkspace } from "./hue-drift/HueDriftGameWorkspace";
@@ -68,6 +69,35 @@ const gameDefinitionByKey: Record<string, GameDefinition> = {
       previewSrc: "/images/games/color-sweep-preview.svg",
     },
     workspace: ColorSweepGameWorkspace,
+  },
+  "color-census": {
+    instructions: {
+      summary: "Memorize the mosaic while it is visible, then answer the color-distribution query from memory before the timer expires.",
+      sections: [
+        {
+          title: "Run flow",
+          items: [
+            { label: "Start run", detail: "Choose a difficulty and press Start run to open the first watch phase." },
+            { label: "Watch then answer", detail: "Each round starts with a short mosaic reveal and then unlocks a majority or exact-count question." },
+            { label: "Timeout", detail: "If the timer expires before the full sprint is answered, the run is saved as not cleared and opens the Result screen automatically." },
+          ],
+        },
+        {
+          title: "Board controls",
+          items: [
+            { label: "Memorize the spread", detail: "The live mosaic is visible only during the watch phase. Once it fades, answer from memory." },
+            { label: "Read the query", detail: "Some rounds ask which color appeared most. Others ask how many tiles used one color." },
+            { label: "Read mistakes", detail: "Wrong answers increase the mistake count but the round stays active until the correct answer is chosen." },
+          ],
+        },
+      ],
+      title: "Color Census controls",
+    },
+    presentation: {
+      previewAlt: "Color Census mosaic with a hidden query asking which color appeared most",
+      previewSrc: "/images/games/color-census-preview.svg",
+    },
+    workspace: ColorCensusGameWorkspace,
   },
   "precision-drop": {
     instructions: {

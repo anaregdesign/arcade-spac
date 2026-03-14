@@ -19,6 +19,15 @@ describe("home-hub selectors", () => {
     },
     {
       currentRank: null,
+      key: "color-census",
+      metricValue: "0:58",
+      name: "Color Census",
+      playCount: 2,
+      recommendationText: "Rapid mosaic memory",
+      shortDescription: "Read the full color spread",
+    },
+    {
+      currentRank: null,
       key: "sudoku",
       metricValue: "No record yet",
       name: "Sudoku",
@@ -82,6 +91,15 @@ describe("home-hub selectors", () => {
       },
       {
         ...games[1],
+        previewAlt: "Color Census mosaic with a hidden query asking which color appeared most",
+        previewObjectPosition: undefined,
+        previewSrc: "/images/games/color-census-preview.svg",
+        recordLabel: "Best 0:58",
+        runLabel: "2 runs",
+        statusLabel: "Played",
+      },
+      {
+        ...games[2],
         previewAlt: "Sudoku puzzle board with preset digits and empty cells",
         previewObjectPosition: "top center",
         previewSrc: "/images/games/sudoku-preview.png",
@@ -90,7 +108,7 @@ describe("home-hub selectors", () => {
         statusLabel: "Played",
       },
       {
-        ...games[2],
+        ...games[3],
         previewAlt: null,
         previewObjectPosition: undefined,
         previewSrc: null,
@@ -99,7 +117,7 @@ describe("home-hub selectors", () => {
         statusLabel: "New",
       },
       {
-        ...games[3],
+        ...games[4],
         previewAlt: "Spot Change original and changed scene boards with one highlighted difference",
         previewObjectPosition: undefined,
         previewSrc: "/images/games/spot-change-preview.svg",
@@ -108,7 +126,7 @@ describe("home-hub selectors", () => {
         statusLabel: "Played",
       },
       {
-        ...games[4],
+        ...games[5],
         previewAlt: "Sequence Point grid showing a fast memory sequence across lit points",
         previewObjectPosition: undefined,
         previewSrc: "/images/games/sequence-point-preview.svg",
@@ -117,7 +135,7 @@ describe("home-hub selectors", () => {
         statusLabel: "Played",
       },
       {
-        ...games[5],
+        ...games[6],
         previewAlt: "Hue Drift gradient row with a missing color step and answer swatches",
         previewObjectPosition: undefined,
         previewSrc: "/images/games/hue-drift-preview.svg",
