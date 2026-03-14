@@ -2,11 +2,11 @@
 
 ## Links
 - Program spec: /docs/spec/game-catalog-50-expansion-program.md
-- Current game spec: /docs/spec/games/box-fill.md
+- Current game spec: /docs/spec/games/block-tessellate.md
 
 ## Section 1 - Catalog Recovery Audit
 - [x] Confirm the durable game-spec inventory covers 50 game specs plus 2 meta specs (`two-minute-expansion-wave`, expansion program support docs).
-- [x] Confirm the current app implementation exposes 45 playable games in `supportedGames` and `game-workspace-registry`.
+- [x] Confirm the current app implementation exposes 46 playable games in `supportedGames` and `game-workspace-registry`.
 - [x] Choose the next reviewable slice as one low-risk unimplemented game that fits the current shared result and UI architecture.
 
 ### Subsection 1.1 - Remaining backlog risk buckets
@@ -24,37 +24,37 @@
 ### Subsection 1.3 - Scope reconciliation to 50
 - [x] Keep the 50-game target fixed instead of expanding the program to 51 games after the `Relative Pitch` swap.
 - [x] Defer `Intercept Ball` beyond the 50-game target because its prediction-reflex loop overlaps more with `Bounce Angle` and `Gap Rush` than the remaining backlog overlaps with each other.
-- [x] Treat the remaining implementation scope as 5 games: `Block Tessellate`, `Box Fill`, `Bounce Angle`, `Cascade Flip`, and `Gap Rush`.
+- [x] Treat the remaining implementation scope as 4 games: `Block Tessellate`, `Bounce Angle`, `Cascade Flip`, and `Gap Rush`.
 
 ### Subsection 1.4 - Melody audio foundation
 - [x] Add reusable equal-temperament note helpers so future melody and ear-training games can trigger arbitrary `sine` note pitches without hard-coded frequencies.
 - [x] Migrate `Relative Pitch` to the reusable `sine` note helper and remove generic tap sounds from its replay and candidate actions so only melodic cues remain.
 
-## Section 2 - Current Slice: Box Fill
+## Section 2 - Current Slice: Block Tessellate
 ### Subsection 2.1 - Spec and planning alignment
-- [ ] Reconfirm `/docs/spec/games/box-fill.md` so the tap-first piece placement interaction, deterministic fit validation, and current result metrics are explicit.
+- [ ] Reconfirm `/docs/spec/games/block-tessellate.md` so the falling-piece interaction, deterministic gravity lock, and current result metrics are explicit.
 - [x] Keep this active plan focused on the current slice and append new implementation tasks only when they become concrete.
 
 ### Subsection 2.2 - App integration
-- [ ] Add `Box Fill` to the game catalog metadata and Home preview mapping.
+- [ ] Add `Block Tessellate` to the game catalog metadata and Home preview mapping.
 - [ ] Add the game registry entry, help content, and preview asset.
-- [ ] Implement the deterministic piece-tray and snap-placement resolver plus `Box Fill` session/workspace Hook under `app/lib/client/usecase/game-workspace/`.
-- [ ] Implement the `Box Fill` workspace Component and CSS under `app/components/games/box-fill/`.
-- [ ] Add deterministic Playwright hooks for selected piece, rotation state, placement target, and run completion without changing the visible UI.
-- [ ] Keep the board, tray, and placement controls readable and touch-safe on narrow viewports.
+- [ ] Implement the deterministic falling-piece resolver and `Block Tessellate` session/workspace Hook under `app/lib/client/usecase/game-workspace/`.
+- [ ] Implement the `Block Tessellate` workspace Component and CSS under `app/components/games/block-tessellate/`.
+- [ ] Add deterministic Playwright hooks for active piece, rotation state, drop target, and run completion without changing the visible UI.
+- [ ] Keep the board, preview, and movement controls readable and touch-safe on narrow viewports.
 - [ ] Update the touched catalog and Home selector tests for the new game metadata.
 
 ### Subsection 2.3 - Verification and slice closeout
 - [ ] Run targeted automated verification for the touched catalog and gameplay modules.
-- [ ] Run Playwright UI verification for `/games/box-fill` and the Home card.
-- [ ] Commit the `Box Fill` slice in one reviewable unit.
+- [ ] Run Playwright UI verification for `/games/block-tessellate` and the Home card.
+- [ ] Commit the `Block Tessellate` slice in one reviewable unit.
 
 ## Section 3 - Named Backlog
 - [x] `Spot Change` - implementation, automated verification, Playwright UI verification, and commit are complete.
 - [x] `Beat Match` - implementation, automated verification, Playwright UI verification, and commit are complete.
 - [ ] `Block Tessellate` - keep the game unchecked until implementation, automated verification, and Playwright UI verification are complete.
 - [ ] `Bounce Angle` - keep the game unchecked until implementation, automated verification, and Playwright UI verification are complete.
-- [ ] `Box Fill` - keep the game unchecked until implementation, automated verification, and Playwright UI verification are complete.
+- [x] `Box Fill` - implementation, automated verification, Playwright UI verification, and commit are complete.
 - [x] `Bubble Spawn` - implementation, automated verification, Playwright UI verification, and commit are complete.
 - [x] `Cascade Clear` - implementation, automated verification, Playwright UI verification, and commit are complete.
 - [ ] `Cascade Flip` - keep the game unchecked until implementation, automated verification, and Playwright UI verification are complete.

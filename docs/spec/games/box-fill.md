@@ -2,7 +2,7 @@
 
 ## Summary
 
-`Arcade` に `Box Fill` を追加する。piece tray から shape を選び、rotate と placement で irregular box を無駄なく埋め切る static packing puzzle とする。
+`Arcade` に `Box Fill` を追加する。piece tray から shape を選び、rotate と tap-first placement で irregular box を無駄なく埋め切る static packing puzzle とする。
 
 ## User Problem
 
@@ -19,7 +19,7 @@
 
 - `Box Fill` を home、workspace、result、rankings、profile に統合する
 - primary metric は `clear time`、support metric は `placement errors` とする
-- workspace では box board、piece tray、selected piece、snap preview、remaining coverage を visible にする
+- workspace では box board、piece tray、selected piece、preview anchor、snap preview、remaining coverage を visible にする
 
 ## Non-Goals
 
@@ -30,7 +30,7 @@
 ## User-Visible Behavior
 
 - idle overlay から run を開始すると、irregular box と piece tray が表示される
-- 利用者は piece を選んで rotate し、board 上に snap placement する
+- 利用者は piece を選んで rotate し、board 上の one-cell anchor を選んで preview を確認してから `Place piece` で snap placement する
 - valid placement は board に固定され、box coverage が更新される
 - overlap、out-of-bounds、無効 cell への配置は block され、`placement errors` が増える
 - box を完全に埋めると次の puzzle に進み、規定 puzzle 数を完了すると Result に遷移する
@@ -48,7 +48,7 @@
 
 - run 中以外の selection と placement input は state を変えない
 - already placed piece を再配置する場合は explicit undo or pick-up path が必要である
-- touch device では drag unavailable な場合でも tap-to-select / tap-to-place fallback がある
+- touch device では drag を前提にせず、tap-to-select / rotate / anchor tap / place の flow だけで完結できる
 - narrow viewport でも tray と board のどちらも操作可能で horizontal overflow を起こさない
 
 ## Constraints and Dependencies

@@ -1,6 +1,7 @@
 import type { ComponentType } from "react";
 
 import { BeatMatchGameWorkspace } from "./beat-match/BeatMatchGameWorkspace";
+import { BoxFillGameWorkspace } from "./box-fill/BoxFillGameWorkspace";
 import { BubbleSpawnGameWorkspace } from "./bubble-spawn/BubbleSpawnGameWorkspace";
 import { CascadeClearGameWorkspace } from "./cascade-clear/CascadeClearGameWorkspace";
 import { ChainTriggerGameWorkspace } from "./chain-trigger/ChainTriggerGameWorkspace";
@@ -89,6 +90,35 @@ const gameDefinitionByKey: Record<string, GameDefinition> = {
       previewSrc: "/images/games/beat-match-preview.svg",
     },
     workspace: BeatMatchGameWorkspace,
+  },
+  "box-fill": {
+    instructions: {
+      summary: "Choose one tray piece at a time, rotate it into the right footprint, preview the anchor on the board, and place only when the fit is clean.",
+      sections: [
+        {
+          title: "Run flow",
+          items: [
+            { label: "Start run", detail: "Choose a difficulty and press Start run to load the first irregular box with a fixed tray of pieces." },
+            { label: "Preview then place", detail: "Tap a tray piece, rotate it if needed, tap a board anchor to preview the fit, and use Place piece to commit it." },
+            { label: "Clear or fail", detail: "Finish every board in the set before the timer expires. Invalid fits are blocked and add placement errors to the result." },
+          ],
+        },
+        {
+          title: "Packing controls",
+          items: [
+            { label: "Select from the tray", detail: "Only unplaced tray pieces stay active, and the selected piece is the one that will respond to rotate or place actions." },
+            { label: "Use anchor previews", detail: "Tapping any board slot sets the preview anchor so you can read whether the rotated piece will fit before committing it." },
+            { label: "Undo or reset", detail: "Undo piece removes the last committed placement, while Reset board clears the current box if the tray order traps the later pieces." },
+          ],
+        },
+      ],
+      title: "Box Fill controls",
+    },
+    presentation: {
+      previewAlt: "Box Fill tray-and-board puzzle with selected polyomino pieces and a highlighted anchor preview",
+      previewSrc: "/images/games/box-fill-preview.svg",
+    },
+    workspace: BoxFillGameWorkspace,
   },
   "bubble-spawn": {
     instructions: {

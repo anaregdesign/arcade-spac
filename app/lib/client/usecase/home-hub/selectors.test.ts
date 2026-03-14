@@ -235,6 +235,15 @@ describe("home-hub selectors", () => {
     },
     {
       currentRank: null,
+      key: "box-fill",
+      metricValue: "1:06",
+      name: "Box Fill",
+      playCount: 2,
+      recommendationText: "Tap-first packing board",
+      shortDescription: "Pack an irregular box with a small tray of pieces, using rotation and anchor previews to avoid wasted fits",
+    },
+    {
+      currentRank: null,
       key: "bubble-spawn",
       metricValue: "0:48",
       name: "Bubble Spawn",
@@ -487,6 +496,15 @@ describe("home-hub selectors", () => {
       },
       {
         ...games[25],
+        previewAlt: "Box Fill tray-and-board puzzle with selected polyomino pieces and a highlighted anchor preview",
+        previewObjectPosition: undefined,
+        previewSrc: "/images/games/box-fill-preview.svg",
+        recordLabel: "Best 1:06",
+        runLabel: "2 runs",
+        statusLabel: "Played",
+      },
+      {
+        ...games[26],
         previewAlt: "Bubble Spawn field with growing colored bubbles, dual pressure meters, and a highlighted best burst target",
         previewObjectPosition: undefined,
         previewSrc: "/images/games/bubble-spawn-preview.svg",
@@ -495,7 +513,7 @@ describe("home-hub selectors", () => {
         statusLabel: "Played",
       },
       {
-        ...games[26],
+        ...games[27],
         previewAlt: "Line Connect grid with labeled node pairs, an active route, and a step-by-step path build",
         previewObjectPosition: undefined,
         previewSrc: "/images/games/line-connect-preview.svg",
