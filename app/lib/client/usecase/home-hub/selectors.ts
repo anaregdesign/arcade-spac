@@ -131,6 +131,10 @@ const previewByGameKey: Record<string, Pick<HomeGameCard, "previewAlt" | "previe
     previewAlt: "Tile Shift target board and live board with row and column controls",
     previewSrc: "/images/games/tile-shift-preview.svg",
   },
+  "tile-instant": {
+    previewAlt: "Tile Instant target memory board next to a shuffled live reconstruction board",
+    previewSrc: "/images/games/tile-instant-preview.svg",
+  },
   "stack-sort": {
     previewAlt: "Stack Sort puzzle with colored token columns",
     previewSrc: "/images/games/stack-sort-preview.svg",

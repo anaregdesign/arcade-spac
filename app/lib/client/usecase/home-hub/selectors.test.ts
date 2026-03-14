@@ -152,6 +152,15 @@ describe("home-hub selectors", () => {
       recommendationText: "Color inference sprint",
       shortDescription: "Fill the missing gradient step",
     },
+    {
+      currentRank: null,
+      key: "tile-instant",
+      metricValue: "1:07",
+      name: "Tile Instant",
+      playCount: 2,
+      recommendationText: "Flash reconstruction sprint",
+      shortDescription: "Memorize the board, then swap the live tiles back into the same arrangement",
+    },
   ];
 
   it("counts ranked and unplayed games from visible cards", () => {
@@ -303,6 +312,15 @@ describe("home-hub selectors", () => {
         previewSrc: "/images/games/hue-drift-preview.svg",
         recordLabel: "Best 0:47",
         runLabel: "3 runs",
+        statusLabel: "Played",
+      },
+      {
+        ...games[16],
+        previewAlt: "Tile Instant target memory board next to a shuffled live reconstruction board",
+        previewObjectPosition: undefined,
+        previewSrc: "/images/games/tile-instant-preview.svg",
+        recordLabel: "Best 1:07",
+        runLabel: "2 runs",
         statusLabel: "Played",
       },
     ]);

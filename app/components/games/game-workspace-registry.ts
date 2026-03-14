@@ -25,6 +25,7 @@ import { SpotChangeGameWorkspace } from "./spot-change/SpotChangeGameWorkspace";
 import { SyncPulseGameWorkspace } from "./sync-pulse/SyncPulseGameWorkspace";
 import { TapSafeGameWorkspace } from "./tap-safe/TapSafeGameWorkspace";
 import { TempoHoldGameWorkspace } from "./tempo-hold/TempoHoldGameWorkspace";
+import { TileInstantGameWorkspace } from "./tile-instant/TileInstantGameWorkspace";
 import type { GameInstructions } from "./shared/GameInstructionsDialog";
 import { SwapSolveGameWorkspace } from "./swap-solve/SwapSolveGameWorkspace";
 import { SumGridGameWorkspace } from "./sum-grid/SumGridGameWorkspace";
@@ -949,6 +950,35 @@ const gameDefinitionByKey: Record<string, GameDefinition> = {
       previewSrc: "/images/games/tile-shift-preview.svg",
     },
     workspace: TileShiftGameWorkspace,
+  },
+  "tile-instant": {
+    instructions: {
+      summary: "Memorize the target board during the watch phase, then rebuild the same arrangement by swapping two live tiles at a time.",
+      sections: [
+        {
+          title: "Run flow",
+          items: [
+            { label: "Start run", detail: "Choose a difficulty and press Start run to reveal the first target board briefly." },
+            { label: "Watch then rebuild", detail: "The target board hides after the watch phase, and the scrambled live board unlocks for swapping." },
+            { label: "Advance rounds", detail: "Each solved board starts the next watch phase automatically until the full sprint is complete." },
+          ],
+        },
+        {
+          title: "Board controls",
+          items: [
+            { label: "Memorize first", detail: "Only the watch phase shows the full target arrangement. After that, the target panel hides its values." },
+            { label: "Swap two tiles", detail: "Tap one live tile, then tap another live tile, to swap their positions." },
+            { label: "Read moves", detail: "Every completed swap adds one move to the result summary." },
+          ],
+        },
+      ],
+      title: "Tile Instant controls",
+    },
+    presentation: {
+      previewAlt: "Tile Instant target memory board next to a shuffled live reconstruction board",
+      previewSrc: "/images/games/tile-instant-preview.svg",
+    },
+    workspace: TileInstantGameWorkspace,
   },
   "stack-sort": {
     instructions: {

@@ -1,0 +1,55 @@
+<svg width="640" height="360" viewBox="0 0 640 360" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="640" height="360" rx="36" fill="#0F172A"/>
+  <rect x="24" y="24" width="592" height="312" rx="28" fill="url(#bg)"/>
+  <rect x="82" y="78" width="182" height="204" rx="24" fill="#134E4A" opacity="0.94"/>
+  <rect x="376" y="78" width="182" height="204" rx="24" fill="#1E3A8A" opacity="0.94"/>
+  <g fill="#CCFBF1">
+    <rect x="110" y="110" width="40" height="40" rx="12"/>
+    <rect x="154" y="110" width="40" height="40" rx="12"/>
+    <rect x="198" y="110" width="40" height="40" rx="12"/>
+    <rect x="110" y="154" width="40" height="40" rx="12"/>
+    <rect x="154" y="154" width="40" height="40" rx="12"/>
+    <rect x="198" y="154" width="40" height="40" rx="12"/>
+    <rect x="110" y="198" width="40" height="40" rx="12"/>
+    <rect x="154" y="198" width="40" height="40" rx="12"/>
+    <rect x="198" y="198" width="40" height="40" rx="12"/>
+  </g>
+  <g fill="#DBEAFE">
+    <rect x="404" y="110" width="40" height="40" rx="12"/>
+    <rect x="448" y="110" width="40" height="40" rx="12"/>
+    <rect x="492" y="110" width="40" height="40" rx="12"/>
+    <rect x="404" y="154" width="40" height="40" rx="12"/>
+    <rect x="448" y="154" width="40" height="40" rx="12"/>
+    <rect x="492" y="154" width="40" height="40" rx="12"/>
+    <rect x="404" y="198" width="40" height="40" rx="12"/>
+    <rect x="448" y="198" width="40" height="40" rx="12"/>
+    <rect x="492" y="198" width="40" height="40" rx="12"/>
+  </g>
+  <text x="173" y="252" text-anchor="middle" fill="#D1FAE5" font-family="Arial, sans-serif" font-size="20" font-weight="700">MEMORY</text>
+  <text x="467" y="252" text-anchor="middle" fill="#DBEAFE" font-family="Arial, sans-serif" font-size="20" font-weight="700">LIVE</text>
+  <text x="130" y="138" text-anchor="middle" fill="#115E59" font-family="Arial, sans-serif" font-size="22" font-weight="700">▲</text>
+  <text x="174" y="138" text-anchor="middle" fill="#115E59" font-family="Arial, sans-serif" font-size="22" font-weight="700">◆</text>
+  <text x="218" y="138" text-anchor="middle" fill="#115E59" font-family="Arial, sans-serif" font-size="22" font-weight="700">●</text>
+  <text x="130" y="182" text-anchor="middle" fill="#115E59" font-family="Arial, sans-serif" font-size="22" font-weight="700">★</text>
+  <text x="174" y="182" text-anchor="middle" fill="#115E59" font-family="Arial, sans-serif" font-size="22" font-weight="700">■</text>
+  <text x="218" y="182" text-anchor="middle" fill="#115E59" font-family="Arial, sans-serif" font-size="22" font-weight="700">✚</text>
+  <text x="130" y="226" text-anchor="middle" fill="#115E59" font-family="Arial, sans-serif" font-size="22" font-weight="700">✦</text>
+  <text x="174" y="226" text-anchor="middle" fill="#115E59" font-family="Arial, sans-serif" font-size="22" font-weight="700">⬟</text>
+  <text x="218" y="226" text-anchor="middle" fill="#115E59" font-family="Arial, sans-serif" font-size="22" font-weight="700">✿</text>
+  <text x="424" y="138" text-anchor="middle" fill="#1E3A8A" font-family="Arial, sans-serif" font-size="22" font-weight="700">◆</text>
+  <text x="468" y="138" text-anchor="middle" fill="#1E3A8A" font-family="Arial, sans-serif" font-size="22" font-weight="700">▲</text>
+  <text x="512" y="138" text-anchor="middle" fill="#1E3A8A" font-family="Arial, sans-serif" font-size="22" font-weight="700">●</text>
+  <text x="424" y="182" text-anchor="middle" fill="#1E3A8A" font-family="Arial, sans-serif" font-size="22" font-weight="700">★</text>
+  <text x="468" y="182" text-anchor="middle" fill="#1E3A8A" font-family="Arial, sans-serif" font-size="22" font-weight="700">✚</text>
+  <text x="512" y="182" text-anchor="middle" fill="#1E3A8A" font-family="Arial, sans-serif" font-size="22" font-weight="700">■</text>
+  <text x="424" y="226" text-anchor="middle" fill="#1E3A8A" font-family="Arial, sans-serif" font-size="22" font-weight="700">✦</text>
+  <text x="468" y="226" text-anchor="middle" fill="#1E3A8A" font-family="Arial, sans-serif" font-size="22" font-weight="700">✿</text>
+  <text x="512" y="226" text-anchor="middle" fill="#1E3A8A" font-family="Arial, sans-serif" font-size="22" font-weight="700">⬟</text>
+  <defs>
+    <linearGradient id="bg" x1="78" y1="34" x2="562" y2="326" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#12324A"/>
+      <stop offset="0.5" stop-color="#0F172A"/>
+      <stop offset="1" stop-color="#102A43"/>
+    </linearGradient>
+  </defs>
+</svg>
