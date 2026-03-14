@@ -200,12 +200,12 @@ export function playBallDrop(): void {
 }
 
 export function playPitchNote(frequency: number): void {
-  playTone(frequency, "triangle", 0.22, 0.24);
+  playTone(frequency, "sine", 0.22, 0.24);
 }
 
 export function playPitchInterval(anchorFrequency: number, targetFrequency: number): void {
   playSequence([
-    { duration: 0.24, frequency: anchorFrequency, gain: 0.24, startAt: 0, type: "triangle" },
-    { duration: 0.28, frequency: targetFrequency, gain: 0.28, startAt: 0.42, type: "triangle" },
+    { duration: 0.24, frequency: anchorFrequency, gain: 0.24, startAt: 0, type: "sine" },
+    { duration: 0.28, frequency: targetFrequency, gain: 0.28, startAt: 0.42, type: "sine" },
   ]);
 }
