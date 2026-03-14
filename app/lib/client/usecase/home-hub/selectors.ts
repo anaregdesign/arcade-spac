@@ -50,6 +50,10 @@ const previewByGameKey: Record<string, Pick<HomeGameCard, "previewAlt" | "previe
     previewAlt: "Sequence Point grid showing a fast memory sequence across lit points",
     previewSrc: "/images/games/sequence-point-preview.svg",
   },
+  "hue-drift": {
+    previewAlt: "Hue Drift gradient row with a missing color step and answer swatches",
+    previewSrc: "/images/games/hue-drift-preview.svg",
+  },
   "precision-drop": {
     previewAlt: "Falling ball above a target line in a vertical lane",
     previewSrc: "/images/games/precision-drop-preview.svg",

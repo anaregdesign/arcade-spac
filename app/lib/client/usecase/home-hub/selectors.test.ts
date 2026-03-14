@@ -53,6 +53,15 @@ describe("home-hub selectors", () => {
       recommendationText: "Working memory sprint",
       shortDescription: "Replay the point sequence",
     },
+    {
+      currentRank: null,
+      key: "hue-drift",
+      metricValue: "0:47",
+      name: "Hue Drift",
+      playCount: 3,
+      recommendationText: "Color inference sprint",
+      shortDescription: "Fill the missing gradient step",
+    },
   ];
 
   it("counts ranked and unplayed games from visible cards", () => {
@@ -105,6 +114,15 @@ describe("home-hub selectors", () => {
         previewSrc: "/images/games/sequence-point-preview.svg",
         recordLabel: "Best 0:54",
         runLabel: "4 runs",
+        statusLabel: "Played",
+      },
+      {
+        ...games[5],
+        previewAlt: "Hue Drift gradient row with a missing color step and answer swatches",
+        previewObjectPosition: undefined,
+        previewSrc: "/images/games/hue-drift-preview.svg",
+        recordLabel: "Best 0:47",
+        runLabel: "3 runs",
         statusLabel: "Played",
       },
     ]);

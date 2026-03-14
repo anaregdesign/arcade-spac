@@ -2,6 +2,7 @@ import type { ComponentType } from "react";
 
 import { ColorSweepGameWorkspace } from "./color-sweep/ColorSweepGameWorkspace";
 import { HiddenFindGameWorkspace } from "./hidden-find/HiddenFindGameWorkspace";
+import { HueDriftGameWorkspace } from "./hue-drift/HueDriftGameWorkspace";
 import { MinesweeperGameWorkspace } from "./minesweeper/MinesweeperGameWorkspace";
 import { NumberChainGameWorkspace } from "./number-chain/NumberChainGameWorkspace";
 import { OrbitTapGameWorkspace } from "./orbit-tap/OrbitTapGameWorkspace";
@@ -183,6 +184,35 @@ const gameDefinitionByKey: Record<string, GameDefinition> = {
       previewSrc: "/images/games/hidden-find-preview.svg",
     },
     workspace: HiddenFindGameWorkspace,
+  },
+  "hue-drift": {
+    instructions: {
+      summary: "Read the color drift across the row, infer the missing step, and choose the correct swatch before the timer expires.",
+      sections: [
+        {
+          title: "Run flow",
+          items: [
+            { label: "Start run", detail: "Choose a difficulty and press Start run to load the first drift prompt." },
+            { label: "Solve the sprint", detail: "Each correct answer advances directly to the next prompt until the full sprint is complete." },
+            { label: "Timeout", detail: "If the timer expires before every prompt is solved, the run is saved as not cleared and opens the Result screen automatically." },
+          ],
+        },
+        {
+          title: "Board controls",
+          items: [
+            { label: "Read the drift", detail: "One step in the color row is missing. Compare the visible swatches to infer the pattern." },
+            { label: "Tap one answer", detail: "Choose one of the four candidate swatches to fill the missing step." },
+            { label: "Read mistakes", detail: "Wrong answers increase the mistake count but the sprint keeps going." },
+          ],
+        },
+      ],
+      title: "Hue Drift controls",
+    },
+    presentation: {
+      previewAlt: "Hue Drift gradient row with a missing color step and answer swatches",
+      previewSrc: "/images/games/hue-drift-preview.svg",
+    },
+    workspace: HueDriftGameWorkspace,
   },
   "spot-change": {
     instructions: {

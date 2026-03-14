@@ -1,0 +1,90 @@
+.hue-drift-board-card {
+  min-height: 24rem;
+}
+
+.hue-drift-shell {
+  min-height: 24rem;
+  display: grid;
+}
+
+.hue-drift-stage {
+  display: grid;
+  gap: 1rem;
+}
+
+.hue-drift-copy {
+  display: grid;
+  gap: 0.35rem;
+  justify-items: center;
+  text-align: center;
+}
+
+.hue-drift-copy strong {
+  color: #f8fafc;
+  font-size: 1.1rem;
+}
+
+.hue-drift-row {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.hue-drift-step {
+  min-height: 6rem;
+  border-radius: 1rem;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.hue-drift-step-missing {
+  display: grid;
+  place-items: center;
+  background: linear-gradient(180deg, rgba(30, 41, 59, 0.96), rgba(15, 23, 42, 0.9));
+  color: #e2e8f0;
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+.hue-drift-choice-grid {
+  display: grid;
+  gap: 0.9rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.hue-drift-choice {
+  display: grid;
+  gap: 0.7rem;
+  padding: 0.85rem;
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  border-radius: 1rem;
+  background: linear-gradient(180deg, rgba(30, 41, 59, 0.96), rgba(15, 23, 42, 0.9));
+  cursor: pointer;
+}
+
+.hue-drift-choice:disabled {
+  cursor: default;
+  opacity: 1;
+}
+
+.hue-drift-choice-swatch {
+  min-height: 5rem;
+  border-radius: 0.9rem;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+}
+
+.hue-drift-choice-copy {
+  color: #e2e8f0;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-align: left;
+}
+
+@media (max-width: 640px) {
+  .hue-drift-row {
+    gap: 0.55rem;
+  }
+
+  .hue-drift-step {
+    min-height: 4.8rem;
+  }
+}

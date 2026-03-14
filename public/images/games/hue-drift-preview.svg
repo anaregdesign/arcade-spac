@@ -1,0 +1,16 @@
+<svg width="1200" height="720" viewBox="0 0 1200 720" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="720" rx="40" fill="#0F172A"/>
+  <rect x="120" y="104" width="960" height="512" rx="36" fill="#111827" stroke="#334155" stroke-width="2"/>
+  <text x="164" y="166" fill="#E2E8F0" font-family="sans-serif" font-size="30" font-weight="700">Hue Drift</text>
+  <text x="164" y="204" fill="#94A3B8" font-family="sans-serif" font-size="20">Infer the missing gradient step from the visible color drift.</text>
+  <rect x="184" y="278" width="132" height="132" rx="24" fill="hsl(198 74% 38%)"/>
+  <rect x="338" y="278" width="132" height="132" rx="24" fill="hsl(198 66% 46%)"/>
+  <rect x="492" y="278" width="132" height="132" rx="24" fill="#1E293B" stroke="#E2E8F0" stroke-width="3" stroke-dasharray="10 10"/>
+  <rect x="646" y="278" width="132" height="132" rx="24" fill="hsl(198 50% 62%)"/>
+  <rect x="800" y="278" width="132" height="132" rx="24" fill="hsl(198 42% 70%)"/>
+  <text x="558" y="356" fill="#E2E8F0" font-family="sans-serif" font-size="48" font-weight="700" text-anchor="middle">?</text>
+  <rect x="292" y="466" width="132" height="88" rx="22" fill="hsl(198 58% 54%)" stroke="#F8FAFC" stroke-width="4"/>
+  <rect x="446" y="466" width="132" height="88" rx="22" fill="hsl(212 58% 54%)"/>
+  <rect x="600" y="466" width="132" height="88" rx="22" fill="hsl(198 64% 58%)"/>
+  <rect x="754" y="466" width="132" height="88" rx="22" fill="hsl(198 48% 60%)"/>
+</svg>
