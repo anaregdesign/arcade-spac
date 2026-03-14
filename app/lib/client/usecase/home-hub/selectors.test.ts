@@ -46,6 +46,15 @@ describe("home-hub selectors", () => {
     },
     {
       currentRank: null,
+      key: "flip-match",
+      metricValue: "1:12",
+      name: "Flip Match",
+      playCount: 3,
+      recommendationText: "Board transformation sprint",
+      shortDescription: "Flip the live board into the target silhouette",
+    },
+    {
+      currentRank: null,
       key: "spot-change",
       metricValue: "1:05",
       name: "Spot Change",
@@ -118,6 +127,15 @@ describe("home-hub selectors", () => {
       },
       {
         ...games[4],
+        previewAlt: "Flip Match target and live card boards linked by a horizontal flip rule",
+        previewObjectPosition: undefined,
+        previewSrc: "/images/games/flip-match-preview.svg",
+        recordLabel: "Best 1:12",
+        runLabel: "3 runs",
+        statusLabel: "Played",
+      },
+      {
+        ...games[5],
         previewAlt: "Spot Change original and changed scene boards with one highlighted difference",
         previewObjectPosition: undefined,
         previewSrc: "/images/games/spot-change-preview.svg",
@@ -126,7 +144,7 @@ describe("home-hub selectors", () => {
         statusLabel: "Played",
       },
       {
-        ...games[5],
+        ...games[6],
         previewAlt: "Sequence Point grid showing a fast memory sequence across lit points",
         previewObjectPosition: undefined,
         previewSrc: "/images/games/sequence-point-preview.svg",
@@ -135,7 +153,7 @@ describe("home-hub selectors", () => {
         statusLabel: "Played",
       },
       {
-        ...games[6],
+        ...games[7],
         previewAlt: "Hue Drift gradient row with a missing color step and answer swatches",
         previewObjectPosition: undefined,
         previewSrc: "/images/games/hue-drift-preview.svg",

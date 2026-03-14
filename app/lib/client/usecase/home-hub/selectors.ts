@@ -26,6 +26,10 @@ const previewByGameKey: Record<string, Pick<HomeGameCard, "previewAlt" | "previe
     previewAlt: "Color Census mosaic with a hidden query asking which color appeared most",
     previewSrc: "/images/games/color-census-preview.svg",
   },
+  "flip-match": {
+    previewAlt: "Flip Match target and live card boards linked by a horizontal flip rule",
+    previewSrc: "/images/games/flip-match-preview.svg",
+  },
   minesweeper: {
     previewAlt: "Minesweeper board with opened cells and numbered hints",
     previewSrc: "/images/games/minesweeper-preview.png",

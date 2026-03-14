@@ -1,0 +1,31 @@
+<svg width="640" height="360" viewBox="0 0 640 360" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="640" height="360" rx="32" fill="#0F172A"/>
+  <rect x="32" y="32" width="576" height="296" rx="28" fill="#111827"/>
+  <text x="64" y="72" fill="#E2E8F0" font-family="Arial, sans-serif" font-size="18" font-weight="700">Flip Match</text>
+  <text x="64" y="98" fill="#94A3B8" font-family="Arial, sans-serif" font-size="15">Rule: tap flips self + left + right</text>
+  <text x="88" y="128" fill="#CBD5E1" font-family="Arial, sans-serif" font-size="14">Target</text>
+  <text x="354" y="128" fill="#CBD5E1" font-family="Arial, sans-serif" font-size="14">Live</text>
+  <g transform="translate(64 144)">
+    <rect x="0" y="0" width="56" height="56" rx="14" fill="#F59E0B"/>
+    <rect x="68" y="0" width="56" height="56" rx="14" fill="#1E293B"/>
+    <rect x="136" y="0" width="56" height="56" rx="14" fill="#F59E0B"/>
+    <rect x="0" y="68" width="56" height="56" rx="14" fill="#1E293B"/>
+    <rect x="68" y="68" width="56" height="56" rx="14" fill="#F59E0B"/>
+    <rect x="136" y="68" width="56" height="56" rx="14" fill="#1E293B"/>
+    <rect x="0" y="136" width="56" height="56" rx="14" fill="#F59E0B"/>
+    <rect x="68" y="136" width="56" height="56" rx="14" fill="#1E293B"/>
+    <rect x="136" y="136" width="56" height="56" rx="14" fill="#F59E0B"/>
+  </g>
+  <g transform="translate(332 144)">
+    <rect x="0" y="0" width="56" height="56" rx="14" fill="#1E293B"/>
+    <rect x="68" y="0" width="56" height="56" rx="14" fill="#F59E0B"/>
+    <rect x="136" y="0" width="56" height="56" rx="14" fill="#1E293B"/>
+    <rect x="0" y="68" width="56" height="56" rx="14" fill="#1E293B"/>
+    <rect x="68" y="68" width="56" height="56" rx="14" fill="#1E293B"/>
+    <rect x="136" y="68" width="56" height="56" rx="14" fill="#F59E0B"/>
+    <rect x="0" y="136" width="56" height="56" rx="14" fill="#F59E0B"/>
+    <rect x="68" y="136" width="56" height="56" rx="14" fill="#F59E0B"/>
+    <rect x="136" y="136" width="56" height="56" rx="14" fill="#1E293B"/>
+  </g>
+  <path d="M290 202H332" stroke="#38BDF8" stroke-width="8" stroke-linecap="round"/>
+  <path d="M310 184L332 202L310 220" stroke="#38BDF8" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>

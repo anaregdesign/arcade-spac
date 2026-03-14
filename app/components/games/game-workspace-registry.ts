@@ -2,6 +2,7 @@ import type { ComponentType } from "react";
 
 import { ColorCensusGameWorkspace } from "./color-census/ColorCensusGameWorkspace";
 import { ColorSweepGameWorkspace } from "./color-sweep/ColorSweepGameWorkspace";
+import { FlipMatchGameWorkspace } from "./flip-match/FlipMatchGameWorkspace";
 import { HiddenFindGameWorkspace } from "./hidden-find/HiddenFindGameWorkspace";
 import { HueDriftGameWorkspace } from "./hue-drift/HueDriftGameWorkspace";
 import { MinesweeperGameWorkspace } from "./minesweeper/MinesweeperGameWorkspace";
@@ -98,6 +99,35 @@ const gameDefinitionByKey: Record<string, GameDefinition> = {
       previewSrc: "/images/games/color-census-preview.svg",
     },
     workspace: ColorCensusGameWorkspace,
+  },
+  "flip-match": {
+    instructions: {
+      summary: "Read the target silhouette, flip the live cards, and use the horizontal strip rule to match every board in the sprint.",
+      sections: [
+        {
+          title: "Run flow",
+          items: [
+            { label: "Start run", detail: "Choose a difficulty and press Start run to load the first target and live board pair." },
+            { label: "Clear rounds", detail: "Each solved board opens the next round automatically until the full sprint is complete." },
+            { label: "Timeout", detail: "If the timer expires before every round is solved, the run is saved as not cleared and opens the Result screen automatically." },
+          ],
+        },
+        {
+          title: "Board controls",
+          items: [
+            { label: "Read the rule", detail: "Each tap flips the selected tile and its immediate left and right neighbors." },
+            { label: "Match the target", detail: "Only the live board is interactive. The round clears as soon as its front/back pattern matches the target silhouette." },
+            { label: "Read flips", detail: "Every tap counts toward the flips metric, so faster solutions are not enough by themselves." },
+          ],
+        },
+      ],
+      title: "Flip Match controls",
+    },
+    presentation: {
+      previewAlt: "Flip Match target and live card boards linked by a horizontal flip rule",
+      previewSrc: "/images/games/flip-match-preview.svg",
+    },
+    workspace: FlipMatchGameWorkspace,
   },
   "precision-drop": {
     instructions: {
