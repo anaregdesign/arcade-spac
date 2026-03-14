@@ -12,6 +12,20 @@ KEY_VAULT_PRIVATE_DNS_ZONE_NAME="${KEY_VAULT_PRIVATE_DNS_ZONE_NAME:-privatelink.
 EXPECTED_SQL_PUBLIC_NETWORK_ACCESS="${EXPECTED_SQL_PUBLIC_NETWORK_ACCESS:-Disabled}"
 EXPECTED_PRIVATE_CONFIG_STORES="${EXPECTED_PRIVATE_CONFIG_STORES:-true}"
 
+resolve_container_app_name() {
+  if [[ -n "${AZURE_CONTAINER_APP_NAME:-}" ]]; then
+    printf '%s\n' "${AZURE_CONTAINER_APP_NAME}"
+    return
+  fi
+
+  if [[ -n "${AZURE_APP_NAME:-}" ]]; then
+    printf 'ca-%s\n' "${AZURE_APP_NAME}"
+    return
+  fi
+
+  printf '%s\n' ''
+}
+
 require_single_resource_name() {
   local resource_type="$1"
   local label="$2"
@@ -39,15 +53,17 @@ resolve_app_url() {
     return
   fi
 
-  if [[ -z "${AZURE_CONTAINER_APP_NAME:-}" ]]; then
-    echo "APP_URL or AZURE_CONTAINER_APP_NAME is required."
+  local container_app_name="$1"
+
+  if [[ -z "${container_app_name}" ]]; then
+    echo "APP_URL or AZURE_APP_NAME is required."
     exit 1
   fi
 
   local container_app_fqdn
   container_app_fqdn="$(az containerapp show \
     --resource-group "${AZURE_RESOURCE_GROUP}" \
-    --name "${AZURE_CONTAINER_APP_NAME}" \
+    --name "${container_app_name}" \
     --query properties.configuration.ingress.fqdn \
     -o tsv)"
 
@@ -186,7 +202,8 @@ assert_role_assignment_for_principal() {
   echo "Verified ${label} role ${role_name} for principal ${principal_id}."
 }
 
-APP_URL="$(resolve_app_url)"
+container_app_name="$(resolve_container_app_name)"
+APP_URL="$(resolve_app_url "${container_app_name}")"
 sql_server_name="${AZURE_SQL_SERVER_NAME:-$(require_single_resource_name 'Microsoft.Sql/servers' 'Azure SQL server')}"
 
 actual_public_network_access="$(az sql server show \
@@ -254,29 +271,29 @@ managed_environment_name=''
 container_apps_vnet_id=''
 container_app_principal_id=''
 
-if [[ -n "${AZURE_CONTAINER_APP_NAME:-}" ]]; then
+if [[ -n "${container_app_name}" ]]; then
   container_app_status="$(az containerapp show \
     --resource-group "${AZURE_RESOURCE_GROUP}" \
-    --name "${AZURE_CONTAINER_APP_NAME}" \
+    --name "${container_app_name}" \
     --query properties.runningStatus \
     -o tsv)"
 
   if [[ "${container_app_status}" != "Running" ]]; then
-    echo "Container App ${AZURE_CONTAINER_APP_NAME} is ${container_app_status}."
+    echo "Container App ${container_app_name} is ${container_app_status}."
     exit 1
   fi
 
-  echo "Verified Container App ${AZURE_CONTAINER_APP_NAME} is running."
+  echo "Verified Container App ${container_app_name} is running."
 
   managed_environment_id="$(az containerapp show \
     --resource-group "${AZURE_RESOURCE_GROUP}" \
-    --name "${AZURE_CONTAINER_APP_NAME}" \
+    --name "${container_app_name}" \
     --query properties.managedEnvironmentId \
     -o tsv)"
   managed_environment_name="${managed_environment_id##*/}"
   container_app_principal_id="$(az containerapp show \
     --resource-group "${AZURE_RESOURCE_GROUP}" \
-    --name "${AZURE_CONTAINER_APP_NAME}" \
+    --name "${container_app_name}" \
     --query identity.principalId \
     -o tsv)"
 
@@ -353,10 +370,13 @@ if [[ "${EXPECTED_PRIVATE_CONFIG_STORES}" == "true" ]]; then
     "${KEY_VAULT_PRIVATE_DNS_ZONE_NAME}" \
     "${key_vault_name}"
 
-  if [[ -n "${AZURE_CONTAINER_APP_NAME:-}" ]]; then
-    assert_container_app_env_value "${AZURE_CONTAINER_APP_NAME}" 'AZURE_CONTAINER_APP_NAME' "${AZURE_CONTAINER_APP_NAME}"
-    assert_container_app_env_value "${AZURE_CONTAINER_APP_NAME}" 'AZURE_APPCONFIG_ENDPOINT' "${app_configuration_endpoint}"
-    assert_container_app_env_value "${AZURE_CONTAINER_APP_NAME}" 'AZURE_KEY_VAULT_URI' "${key_vault_uri}"
+  if [[ -n "${container_app_name}" ]]; then
+    assert_container_app_env_value "${container_app_name}" 'AZURE_CONTAINER_APP_NAME' "${container_app_name}"
+    if [[ -n "${AZURE_APP_NAME:-}" ]]; then
+      assert_container_app_env_value "${container_app_name}" 'AZURE_APP_NAME' "${AZURE_APP_NAME}"
+    fi
+    assert_container_app_env_value "${container_app_name}" 'AZURE_APPCONFIG_ENDPOINT' "${app_configuration_endpoint}"
+    assert_container_app_env_value "${container_app_name}" 'AZURE_KEY_VAULT_URI' "${key_vault_uri}"
   fi
 
   if [[ -n "${container_app_principal_id}" ]]; then

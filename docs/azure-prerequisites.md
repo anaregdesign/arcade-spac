@@ -7,7 +7,8 @@ This checklist captures what is already scaffolded in the repository and what st
 - `azure.yaml` targets Azure Container Apps.
 - `infra/main.bicep` provisions a VNet-integrated Container Apps environment, a delegated Container Apps subnet, a private-endpoint subnet, Azure SQL, App Configuration, Key Vault, Application Insights, and Log Analytics.
 - `infra/main.bicep` also provisions private DNS zones and `Private Endpoint` resources for Azure SQL, App Configuration, and Key Vault when those paths are enabled.
-- `.github/workflows/release-container-image.yml` publishes immutable release images to GHCR and updates the Azure Container App through GitHub Actions OIDC.
+- `.github/workflows/quality-gates.yml` runs typecheck, unit test, build, Bicep validation, and GitHub workflow lint on `main` pushes and pull requests.
+- `.github/workflows/release-container-image.yml` publishes immutable release images to GHCR, runs infra `what-if`, deploys infra only when real changes exist, rolls out the app revision, and smoke-tests the deployed app through GitHub Actions OIDC.
 - `scripts/azure/postprovision.sh` can attach a private container registry to the provisioned Container App.
 - `scripts/azure/sync-runtime-config.sh` can populate the expected App Configuration keys and Key Vault secrets for the runtime bootstrap.
 - `scripts/azure/smoke-test.sh` verifies the deployed `health` and `login` routes.
@@ -31,6 +32,9 @@ This checklist captures what is already scaffolded in the repository and what st
 - A Microsoft Entra ID tenant for the production `web` app registration
 - A Microsoft Entra ID user, group, or application that can be set as the Azure SQL Entra administrator
 - Permission to create workload identity federation between GitHub Actions and Azure
+- Azure RBAC for the deploy identity at the target resource-group scope:
+  - `Contributor`
+  - `Role Based Access Control Administrator` or `User Access Administrator` because `infra/main.bicep` manages role assignments
 - Network ownership or approval for:
   - the delegated Container Apps infrastructure subnet
   - the private-endpoint subnet
@@ -46,12 +50,19 @@ Set the following GitHub Environment variables for the `production` environment:
 - `AZURE_TENANT_ID`
 - `AZURE_SUBSCRIPTION_ID`
 - `AZURE_RESOURCE_GROUP`
-- `AZURE_CONTAINER_APP_NAME`
-- `GHCR_PULL_USERNAME`
+- `AZURE_APP_NAME`
 
-Set the following GitHub Environment secrets:
+Optional GitHub Environment variables:
 
-- `GHCR_PULL_TOKEN`
+- `CONTAINER_REGISTRY_SERVER`
+- `CONTAINER_REGISTRY_IDENTITY`
+- `CONTAINER_REGISTRY_USERNAME`
+
+Optional GitHub Environment secrets:
+
+- `CONTAINER_REGISTRY_PASSWORD`
+
+If the GHCR package is public, do not add registry pull credentials. If the runtime must pull from a private registry, prefer `CONTAINER_REGISTRY_IDENTITY` for ACR and use username / password only when the platform cannot avoid it.
 
 ## Runtime Configuration Requirements
 
@@ -89,7 +100,8 @@ Current repository note:
 - The server runtime now loads the `Arcade:` App Configuration keys through `@azure/app-configuration-provider`.
 - `npm run azure:sync:runtime-config` is the repository-supported sync path for App Configuration and Key Vault.
 - Run that sync only from a host that can reach the private App Configuration and Key Vault data plane.
-- The GitHub release workflow updates the image and verifies runtime state, but it does not populate the private App Configuration or Key Vault data plane.
+- The GitHub release workflow does not treat GitHub variables or secrets as the runtime source of truth. It updates infra and the image rollout, but it does not populate the private App Configuration or Key Vault data plane.
+- `infra/main.bicep` no longer accepts runtime app secrets as deployment parameters. Runtime secrets must stay in Key Vault and App Configuration.
 - When `deploySql=true`, the sync script can derive a `DefaultAzureCredential`-backed `DATABASE_URL` from Azure SQL metadata when explicit `DATABASE_URL` is not provided.
 
 ## Azure SQL Provisioning Inputs
@@ -139,15 +151,16 @@ These are no longer bootstrap blockers, but they still need active operational d
 ## Suggested Verification Sequence
 
 1. Confirm `npm run typecheck` and `npm run build` pass locally.
-2. Run `npm run azure:check:production-data` against the intended hosted settings.
-3. Run `az bicep build --file infra/main.bicep`.
-4. Run `azd provision --preview` and review the generated plan, especially the VNet, private-endpoint, private DNS, and optional Azure SQL resources.
-5. Provision Azure resources.
-6. Confirm the Azure SQL Entra administrator, `Entra-only` auth, and database role split between the runtime and migration identities.
-7. Run `npm run azure:sync:runtime-config` from a host that can reach the private App Configuration and Key Vault data plane.
-8. Publish a release so the GitHub workflow pushes an immutable image.
-9. Verify `https://<container-app-fqdn>/health`.
-10. Run `scripts/azure/verify-production-runtime.sh`.
-11. Smoke-test login, gameplay, result, rankings, and profile flows in the hosted environment.
+2. Confirm the `Quality Gates` workflow is passing on the release target commit.
+3. Run `npm run azure:check:production-data` against the intended hosted settings.
+4. Run `az bicep build --file infra/main.bicep`.
+5. Run `azd provision --preview` and review the generated plan, especially the VNet, private-endpoint, private DNS, and optional Azure SQL resources.
+6. Provision Azure resources.
+7. Confirm the Azure SQL Entra administrator, `Entra-only` auth, and database role split between the runtime and migration identities.
+8. Run `npm run azure:sync:runtime-config` from a host that can reach the private App Configuration and Key Vault data plane.
+9. Publish a release so the GitHub workflow runs `publish`, `plan_infra`, `deploy_infra`, `deploy_app`, and `smoke_test`.
+10. Verify `https://<container-app-fqdn>/health`.
+11. Run `scripts/azure/verify-production-runtime.sh`.
+12. Smoke-test login, gameplay, result, rankings, and profile flows in the hosted environment.
 
 For the latest verified production values and rollback notes, see `docs/production-operations.md`.

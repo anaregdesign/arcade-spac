@@ -94,7 +94,8 @@ The repository now includes these Azure-oriented assets:
 - `azure.yaml` for `azd` service wiring
 - `infra/main.bicep` for VNet-integrated Azure Container Apps, private-endpoint subnets, Azure SQL, App Configuration, Key Vault, Log Analytics, and Application Insights
 - `infra/main.bicep` also defines the Azure SQL serverless database path, `Private Endpoint` resources, private DNS links, Container App `/health` probes, and a separate user-assigned migration identity
-- `.github/workflows/release-container-image.yml` for GitHub Releases to GHCR and Azure deployment
+- `.github/workflows/quality-gates.yml` for push / pull request validation of app code, Bicep, and GitHub workflow syntax
+- `.github/workflows/release-container-image.yml` for GitHub Releases to GHCR plus `plan_infra`, conditional `deploy_infra`, `deploy_app`, and `smoke_test`
 - `scripts/azure/postprovision.sh` for post-provision registry wiring
 - `scripts/azure/sync-runtime-config.sh` for App Configuration and Key Vault runtime config synchronization
 - `scripts/azure/smoke-test.sh` for post-deploy smoke checks
@@ -113,14 +114,17 @@ Before a real hosted deployment, prepare all of the following:
   - `privatelink.azconfig.io`
   - `privatelink.vaultcore.azure.net`
 - GitHub Environment variables for Azure OIDC deployment:
-	- `AZURE_CLIENT_ID`
-	- `AZURE_TENANT_ID`
-	- `AZURE_SUBSCRIPTION_ID`
-	- `AZURE_RESOURCE_GROUP`
-	- `AZURE_CONTAINER_APP_NAME`
-	- `GHCR_PULL_USERNAME`
-- GitHub Environment secret:
-	- `GHCR_PULL_TOKEN`
+  - `AZURE_CLIENT_ID`
+  - `AZURE_TENANT_ID`
+  - `AZURE_SUBSCRIPTION_ID`
+  - `AZURE_RESOURCE_GROUP`
+  - `AZURE_APP_NAME`
+- Optional GitHub Environment variables for non-public or non-GHCR registry paths:
+  - `CONTAINER_REGISTRY_SERVER`
+  - `CONTAINER_REGISTRY_IDENTITY`
+  - `CONTAINER_REGISTRY_USERNAME`
+- Optional GitHub Environment secret:
+  - `CONTAINER_REGISTRY_PASSWORD`
 - Azure App Configuration values for non-secret runtime settings
 - Azure Key Vault secrets for secret runtime values such as `ARCADE_SESSION_SECRET` and the Entra confidential client secret
 - A private-network-reachable operator path for `npm run azure:sync:runtime-config`
@@ -139,5 +143,6 @@ See `docs/repository-rename-runbook.md` for repository rename, GHCR namespace, a
 ## Next Steps
 
 - Sync App Configuration and Key Vault from a host that can reach the private data plane, then roll out the new private-network contract through the repository GitHub Workflow path.
+- Keep the `Quality Gates` workflow required on `main` once branch protection is configured.
 - Keep release notes, rollback data, and smoke verification steps synchronized with `docs/production-operations.md` after each production release.
 - Keep local auth verification aligned with a documented dev or test Entra registration when production-like sign-in coverage is required.

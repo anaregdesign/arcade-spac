@@ -53,5 +53,5 @@ These assets establish the repository-side contract for the hosted data path. Th
 ## Remaining Verification
 
 - This repository change does not itself prove that the live Azure environment has already moved to the private path.
-- The GitHub release workflow does not populate private App Configuration or Key Vault data-plane values.
+- The GitHub release workflow now separates `plan_infra`, `deploy_infra`, and `deploy_app`, but it still does not populate private App Configuration or Key Vault data-plane values.
 - After the next GitHub-workflow deployment, verify the hosted Container Apps path resolves Azure SQL through private DNS and that the runtime no longer depends on `AllowAzureServices`.

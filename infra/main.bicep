@@ -1,12 +1,6 @@
 param appName string = 'arcade'
 param location string = resourceGroup().location
 param containerImage string
-param publicAppUrl string
-@allowed([
-  'local'
-  'entra'
-])
-param authMode string = 'entra'
 param deploySql bool = false
 param sqlDatabaseName string = 'arcade'
 param sqlAdministratorLogin string = ''
@@ -22,15 +16,7 @@ param sqlEntraAdminTenantId string = tenant().tenantId
   'Application'
 ])
 param sqlEntraAdminPrincipalType string = 'Group'
-param entraClientId string = ''
 param entraTenantId string = tenant().tenantId
-param entraAuthorityTenant string = entraTenantId
-@secure()
-param entraClientSecret string = ''
-@secure()
-param databaseUrl string = ''
-@secure()
-param sessionSecret string
 param containerPort int = 3000
 param cpu int = 1
 param memory string = '2Gi'
@@ -332,6 +318,10 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
               {
                 name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
                 value: applicationInsights.properties.ConnectionString
+              }
+              {
+                name: 'AZURE_APP_NAME'
+                value: appName
               }
               {
                 name: 'AZURE_CONTAINER_APP_NAME'

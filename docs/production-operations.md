@@ -12,6 +12,7 @@ This runbook records the repository-side production contract for Arcade on Azure
 - App Configuration and Key Vault: private endpoint backed hosted access
 - Runtime bootstrap: `AZURE_APPCONFIG_ENDPOINT` and `AZURE_KEY_VAULT_URI` env values, `Arcade:` App Configuration keys, and Key Vault references for secrets
 - Health route: `/health`
+- Release workflow shape: `publish` -> `plan_infra` -> `deploy_infra` -> `deploy_app` -> `smoke_test`
 - Verification scripts:
   - `scripts/azure/sync-runtime-config.sh`
   - `scripts/azure/smoke-test.sh`
@@ -51,18 +52,20 @@ After rollback, re-run the health endpoint, smoke test, and private-network veri
 
 Pre-release requirement:
 
-1. Run `npm run azure:check:production-data`.
-2. Run `npm run azure:sync:runtime-config` from a host that can reach the private App Configuration and Key Vault data plane.
-3. Publish the release so the GitHub workflow deploys the image.
+1. Confirm the `Quality Gates` workflow passed for the release target commit.
+2. Run `npm run azure:check:production-data`.
+3. Run `npm run azure:sync:runtime-config` from a host that can reach the private App Configuration and Key Vault data plane.
+4. Publish the release so the GitHub workflow deploys the image.
 
 Post-release checks:
 
-1. Confirm the GitHub release workflow completed successfully.
-2. Confirm the Container App image and latest ready revision match the intended release.
-3. Run the health endpoint check.
-4. Run `scripts/azure/verify-production-runtime.sh`.
-5. Run the scripted smoke test.
-6. Verify hosted sign-in, gameplay, result, rankings, and profile screens in a browser.
+1. Confirm the GitHub release workflow completed successfully through `publish`, `plan_infra`, `deploy_infra`, `deploy_app`, and `smoke_test`.
+2. Confirm `plan_infra` reported the expected infra status and that `deploy_infra` was skipped for app-only releases.
+3. Confirm the Container App image and latest ready revision match the intended release.
+4. Run the health endpoint check.
+5. Run `scripts/azure/verify-production-runtime.sh`.
+6. Run the scripted smoke test.
+7. Verify hosted sign-in, gameplay, result, rankings, and profile screens in a browser.
 
 Commands:
 
@@ -86,7 +89,7 @@ APP_URL="https://ca-arcade.bravepond-f695129a.japaneast.azurecontainerapps.io" \
   ./scripts/azure/smoke-test.sh
 
 AZURE_RESOURCE_GROUP="rg-arcade-spec-dev" \
-AZURE_CONTAINER_APP_NAME="ca-arcade" \
+AZURE_APP_NAME="arcade" \
   ./scripts/azure/verify-production-runtime.sh
 
 az containerapp show \
@@ -179,5 +182,5 @@ sqlcmd -S sql-arcade-qddhfw4moexbm.database.windows.net -d arcade -G -Q "SELECT 
 
 - A previous outage on March 14, 2026 was caused by drift between the runtime's dependency on the Azure SQL public endpoint and the server's `publicNetworkAccess` setting.
 - The repository contract now removes that dependency instead of teaching operators to restore public access.
-- The GitHub release workflow updates the Container App image but does not populate private App Configuration or Key Vault data-plane values.
+- The GitHub release workflow now plans infra before deploy and keeps app rollout separate from infra convergence, but it still does not populate private App Configuration or Key Vault data-plane values.
 - If the hosted rollout has not happened yet, treat any live public SQL dependency as configuration drift that still needs to be remediated through the GitHub workflow path.

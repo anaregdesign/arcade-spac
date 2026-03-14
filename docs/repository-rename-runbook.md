@@ -16,6 +16,7 @@ This runbook captures the remaining external follow-up needed after standardizin
 ## What Is Already Safe In Repo
 
 - `.github/workflows/release-container-image.yml` derives `IMAGE_NAME` and deploy `IMAGE_REF` from `${{ github.repository }}`.
+- `.github/workflows/release-container-image.yml` now keeps `publish`, `plan_infra`, `deploy_infra`, `deploy_app`, and `smoke_test` in one release workflow.
 - Future release builds will automatically push `ghcr.io/anaregdesign/arcade-spec:<tag>` because GitHub now reports the repository as `anaregdesign/arcade-spec`.
 - `azure.yaml` does not embed the repository slug directly.
 
@@ -33,10 +34,14 @@ This runbook captures the remaining external follow-up needed after standardizin
    - `AZURE_TENANT_ID`
    - `AZURE_SUBSCRIPTION_ID`
    - `AZURE_RESOURCE_GROUP`
-   - `AZURE_CONTAINER_APP_NAME`
-3. Do not assume GHCR pull credentials exist. The current `production` Environment has no visible Actions secrets, and the optional `Configure GHCR auth for private packages` step is therefore skipped.
-4. Keep the release workflow package write permission as-is. The latest inspected release run still published to GHCR successfully after the repository rename.
-5. Remove legacy package namespace dependencies from operational procedures now that the first successful post-rename release has completed.
+   - `AZURE_APP_NAME`
+3. Add the new optional registry variables only when the runtime cannot use public GHCR or a managed-identity registry path:
+   - `CONTAINER_REGISTRY_SERVER`
+   - `CONTAINER_REGISTRY_IDENTITY`
+   - `CONTAINER_REGISTRY_USERNAME`
+4. Add the `CONTAINER_REGISTRY_PASSWORD` secret only when the chosen registry cannot use managed identity.
+5. Keep the release workflow package write permission as-is. The latest inspected release run still published to GHCR successfully after the repository rename.
+6. Remove legacy package namespace dependencies from operational procedures now that the first successful post-rename release has completed.
 
 ## Azure Follow-Up
 
@@ -59,9 +64,10 @@ This runbook captures the remaining external follow-up needed after standardizin
 1. Run `git remote -v` locally and confirm `origin` uses `git@github.com:anaregdesign/arcade-spec.git`.
 2. Confirm the deploy app registration federated credential subject is `repo:anaregdesign/arcade-spec:environment:production`.
 3. Publish a release and confirm the workflow pushes a package under `ghcr.io/anaregdesign/arcade-spec`.
-4. Confirm the deploy job updates Azure Container Apps successfully.
-5. Run the hosted smoke checks from `docs/production-operations.md`.
-6. Update the production baseline image references in the operational docs if the deployed image namespace has changed.
+4. Confirm the release workflow completes `plan_infra` and that `deploy_infra` only runs when the plan finds real changes.
+5. Confirm the deploy job updates Azure Container Apps successfully.
+6. Run the hosted smoke checks from `docs/production-operations.md`.
+7. Update the production baseline image references in the operational docs if the deployed image namespace has changed.
 
 ## Notes On Historical Values
 
