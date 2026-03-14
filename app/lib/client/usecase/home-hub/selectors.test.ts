@@ -287,6 +287,15 @@ describe("home-hub selectors", () => {
       recommendationText: "Moving memory stream",
       shortDescription: "Watch a short reveal, then flip the same order out of a shifting card stream",
     },
+    {
+      currentRank: null,
+      key: "gap-rush",
+      metricValue: "0:46",
+      name: "Gap Rush",
+      playCount: 2,
+      recommendationText: "Continuous corridor sprint",
+      shortDescription: "Guide a drifting runner through a fixed wall sequence by picking the next lane early enough to survive the speed ramp",
+    },
   ];
 
   it("counts ranked and unplayed games from visible cards", () => {
@@ -572,6 +581,15 @@ describe("home-hub selectors", () => {
         previewObjectPosition: undefined,
         previewSrc: "/images/games/cascade-flip-preview.svg",
         recordLabel: "Best 1:00",
+        runLabel: "2 runs",
+        statusLabel: "Played",
+      },
+      {
+        ...games[31],
+        previewAlt: "Gap Rush corridor with a drifting runner, live wall opening, and lane target pads",
+        previewObjectPosition: undefined,
+        previewSrc: "/images/games/gap-rush-preview.svg",
+        recordLabel: "Best 0:46",
         runLabel: "2 runs",
         statusLabel: "Played",
       },

@@ -11,6 +11,7 @@ import { ChainTriggerGameWorkspace } from "./chain-trigger/ChainTriggerGameWorks
 import { ColorCensusGameWorkspace } from "./color-census/ColorCensusGameWorkspace";
 import { ColorSweepGameWorkspace } from "./color-sweep/ColorSweepGameWorkspace";
 import { FlipMatchGameWorkspace } from "./flip-match/FlipMatchGameWorkspace";
+import { GapRushGameWorkspace } from "./gap-rush/GapRushGameWorkspace";
 import { GlowCycleGameWorkspace } from "./glow-cycle/GlowCycleGameWorkspace";
 import { HiddenFindGameWorkspace } from "./hidden-find/HiddenFindGameWorkspace";
 import { HueDriftGameWorkspace } from "./hue-drift/HueDriftGameWorkspace";
@@ -209,6 +210,35 @@ const gameDefinitionByKey: Record<string, GameDefinition> = {
       previewSrc: "/images/games/box-fill-preview.svg",
     },
     workspace: BoxFillGameWorkspace,
+  },
+  "gap-rush": {
+    instructions: {
+      summary: "Set the next lane early, let the runner glide across the corridor, and stay centered in each opening as the wall speed ramps upward.",
+      sections: [
+        {
+          title: "Run flow",
+          items: [
+            { label: "Start run", detail: "Choose a difficulty and press Start run to arm one fixed corridor sequence with a visible first opening." },
+            { label: "Glide into each gap", detail: "Lane pads retarget the runner, but the runner drifts continuously instead of snapping instantly, so early reads matter." },
+            { label: "Clear or crash", detail: "Survive the full wall set before the timer expires. Missing the opening crashes the run immediately." },
+          ],
+        },
+        {
+          title: "Corridor controls",
+          items: [
+            { label: "Use lane pads", detail: "Each large lane button retargets the glide path and stays touch-safe on narrow screens." },
+            { label: "Read the previews", detail: "The live wall shows the current opening and the faded band previews the next one so you can plan ahead." },
+            { label: "Chase perfect passes", detail: "Perfect credit only counts when the runner is near the center of the opening, not merely inside the safe zone." },
+          ],
+        },
+      ],
+      title: "Gap Rush controls",
+    },
+    presentation: {
+      previewAlt: "Gap Rush corridor with a drifting runner, live wall opening, and lane target pads",
+      previewSrc: "/images/games/gap-rush-preview.svg",
+    },
+    workspace: GapRushGameWorkspace,
   },
   "bubble-spawn": {
     instructions: {

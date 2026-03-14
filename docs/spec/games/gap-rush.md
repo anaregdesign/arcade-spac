@@ -18,8 +18,8 @@
 ## Scope
 
 - `Gap Rush` を home、workspace、result、rankings、profile に統合する
-- primary metric は `walls cleared`、support metric は `perfect passes` とする
-- workspace では corridor、avatar position、incoming wall preview、speed ramp を live 表示する
+- primary metric は `clear time`、support metric は `perfect passes` とする
+- workspace では corridor、continuous-feel lane drift、incoming wall preview、speed ramp を live 表示する
 
 ## Non-Goals
 
@@ -30,25 +30,25 @@
 ## User-Visible Behavior
 
 - idle overlay から run を開始すると、wall pattern が連続で接近する corridor が始まる
-- 利用者は touch-safe left / right controls または hold input で avatar を横移動させ、gap を通す
+- 利用者は touch-safe lane pads で target lane を選び、avatar が continuous-feel に glide しながら gap を通す
 - gap を clean に center pass すると `perfect passes` が増え、run quality が上がる
 - wall に触れると run は即 fail になる
 - wall streak が伸びるほど speed と pattern variation が上がる
 - target wall count を突破すると clear となり Result に遷移する
-- Result、profile、rankings では `walls cleared` と `perfect passes` を確認できる
+- Result、profile、rankings では `clear time` と `perfect passes` を確認できる
 
 ## Acceptance Criteria
 
 - `Gap Rush` card が Home に表示され、game route を開ける
 - 1 run は 2 分以内で clear または fail が必ず確定する
-- lateral movement、approaching wall pressure、speed ramp が visible に機能する
+- target lane を変えると avatar が即 teleport せず glide し、approaching wall pressure と speed ramp が visible に機能する
 - workspace 上で current speed、upcoming wall gap、perfect pass count が更新される
-- Result、profile、rankings では `walls cleared` と `perfect passes` が保存される
+- Result、profile、rankings では `clear time` と `perfect passes` が保存される
 
 ## Edge Cases
 
 - run 中以外の movement input は state を変えない
-- continuous input が stuck しても avatar が corridor 外へ出ない
+- rapid target changes を続けても avatar が corridor 外へ出ない
 - same wall pattern seed なら gap timing は deterministic に再現できる
 - narrow viewport でも corridor と movement controls が touch-safe に保たれる
 
@@ -56,6 +56,7 @@
 
 - shared workspace card、board overlay、finish card、result flow を再利用する
 - deterministic Playwright selector を avatar position、incoming wall gap、perfect pass state、run outcome に付ける
+- current app result architecture に合わせ、saved ranking metric は `clear time` のまま拡張しない
 - motion blur なしでも gap readability を保つ
 
 ## Distinction

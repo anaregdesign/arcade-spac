@@ -40,6 +40,7 @@ describe("game-catalog", () => {
     expect(resolveGameKey("CASCADE_FLIP")).toBe("cascade-flip");
     expect(resolveGameKey("CASCADE_CLEAR")).toBe("cascade-clear");
     expect(resolveGameKey("CHAIN_TRIGGER")).toBe("chain-trigger");
+    expect(resolveGameKey("GAP_RUSH")).toBe("gap-rush");
     expect(resolveGameKey("COLOR_SWEEP")).toBe("color-sweep");
     expect(resolveGameKey("ICON_CHAIN")).toBe("icon-chain");
     expect(resolveGameKey("LINE_CONNECT")).toBe("line-connect");
@@ -74,6 +75,7 @@ describe("game-catalog", () => {
     expect(toStoredGameKey("cascade-flip")).toBe("CASCADE_FLIP");
     expect(toStoredGameKey("cascade-clear")).toBe("CASCADE_CLEAR");
     expect(toStoredGameKey("chain-trigger")).toBe("CHAIN_TRIGGER");
+    expect(toStoredGameKey("gap-rush")).toBe("GAP_RUSH");
     expect(toStoredGameKey("color-sweep")).toBe("COLOR_SWEEP");
     expect(toStoredGameKey("icon-chain")).toBe("ICON_CHAIN");
     expect(toStoredGameKey("line-connect")).toBe("LINE_CONNECT");
@@ -107,6 +109,7 @@ describe("game-catalog", () => {
     expect(toRouteGameKey("CASCADE_FLIP")).toBe("cascade-flip");
     expect(toRouteGameKey("CASCADE_CLEAR")).toBe("cascade-clear");
     expect(toRouteGameKey("CHAIN_TRIGGER")).toBe("chain-trigger");
+    expect(toRouteGameKey("GAP_RUSH")).toBe("gap-rush");
     expect(toRouteGameKey("COLOR_SWEEP")).toBe("color-sweep");
     expect(toRouteGameKey("ICON_CHAIN")).toBe("icon-chain");
     expect(toRouteGameKey("LINE_CONNECT")).toBe("line-connect");
@@ -142,6 +145,7 @@ describe("game-catalog", () => {
     expect(getGameDefinition("CASCADE_FLIP")?.name).toBe("Cascade Flip");
     expect(getGameDefinition("CASCADE_CLEAR")?.name).toBe("Cascade Clear");
     expect(getGameDefinition("CHAIN_TRIGGER")?.name).toBe("Chain Trigger");
+    expect(getGameDefinition("GAP_RUSH")?.name).toBe("Gap Rush");
     expect(getGameDefinition("DROP_LINE")?.name).toBe("Precision Drop");
     expect(getGameDefinition("ICON_CHAIN")?.name).toBe("Icon Chain");
     expect(getGameDefinition("LINE_CONNECT")?.name).toBe("Line Connect");
@@ -177,6 +181,7 @@ describe("game-catalog", () => {
     expect(getGameHomeTags("CASCADE_FLIP")).toEqual(["memory", "timing"]);
     expect(getGameHomeTags("CASCADE_CLEAR")).toEqual(["logic", "perception"]);
     expect(getGameHomeTags("CHAIN_TRIGGER")).toEqual(["logic", "spatial"]);
+    expect(getGameHomeTags("GAP_RUSH")).toEqual(["reflex", "timing"]);
     expect(getGameHomeTags("DROP_LINE")).toEqual(["timing", "fast-start"]);
     expect(getGameHomeTags("ICON_CHAIN")).toEqual(["logic", "memory"]);
     expect(getGameHomeTags("LINE_CONNECT")).toEqual(["logic", "spatial"]);
@@ -209,6 +214,7 @@ describe("game-catalog", () => {
     expect(getGameSuccessfulResultLabel("CASCADE_FLIP")).toBe("clear");
     expect(getGameSuccessfulResultLabel("CASCADE_CLEAR")).toBe("clear");
     expect(getGameSuccessfulResultLabel("CHAIN_TRIGGER")).toBe("clear");
+    expect(getGameSuccessfulResultLabel("GAP_RUSH")).toBe("clear");
     expect(getGameSuccessfulResultLabel("DROP_LINE")).toBe("hit");
     expect(getGameSuccessfulResultLabel("ICON_CHAIN")).toBe("clear");
     expect(getGameSuccessfulResultLabel("LINE_CONNECT")).toBe("clear");

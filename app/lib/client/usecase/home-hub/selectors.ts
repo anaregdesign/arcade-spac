@@ -34,6 +34,10 @@ const previewByGameKey: Record<string, Pick<HomeGameCard, "previewAlt" | "previe
     previewAlt: "Cascade Flip stream with a target order strip above a shifting memory board",
     previewSrc: "/images/games/cascade-flip-preview.svg",
   },
+  "gap-rush": {
+    previewAlt: "Gap Rush corridor with a drifting runner, live wall opening, and lane target pads",
+    previewSrc: "/images/games/gap-rush-preview.svg",
+  },
   "box-fill": {
     previewAlt: "Box Fill tray-and-board puzzle with selected polyomino pieces and a highlighted anchor preview",
     previewSrc: "/images/games/box-fill-preview.svg",
