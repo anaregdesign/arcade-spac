@@ -1,0 +1,83 @@
+.layout-sidecar {
+  --gameplay-layout-gap: 1rem;
+  --gameplay-layout-mobile-gap: 0.75rem;
+  --gameplay-layout-main-fr: 1.2fr;
+  --gameplay-layout-side-fr: 0.9fr;
+  --gameplay-layout-side-min: 16rem;
+  --gameplay-layout-mobile-side-min: 7rem;
+  --gameplay-layout-mobile-side-max: 8rem;
+  display: grid;
+  gap: var(--gameplay-layout-gap);
+  grid-template-columns: minmax(0, var(--gameplay-layout-main-fr)) minmax(var(--gameplay-layout-side-min), var(--gameplay-layout-side-fr));
+  align-items: start;
+}
+
+.layout-twin-panel {
+  --gameplay-layout-gap: 1rem;
+  --gameplay-layout-mobile-gap: 0.75rem;
+  display: grid;
+  gap: var(--gameplay-layout-gap);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+}
+
+.layout-choice-grid {
+  --gameplay-choice-gap: 0.75rem;
+  --gameplay-choice-mobile-gap: 0.55rem;
+  --gameplay-choice-columns: 2;
+  --gameplay-choice-mobile-columns: 2;
+  display: grid;
+  gap: var(--gameplay-choice-gap);
+  grid-template-columns: repeat(var(--gameplay-choice-columns), minmax(0, 1fr));
+}
+
+@media (max-width: 940px) {
+  .layout-sidecar.layout-sidecar {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 900px) {
+  .layout-twin-panel.layout-twin-panel {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .layout-choice-grid.layout-choice-grid {
+    gap: var(--gameplay-choice-mobile-gap);
+    grid-template-columns: repeat(var(--gameplay-choice-mobile-columns), minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .layout-sidecar.layout-sidecar {
+    gap: var(--gameplay-layout-mobile-gap);
+    grid-template-columns: minmax(0, 1fr) minmax(var(--gameplay-layout-mobile-side-min), var(--gameplay-layout-mobile-side-max));
+  }
+
+  .layout-twin-panel.layout-twin-panel {
+    gap: var(--gameplay-layout-mobile-gap);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .mobile-order-1 {
+    order: 1;
+  }
+
+  .mobile-order-2 {
+    order: 2;
+  }
+
+  .mobile-order-3 {
+    order: 3;
+  }
+
+  .mobile-order-4 {
+    order: 4;
+  }
+
+  .mobile-order-5 {
+    order: 5;
+  }
+}

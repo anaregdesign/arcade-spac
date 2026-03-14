@@ -1,12 +1,13 @@
 import type { PointerEvent as ReactPointerEvent } from "react";
 
 import { useTempoHoldWorkspace } from "../../../lib/client/usecase/game-workspace/use-tempo-hold-workspace";
-import sharedStyles from "../shared/GameWorkspaceShared.module.css";
-import { GameWorkspaceBoardOverlay } from "../shared/GameWorkspaceBoardOverlay";
-import { GameWorkspaceControlsCard } from "../shared/GameWorkspaceControlsCard";
-import { GameWorkspaceFinishCard } from "../shared/GameWorkspaceFinishCard";
-import { GameInstructionsDialog } from "../shared/GameInstructionsDialog";
-import type { GameWorkspaceComponentProps } from "../shared/game-workspace-types";
+import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
+import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
+import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
+import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
+import { GameWorkspaceFinishCard } from "../../gameplay/workspace/GameWorkspaceFinishCard";
+import { GameInstructionsDialog } from "../../gameplay/workspace/GameInstructionsDialog";
+import type { GameWorkspaceComponentProps } from "../../gameplay/workspace/game-workspace-types";
 import styles from "./TempoHoldGameWorkspace.module.css";
 
 function clampPercent(value: number) {
@@ -110,13 +111,13 @@ export function TempoHoldGameWorkspace({ instructions, workspace }: GameWorkspac
 
       <section className={["feature-card", sharedStyles["workspace-card"], sharedStyles["board-card"], styles["tempo-hold-board-card"]].join(" ")} aria-label="Tempo Hold board">
         <div className={[styles["tempo-hold-shell"], sharedStyles["game-board-overlay-shell"]].join(" ")}>
-          <div className={styles["tempo-hold-copy"]}>
-            <p className="eyebrow">Release timing sprint</p>
-            <strong>Press and hold, then release only while the meter sits inside the target zone.</strong>
-            <p className="compact-copy">
-              Every release advances the round. Perfect and good releases keep quality high, while misses still count and move the target to a new duration.
-            </p>
-          </div>
+          <GameplayContextCue
+            className={styles["tempo-hold-copy"]}
+            detail="Press, hold, then let go."
+            phase="Hold"
+            title="Release inside the target zone"
+            tone="timing"
+          />
 
           <div className={styles["tempo-hold-legend"]}>
             <span className={styles["tempo-hold-legend-target"]}>Target zone</span>

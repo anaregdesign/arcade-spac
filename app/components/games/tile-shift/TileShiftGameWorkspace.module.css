@@ -67,3 +67,42 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+@media (max-width: 640px) {
+  .shift-shell {
+    display: grid;
+    gap: 0.8rem;
+  }
+
+  .shift-columns {
+    gap: 0.75rem;
+    grid-template-columns: minmax(0, 0.82fr) minmax(0, 1fr);
+  }
+
+  .shift-panel {
+    gap: 0.45rem;
+  }
+
+  .shift-board,
+  .shift-controls-top,
+  .shift-controls-side {
+    gap: 0.4rem;
+  }
+
+  .shift-cell {
+    border-radius: 0.7rem;
+    font-size: 1rem;
+  }
+
+  .shift-live-row {
+    gap: 0.5rem;
+    grid-template-columns: 2.2rem minmax(0, 1fr);
+  }
+
+  .shift-control {
+    border-radius: 0.65rem;
+    font-size: 0.82rem;
+    min-height: 2.2rem;
+    min-width: 2.2rem;
+  }
+}

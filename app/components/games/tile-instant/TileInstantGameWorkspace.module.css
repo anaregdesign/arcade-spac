@@ -88,3 +88,45 @@ button.tile-instant-cell:disabled {
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+@media (max-width: 640px) {
+  .tile-instant-shell {
+    gap: 0.8rem;
+  }
+
+  .tile-instant-copy strong {
+    font-size: 0.95rem;
+  }
+
+  .tile-instant-columns {
+    gap: 0.75rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .tile-instant-panel {
+    gap: 0.45rem;
+  }
+
+  .tile-instant-panel-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  .tile-instant-panel-header strong {
+    font-size: 0.8rem;
+  }
+
+  .tile-instant-board {
+    gap: 0.4rem;
+  }
+
+  .tile-instant-cell {
+    border-radius: 0.7rem;
+    font-size: 1rem;
+  }
+
+  .tile-instant-cell-selected {
+    outline-width: 2px;
+  }
+}

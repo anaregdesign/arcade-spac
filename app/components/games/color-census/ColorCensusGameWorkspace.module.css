@@ -31,6 +31,8 @@
 .census-board {
   display: grid;
   gap: 0.55rem;
+  margin-inline: auto;
+  width: min(100%, 19rem);
 }
 
 .census-tile {
@@ -85,6 +87,8 @@
   display: grid;
   gap: 0.9rem;
   grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
+  margin-inline: auto;
+  width: min(100%, 22rem);
 }
 
 .census-choice-card {
@@ -146,15 +150,45 @@
 }
 
 @media (max-width: 640px) {
+  .census-shell,
+  .census-stage {
+    gap: 0.75rem;
+  }
+
   .census-board {
-    gap: 0.4rem;
+    gap: 0.32rem;
+    width: min(100%, 16.4rem);
   }
 
   .census-tile {
-    min-height: 2.9rem;
+    min-height: 2.35rem;
+    border-radius: 0.72rem;
   }
 
   .census-choice-grid {
+    gap: 0.55rem;
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: min(100%, 18rem);
+  }
+
+  .census-choice-card {
+    gap: 0.45rem;
+    padding: 0.62rem;
+  }
+
+  .census-choice-swatch {
+    min-height: 3.2rem;
+  }
+
+  .census-choice-copy {
+    font-size: 0.82rem;
+  }
+
+  .census-choice-card-numeric {
+    min-height: 5.4rem;
+  }
+
+  .census-count-value {
+    font-size: 1.55rem;
   }
 }

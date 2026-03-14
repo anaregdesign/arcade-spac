@@ -1,10 +1,11 @@
 import { useBeatMatchWorkspace } from "../../../lib/client/usecase/game-workspace/use-beat-match-workspace";
-import sharedStyles from "../shared/GameWorkspaceShared.module.css";
-import { GameWorkspaceBoardOverlay } from "../shared/GameWorkspaceBoardOverlay";
-import { GameWorkspaceControlsCard } from "../shared/GameWorkspaceControlsCard";
-import { GameWorkspaceFinishCard } from "../shared/GameWorkspaceFinishCard";
-import { GameInstructionsDialog } from "../shared/GameInstructionsDialog";
-import type { GameWorkspaceComponentProps } from "../shared/game-workspace-types";
+import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
+import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
+import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
+import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
+import { GameWorkspaceFinishCard } from "../../gameplay/workspace/GameWorkspaceFinishCard";
+import { GameInstructionsDialog } from "../../gameplay/workspace/GameInstructionsDialog";
+import type { GameWorkspaceComponentProps } from "../../gameplay/workspace/game-workspace-types";
 import styles from "./BeatMatchGameWorkspace.module.css";
 
 const laneLabels = ["Left", "Center", "Right"];
@@ -65,13 +66,7 @@ export function BeatMatchGameWorkspace({ instructions, workspace }: GameWorkspac
 
       <section className={["feature-card", sharedStyles["workspace-card"], sharedStyles["board-card"], styles["beat-match-board-card"]].join(" ")} aria-label="Beat Match board">
         <div className={[styles["beat-match-shell"], sharedStyles["game-board-overlay-shell"]].join(" ")}>
-          <div className={styles["beat-match-copy"]}>
-            <p className="eyebrow">Lane rhythm timing</p>
-            <strong>Tap the highlighted lane only while the timing marker crosses the center zone.</strong>
-            <p className="compact-copy">
-              Perfect and good taps raise hit progress and combo. Misses break combo but the stream keeps moving, so recovery depends on the next beat.
-            </p>
-          </div>
+          <GameplayContextCue className={styles["beat-match-copy"]} phase="Timing" title="Hit the lit lane in the center zone" tone="timing" />
 
           <div className={styles["beat-match-legend"]}>
             <span className={styles["beat-match-legend-target"]}>Hit zone</span>

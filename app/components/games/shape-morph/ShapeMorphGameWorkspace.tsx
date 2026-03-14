@@ -1,11 +1,12 @@
 import { useShapeMorphWorkspace } from "../../../lib/client/usecase/game-workspace/use-shape-morph-workspace";
 import type { Glyph } from "../../../lib/client/usecase/game-workspace/use-shape-morph-session";
-import sharedStyles from "../shared/GameWorkspaceShared.module.css";
-import { GameWorkspaceBoardOverlay } from "../shared/GameWorkspaceBoardOverlay";
-import { GameWorkspaceControlsCard } from "../shared/GameWorkspaceControlsCard";
-import { GameWorkspaceFinishCard } from "../shared/GameWorkspaceFinishCard";
-import { GameInstructionsDialog } from "../shared/GameInstructionsDialog";
-import type { GameWorkspaceComponentProps } from "../shared/game-workspace-types";
+import { GameplayChoiceGrid } from "../../gameplay/GameplayLayoutVariants";
+import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
+import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
+import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
+import { GameWorkspaceFinishCard } from "../../gameplay/workspace/GameWorkspaceFinishCard";
+import { GameInstructionsDialog } from "../../gameplay/workspace/GameInstructionsDialog";
+import type { GameWorkspaceComponentProps } from "../../gameplay/workspace/game-workspace-types";
 import styles from "./ShapeMorphGameWorkspace.module.css";
 
 function renderShapePath(shape: Glyph["shape"]) {
@@ -96,7 +97,7 @@ export function ShapeMorphGameWorkspace({ instructions, workspace }: GameWorkspa
                 <div className={styles["shape-morph-missing"]}>?</div>
               </div>
             </div>
-            <div className={styles["shape-morph-choice-grid"]}>
+            <GameplayChoiceGrid className={styles["shape-morph-choice-grid"]}>
               {screen.shapeMorph.currentProblem.choices.map((choice, index) => (
                 <button
                   className={styles["shape-morph-choice"]}
@@ -109,7 +110,7 @@ export function ShapeMorphGameWorkspace({ instructions, workspace }: GameWorkspa
                   <span className={styles["shape-morph-choice-copy"]}>Choice {index + 1}</span>
                 </button>
               ))}
-            </div>
+            </GameplayChoiceGrid>
           </div>
           <GameWorkspaceBoardOverlay
             actionLabel={screen.startActionLabel}

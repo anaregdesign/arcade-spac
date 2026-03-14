@@ -2,12 +2,14 @@ import type { CSSProperties } from "react";
 
 import { useSpotChangeWorkspace } from "../../../lib/client/usecase/game-workspace/use-spot-change-workspace";
 import type { SpotChangeCell } from "../../../lib/client/usecase/game-workspace/use-spot-change-session";
-import sharedStyles from "../shared/GameWorkspaceShared.module.css";
-import { GameWorkspaceBoardOverlay } from "../shared/GameWorkspaceBoardOverlay";
-import { GameWorkspaceControlsCard } from "../shared/GameWorkspaceControlsCard";
-import { GameWorkspaceFinishCard } from "../shared/GameWorkspaceFinishCard";
-import { GameInstructionsDialog } from "../shared/GameInstructionsDialog";
-import type { GameWorkspaceComponentProps } from "../shared/game-workspace-types";
+import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
+import { GameplayTwinPanelLayout } from "../../gameplay/GameplayLayoutVariants";
+import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
+import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
+import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
+import { GameWorkspaceFinishCard } from "../../gameplay/workspace/GameWorkspaceFinishCard";
+import { GameInstructionsDialog } from "../../gameplay/workspace/GameInstructionsDialog";
+import type { GameWorkspaceComponentProps } from "../../gameplay/workspace/game-workspace-types";
 import styles from "./SpotChangeGameWorkspace.module.css";
 
 function buildSymbolStyle(cell: SpotChangeCell["original"]): CSSProperties {
@@ -48,17 +50,9 @@ export function SpotChangeGameWorkspace({ instructions, workspace }: GameWorkspa
 
       <section className={["feature-card", sharedStyles["workspace-card"], sharedStyles["board-card"], styles["spot-board-card"]].join(" ")} aria-label="Spot Change board">
         <div className={[styles["spot-shell"], sharedStyles["game-board-overlay-shell"]].join(" ")}>
-          <div className={styles["spot-header"]}>
-            <div>
-              <p className="eyebrow">Comparison scene</p>
-              <h2 className="section-title">Find every change in the right scene</h2>
-            </div>
-            <p className="compact-copy">
-              Position, color, orientation, and missing-symbol differences can appear in the changed scene.
-            </p>
-          </div>
+          <GameplayContextCue className={styles["spot-header"]} detail="Left board is reference." phase="Compare" title="Find changes on the right board" tone="compare" />
 
-          <div className={styles["spot-scene-grid"]}>
+          <GameplayTwinPanelLayout className={styles["spot-scene-grid"]}>
             <section className={styles["spot-scene-panel"]} aria-label="Original scene">
               <div className={styles["spot-scene-heading"]}>
                 <p className="eyebrow">Original</p>
@@ -115,7 +109,7 @@ export function SpotChangeGameWorkspace({ instructions, workspace }: GameWorkspa
                 )}
               </div>
             </section>
-          </div>
+          </GameplayTwinPanelLayout>
 
           <GameWorkspaceBoardOverlay
             actionLabel={screen.startActionLabel}

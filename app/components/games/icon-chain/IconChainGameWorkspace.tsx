@@ -1,10 +1,12 @@
 import { useIconChainWorkspace } from "../../../lib/client/usecase/game-workspace/use-icon-chain-workspace";
-import sharedStyles from "../shared/GameWorkspaceShared.module.css";
-import { GameWorkspaceBoardOverlay } from "../shared/GameWorkspaceBoardOverlay";
-import { GameWorkspaceControlsCard } from "../shared/GameWorkspaceControlsCard";
-import { GameWorkspaceFinishCard } from "../shared/GameWorkspaceFinishCard";
-import { GameInstructionsDialog } from "../shared/GameInstructionsDialog";
-import type { GameWorkspaceComponentProps } from "../shared/game-workspace-types";
+import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
+import { GameplaySidecarLayout } from "../../gameplay/GameplayLayoutVariants";
+import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
+import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
+import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
+import { GameWorkspaceFinishCard } from "../../gameplay/workspace/GameWorkspaceFinishCard";
+import { GameInstructionsDialog } from "../../gameplay/workspace/GameInstructionsDialog";
+import type { GameWorkspaceComponentProps } from "../../gameplay/workspace/game-workspace-types";
 import styles from "./IconChainGameWorkspace.module.css";
 
 function IconPill({
@@ -60,25 +62,21 @@ export function IconChainGameWorkspace({ instructions, workspace }: GameWorkspac
           data-state={screen.iconChain.state}
           data-wrong-picks={screen.iconChain.wrongPickCount}
         >
-          <div className={styles["icon-chain-copy"]}>
-            <p className="eyebrow">{screen.isWatching ? "Watch" : screen.isInputting ? "Clue reconstruction" : "Icon Chain"}</p>
-            <strong>
-              {screen.isWatching
-                ? "Memorize the icon order before it disappears"
+          <GameplayContextCue
+            className={styles["icon-chain-copy"]}
+            detail={
+              screen.isWatching
+                ? "Hidden after reveal."
                 : screen.isInputting
-                  ? "The first icon is anchored. Use the clues to rebuild the remaining order"
-                  : "Memory first, inference second"}
-            </strong>
-            <p className="compact-copy">
-              {screen.isWatching
-                ? "The full chain is visible only during the watch phase. Once the clue board opens, the sequence row hides the unknown slots."
-                : screen.isInputting
-                  ? "A wrong pick resets the current chain back to the anchored start icon, so use the clue cards before committing."
-                  : "Each round starts with a brief reveal, then switches to a clue board with fixed slot, order, and adjacent-pair hints."}
-            </p>
-          </div>
+                  ? "Wrong picks reset to slot 1."
+                  : "Reveal, then rebuild."
+            }
+            phase={screen.isWatching ? "Watch" : screen.isInputting ? "Clue" : "Ready"}
+            title={screen.isWatching ? "Memorize the chain order" : screen.isInputting ? "Read clues, then pick the next icon" : "Reveal then rebuild"}
+            tone={screen.isWatching ? "memory" : "logic"}
+          />
 
-          <div className={styles["icon-chain-columns"]}>
+          <GameplaySidecarLayout className={styles["icon-chain-columns"]} desktopMain="1.35fr" desktopSide="0.95fr" desktopSideMin="16rem" mobileSideMax="8.6rem" mobileSideMin="7.8rem">
             <div className={styles["icon-chain-board-column"]}>
               <article className={styles["icon-chain-panel"]}>
                 <header className={styles["icon-chain-panel-header"]}>
@@ -128,7 +126,7 @@ export function IconChainGameWorkspace({ instructions, workspace }: GameWorkspac
               <article className={styles["icon-chain-panel"]}>
                 <header className={styles["icon-chain-panel-header"]}>
                   <p className="eyebrow">Clue board</p>
-                  <strong>Read the fixed anchors, links, and order relations before tapping</strong>
+                  <strong>Read clues before tapping</strong>
                 </header>
                 <div className={styles["icon-chain-clue-grid"]}>
                   {screen.iconChain.clueCards.map((clue) => (
@@ -157,7 +155,7 @@ export function IconChainGameWorkspace({ instructions, workspace }: GameWorkspac
               <article className={styles["icon-chain-panel"]}>
                 <header className={styles["icon-chain-panel-header"]}>
                   <p className="eyebrow">Candidate tray</p>
-                  <strong>{screen.isInputting ? "Tap the next icon in the chain" : "Unlocked after the watch phase"}</strong>
+                  <strong>{screen.isInputting ? "Tap the next icon" : "Unlocks after reveal"}</strong>
                 </header>
                 <p className={styles["icon-chain-live-copy"]}>
                   {screen.isInputting && screen.iconChain.nextExpectedIconId
@@ -197,7 +195,7 @@ export function IconChainGameWorkspace({ instructions, workspace }: GameWorkspac
                 </div>
               </article>
             </div>
-          </div>
+          </GameplaySidecarLayout>
 
           <GameWorkspaceBoardOverlay
             actionLabel={screen.startActionLabel}

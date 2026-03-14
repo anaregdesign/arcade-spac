@@ -1,10 +1,12 @@
 import { useZoneLockWorkspace } from "../../../lib/client/usecase/game-workspace/use-zone-lock-workspace";
-import sharedStyles from "../shared/GameWorkspaceShared.module.css";
-import { GameWorkspaceBoardOverlay } from "../shared/GameWorkspaceBoardOverlay";
-import { GameWorkspaceControlsCard } from "../shared/GameWorkspaceControlsCard";
-import { GameWorkspaceFinishCard } from "../shared/GameWorkspaceFinishCard";
-import { GameInstructionsDialog } from "../shared/GameInstructionsDialog";
-import type { GameWorkspaceComponentProps } from "../shared/game-workspace-types";
+import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
+import { GameplaySidecarLayout } from "../../gameplay/GameplayLayoutVariants";
+import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
+import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
+import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
+import { GameWorkspaceFinishCard } from "../../gameplay/workspace/GameWorkspaceFinishCard";
+import { GameInstructionsDialog } from "../../gameplay/workspace/GameInstructionsDialog";
+import type { GameWorkspaceComponentProps } from "../../gameplay/workspace/game-workspace-types";
 import styles from "./ZoneLockGameWorkspace.module.css";
 
 function formatZoneCells(cells: Array<{ columnIndex: number; rowIndex: number }>) {
@@ -44,15 +46,15 @@ export function ZoneLockGameWorkspace({ instructions, workspace }: GameWorkspace
           data-state={screen.zoneLock.state}
           data-zone-lock-root="true"
         >
-          <div className={styles["zone-lock-copy"]}>
-            <p className="eyebrow">{screen.isLiveRun ? "Live zones" : screen.isRunCleared ? "Cleared" : screen.isRunFailed ? "Timed out" : "Zone Lock"}</p>
-            <strong>Toggle shared cells until every zone card locks at the same time</strong>
-            <p className="compact-copy">
-              Each cell belongs to multiple overlapping zones. One tap can fix a count in one card while breaking another, so read the full board before toggling.
-            </p>
-          </div>
+          <GameplayContextCue
+            className={styles["zone-lock-copy"]}
+            detail="One cell can affect multiple zones."
+            phase={screen.isLiveRun ? "Live" : screen.isRunCleared ? "Cleared" : screen.isRunFailed ? "Timed out" : "Ready"}
+            title="Toggle cells until every zone locks"
+            tone="logic"
+          />
 
-          <div className={styles["zone-lock-columns"]}>
+          <GameplaySidecarLayout className={styles["zone-lock-columns"]} desktopMain="1.2fr" desktopSide="0.9fr" desktopSideMin="18rem" mobileSideMax="8rem" mobileSideMin="7.2rem">
             <div className={styles["zone-lock-board-column"]}>
               <div className={["hero-actions", "compact-actions", sharedStyles["workspace-utility-actions"], styles["zone-lock-actions"]].join(" ")}>
                 <button className="action-link action-link-secondary" disabled={!screen.isLiveRun} onClick={screen.handleResetBoard} type="button">
@@ -125,7 +127,7 @@ export function ZoneLockGameWorkspace({ instructions, workspace }: GameWorkspace
                 </article>
               ))}
             </div>
-          </div>
+          </GameplaySidecarLayout>
 
           <GameWorkspaceBoardOverlay
             actionLabel={screen.startActionLabel}

@@ -1,10 +1,11 @@
 import { useSpinnerAimWorkspace } from "../../../lib/client/usecase/game-workspace/use-spinner-aim-workspace";
-import sharedStyles from "../shared/GameWorkspaceShared.module.css";
-import { GameWorkspaceBoardOverlay } from "../shared/GameWorkspaceBoardOverlay";
-import { GameWorkspaceControlsCard } from "../shared/GameWorkspaceControlsCard";
-import { GameWorkspaceFinishCard } from "../shared/GameWorkspaceFinishCard";
-import { GameInstructionsDialog } from "../shared/GameInstructionsDialog";
-import type { GameWorkspaceComponentProps } from "../shared/game-workspace-types";
+import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
+import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
+import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
+import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
+import { GameWorkspaceFinishCard } from "../../gameplay/workspace/GameWorkspaceFinishCard";
+import { GameInstructionsDialog } from "../../gameplay/workspace/GameInstructionsDialog";
+import type { GameWorkspaceComponentProps } from "../../gameplay/workspace/game-workspace-types";
 import styles from "./SpinnerAimGameWorkspace.module.css";
 
 function toArcStyle(angle: number) {
@@ -46,13 +47,13 @@ export function SpinnerAimGameWorkspace({ instructions, workspace }: GameWorkspa
 
       <section className={["feature-card", sharedStyles["workspace-card"], sharedStyles["board-card"], styles["spinner-aim-board-card"]].join(" ")} aria-label="Spinner Aim board">
         <div className={[styles["spinner-aim-shell"], sharedStyles["game-board-overlay-shell"]].join(" ")}>
-          <div className={styles["spinner-aim-copy"]}>
-            <p className="eyebrow">Angular shot timing</p>
-            <strong>Fire when the launcher lines up with the target arc.</strong>
-            <p className="compact-copy">
-              The green target arc advances the run. The coral hazard arc counts as a bad shot, and every off-target fire lowers accuracy.
-            </p>
-          </div>
+          <GameplayContextCue
+            className={styles["spinner-aim-copy"]}
+            detail="Avoid the hazard arc."
+            phase="Timing"
+            title="Fire only through the target arc"
+            tone="timing"
+          />
 
           <div className={styles["spinner-aim-legend"]}>
             <span className={styles["spinner-aim-legend-target"]}>Target arc</span>

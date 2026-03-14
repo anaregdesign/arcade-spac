@@ -1,10 +1,11 @@
 import { useSwapSolveWorkspace } from "../../../lib/client/usecase/game-workspace/use-swap-solve-workspace";
-import sharedStyles from "../shared/GameWorkspaceShared.module.css";
-import { GameWorkspaceBoardOverlay } from "../shared/GameWorkspaceBoardOverlay";
-import { GameWorkspaceControlsCard } from "../shared/GameWorkspaceControlsCard";
-import { GameWorkspaceFinishCard } from "../shared/GameWorkspaceFinishCard";
-import { GameInstructionsDialog } from "../shared/GameInstructionsDialog";
-import type { GameWorkspaceComponentProps } from "../shared/game-workspace-types";
+import { GameplayTwinPanelLayout } from "../../gameplay/GameplayLayoutVariants";
+import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
+import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
+import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
+import { GameWorkspaceFinishCard } from "../../gameplay/workspace/GameWorkspaceFinishCard";
+import { GameInstructionsDialog } from "../../gameplay/workspace/GameInstructionsDialog";
+import type { GameWorkspaceComponentProps } from "../../gameplay/workspace/game-workspace-types";
 import styles from "./SwapSolveGameWorkspace.module.css";
 
 function StaticBoard({ board }: { board: string[][] }) {
@@ -43,7 +44,7 @@ export function SwapSolveGameWorkspace({ instructions, workspace }: GameWorkspac
 
       <section className={["feature-card", sharedStyles["workspace-card"], sharedStyles["board-card"], styles["swap-workspace-card"]].join(" ")} aria-label="Swap Solve board">
         <div className={[styles["swap-shell"], sharedStyles["game-board-overlay-shell"]].join(" ")}>
-          <div className={styles["swap-columns"]}>
+          <GameplayTwinPanelLayout className={styles["swap-columns"]}>
             <div className={styles["swap-panel"]}>
               <p className="eyebrow">Target</p>
               <StaticBoard board={screen.swapSolve.targetBoard} />
@@ -72,7 +73,7 @@ export function SwapSolveGameWorkspace({ instructions, workspace }: GameWorkspac
                 )}
               </div>
             </div>
-          </div>
+          </GameplayTwinPanelLayout>
           <GameWorkspaceBoardOverlay
             actionLabel={screen.startActionLabel}
             detail="Tap one tile, tap another tile, and swap them until the live board matches the target before the budget runs out."

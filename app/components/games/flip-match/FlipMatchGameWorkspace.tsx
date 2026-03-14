@@ -1,10 +1,12 @@
 import { useFlipMatchWorkspace } from "../../../lib/client/usecase/game-workspace/use-flip-match-workspace";
-import sharedStyles from "../shared/GameWorkspaceShared.module.css";
-import { GameWorkspaceBoardOverlay } from "../shared/GameWorkspaceBoardOverlay";
-import { GameWorkspaceControlsCard } from "../shared/GameWorkspaceControlsCard";
-import { GameWorkspaceFinishCard } from "../shared/GameWorkspaceFinishCard";
-import { GameInstructionsDialog } from "../shared/GameInstructionsDialog";
-import type { GameWorkspaceComponentProps } from "../shared/game-workspace-types";
+import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
+import { GameplayTwinPanelLayout } from "../../gameplay/GameplayLayoutVariants";
+import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
+import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
+import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
+import { GameWorkspaceFinishCard } from "../../gameplay/workspace/GameWorkspaceFinishCard";
+import { GameInstructionsDialog } from "../../gameplay/workspace/GameInstructionsDialog";
+import type { GameWorkspaceComponentProps } from "../../gameplay/workspace/game-workspace-types";
 import styles from "./FlipMatchGameWorkspace.module.css";
 
 function FlipBoard({
@@ -79,14 +81,14 @@ export function FlipMatchGameWorkspace({ instructions, workspace }: GameWorkspac
 
       <section className={["feature-card", sharedStyles["workspace-card"], sharedStyles["board-card"], styles["flip-workspace-card"]].join(" ")} aria-label="Flip Match board">
         <div className={[styles["flip-shell"], sharedStyles["game-board-overlay-shell"]].join(" ")}>
-          <div className={styles["flip-copy"]}>
-            <p className="eyebrow">Match the silhouette</p>
-            <strong>Tap one tile to flip a horizontal strip.</strong>
-            <p className="compact-copy">
-              Each move flips the selected tile and its immediate left and right neighbors. Match the live board to the goal silhouette, then the next round opens automatically.
-            </p>
-          </div>
-          <div className={styles["flip-columns"]}>
+          <GameplayContextCue
+            className={styles["flip-copy"]}
+            detail="Center tile flips with its left and right neighbors."
+            phase="Rule"
+            title="Flip a horizontal strip to match target"
+            tone="swap"
+          />
+          <GameplayTwinPanelLayout className={styles["flip-columns"]}>
             <FlipBoard board={screen.flipMatch.targetGrid} columnCount={screen.flipMatch.columnCount} title="Target silhouette" />
             <FlipBoard
               board={screen.flipMatch.liveGrid}
@@ -95,7 +97,7 @@ export function FlipMatchGameWorkspace({ instructions, workspace }: GameWorkspac
               onTilePress={screen.handleTilePress}
               title="Live board"
             />
-          </div>
+          </GameplayTwinPanelLayout>
           <GameWorkspaceBoardOverlay
             actionLabel={screen.startActionLabel}
             detail="Tap a live tile to flip itself plus its left and right neighbors until the live board matches the target silhouette."

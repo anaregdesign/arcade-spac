@@ -1,10 +1,11 @@
 import { useGlowCycleWorkspace } from "../../../lib/client/usecase/game-workspace/use-glow-cycle-workspace";
-import sharedStyles from "../shared/GameWorkspaceShared.module.css";
-import { GameWorkspaceBoardOverlay } from "../shared/GameWorkspaceBoardOverlay";
-import { GameWorkspaceControlsCard } from "../shared/GameWorkspaceControlsCard";
-import { GameWorkspaceFinishCard } from "../shared/GameWorkspaceFinishCard";
-import { GameInstructionsDialog } from "../shared/GameInstructionsDialog";
-import type { GameWorkspaceComponentProps } from "../shared/game-workspace-types";
+import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
+import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
+import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
+import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
+import { GameWorkspaceFinishCard } from "../../gameplay/workspace/GameWorkspaceFinishCard";
+import { GameInstructionsDialog } from "../../gameplay/workspace/GameInstructionsDialog";
+import type { GameWorkspaceComponentProps } from "../../gameplay/workspace/game-workspace-types";
 import styles from "./GlowCycleGameWorkspace.module.css";
 
 function getJudgmentCopy(judgment: "good" | "miss" | "perfect" | "wrong-node" | null) {
@@ -118,13 +119,13 @@ export function GlowCycleGameWorkspace({ instructions, workspace }: GameWorkspac
           data-window-spread={screen.glowCycle.windowSpreadPercent}
           data-glow-cycle-root="true"
         >
-          <div className={styles["glow-cycle-copy"]}>
-            <p className="eyebrow">Visual rhythm target selection</p>
-            <strong>Wait for the whole node board to crest together, then tap only the highlighted target.</strong>
-            <p className="compact-copy">
-              Every node pulses on a different cycle. Read the shared sync meter, avoid decoy taps, and keep the mistimed count low while the target changes each round.
-            </p>
-          </div>
+          <GameplayContextCue
+            className={styles["glow-cycle-copy"]}
+            detail="Ignore decoys."
+            phase="Sync"
+            title="Tap only the highlighted node at the glow crest"
+            tone="timing"
+          />
 
           <div className={styles["glow-cycle-legend"]}>
             <span className={styles["glow-cycle-legend-target"]}>Target {targetNode?.label ?? "—"}</span>

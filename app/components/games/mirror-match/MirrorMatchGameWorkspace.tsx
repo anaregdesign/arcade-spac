@@ -1,10 +1,11 @@
 import { useMirrorMatchWorkspace } from "../../../lib/client/usecase/game-workspace/use-mirror-match-workspace";
-import sharedStyles from "../shared/GameWorkspaceShared.module.css";
-import { GameWorkspaceBoardOverlay } from "../shared/GameWorkspaceBoardOverlay";
-import { GameWorkspaceControlsCard } from "../shared/GameWorkspaceControlsCard";
-import { GameWorkspaceFinishCard } from "../shared/GameWorkspaceFinishCard";
-import { GameInstructionsDialog } from "../shared/GameInstructionsDialog";
-import type { GameWorkspaceComponentProps } from "../shared/game-workspace-types";
+import { GameplayTwinPanelLayout } from "../../gameplay/GameplayLayoutVariants";
+import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
+import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
+import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
+import { GameWorkspaceFinishCard } from "../../gameplay/workspace/GameWorkspaceFinishCard";
+import { GameInstructionsDialog } from "../../gameplay/workspace/GameInstructionsDialog";
+import type { GameWorkspaceComponentProps } from "../../gameplay/workspace/game-workspace-types";
 import styles from "./MirrorMatchGameWorkspace.module.css";
 
 function Board({
@@ -65,7 +66,7 @@ export function MirrorMatchGameWorkspace({ instructions, workspace }: GameWorksp
 
       <section className={["feature-card", sharedStyles["workspace-card"], sharedStyles["board-card"], styles["mirror-workspace-card"]].join(" ")} aria-label="Mirror Match board">
         <div className={[styles["mirror-shell"], sharedStyles["game-board-overlay-shell"]].join(" ")}>
-          <div className={styles["mirror-columns"]}>
+          <GameplayTwinPanelLayout className={styles["mirror-columns"]}>
             <Board board={screen.mirrorMatch.targetGrid} columnCount={screen.mirrorMatch.columnCount} title="Target" />
             <Board
               board={screen.mirrorMatch.liveGrid}
@@ -73,7 +74,7 @@ export function MirrorMatchGameWorkspace({ instructions, workspace }: GameWorksp
               onCellPress={screen.handleCellPress}
               title="Mirror"
             />
-          </div>
+          </GameplayTwinPanelLayout>
           <GameWorkspaceBoardOverlay
             actionLabel={screen.startActionLabel}
             detail="Copy the horizontally mirrored target pattern on the editable board."

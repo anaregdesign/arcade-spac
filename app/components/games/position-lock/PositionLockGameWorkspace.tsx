@@ -1,26 +1,27 @@
 import { usePositionLockWorkspace } from "../../../lib/client/usecase/game-workspace/use-position-lock-workspace";
-import sharedStyles from "../shared/GameWorkspaceShared.module.css";
-import { GameWorkspaceBoardOverlay } from "../shared/GameWorkspaceBoardOverlay";
-import { GameWorkspaceControlsCard } from "../shared/GameWorkspaceControlsCard";
-import { GameWorkspaceFinishCard } from "../shared/GameWorkspaceFinishCard";
-import { GameInstructionsDialog } from "../shared/GameInstructionsDialog";
-import type { GameWorkspaceComponentProps } from "../shared/game-workspace-types";
+import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
+import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
+import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
+import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
+import { GameWorkspaceFinishCard } from "../../gameplay/workspace/GameWorkspaceFinishCard";
+import { GameInstructionsDialog } from "../../gameplay/workspace/GameInstructionsDialog";
+import type { GameWorkspaceComponentProps } from "../../gameplay/workspace/game-workspace-types";
 import styles from "./PositionLockGameWorkspace.module.css";
 
 function getPhaseHeading(isWatching: boolean, isInputting: boolean, isReviewing: boolean) {
   if (isWatching) {
-    return "Watch the landing pattern";
+    return "Track each token's final cell";
   }
 
   if (isInputting) {
-    return "Rebuild the final board";
+    return "Place each token back on its cell";
   }
 
   if (isReviewing) {
-    return "Check the round accuracy";
+    return "Read exact, near, and miss marks";
   }
 
-  return "Remember where each token stops";
+  return "Watch first, then rebuild";
 }
 
 export function PositionLockGameWorkspace({ instructions, workspace }: GameWorkspaceComponentProps) {
@@ -53,19 +54,21 @@ export function PositionLockGameWorkspace({ instructions, workspace }: GameWorks
       <section className={["feature-card", sharedStyles["workspace-card"], sharedStyles["board-card"], styles["position-lock-board-card"]].join(" ")} aria-label="Position Lock board">
         <div className={[styles["position-lock-shell"], sharedStyles["game-board-overlay-shell"]].join(" ")}>
           <div className={styles["position-lock-panel"]} data-position-lock-phase={screen.positionLock.state}>
-            <div className={styles["position-lock-copy"]}>
-              <p className="eyebrow">{screen.isWatching ? "Watch" : screen.isInputting ? "Place" : screen.isReviewing ? "Review" : "Position Lock"}</p>
-              <strong>{getPhaseHeading(screen.isWatching, screen.isInputting, screen.isReviewing)}</strong>
-              <p className="compact-copy">
-                {screen.isWatching
-                  ? "Tokens settle one by one. Focus on the final cell for each label before the board blanks out."
+            <GameplayContextCue
+              className={styles["position-lock-copy"]}
+              detail={
+                screen.isWatching
+                  ? "Only final positions matter."
                   : screen.isInputting
-                    ? "Choose a token from the tray, then tap the cell where it stopped. Every token must be placed before scoring."
+                    ? "Choose a token, then tap its cell."
                     : screen.isReviewing
-                      ? "Exact placements glow green, near placements glow amber, and misses stay coral before the next round starts."
-                      : "A short watch phase is followed by an empty board. Rebuild the same layout from memory."}
-              </p>
-            </div>
+                      ? "Green exact, amber near, coral miss."
+                      : "Short reveal before placement."
+              }
+              phase={screen.isWatching ? "Watch" : screen.isInputting ? "Place" : screen.isReviewing ? "Review" : "Ready"}
+              title={getPhaseHeading(screen.isWatching, screen.isInputting, screen.isReviewing)}
+              tone={screen.isWatching ? "watch" : screen.isInputting ? "target" : "review"}
+            />
 
             <div className={styles["position-lock-summary"]}>
               <span>Current round tokens: {screen.positionLock.tokenCount}</span>

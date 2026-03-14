@@ -1,10 +1,11 @@
 import { useBoxFillWorkspace } from "../../../lib/client/usecase/game-workspace/use-box-fill-workspace";
-import sharedStyles from "../shared/GameWorkspaceShared.module.css";
-import { GameWorkspaceBoardOverlay } from "../shared/GameWorkspaceBoardOverlay";
-import { GameWorkspaceControlsCard } from "../shared/GameWorkspaceControlsCard";
-import { GameWorkspaceFinishCard } from "../shared/GameWorkspaceFinishCard";
-import { GameInstructionsDialog } from "../shared/GameInstructionsDialog";
-import type { GameWorkspaceComponentProps } from "../shared/game-workspace-types";
+import { GameplaySidecarLayout } from "../../gameplay/GameplayLayoutVariants";
+import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
+import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
+import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
+import { GameWorkspaceFinishCard } from "../../gameplay/workspace/GameWorkspaceFinishCard";
+import { GameInstructionsDialog } from "../../gameplay/workspace/GameInstructionsDialog";
+import type { GameWorkspaceComponentProps } from "../../gameplay/workspace/game-workspace-types";
 import styles from "./BoxFillGameWorkspace.module.css";
 
 function getThemeClass(theme: string | null) {
@@ -90,32 +91,7 @@ export function BoxFillGameWorkspace({ instructions, workspace }: GameWorkspaceC
             </button>
           </div>
 
-          <div className={styles["workspace-grid"]}>
-            <div className={styles["tray-panel"]}>
-              <p className={styles["panel-title"]}>Piece tray</p>
-              <div className={styles["tray-grid"]}>
-                {screen.boxFill.pieces.map((piece) => (
-                  <button
-                    className={[
-                      styles["piece-card"],
-                      getThemeClass(piece.theme),
-                      screen.boxFill.selectedPieceId === piece.id ? styles["piece-card-selected"] : "",
-                      piece.isPlaced ? styles["piece-card-placed"] : "",
-                    ].filter(Boolean).join(" ")}
-                    data-piece-id={piece.id}
-                    data-piece-placed={piece.isPlaced ? "true" : "false"}
-                    disabled={!screen.isLiveRun || piece.isPlaced}
-                    key={piece.id}
-                    onClick={() => screen.boxFill.selectPiece(piece.id)}
-                    type="button"
-                  >
-                    <span className={styles["piece-label"]}>{piece.label}</span>
-                    <span className={styles["piece-meta"]}>{piece.cellCount} cells</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-
+          <GameplaySidecarLayout className={styles["workspace-grid"]} desktopMain="1fr" desktopSide="220px" desktopSideMin="180px" mobileSideMax="7.4rem" mobileSideMin="6.8rem">
             <div className={styles["board-panel"]}>
               <p className={styles["panel-title"]}>Target box</p>
               <div className={styles["board-grid"]} style={{ gridTemplateColumns: `repeat(${screen.boxFill.columnCount}, minmax(0, 1fr))` }}>
@@ -146,7 +122,32 @@ export function BoxFillGameWorkspace({ instructions, workspace }: GameWorkspaceC
                 ))}
               </div>
             </div>
-          </div>
+
+            <div className={styles["tray-panel"]}>
+              <p className={styles["panel-title"]}>Piece tray</p>
+              <div className={styles["tray-grid"]}>
+                {screen.boxFill.pieces.map((piece) => (
+                  <button
+                    className={[
+                      styles["piece-card"],
+                      getThemeClass(piece.theme),
+                      screen.boxFill.selectedPieceId === piece.id ? styles["piece-card-selected"] : "",
+                      piece.isPlaced ? styles["piece-card-placed"] : "",
+                    ].filter(Boolean).join(" ")}
+                    data-piece-id={piece.id}
+                    data-piece-placed={piece.isPlaced ? "true" : "false"}
+                    disabled={!screen.isLiveRun || piece.isPlaced}
+                    key={piece.id}
+                    onClick={() => screen.boxFill.selectPiece(piece.id)}
+                    type="button"
+                  >
+                    <span className={styles["piece-label"]}>{piece.label}</span>
+                    <span className={styles["piece-meta"]}>{piece.cellCount} cells</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </GameplaySidecarLayout>
 
           <p className={styles["board-copy"]}>
             Select a tray piece, rotate it if needed, tap one board anchor to preview the fit, then place it into the open box.

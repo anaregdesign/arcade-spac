@@ -1,10 +1,11 @@
 import { usePhaseLockWorkspace } from "../../../lib/client/usecase/game-workspace/use-phase-lock-workspace";
-import sharedStyles from "../shared/GameWorkspaceShared.module.css";
-import { GameWorkspaceBoardOverlay } from "../shared/GameWorkspaceBoardOverlay";
-import { GameWorkspaceControlsCard } from "../shared/GameWorkspaceControlsCard";
-import { GameWorkspaceFinishCard } from "../shared/GameWorkspaceFinishCard";
-import { GameInstructionsDialog } from "../shared/GameInstructionsDialog";
-import type { GameWorkspaceComponentProps } from "../shared/game-workspace-types";
+import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
+import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
+import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
+import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
+import { GameWorkspaceFinishCard } from "../../gameplay/workspace/GameWorkspaceFinishCard";
+import { GameInstructionsDialog } from "../../gameplay/workspace/GameInstructionsDialog";
+import type { GameWorkspaceComponentProps } from "../../gameplay/workspace/game-workspace-types";
 import styles from "./PhaseLockGameWorkspace.module.css";
 
 function toBandStyle(angle: number) {
@@ -47,13 +48,13 @@ export function PhaseLockGameWorkspace({ instructions, workspace }: GameWorkspac
 
       <section className={["feature-card", sharedStyles["workspace-card"], sharedStyles["board-card"], styles["phase-lock-board-card"]].join(" ")} aria-label="Phase Lock board">
         <div className={[styles["phase-lock-shell"], sharedStyles["game-board-overlay-shell"]].join(" ")}>
-          <div className={styles["phase-lock-copy"]}>
-            <p className="eyebrow">Sequential phase timing</p>
-            <strong>Lock each highlighted wheel only while its marker is inside the target band.</strong>
-            <p className="compact-copy">
-              Wheels keep spinning until you lock them cleanly. Misses add timing errors, but the active wheel stays live until you catch the right moment.
-            </p>
-          </div>
+          <GameplayContextCue
+            className={styles["phase-lock-copy"]}
+            detail="Misses keep the wheel live."
+            phase="Timing"
+            title="Lock the active wheel inside the band"
+            tone="timing"
+          />
 
           <div className={styles["phase-lock-legend"]}>
             <span className={styles["phase-lock-legend-target"]}>Target band</span>

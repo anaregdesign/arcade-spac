@@ -9,8 +9,7 @@
 }
 
 .spot-header {
-  display: grid;
-  gap: 0.45rem;
+  width: min(100%, 34rem);
 }
 
 .spot-scene-grid {
@@ -101,5 +100,49 @@
 @media (max-width: 900px) {
   .spot-scene-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .spot-shell {
+    gap: 0.8rem;
+  }
+
+  .spot-header {
+    width: 100%;
+  }
+
+  .spot-scene-grid {
+    gap: 0.75rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .spot-scene-panel {
+    gap: 0.55rem;
+    padding: 0.75rem;
+  }
+
+  .spot-scene-heading strong {
+    font-size: 0.82rem;
+  }
+
+  .spot-grid {
+    gap: 0.45rem;
+  }
+
+  .spot-cell {
+    border-radius: 0.8rem;
+  }
+
+  .spot-symbol {
+    font-size: 1.05rem;
+    min-height: 1.6rem;
+    min-width: 1.6rem;
+  }
+
+  .spot-found-badge {
+    bottom: 0.3rem;
+    font-size: 0.58rem;
+    right: 0.3rem;
   }
 }

@@ -1,10 +1,11 @@
 import { useTileShiftWorkspace } from "../../../lib/client/usecase/game-workspace/use-tile-shift-workspace";
-import sharedStyles from "../shared/GameWorkspaceShared.module.css";
-import { GameWorkspaceBoardOverlay } from "../shared/GameWorkspaceBoardOverlay";
-import { GameWorkspaceControlsCard } from "../shared/GameWorkspaceControlsCard";
-import { GameWorkspaceFinishCard } from "../shared/GameWorkspaceFinishCard";
-import { GameInstructionsDialog } from "../shared/GameInstructionsDialog";
-import type { GameWorkspaceComponentProps } from "../shared/game-workspace-types";
+import { GameplayTwinPanelLayout } from "../../gameplay/GameplayLayoutVariants";
+import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
+import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
+import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
+import { GameWorkspaceFinishCard } from "../../gameplay/workspace/GameWorkspaceFinishCard";
+import { GameInstructionsDialog } from "../../gameplay/workspace/GameInstructionsDialog";
+import type { GameWorkspaceComponentProps } from "../../gameplay/workspace/game-workspace-types";
 import styles from "./TileShiftGameWorkspace.module.css";
 
 function Board({ board }: { board: string[][] }) {
@@ -42,7 +43,7 @@ export function TileShiftGameWorkspace({ instructions, workspace }: GameWorkspac
 
       <section className={["feature-card", sharedStyles["workspace-card"], sharedStyles["board-card"], styles["shift-workspace-card"]].join(" ")} aria-label="Tile Shift board">
         <div className={[styles["shift-shell"], sharedStyles["game-board-overlay-shell"]].join(" ")}>
-          <div className={styles["shift-columns"]}>
+          <GameplayTwinPanelLayout className={styles["shift-columns"]}>
             <div className={styles["shift-panel"]}>
               <p className="eyebrow">Target</p>
               <Board board={screen.tileShift.targetBoard} />
@@ -77,7 +78,7 @@ export function TileShiftGameWorkspace({ instructions, workspace }: GameWorkspac
                 <Board board={screen.tileShift.liveBoard} />
               </div>
             </div>
-          </div>
+          </GameplayTwinPanelLayout>
           <GameWorkspaceBoardOverlay
             actionLabel={screen.startActionLabel}
             detail="Shift rows to the right and columns downward until the live board matches the target."

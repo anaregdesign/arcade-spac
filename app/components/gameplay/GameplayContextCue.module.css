@@ -1,0 +1,133 @@
+.context-cue {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.75rem;
+  align-items: start;
+  width: min(100%, 42rem);
+  padding: 0.82rem 0.95rem;
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  border-radius: 1rem;
+  background:
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0) 45%),
+    rgba(15, 23, 42, 0.7);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.context-cue[data-align="center"] {
+  justify-self: center;
+}
+
+.context-cue[data-align="center"] .context-cue-copy {
+  justify-items: center;
+  text-align: center;
+}
+
+.context-cue-icon {
+  display: grid;
+  width: 2.2rem;
+  height: 2.2rem;
+  place-items: center;
+  border-radius: 0.82rem;
+  background: rgba(148, 163, 184, 0.16);
+  color: #e2e8f0;
+}
+
+.context-cue-glyph {
+  font-size: 0.98rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.context-cue-copy {
+  display: grid;
+  gap: 0.22rem;
+  min-width: 0;
+}
+
+.context-cue-phase {
+  color: #cbd5e1;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.context-cue-title {
+  color: #f8fafc;
+  font-size: 0.98rem;
+  line-height: 1.3;
+}
+
+.context-cue-detail {
+  margin: 0;
+  color: #94a3b8;
+  font-size: 0.82rem;
+  line-height: 1.35;
+}
+
+.context-cue[data-tone="watch"] .context-cue-icon {
+  background: rgba(59, 130, 246, 0.18);
+  color: #bfdbfe;
+}
+
+.context-cue[data-tone="memory"] .context-cue-icon {
+  background: rgba(168, 85, 247, 0.18);
+  color: #e9d5ff;
+}
+
+.context-cue[data-tone="tap"] .context-cue-icon {
+  background: rgba(14, 165, 233, 0.18);
+  color: #bae6fd;
+}
+
+.context-cue[data-tone="timing"] .context-cue-icon {
+  background: rgba(244, 114, 182, 0.18);
+  color: #fbcfe8;
+}
+
+.context-cue[data-tone="target"] .context-cue-icon,
+.context-cue[data-tone="review"] .context-cue-icon {
+  background: rgba(34, 197, 94, 0.18);
+  color: #bbf7d0;
+}
+
+.context-cue[data-tone="compare"] .context-cue-icon {
+  background: rgba(250, 204, 21, 0.18);
+  color: #fde68a;
+}
+
+.context-cue[data-tone="logic"] .context-cue-icon,
+.context-cue[data-tone="swap"] .context-cue-icon {
+  background: rgba(251, 146, 60, 0.18);
+  color: #fed7aa;
+}
+
+@media (max-width: 640px) {
+  .context-cue {
+    gap: 0.62rem;
+    padding: 0.68rem 0.78rem;
+    border-radius: 0.92rem;
+  }
+
+  .context-cue-icon {
+    width: 1.9rem;
+    height: 1.9rem;
+    border-radius: 0.72rem;
+  }
+
+  .context-cue-glyph {
+    font-size: 0.88rem;
+  }
+
+  .context-cue-phase {
+    font-size: 0.62rem;
+  }
+
+  .context-cue-title {
+    font-size: 0.88rem;
+  }
+
+  .context-cue-detail[data-mobile-visible="false"] {
+    display: none;
+  }
+}

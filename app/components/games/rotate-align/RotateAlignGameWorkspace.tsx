@@ -1,11 +1,12 @@
 import type { RotateAlignCell } from "../../../lib/client/usecase/game-workspace/use-rotate-align-session";
 import { useRotateAlignWorkspace } from "../../../lib/client/usecase/game-workspace/use-rotate-align-workspace";
-import sharedStyles from "../shared/GameWorkspaceShared.module.css";
-import { GameWorkspaceBoardOverlay } from "../shared/GameWorkspaceBoardOverlay";
-import { GameWorkspaceControlsCard } from "../shared/GameWorkspaceControlsCard";
-import { GameWorkspaceFinishCard } from "../shared/GameWorkspaceFinishCard";
-import { GameInstructionsDialog } from "../shared/GameInstructionsDialog";
-import type { GameWorkspaceComponentProps } from "../shared/game-workspace-types";
+import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
+import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
+import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
+import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
+import { GameWorkspaceFinishCard } from "../../gameplay/workspace/GameWorkspaceFinishCard";
+import { GameInstructionsDialog } from "../../gameplay/workspace/GameInstructionsDialog";
+import type { GameWorkspaceComponentProps } from "../../gameplay/workspace/game-workspace-types";
 import styles from "./RotateAlignGameWorkspace.module.css";
 
 function connectorClassName(direction: string) {
@@ -129,13 +130,13 @@ export function RotateAlignGameWorkspace({ instructions, workspace }: GameWorksp
 
       <section className={["feature-card", sharedStyles["workspace-card"], sharedStyles["board-card"], styles["route-workspace-card"]].join(" ")} aria-label="Rotate Align board">
         <div className={[styles["route-shell"], sharedStyles["game-board-overlay-shell"]].join(" ")}>
-          <div className={styles["route-copy"]}>
-            <p className="eyebrow">Reconnect the route</p>
-            <strong>Rotate one tile at a time until the line runs from S to E.</strong>
-            <p className="compact-copy">
-              Each tap rotates one route tile 90 degrees clockwise. Empty tiles are inert, and the round clears as soon as the full path is continuous.
-            </p>
-          </div>
+          <GameplayContextCue
+            className={styles["route-copy"]}
+            detail="Each tap turns one tile clockwise."
+            phase="Route"
+            title="Rotate tiles until S connects to E"
+            tone="swap"
+          />
           <div
             className={styles["route-board"]}
             style={{ gridTemplateColumns: `repeat(${screen.rotateAlign.columnCount}, minmax(0, 1fr))` }}

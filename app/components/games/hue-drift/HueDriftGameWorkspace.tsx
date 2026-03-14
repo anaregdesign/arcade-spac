@@ -1,11 +1,13 @@
 import { useHueDriftWorkspace } from "../../../lib/client/usecase/game-workspace/use-hue-drift-workspace";
 import type { DriftColor } from "../../../lib/client/usecase/game-workspace/use-hue-drift-session";
-import sharedStyles from "../shared/GameWorkspaceShared.module.css";
-import { GameWorkspaceBoardOverlay } from "../shared/GameWorkspaceBoardOverlay";
-import { GameWorkspaceControlsCard } from "../shared/GameWorkspaceControlsCard";
-import { GameWorkspaceFinishCard } from "../shared/GameWorkspaceFinishCard";
-import { GameInstructionsDialog } from "../shared/GameInstructionsDialog";
-import type { GameWorkspaceComponentProps } from "../shared/game-workspace-types";
+import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
+import { GameplayChoiceGrid } from "../../gameplay/GameplayLayoutVariants";
+import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
+import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
+import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
+import { GameWorkspaceFinishCard } from "../../gameplay/workspace/GameWorkspaceFinishCard";
+import { GameInstructionsDialog } from "../../gameplay/workspace/GameInstructionsDialog";
+import type { GameWorkspaceComponentProps } from "../../gameplay/workspace/game-workspace-types";
 import styles from "./HueDriftGameWorkspace.module.css";
 
 function colorStyle(color: DriftColor) {
@@ -39,13 +41,13 @@ export function HueDriftGameWorkspace({ instructions, workspace }: GameWorkspace
       <section className={["feature-card", sharedStyles["workspace-card"], sharedStyles["board-card"], styles["hue-drift-board-card"]].join(" ")} aria-label="Hue Drift board">
         <div className={[styles["hue-drift-shell"], sharedStyles["game-board-overlay-shell"]].join(" ")}>
           <div className={styles["hue-drift-stage"]}>
-            <div className={styles["hue-drift-copy"]}>
-              <p className="eyebrow">Read the drift</p>
-              <strong>{screen.hueDrift.currentProblem.ruleLabel}</strong>
-              <p className="compact-copy">
-                One swatch is missing from the row. Compare the visible steps and choose the correct missing color.
-              </p>
-            </div>
+            <GameplayContextCue
+              className={styles["hue-drift-copy"]}
+              detail="Pick the missing swatch."
+              phase="Read"
+              title={screen.hueDrift.currentProblem.ruleLabel}
+              tone="logic"
+            />
             <div
               className={styles["hue-drift-row"]}
               style={{ gridTemplateColumns: `repeat(${screen.hueDrift.currentProblem.visibleSteps.length}, minmax(0, 1fr))` }}
@@ -60,7 +62,7 @@ export function HueDriftGameWorkspace({ instructions, workspace }: GameWorkspace
                 ),
               )}
             </div>
-            <div className={styles["hue-drift-choice-grid"]}>
+            <GameplayChoiceGrid className={styles["hue-drift-choice-grid"]}>
               {screen.hueDrift.currentProblem.choices.map((choice, index) => (
                 <button
                   className={styles["hue-drift-choice"]}
@@ -73,7 +75,7 @@ export function HueDriftGameWorkspace({ instructions, workspace }: GameWorkspace
                   <span className={styles["hue-drift-choice-copy"]}>Choice {index + 1}</span>
                 </button>
               ))}
-            </div>
+            </GameplayChoiceGrid>
           </div>
           <GameWorkspaceBoardOverlay
             actionLabel={screen.startActionLabel}

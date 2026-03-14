@@ -1,10 +1,11 @@
 import { useSyncPulseWorkspace } from "../../../lib/client/usecase/game-workspace/use-sync-pulse-workspace";
-import sharedStyles from "../shared/GameWorkspaceShared.module.css";
-import { GameWorkspaceBoardOverlay } from "../shared/GameWorkspaceBoardOverlay";
-import { GameWorkspaceControlsCard } from "../shared/GameWorkspaceControlsCard";
-import { GameWorkspaceFinishCard } from "../shared/GameWorkspaceFinishCard";
-import { GameInstructionsDialog } from "../shared/GameInstructionsDialog";
-import type { GameWorkspaceComponentProps } from "../shared/game-workspace-types";
+import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
+import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
+import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
+import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
+import { GameWorkspaceFinishCard } from "../../gameplay/workspace/GameWorkspaceFinishCard";
+import { GameInstructionsDialog } from "../../gameplay/workspace/GameInstructionsDialog";
+import type { GameWorkspaceComponentProps } from "../../gameplay/workspace/game-workspace-types";
 import styles from "./SyncPulseGameWorkspace.module.css";
 
 function toPulseStyle(radiusPx: number) {
@@ -71,13 +72,7 @@ export function SyncPulseGameWorkspace({ instructions, workspace }: GameWorkspac
 
       <section className={["feature-card", sharedStyles["workspace-card"], sharedStyles["board-card"], styles["sync-pulse-board-card"]].join(" ")} aria-label="Sync Pulse board">
         <div className={[styles["sync-pulse-shell"], sharedStyles["game-board-overlay-shell"]].join(" ")}>
-          <div className={styles["sync-pulse-copy"]}>
-            <p className="eyebrow">Beat overlap timing</p>
-            <strong>Tap only while both pulse rings collapse into the same radius.</strong>
-            <p className="compact-copy">
-              Perfect and good syncs advance the wave. Misses keep the same pulse live, so you can recover without leaving the board.
-            </p>
-          </div>
+          <GameplayContextCue className={styles["sync-pulse-copy"]} phase="Timing" title="Tap when both rings overlap" tone="timing" />
 
           <div className={styles["sync-pulse-legend"]}>
             <span className={styles["sync-pulse-legend-a"]}>Pulse A</span>

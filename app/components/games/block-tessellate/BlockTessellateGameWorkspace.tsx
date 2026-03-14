@@ -1,10 +1,11 @@
 import { useBlockTessellateWorkspace } from "../../../lib/client/usecase/game-workspace/use-block-tessellate-workspace";
-import sharedStyles from "../shared/GameWorkspaceShared.module.css";
-import { GameWorkspaceBoardOverlay } from "../shared/GameWorkspaceBoardOverlay";
-import { GameWorkspaceControlsCard } from "../shared/GameWorkspaceControlsCard";
-import { GameWorkspaceFinishCard } from "../shared/GameWorkspaceFinishCard";
-import { GameInstructionsDialog } from "../shared/GameInstructionsDialog";
-import type { GameWorkspaceComponentProps } from "../shared/game-workspace-types";
+import { GameplaySidecarLayout } from "../../gameplay/GameplayLayoutVariants";
+import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
+import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
+import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
+import { GameWorkspaceFinishCard } from "../../gameplay/workspace/GameWorkspaceFinishCard";
+import { GameInstructionsDialog } from "../../gameplay/workspace/GameInstructionsDialog";
+import type { GameWorkspaceComponentProps } from "../../gameplay/workspace/game-workspace-types";
 import styles from "./BlockTessellateGameWorkspace.module.css";
 
 function getThemeClass(theme: string | null) {
@@ -91,7 +92,7 @@ export function BlockTessellateGameWorkspace({ instructions, workspace }: GameWo
             </article>
           </div>
 
-          <div className={styles["workspace-grid"]}>
+          <GameplaySidecarLayout className={styles["workspace-grid"]} desktopMain="1.45fr" desktopSide="1fr" desktopSideMin="16rem" mobileSideMin="7.6rem" mobileSideMax="8.4rem">
             <div className={styles["board-panel"]}>
               <p className={styles["panel-title"]}>Target silhouette</p>
               <div
@@ -178,7 +179,7 @@ export function BlockTessellateGameWorkspace({ instructions, workspace }: GameWo
                 Use lateral moves to line up the piece, Rotate when the footprint needs a new orientation, then Hard drop to lock it immediately.
               </p>
             </div>
-          </div>
+          </GameplaySidecarLayout>
 
           <GameWorkspaceBoardOverlay
             actionLabel={screen.startActionLabel}

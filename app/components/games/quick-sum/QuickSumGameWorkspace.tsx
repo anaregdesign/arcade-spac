@@ -1,10 +1,11 @@
 import { useQuickSumWorkspace } from "../../../lib/client/usecase/game-workspace/use-quick-sum-workspace";
-import sharedStyles from "../shared/GameWorkspaceShared.module.css";
-import { GameWorkspaceBoardOverlay } from "../shared/GameWorkspaceBoardOverlay";
-import { GameWorkspaceControlsCard } from "../shared/GameWorkspaceControlsCard";
-import { GameWorkspaceFinishCard } from "../shared/GameWorkspaceFinishCard";
-import { GameInstructionsDialog } from "../shared/GameInstructionsDialog";
-import type { GameWorkspaceComponentProps } from "../shared/game-workspace-types";
+import { GameplayChoiceGrid } from "../../gameplay/GameplayLayoutVariants";
+import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
+import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
+import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
+import { GameWorkspaceFinishCard } from "../../gameplay/workspace/GameWorkspaceFinishCard";
+import { GameInstructionsDialog } from "../../gameplay/workspace/GameInstructionsDialog";
+import type { GameWorkspaceComponentProps } from "../../gameplay/workspace/game-workspace-types";
 import styles from "./QuickSumGameWorkspace.module.css";
 
 export function QuickSumGameWorkspace({ instructions, workspace }: GameWorkspaceComponentProps) {
@@ -33,7 +34,7 @@ export function QuickSumGameWorkspace({ instructions, workspace }: GameWorkspace
             <p className="eyebrow">Solve the prompt</p>
             <strong className={styles["sum-prompt"]}>{screen.quickSum.currentProblem?.prompt ?? "0 + 0"}</strong>
             {screen.quickSum.currentProblem ? (
-              <div className={styles["sum-answer-grid"]}>
+              <GameplayChoiceGrid className={styles["sum-answer-grid"]}>
                 {screen.quickSum.currentProblem.choices.map((choice) => (
                   <button
                     className={styles["sum-answer-button"]}
@@ -45,7 +46,7 @@ export function QuickSumGameWorkspace({ instructions, workspace }: GameWorkspace
                     {choice}
                   </button>
                 ))}
-              </div>
+              </GameplayChoiceGrid>
             ) : null}
           </div>
           <GameWorkspaceBoardOverlay

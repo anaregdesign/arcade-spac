@@ -1,10 +1,12 @@
 import { useTileInstantWorkspace } from "../../../lib/client/usecase/game-workspace/use-tile-instant-workspace";
-import sharedStyles from "../shared/GameWorkspaceShared.module.css";
-import { GameWorkspaceBoardOverlay } from "../shared/GameWorkspaceBoardOverlay";
-import { GameWorkspaceControlsCard } from "../shared/GameWorkspaceControlsCard";
-import { GameWorkspaceFinishCard } from "../shared/GameWorkspaceFinishCard";
-import { GameInstructionsDialog } from "../shared/GameInstructionsDialog";
-import type { GameWorkspaceComponentProps } from "../shared/game-workspace-types";
+import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
+import { GameplayTwinPanelLayout } from "../../gameplay/GameplayLayoutVariants";
+import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
+import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
+import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
+import { GameWorkspaceFinishCard } from "../../gameplay/workspace/GameWorkspaceFinishCard";
+import { GameInstructionsDialog } from "../../gameplay/workspace/GameInstructionsDialog";
+import type { GameWorkspaceComponentProps } from "../../gameplay/workspace/game-workspace-types";
 import styles from "./TileInstantGameWorkspace.module.css";
 
 function StaticBoard({
@@ -70,25 +72,15 @@ export function TileInstantGameWorkspace({ instructions, workspace }: GameWorksp
           data-state={screen.tileInstant.state}
           data-tile-instant-root="true"
         >
-          <div className={styles["tile-instant-copy"]}>
-            <p className="eyebrow">{screen.isWatching ? "Watch" : screen.isInputting ? "Rebuild" : "Tile Instant"}</p>
-            <strong>
-              {screen.isWatching
-                ? "Memorize the full tile arrangement"
-                : screen.isInputting
-                  ? "Swap the live board back into the hidden target"
-                  : "Flash memory first, reconstruction second"}
-            </strong>
-            <p className="compact-copy">
-              {screen.isWatching
-                ? "The target board stays visible only for a short moment. The same symbols will stay in play after the watch phase ends."
-                : screen.isInputting
-                  ? "Tap one live tile, then another tile, to swap their positions until the board matches the remembered layout."
-                  : "Each solved round starts a new watch phase with a fresh board and a slightly denser scramble."}
-            </p>
-          </div>
+          <GameplayContextCue
+            className={styles["tile-instant-copy"]}
+            detail={screen.isWatching ? "Target hides after reveal." : screen.isInputting ? "Swap any two tiles." : "Watch, then rebuild."}
+            phase={screen.isWatching ? "Watch" : screen.isInputting ? "Rebuild" : "Ready"}
+            title={screen.isWatching ? "Memorize the target board" : screen.isInputting ? "Swap the live board back to target" : "Watch then rebuild"}
+            tone={screen.isWatching ? "memory" : "swap"}
+          />
 
-          <div className={styles["tile-instant-columns"]}>
+          <GameplayTwinPanelLayout className={styles["tile-instant-columns"]}>
             <article className={styles["tile-instant-panel"]}>
               <header className={styles["tile-instant-panel-header"]}>
                 <p className="eyebrow">Target memory</p>
@@ -132,7 +124,7 @@ export function TileInstantGameWorkspace({ instructions, workspace }: GameWorksp
                 )}
               </div>
             </article>
-          </div>
+          </GameplayTwinPanelLayout>
 
           <GameWorkspaceBoardOverlay
             actionLabel={screen.startActionLabel}

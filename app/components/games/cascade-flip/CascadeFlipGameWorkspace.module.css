@@ -151,8 +151,69 @@
 }
 
 @media (max-width: 860px) {
-  .summary-grid,
   .workspace-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .cascade-flip-board-card,
+  .cascade-flip-shell {
+    gap: 0.8rem;
+  }
+
+  .summary-grid {
+    gap: 0.55rem;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .summary-card {
+    padding: 0.65rem 0.7rem;
+  }
+
+  .summary-label,
+  .panel-title {
+    font-size: 0.68rem;
+  }
+
+  .summary-value {
+    font-size: 0.94rem;
+  }
+
+  .workspace-grid {
+    gap: 0.75rem;
+  }
+
+  .sequence-panel,
+  .stream-panel {
+    gap: 0.65rem;
+  }
+
+  .sequence-strip {
+    gap: 0.45rem;
+  }
+
+  .sequence-card {
+    min-height: 2.45rem;
+    min-width: 2.45rem;
+    padding: 0.45rem;
+    font-size: 0.84rem;
+  }
+
+  .stream-grid {
+    gap: 0.45rem;
+  }
+
+  .stream-card {
+    min-height: 3.1rem;
+    padding: 0.6rem;
+  }
+
+  .stream-card-label {
+    font-size: 0.88rem;
+  }
+
+  .panel-copy {
+    font-size: 0.82rem;
   }
 }

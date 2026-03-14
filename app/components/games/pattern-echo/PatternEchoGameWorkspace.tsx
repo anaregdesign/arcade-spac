@@ -1,10 +1,11 @@
 import { usePatternEchoWorkspace } from "../../../lib/client/usecase/game-workspace/use-pattern-echo-workspace";
-import sharedStyles from "../shared/GameWorkspaceShared.module.css";
-import { GameWorkspaceBoardOverlay } from "../shared/GameWorkspaceBoardOverlay";
-import { GameWorkspaceControlsCard } from "../shared/GameWorkspaceControlsCard";
-import { GameWorkspaceFinishCard } from "../shared/GameWorkspaceFinishCard";
-import { GameInstructionsDialog } from "../shared/GameInstructionsDialog";
-import type { GameWorkspaceComponentProps } from "../shared/game-workspace-types";
+import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
+import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
+import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
+import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
+import { GameWorkspaceFinishCard } from "../../gameplay/workspace/GameWorkspaceFinishCard";
+import { GameInstructionsDialog } from "../../gameplay/workspace/GameInstructionsDialog";
+import type { GameWorkspaceComponentProps } from "../../gameplay/workspace/game-workspace-types";
 import styles from "./PatternEchoGameWorkspace.module.css";
 
 export function PatternEchoGameWorkspace({ instructions, workspace }: GameWorkspaceComponentProps) {
@@ -35,17 +36,12 @@ export function PatternEchoGameWorkspace({ instructions, workspace }: GameWorksp
         <div className={[styles["pattern-echo-shell"], sharedStyles["game-board-overlay-shell"]].join(" ")}>
           <div className={styles["pattern-echo-panel"]}>
             <div className={styles["pattern-echo-legend"]}>
-              <div className={styles["pattern-echo-target-copy"]}>
-                <p className="eyebrow">{screen.isWatching ? "Watch" : screen.isInputting ? "Repeat" : "Pattern Echo"}</p>
-                <strong>{screen.isWatching ? "Memorise the sequence" : screen.isInputting ? "Tap in the same order" : "Watch, then repeat"}</strong>
-              </div>
-              <p className="compact-copy">
-                {screen.isWatching
-                  ? "Each pad will flash once. Remember the order before your turn begins."
-                  : screen.isInputting
-                    ? "Tap each pad in the exact order you saw. Wrong taps count but don't stop the run."
-                    : "Watch all pads light up in sequence, then reproduce the same order."}
-              </p>
+              <GameplayContextCue
+                detail={screen.isInputting ? "Wrong taps still count." : screen.isWatching ? "Input unlocks next." : undefined}
+                phase={screen.isWatching ? "Watch" : screen.isInputting ? "Repeat" : "Ready"}
+                title={screen.isWatching ? "Memorize the pad order" : screen.isInputting ? "Repeat the same order" : "Watch then repeat"}
+                tone={screen.isWatching ? "watch" : "tap"}
+              />
             </div>
             <div
               className={styles["pattern-echo-grid"]}

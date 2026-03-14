@@ -2,7 +2,7 @@ import { Link } from "react-router";
 
 import { getGameInstructions, getGameWorkspaceComponent } from "../games/game-workspace-registry";
 import { useGameWorkspace } from "../../lib/client/usecase/game-workspace/use-game-workspace";
-import styles from "../games/shared/GameWorkspaceShared.module.css";
+import styles from "./workspace/GameWorkspaceShared.module.css";
 
 type GameWorkspaceScreenProps = {
   game: {

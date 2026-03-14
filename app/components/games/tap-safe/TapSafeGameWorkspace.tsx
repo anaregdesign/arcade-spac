@@ -1,10 +1,11 @@
 import { useTapSafeWorkspace } from "../../../lib/client/usecase/game-workspace/use-tap-safe-workspace";
-import sharedStyles from "../shared/GameWorkspaceShared.module.css";
-import { GameWorkspaceBoardOverlay } from "../shared/GameWorkspaceBoardOverlay";
-import { GameWorkspaceControlsCard } from "../shared/GameWorkspaceControlsCard";
-import { GameWorkspaceFinishCard } from "../shared/GameWorkspaceFinishCard";
-import { GameInstructionsDialog } from "../shared/GameInstructionsDialog";
-import type { GameWorkspaceComponentProps } from "../shared/game-workspace-types";
+import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
+import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
+import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
+import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
+import { GameWorkspaceFinishCard } from "../../gameplay/workspace/GameWorkspaceFinishCard";
+import { GameInstructionsDialog } from "../../gameplay/workspace/GameInstructionsDialog";
+import type { GameWorkspaceComponentProps } from "../../gameplay/workspace/game-workspace-types";
 import styles from "./TapSafeGameWorkspace.module.css";
 
 export function TapSafeGameWorkspace({ instructions, workspace }: GameWorkspaceComponentProps) {
@@ -34,13 +35,7 @@ export function TapSafeGameWorkspace({ instructions, workspace }: GameWorkspaceC
 
       <section className={["feature-card", sharedStyles["workspace-card"], sharedStyles["board-card"], styles["tap-safe-board-card"]].join(" ")} aria-label="Tap Safe board">
         <div className={[styles["tap-safe-shell"], sharedStyles["game-board-overlay-shell"]].join(" ")}>
-          <div className={styles["tap-safe-copy"]}>
-            <p className="eyebrow">Filter the wave</p>
-            <strong>Tap only the safe targets before the board refreshes.</strong>
-            <p className="compact-copy">
-              Safe targets carry clear SAFE or OK badges. Hazard objects use NO or HAZ badges and should be ignored even when they share the same color family.
-            </p>
-          </div>
+          <GameplayContextCue className={styles["tap-safe-copy"]} detail="Ignore hazard marks." phase="Filter" title="Tap only safe targets" tone="target" />
 
           <div className={styles["tap-safe-legend"]}>
             <div className={styles["tap-safe-legend-item"]}>

@@ -41,7 +41,7 @@ import { TempoHoldGameWorkspace } from "./tempo-hold/TempoHoldGameWorkspace";
 import { TempoWeaveGameWorkspace } from "./tempo-weave/TempoWeaveGameWorkspace";
 import { TileInstantGameWorkspace } from "./tile-instant/TileInstantGameWorkspace";
 import { ZoneLockGameWorkspace } from "./zone-lock/ZoneLockGameWorkspace";
-import type { GameInstructions } from "./shared/GameInstructionsDialog";
+import type { GameInstructions } from "../gameplay/workspace/GameInstructionsDialog";
 import { SwapSolveGameWorkspace } from "./swap-solve/SwapSolveGameWorkspace";
 import { SumGridGameWorkspace } from "./sum-grid/SumGridGameWorkspace";
 import { SudokuGameWorkspace } from "./sudoku/SudokuGameWorkspace";
@@ -51,7 +51,7 @@ import { StackSortGameWorkspace } from "./stack-sort/StackSortGameWorkspace";
 import { TargetTrailGameWorkspace } from "./target-trail/TargetTrailGameWorkspace";
 import { TileShiftGameWorkspace } from "./tile-shift/TileShiftGameWorkspace";
 import { MirrorMatchGameWorkspace } from "./mirror-match/MirrorMatchGameWorkspace";
-import type { GameWorkspaceComponentProps } from "./shared/game-workspace-types";
+import type { GameWorkspaceComponentProps } from "../gameplay/workspace/game-workspace-types";
 
 type GamePresentation = {
   previewAlt: string;

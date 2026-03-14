@@ -83,11 +83,38 @@
 }
 
 @media (max-width: 640px) {
+  .shape-morph-stage {
+    gap: 0.75rem;
+    width: 100%;
+  }
+
   .shape-morph-sequence {
     gap: 0.6rem;
   }
 
+  .shape-morph-sequence-card,
+  .shape-morph-choice {
+    gap: 0.4rem;
+    padding: 0.65rem 0.5rem;
+    border-radius: 0.9rem;
+  }
+
   .shape-morph-choice-grid {
-    grid-template-columns: 1fr;
+    gap: 0.6rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .shape-morph-glyph {
+    max-width: 4.8rem;
+  }
+
+  .shape-morph-label,
+  .shape-morph-choice-copy {
+    font-size: 0.68rem;
+  }
+
+  .shape-morph-missing {
+    border-radius: 0.8rem;
+    font-size: 1.4rem;
   }
 }

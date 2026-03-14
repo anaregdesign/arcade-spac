@@ -1,10 +1,11 @@
 import { useTempoWeaveWorkspace } from "../../../lib/client/usecase/game-workspace/use-tempo-weave-workspace";
-import sharedStyles from "../shared/GameWorkspaceShared.module.css";
-import { GameWorkspaceBoardOverlay } from "../shared/GameWorkspaceBoardOverlay";
-import { GameWorkspaceControlsCard } from "../shared/GameWorkspaceControlsCard";
-import { GameWorkspaceFinishCard } from "../shared/GameWorkspaceFinishCard";
-import { GameInstructionsDialog } from "../shared/GameInstructionsDialog";
-import type { GameWorkspaceComponentProps } from "../shared/game-workspace-types";
+import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
+import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
+import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
+import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
+import { GameWorkspaceFinishCard } from "../../gameplay/workspace/GameWorkspaceFinishCard";
+import { GameInstructionsDialog } from "../../gameplay/workspace/GameInstructionsDialog";
+import type { GameWorkspaceComponentProps } from "../../gameplay/workspace/game-workspace-types";
 import styles from "./TempoWeaveGameWorkspace.module.css";
 
 function getJudgmentCopy(judgment: "good" | "miss" | "perfect" | null) {
@@ -79,13 +80,13 @@ export function TempoWeaveGameWorkspace({ instructions, workspace }: GameWorkspa
           data-streak={screen.tempoWeave.currentStreak}
           data-tempo-weave-root="true"
         >
-          <div className={styles["tempo-weave-copy"]}>
-            <p className="eyebrow">Dual-lane rhythm split</p>
-            <strong>Watch both lanes and hit each center zone before the beat slips past.</strong>
-            <p className="compact-copy">
-              Each successful lane press advances only that lane. Long streaks increase density, so both tempos tighten while the miss margin stays the same.
-            </p>
-          </div>
+          <GameplayContextCue
+            className={styles["tempo-weave-copy"]}
+            detail="Track both lanes."
+            phase="Rhythm"
+            title="Hit each lane inside its center zone"
+            tone="timing"
+          />
 
           <div className={styles["tempo-weave-legend"]}>
             <span className={styles["tempo-weave-legend-good"]}>Good window</span>

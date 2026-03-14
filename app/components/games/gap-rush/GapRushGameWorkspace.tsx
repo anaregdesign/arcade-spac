@@ -1,10 +1,11 @@
 import { useGapRushWorkspace } from "../../../lib/client/usecase/game-workspace/use-gap-rush-workspace";
-import sharedStyles from "../shared/GameWorkspaceShared.module.css";
-import { GameWorkspaceBoardOverlay } from "../shared/GameWorkspaceBoardOverlay";
-import { GameWorkspaceControlsCard } from "../shared/GameWorkspaceControlsCard";
-import { GameWorkspaceFinishCard } from "../shared/GameWorkspaceFinishCard";
-import { GameInstructionsDialog } from "../shared/GameInstructionsDialog";
-import type { GameWorkspaceComponentProps } from "../shared/game-workspace-types";
+import { GameplaySidecarLayout } from "../../gameplay/GameplayLayoutVariants";
+import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
+import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
+import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
+import { GameWorkspaceFinishCard } from "../../gameplay/workspace/GameWorkspaceFinishCard";
+import { GameInstructionsDialog } from "../../gameplay/workspace/GameInstructionsDialog";
+import type { GameWorkspaceComponentProps } from "../../gameplay/workspace/game-workspace-types";
 import styles from "./GapRushGameWorkspace.module.css";
 
 function toPercent(position: number, laneCount: number) {
@@ -80,7 +81,7 @@ export function GapRushGameWorkspace({ instructions, workspace }: GameWorkspaceC
             </article>
           </div>
 
-          <div className={styles["workspace-grid"]}>
+          <GameplaySidecarLayout className={styles["workspace-grid"]} desktopMain="1.25fr" desktopSide="0.9fr" desktopSideMin="15rem" mobileSideMin="7.8rem" mobileSideMax="8.6rem">
             <div className={styles["corridor-panel"]}>
               <div className={styles["corridor"]}>
                 {Array.from({ length: screen.gapRush.laneCount - 1 }, (_, index) => (
@@ -141,7 +142,7 @@ export function GapRushGameWorkspace({ instructions, workspace }: GameWorkspaceC
                 Perfect passes come from centering the runner in the gap, not merely surviving at the edge of the opening.
               </p>
             </div>
-          </div>
+          </GameplaySidecarLayout>
 
           <GameWorkspaceBoardOverlay
             actionLabel={screen.startActionLabel}

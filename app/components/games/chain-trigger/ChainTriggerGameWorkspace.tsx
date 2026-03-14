@@ -1,12 +1,14 @@
 import { useMemo } from "react";
 
 import { useChainTriggerWorkspace } from "../../../lib/client/usecase/game-workspace/use-chain-trigger-workspace";
-import sharedStyles from "../shared/GameWorkspaceShared.module.css";
-import { GameWorkspaceBoardOverlay } from "../shared/GameWorkspaceBoardOverlay";
-import { GameWorkspaceControlsCard } from "../shared/GameWorkspaceControlsCard";
-import { GameWorkspaceFinishCard } from "../shared/GameWorkspaceFinishCard";
-import { GameInstructionsDialog } from "../shared/GameInstructionsDialog";
-import type { GameWorkspaceComponentProps } from "../shared/game-workspace-types";
+import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
+import { GameplaySidecarLayout } from "../../gameplay/GameplayLayoutVariants";
+import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
+import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
+import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
+import { GameWorkspaceFinishCard } from "../../gameplay/workspace/GameWorkspaceFinishCard";
+import { GameInstructionsDialog } from "../../gameplay/workspace/GameInstructionsDialog";
+import type { GameWorkspaceComponentProps } from "../../gameplay/workspace/game-workspace-types";
 import styles from "./ChainTriggerGameWorkspace.module.css";
 
 function getNodeStatusCopy(node: {
@@ -111,13 +113,13 @@ export function ChainTriggerGameWorkspace({ instructions, workspace }: GameWorks
           data-puzzle={screen.chainTrigger.currentPuzzleIndex}
           data-solved-rounds={screen.chainTrigger.solvedRoundCount}
         >
-          <div className={styles["chain-trigger-copy"]}>
-            <p className="eyebrow">Deterministic graph planning</p>
-            <strong>Arm only the nodes you need, then fire the source and read the propagation wave.</strong>
-            <p className="compact-copy">
-              Every node fires at most once. Thresholds stay fixed, so the puzzle is about choosing the right extra triggers before you commit the chain.
-            </p>
-          </div>
+          <GameplayContextCue
+            className={styles["chain-trigger-copy"]}
+            detail="Thresholds stay fixed."
+            phase="Plan"
+            title="Arm helpers, then fire the source"
+            tone="logic"
+          />
 
           <div className={styles["chain-trigger-summary"]}>
             <span className={styles["chain-trigger-summary-chip"]}>Puzzle {screen.chainTrigger.puzzleLabel}</span>
@@ -127,7 +129,7 @@ export function ChainTriggerGameWorkspace({ instructions, workspace }: GameWorks
             </span>
           </div>
 
-          <div className={styles["chain-trigger-columns"]}>
+          <GameplaySidecarLayout className={styles["chain-trigger-columns"]} desktopMain="1.5fr" desktopSide="0.9fr" desktopSideMin="15rem" mobileSideMin="7.6rem" mobileSideMax="8.4rem">
             <div className={styles["chain-trigger-board-column"]}>
               <div className={["hero-actions", "compact-actions", sharedStyles["workspace-utility-actions"], styles["chain-trigger-actions"]].join(" ")}>
                 <button
@@ -212,20 +214,16 @@ export function ChainTriggerGameWorkspace({ instructions, workspace }: GameWorks
                 <strong>
                   {screen.chainTrigger.armedNodeIds.length}/{screen.chainTrigger.extraTriggerLimit} extra triggers armed
                 </strong>
-                <p className="compact-copy">
-                  Tap any non-source node to arm or disarm it before firing. Armed nodes join wave 1 together with the source.
-                </p>
+                <p className="compact-copy">Armed nodes join wave 1.</p>
               </article>
 
               <article className={styles["chain-trigger-panel"]}>
                 <p className="eyebrow">Last result</p>
                 <strong>{getResolutionCopy(screen)}</strong>
-                <p className="compact-copy">
-                  Threshold badges show how many incoming signals each dark node still needed. Lit nodes keep the wave number from the last fire.
-                </p>
+                <p className="compact-copy">Dark nodes show missing inputs. Lit nodes keep their last wave.</p>
               </article>
             </div>
-          </div>
+          </GameplaySidecarLayout>
 
           <GameWorkspaceBoardOverlay
             actionLabel={screen.startActionLabel}

@@ -1,7 +1,7 @@
 import { Form, Link } from "react-router";
 
 import { useResultScreen } from "../../lib/client/usecase/result-screen/use-result-screen";
-import sharedStyles from "../games/shared/GameWorkspaceShared.module.css";
+import sharedStyles from "./workspace/GameWorkspaceShared.module.css";
 import { SummaryCard } from "../shared/SummaryCard";
 import styles from "./ResultScreen.module.css";
 

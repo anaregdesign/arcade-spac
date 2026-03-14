@@ -1,10 +1,11 @@
 import { useBounceAngleWorkspace } from "../../../lib/client/usecase/game-workspace/use-bounce-angle-workspace";
-import sharedStyles from "../shared/GameWorkspaceShared.module.css";
-import { GameWorkspaceBoardOverlay } from "../shared/GameWorkspaceBoardOverlay";
-import { GameWorkspaceControlsCard } from "../shared/GameWorkspaceControlsCard";
-import { GameWorkspaceFinishCard } from "../shared/GameWorkspaceFinishCard";
-import { GameInstructionsDialog } from "../shared/GameInstructionsDialog";
-import type { GameWorkspaceComponentProps } from "../shared/game-workspace-types";
+import { GameplaySidecarLayout } from "../../gameplay/GameplayLayoutVariants";
+import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
+import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
+import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
+import { GameWorkspaceFinishCard } from "../../gameplay/workspace/GameWorkspaceFinishCard";
+import { GameInstructionsDialog } from "../../gameplay/workspace/GameInstructionsDialog";
+import type { GameWorkspaceComponentProps } from "../../gameplay/workspace/game-workspace-types";
 import styles from "./BounceAngleGameWorkspace.module.css";
 
 function toTracePath(points: { x: number; y: number }[]) {
@@ -69,7 +70,7 @@ export function BounceAngleGameWorkspace({ instructions, workspace }: GameWorksp
             </article>
           </div>
 
-          <div className={styles["workspace-grid"]}>
+          <GameplaySidecarLayout className={styles["workspace-grid"]} desktopMain="1.22fr" desktopSide="0.92fr" desktopSideMin="16rem" mobileSideMin="7.8rem" mobileSideMax="8.6rem">
             <div className={styles["board-panel"]}>
               <svg
                 aria-label="Bounce Angle ricochet board"
@@ -147,7 +148,7 @@ export function BounceAngleGameWorkspace({ instructions, workspace }: GameWorksp
                 Wide angles can return across the full board after two side-wall contacts. Hazards count as wasted shots, so use the pocket layout instead of guessing.
               </p>
             </div>
-          </div>
+          </GameplaySidecarLayout>
 
           <GameWorkspaceBoardOverlay
             actionLabel={screen.startActionLabel}

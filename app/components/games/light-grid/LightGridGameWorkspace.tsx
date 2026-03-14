@@ -1,10 +1,11 @@
 import { useLightGridWorkspace } from "../../../lib/client/usecase/game-workspace/use-light-grid-workspace";
-import sharedStyles from "../shared/GameWorkspaceShared.module.css";
-import { GameWorkspaceBoardOverlay } from "../shared/GameWorkspaceBoardOverlay";
-import { GameWorkspaceControlsCard } from "../shared/GameWorkspaceControlsCard";
-import { GameWorkspaceFinishCard } from "../shared/GameWorkspaceFinishCard";
-import { GameInstructionsDialog } from "../shared/GameInstructionsDialog";
-import type { GameWorkspaceComponentProps } from "../shared/game-workspace-types";
+import { GameplayTwinPanelLayout } from "../../gameplay/GameplayLayoutVariants";
+import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
+import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
+import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
+import { GameWorkspaceFinishCard } from "../../gameplay/workspace/GameWorkspaceFinishCard";
+import { GameInstructionsDialog } from "../../gameplay/workspace/GameInstructionsDialog";
+import type { GameWorkspaceComponentProps } from "../../gameplay/workspace/game-workspace-types";
 import styles from "./LightGridGameWorkspace.module.css";
 
 function GridBoard({
@@ -65,10 +66,10 @@ export function LightGridGameWorkspace({ instructions, workspace }: GameWorkspac
 
       <section className={["feature-card", sharedStyles["workspace-card"], sharedStyles["board-card"], styles["grid-workspace-card"]].join(" ")} aria-label="Light Grid board">
         <div className={[styles["grid-shell"], sharedStyles["game-board-overlay-shell"]].join(" ")}>
-          <div className={styles["grid-columns"]}>
+          <GameplayTwinPanelLayout className={styles["grid-columns"]}>
             <GridBoard board={screen.lightGrid.targetGrid} columnCount={screen.lightGrid.columnCount} title="Target" />
             <GridBoard board={screen.lightGrid.liveGrid} columnCount={screen.lightGrid.columnCount} onCellPress={screen.handleCellPress} title="Live" />
-          </div>
+          </GameplayTwinPanelLayout>
           <GameWorkspaceBoardOverlay
             actionLabel={screen.startActionLabel}
             detail="Tap a live cell to flip it and its orthogonal neighbors until the pattern matches the target."

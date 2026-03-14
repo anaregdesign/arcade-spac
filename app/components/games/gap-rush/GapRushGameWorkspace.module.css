@@ -135,8 +135,57 @@
 }
 
 @media (max-width: 860px) {
-  .summary-grid,
   .workspace-grid {
+    gap: 0.85rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .gap-rush-board-card,
+  .gap-rush-shell {
+    gap: 0.8rem;
+  }
+
+  .summary-grid {
+    gap: 0.55rem;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .summary-card {
+    padding: 0.65rem 0.7rem;
+  }
+
+  .summary-label,
+  .panel-title {
+    font-size: 0.68rem;
+  }
+
+  .summary-value {
+    font-size: 0.96rem;
+  }
+
+  .workspace-grid,
+  .corridor-panel,
+  .control-panel {
+    gap: 0.6rem;
+  }
+
+  .corridor {
+    height: 13.6rem;
+  }
+
+  .lane-button-grid {
+    gap: 0.45rem;
     grid-template-columns: 1fr;
+  }
+
+  .lane-button {
+    min-height: 2.35rem;
+    padding: 0.45rem 0.35rem;
+    font-size: 0.76rem;
+  }
+
+  .panel-copy {
+    display: none;
   }
 }

@@ -1,10 +1,11 @@
 import { useSequencePointWorkspace } from "../../../lib/client/usecase/game-workspace/use-sequence-point-workspace";
-import sharedStyles from "../shared/GameWorkspaceShared.module.css";
-import { GameWorkspaceBoardOverlay } from "../shared/GameWorkspaceBoardOverlay";
-import { GameWorkspaceControlsCard } from "../shared/GameWorkspaceControlsCard";
-import { GameWorkspaceFinishCard } from "../shared/GameWorkspaceFinishCard";
-import { GameInstructionsDialog } from "../shared/GameInstructionsDialog";
-import type { GameWorkspaceComponentProps } from "../shared/game-workspace-types";
+import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
+import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
+import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
+import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
+import { GameWorkspaceFinishCard } from "../../gameplay/workspace/GameWorkspaceFinishCard";
+import { GameInstructionsDialog } from "../../gameplay/workspace/GameInstructionsDialog";
+import type { GameWorkspaceComponentProps } from "../../gameplay/workspace/game-workspace-types";
 import styles from "./SequencePointGameWorkspace.module.css";
 
 export function SequencePointGameWorkspace({ instructions, workspace }: GameWorkspaceComponentProps) {
@@ -38,23 +39,13 @@ export function SequencePointGameWorkspace({ instructions, workspace }: GameWork
       <section className={["feature-card", sharedStyles["workspace-card"], sharedStyles["board-card"], sharedStyles["board-card-minimal"], styles["sequence-point-board-card"]].join(" ")} aria-label="Sequence Point board">
         <div className={[styles["sequence-point-shell"], sharedStyles["game-board-overlay-shell"]].join(" ")}>
           <div className={styles["sequence-point-panel"]}>
-            <div className={styles["sequence-point-copy"]}>
-              <p className="eyebrow">{screen.isWatching ? "Watch" : screen.isInputting ? "Replay" : "Sequence Point"}</p>
-              <strong>
-                {screen.isWatching
-                  ? "Remember the flash order"
-                  : screen.isInputting
-                    ? "Tap the same points in order"
-                    : "Grow the sequence round by round"}
-              </strong>
-              <p className="compact-copy">
-                {screen.isWatching
-                  ? "The points flash quickly. Input is locked until the watch phase ends."
-                  : screen.isInputting
-                    ? "Replay the same point order. Wrong taps count, but the sprint stays live."
-                    : "Each cleared round adds one more point to the next sequence."}
-              </p>
-            </div>
+            <GameplayContextCue
+              className={styles["sequence-point-copy"]}
+              detail={screen.isWatching ? "Input unlocks next." : screen.isInputting ? "Mistakes do not stop the run." : "Sequence grows each round."}
+              phase={screen.isWatching ? "Watch" : screen.isInputting ? "Replay" : "Ready"}
+              title={screen.isWatching ? "Memorize the flash order" : screen.isInputting ? "Replay the same point order" : "Grow the sequence"}
+              tone={screen.isWatching ? "watch" : "tap"}
+            />
             <div
               className={styles["sequence-point-grid"]}
               style={{ gridTemplateColumns: `repeat(${screen.sequencePoint.columnCount}, minmax(0, 1fr))` }}

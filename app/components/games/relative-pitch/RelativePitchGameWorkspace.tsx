@@ -1,10 +1,11 @@
 import { useRelativePitchWorkspace } from "../../../lib/client/usecase/game-workspace/use-relative-pitch-workspace";
-import sharedStyles from "../shared/GameWorkspaceShared.module.css";
-import { GameWorkspaceBoardOverlay } from "../shared/GameWorkspaceBoardOverlay";
-import { GameWorkspaceControlsCard } from "../shared/GameWorkspaceControlsCard";
-import { GameWorkspaceFinishCard } from "../shared/GameWorkspaceFinishCard";
-import { GameInstructionsDialog } from "../shared/GameInstructionsDialog";
-import type { GameWorkspaceComponentProps } from "../shared/game-workspace-types";
+import { GameplayChoiceGrid } from "../../gameplay/GameplayLayoutVariants";
+import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
+import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
+import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
+import { GameWorkspaceFinishCard } from "../../gameplay/workspace/GameWorkspaceFinishCard";
+import { GameInstructionsDialog } from "../../gameplay/workspace/GameInstructionsDialog";
+import type { GameWorkspaceComponentProps } from "../../gameplay/workspace/game-workspace-types";
 import styles from "./RelativePitchGameWorkspace.module.css";
 
 export function RelativePitchGameWorkspace({ instructions, workspace }: GameWorkspaceComponentProps) {
@@ -73,7 +74,7 @@ export function RelativePitchGameWorkspace({ instructions, workspace }: GameWork
             </div>
           </div>
 
-          <div className={styles["candidate-grid"]}>
+          <GameplayChoiceGrid className={styles["candidate-grid"]}>
             {screen.relativePitch.currentRound.candidates.map((candidate) => (
               <button
                 className={styles["candidate-button"]}
@@ -89,7 +90,7 @@ export function RelativePitchGameWorkspace({ instructions, workspace }: GameWork
                 <span className={styles["candidate-copy"]}>Play and choose</span>
               </button>
             ))}
-          </div>
+          </GameplayChoiceGrid>
 
           <GameWorkspaceBoardOverlay
             actionLabel={screen.startActionLabel}

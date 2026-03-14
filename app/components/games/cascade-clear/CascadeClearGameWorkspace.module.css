@@ -39,6 +39,8 @@
 .cascade-grid-shell {
   display: grid;
   gap: 0.55rem;
+  margin-inline: auto;
+  width: min(100%, 33rem);
 }
 
 .column-trigger-row {
@@ -65,7 +67,7 @@
   color: rgb(8 47 73);
   font-size: 0.9rem;
   font-weight: 800;
-  min-height: 3.35rem;
+  min-height: 2.9rem;
 }
 
 .trigger-button:disabled {
@@ -78,7 +80,7 @@
   border-radius: 0.95rem;
   display: flex;
   justify-content: center;
-  min-height: 3.35rem;
+  min-height: 2.9rem;
 }
 
 .token-dot {
@@ -105,7 +107,7 @@
 }
 
 .rail-spacer {
-  min-height: 3.35rem;
+  min-height: 2.9rem;
 }
 
 .cascade-copy {
@@ -138,10 +140,14 @@
     grid-template-columns: 2.85rem repeat(5, minmax(0, 1fr));
   }
 
+  .cascade-grid-shell {
+    width: min(100%, 18.4rem);
+  }
+
   .trigger-button,
   .rail-spacer,
   .board-cell {
-    min-height: 2.45rem;
+    min-height: 2.15rem;
   }
 
   .trigger-button {
