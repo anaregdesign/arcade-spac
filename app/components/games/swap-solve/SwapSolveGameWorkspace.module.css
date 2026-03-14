@@ -1,0 +1,56 @@
+.swap-workspace-card {
+  min-height: 23rem;
+}
+
+.swap-shell {
+  min-height: 23rem;
+}
+
+.swap-columns {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.swap-panel {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.swap-board {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.swap-cell {
+  display: grid;
+  aspect-ratio: 1;
+  place-items: center;
+  border: none;
+  border-radius: 0.9rem;
+  background: linear-gradient(145deg, rgba(30, 64, 175, 0.9), rgba(37, 99, 235, 0.78));
+  color: #eff6ff;
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+button.swap-cell {
+  cursor: pointer;
+}
+
+button.swap-cell:disabled {
+  cursor: default;
+  opacity: 1;
+}
+
+.swap-cell-selected {
+  outline: 3px solid rgba(253, 224, 71, 0.95);
+  outline-offset: 2px;
+  background: linear-gradient(145deg, rgba(30, 58, 138, 0.96), rgba(14, 116, 144, 0.86));
+}
+
+@media (max-width: 840px) {
+  .swap-columns {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

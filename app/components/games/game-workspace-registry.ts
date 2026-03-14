@@ -11,6 +11,7 @@ import { PrecisionDropGameWorkspace } from "./precision-drop/PrecisionDropGameWo
 import { PulseCountGameWorkspace } from "./pulse-count/PulseCountGameWorkspace";
 import { QuickSumGameWorkspace } from "./quick-sum/QuickSumGameWorkspace";
 import type { GameInstructions } from "./shared/GameInstructionsDialog";
+import { SwapSolveGameWorkspace } from "./swap-solve/SwapSolveGameWorkspace";
 import { SudokuGameWorkspace } from "./sudoku/SudokuGameWorkspace";
 import { SymbolHuntGameWorkspace } from "./symbol-hunt/SymbolHuntGameWorkspace";
 import { LightGridGameWorkspace } from "./light-grid/LightGridGameWorkspace";
@@ -322,6 +323,35 @@ const gameDefinitionByKey: Record<string, GameDefinition> = {
       previewSrc: "/images/games/quick-sum-preview.svg",
     },
     workspace: QuickSumGameWorkspace,
+  },
+  "swap-solve": {
+    instructions: {
+      summary: "Compare the live board with the target board, select two cells to swap them, and restore the full arrangement before time or swaps run out.",
+      sections: [
+        {
+          title: "Run flow",
+          items: [
+            { label: "Start run", detail: "Choose a difficulty and press Start run to generate a scrambled board with a fixed swap budget." },
+            { label: "Clear", detail: "Match the target board exactly before the timer or swap budget expires. The Result screen opens automatically on clear." },
+            { label: "Fail", detail: "If the swap budget is exhausted or the timer ends before the board is restored, the run is saved as failed and opens the Result screen automatically." },
+          ],
+        },
+        {
+          title: "Board controls",
+          items: [
+            { label: "Select first tile", detail: "Tap any live tile to arm it for swapping." },
+            { label: "Complete the swap", detail: "Tap a second tile to exchange the two positions instantly." },
+            { label: "Track pressure", detail: "Watch mismatch count, swap budget, and time left while you work back toward the target." },
+          ],
+        },
+      ],
+      title: "Swap Solve controls",
+    },
+    presentation: {
+      previewAlt: "Swap Solve board showing target and live grids connected by a swap arrow",
+      previewSrc: "/images/games/swap-solve-preview.svg",
+    },
+    workspace: SwapSolveGameWorkspace,
   },
   "pattern-echo": {
     instructions: {
