@@ -38,5 +38,11 @@ jobs:
       - name: Validate Bicep entrypoint
         run: az bicep build --file ./infra/main.bicep > /dev/null
 
+      - name: Install actionlint
+        run: |
+          curl -fsSL https://github.com/rhysd/actionlint/releases/download/v1.7.7/actionlint_1.7.7_linux_amd64.tar.gz -o actionlint.tgz
+          tar -xzf actionlint.tgz actionlint
+          chmod +x ./actionlint
+
       - name: Lint GitHub workflows
-        uses: rhysd/actionlint@v1
+        run: ./actionlint

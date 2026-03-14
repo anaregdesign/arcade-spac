@@ -10,6 +10,7 @@
 - 現在の repository には push / pull request 向けの quality gate workflow がなく、workflow や Bicep の regression を release 前に止めにくい
 - GitHub `production` Environment contract が `AZURE_CONTAINER_APP_NAME` や GHCR 固有の変数に寄っており、shared skill の generic contract とずれている
 - runbook と prerequisite docs が現行 release workflow shape と manual bootstrap responsibility を十分に表現していない
+- hardening 後の first push と first release で `Quality Gates` と `Release Azure Delivery` が fail しており、target contract への migration が完了していない
 
 ## Users and Scenarios
 
@@ -25,6 +26,7 @@
 - GitHub Environment contract を `AZURE_APP_NAME` と generic registry variables / secrets へ寄せる
 - push / pull request 向けの quality gate workflow を追加する
 - Azure helper scripts と docs を新しい workflow contract に合わせて更新する
+- migrated workflow contract で actual GitHub Actions run が成功するように repository-side mismatch を解消する
 
 ## Non-Goals
 
@@ -41,6 +43,7 @@
 - app rollout は infra convergence と分離された job で行われ、Container App revision 更新が explicit に実行される
 - smoke test は deploy 済み Container App FQDN に対して `/health` を検証する
 - runbook と prerequisite docs には、GitHub `production` Environment の expected variables / secrets、OIDC deploy identity、registry auth、manual config sync responsibility が current contract として記載される
+- hardening 変更を含む head commit に対して `Quality Gates` と `Release Azure Delivery` が pass する
 
 ## Acceptance Criteria
 
@@ -52,6 +55,8 @@
 - push / pull request の quality gate workflow が typecheck、unit test、build、Bicep validation、workflow lint を実行する
 - `scripts/azure/postprovision.sh` と `scripts/azure/verify-production-runtime.sh` が `AZURE_APP_NAME` based contract と両立する
 - `docs/azure-prerequisites.md`、`docs/production-operations.md`、関連 runbook が新しい environment variable / secret contract と release flow を説明する
+- hardening 後の push run で `Quality Gates` が success になる
+- hardening 後の release run で `Release Azure Delivery` が success になるか、repository-side failure がなくなって external prerequisite のみが残る
 
 ## Edge Cases
 
