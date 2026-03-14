@@ -1,6 +1,7 @@
 import type { ComponentType } from "react";
 
 import { BeatMatchGameWorkspace } from "./beat-match/BeatMatchGameWorkspace";
+import { CascadeClearGameWorkspace } from "./cascade-clear/CascadeClearGameWorkspace";
 import { ChainTriggerGameWorkspace } from "./chain-trigger/ChainTriggerGameWorkspace";
 import { ColorCensusGameWorkspace } from "./color-census/ColorCensusGameWorkspace";
 import { ColorSweepGameWorkspace } from "./color-sweep/ColorSweepGameWorkspace";
@@ -86,6 +87,35 @@ const gameDefinitionByKey: Record<string, GameDefinition> = {
       previewSrc: "/images/games/beat-match-preview.svg",
     },
     workspace: BeatMatchGameWorkspace,
+  },
+  "cascade-clear": {
+    instructions: {
+      summary: "Fire one row or column trigger, let the board collapse and refill, then read how many connected color groups explode out of that chain.",
+      sections: [
+        {
+          title: "Run flow",
+          items: [
+            { label: "Start run", detail: "Choose a difficulty and press Start run to load one curated combo board with a target score." },
+            { label: "Fire a trigger", detail: "Each move clears one full row or one full column, then the resolver collapses the board and refills empty cells from a fixed sequence." },
+            { label: "Clear or fail", detail: "Reach the target score before the trigger limit or timer runs out. The best cascade depth is saved in the result summary." },
+          ],
+        },
+        {
+          title: "Board controls",
+          items: [
+            { label: "Use row rails", detail: "The left-side rail fires a whole row and is best when that clear will line up multiple color groups after the fall." },
+            { label: "Use column rails", detail: "The top rail fires a whole column and can open a different chain path than any row trigger." },
+            { label: "Read the summary", detail: "Current score, score gain, best cascade, and the last trigger stay visible so you can learn which chains actually paid off." },
+          ],
+        },
+      ],
+      title: "Cascade Clear controls",
+    },
+    presentation: {
+      previewAlt: "Cascade Clear board with row and column trigger rails surrounding a color token grid",
+      previewSrc: "/images/games/cascade-clear-preview.svg",
+    },
+    workspace: CascadeClearGameWorkspace,
   },
   "chain-trigger": {
     instructions: {

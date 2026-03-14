@@ -13,12 +13,12 @@
 
 - 利用者は Home から `Cascade Clear` を開き、small board を読んで最も伸びる trigger を選びたい
 - 利用者は chain resolution を見ながら best cascade と remaining moves を管理したい
-- 利用者は Result、profile、rankings で `final score` と `best cascade` を確認したい
+- 利用者は Result、profile、rankings で `clear time` と `best cascade` を確認したい
 
 ## Scope
 
 - `Cascade Clear` を home、workspace、result、rankings、profile に統合する
-- primary metric は `final score`、support metric は `best cascade` とする
+- primary metric は `clear time`、support metric は `best cascade` とする
 - workspace では board、remaining moves、target score、last cascade summary を visible にする
 
 ## Non-Goals
@@ -33,17 +33,17 @@
 - 利用者は row または column trigger を選んで cascade を開始する
 - trigger 後は block clear、fall、secondary clear が deterministic に連続解決される
 - longer chain ほど score が大きく伸び、`best cascade` が更新される
-- move を使い切るまでに target score を超えると current board が clear され、次の puzzle に進む
-- score が届かないまま moves を使い切ると fail になるか、run quality が大きく下がる
-- Result、profile、rankings では `final score` と `best cascade` を確認できる
+- move を使い切るまでに target score を超えると clear となり Result に遷移する
+- score が届かないまま moves を使い切ると fail になり Result に遷移する
+- Result、profile、rankings では `clear time` と `best cascade` を確認できる
 
 ## Acceptance Criteria
 
 - `Cascade Clear` card が Home に表示され、game route を開ける
 - 1 run は 2 分以内で clear または fail が確定する
-- chain resolution が step-by-step で visible であり、best cascade が読める
+- chain resolution の summary が visible であり、best cascade が読める
 - workspace 上で target score、current score、remaining moves、best cascade が更新される
-- Result、profile、rankings では `final score` と `best cascade` が保存される
+- Result、profile、rankings では `clear time` と `best cascade` が保存される
 
 ## Edge Cases
 

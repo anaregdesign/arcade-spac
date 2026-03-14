@@ -2,11 +2,11 @@
 
 ## Links
 - Program spec: /docs/spec/game-catalog-50-expansion-program.md
-- Current game spec: /docs/spec/games/relative-pitch.md
+- Current game spec: /docs/spec/games/bubble-spawn.md
 
 ## Section 1 - Catalog Recovery Audit
 - [x] Confirm the durable game-spec inventory covers 50 game specs plus 2 meta specs (`two-minute-expansion-wave`, expansion program support docs).
-- [x] Confirm the current app implementation exposes 40 playable games in `supportedGames` and `game-workspace-registry`.
+- [x] Confirm the current app implementation exposes 43 playable games in `supportedGames` and `game-workspace-registry`.
 - [x] Choose the next reviewable slice as one low-risk unimplemented game that fits the current shared result and UI architecture.
 
 ### Subsection 1.1 - Remaining backlog risk buckets
@@ -24,27 +24,30 @@
 ### Subsection 1.3 - Scope reconciliation to 50
 - [x] Keep the 50-game target fixed instead of expanding the program to 51 games after the `Relative Pitch` swap.
 - [x] Defer `Intercept Ball` beyond the 50-game target because its prediction-reflex loop overlaps more with `Bounce Angle` and `Gap Rush` than the remaining backlog overlaps with each other.
-- [x] Treat the remaining implementation scope as 10 games: `Merge Climb`, `Relative Pitch`, `Cascade Clear`, `Block Tessellate`, `Box Fill`, `Bubble Spawn`, `Line Connect`, `Bounce Angle`, `Cascade Flip`, and `Gap Rush`.
+- [x] Treat the remaining implementation scope as 7 games: `Block Tessellate`, `Box Fill`, `Bubble Spawn`, `Line Connect`, `Bounce Angle`, `Cascade Flip`, and `Gap Rush`.
 
-## Section 2 - Current Slice: Relative Pitch
+### Subsection 1.4 - Melody audio foundation
+- [x] Add reusable equal-temperament note helpers so future melody and ear-training games can trigger arbitrary `sine` note pitches without hard-coded frequencies.
+- [x] Migrate `Relative Pitch` to the reusable `sine` note helper and remove generic tap sounds from its replay and candidate actions so only melodic cues remain.
+
+## Section 2 - Current Slice: Bubble Spawn
 ### Subsection 2.1 - Spec and planning alignment
-- [x] Rewrite `/docs/spec/games/relative-pitch.md` so the browser-audio flow, deterministic round structure, and current result metrics are explicit.
+- [ ] Reconfirm `/docs/spec/games/bubble-spawn.md` so the survival loop, deterministic spawn/growth pattern, and current result metrics are explicit.
 - [x] Keep this active plan focused on the current slice and append new implementation tasks only when they become concrete.
 
 ### Subsection 2.2 - App integration
-- [x] Add `Relative Pitch` to the game catalog metadata and Home preview mapping.
-- [x] Add the game registry entry, help content, and preview asset.
-- [x] Extend browser sound support only as far as needed for two-note interval playback and base-note replay.
-- [x] Implement the `Relative Pitch` session and workspace Hook under `app/lib/client/usecase/game-workspace/`.
-- [x] Implement the `Relative Pitch` workspace Component and CSS under `app/components/games/relative-pitch/`.
-- [x] Add deterministic Playwright hooks for round id, candidate id, replay count, audio phase, and run completion without changing the visible UI.
-- [x] Keep the replay controls and candidate pads readable and touch-safe on narrow viewports.
-- [x] Update the touched catalog and Home selector tests for the new game metadata.
+- [ ] Add `Bubble Spawn` to the game catalog metadata and Home preview mapping.
+- [ ] Add the game registry entry, help content, and preview asset.
+- [ ] Implement the deterministic spawn/growth resolver and `Bubble Spawn` session/workspace Hook under `app/lib/client/usecase/game-workspace/`.
+- [ ] Implement the `Bubble Spawn` workspace Component and CSS under `app/components/games/bubble-spawn/`.
+- [ ] Add deterministic Playwright hooks for field state, saturation meter, chain bonus, and run completion without changing the visible UI.
+- [ ] Keep the field, status panel, and tap targets readable and touch-safe on narrow viewports.
+- [ ] Update the touched catalog and Home selector tests for the new game metadata.
 
 ### Subsection 2.3 - Verification and slice closeout
-- [x] Run targeted automated verification for the touched catalog and gameplay modules.
-- [x] Run Playwright UI verification for `/games/relative-pitch` and the Home card.
-- [ ] Commit the `Relative Pitch` slice in one reviewable unit.
+- [ ] Run targeted automated verification for the touched catalog and gameplay modules.
+- [ ] Run Playwright UI verification for `/games/bubble-spawn` and the Home card.
+- [ ] Commit the `Bubble Spawn` slice in one reviewable unit.
 
 ## Section 3 - Named Backlog
 - [x] `Spot Change` - implementation, automated verification, Playwright UI verification, and commit are complete.
@@ -53,7 +56,7 @@
 - [ ] `Bounce Angle` - keep the game unchecked until implementation, automated verification, and Playwright UI verification are complete.
 - [ ] `Box Fill` - keep the game unchecked until implementation, automated verification, and Playwright UI verification are complete.
 - [ ] `Bubble Spawn` - keep the game unchecked until implementation, automated verification, and Playwright UI verification are complete.
-- [ ] `Cascade Clear` - keep the game unchecked until implementation, automated verification, and Playwright UI verification are complete.
+- [x] `Cascade Clear` - implementation, automated verification, Playwright UI verification, and commit are complete.
 - [ ] `Cascade Flip` - keep the game unchecked until implementation, automated verification, and Playwright UI verification are complete.
 - [x] `Chain Trigger` - implementation, automated verification, Playwright UI verification, and commit are complete.
 - [x] `Color Census` - implementation, automated verification, Playwright UI verification, and commit are complete.

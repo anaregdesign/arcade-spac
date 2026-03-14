@@ -224,6 +224,15 @@ describe("home-hub selectors", () => {
       recommendationText: "Dual-lane rhythm split",
       shortDescription: "Track both lanes and tap each one only while its marker crosses the center target zone",
     },
+    {
+      currentRank: null,
+      key: "cascade-clear",
+      metricValue: "1:02",
+      name: "Cascade Clear",
+      playCount: 1,
+      recommendationText: "Trigger-driven combo board",
+      shortDescription: "Choose a row or column trigger that creates the biggest refill cascade and pushes the score target over the line",
+    },
   ];
 
   it("counts ranked and unplayed games from visible cards", () => {
@@ -447,6 +456,15 @@ describe("home-hub selectors", () => {
         previewSrc: "/images/games/tempo-weave-preview.svg",
         recordLabel: "Best 0:53",
         runLabel: "3 runs",
+        statusLabel: "Played",
+      },
+      {
+        ...games[24],
+        previewAlt: "Cascade Clear board with row and column trigger rails surrounding a color token grid",
+        previewObjectPosition: undefined,
+        previewSrc: "/images/games/cascade-clear-preview.svg",
+        recordLabel: "Best 1:02",
+        runLabel: "1 runs",
         statusLabel: "Played",
       },
     ]);
