@@ -49,6 +49,7 @@ describe("game-catalog", () => {
     expect(resolveGameKey("SYNC_PULSE")).toBe("sync-pulse");
     expect(resolveGameKey("TAP_SAFE")).toBe("tap-safe");
     expect(resolveGameKey("TEMPO_HOLD")).toBe("tempo-hold");
+    expect(resolveGameKey("TEMPO_WEAVE")).toBe("tempo-weave");
     expect(resolveGameKey("TILE_INSTANT")).toBe("tile-instant");
     expect(resolveGameKey("ZONE_LOCK")).toBe("zone-lock");
     expect(resolveGameKey("unknown-mode")).toBeNull();
@@ -64,6 +65,7 @@ describe("game-catalog", () => {
     expect(toStoredGameKey("sync-pulse")).toBe("SYNC_PULSE");
     expect(toStoredGameKey("tap-safe")).toBe("TAP_SAFE");
     expect(toStoredGameKey("tempo-hold")).toBe("TEMPO_HOLD");
+    expect(toStoredGameKey("tempo-weave")).toBe("TEMPO_WEAVE");
     expect(toStoredGameKey("tile-instant")).toBe("TILE_INSTANT");
     expect(toStoredGameKey("zone-lock")).toBe("ZONE_LOCK");
     expect(toStoredGameKey("drop-ball")).toBe("DROP_LINE");
@@ -89,6 +91,7 @@ describe("game-catalog", () => {
     expect(toRouteGameKey("SYNC_PULSE")).toBe("sync-pulse");
     expect(toRouteGameKey("TAP_SAFE")).toBe("tap-safe");
     expect(toRouteGameKey("TEMPO_HOLD")).toBe("tempo-hold");
+    expect(toRouteGameKey("TEMPO_WEAVE")).toBe("tempo-weave");
     expect(toRouteGameKey("TILE_INSTANT")).toBe("tile-instant");
     expect(toRouteGameKey("ZONE_LOCK")).toBe("zone-lock");
     expect(toRouteGameKey("CUSTOM_MODE")).toBe("custom-mode");
@@ -107,6 +110,7 @@ describe("game-catalog", () => {
     expect(getGameDefinition("SYNC_PULSE")?.name).toBe("Sync Pulse");
     expect(getGameDefinition("TAP_SAFE")?.name).toBe("Tap Safe");
     expect(getGameDefinition("TEMPO_HOLD")?.name).toBe("Tempo Hold");
+    expect(getGameDefinition("TEMPO_WEAVE")?.name).toBe("Tempo Weave");
     expect(getGameDefinition("TILE_INSTANT")?.name).toBe("Tile Instant");
     expect(getGameDefinition("ZONE_LOCK")?.name).toBe("Zone Lock");
     expect(getGameDefinition("SPOT_CHANGE")?.name).toBe("Spot Change");
@@ -129,6 +133,7 @@ describe("game-catalog", () => {
     expect(getGameHomeTags("SYNC_PULSE")).toEqual(["timing", "rhythm"]);
     expect(getGameHomeTags("TAP_SAFE")).toEqual(["reflex", "perception"]);
     expect(getGameHomeTags("TEMPO_HOLD")).toEqual(["timing", "rhythm"]);
+    expect(getGameHomeTags("TEMPO_WEAVE")).toEqual(["timing", "rhythm"]);
     expect(getGameHomeTags("TILE_INSTANT")).toEqual(["memory", "spatial"]);
     expect(getGameHomeTags("ZONE_LOCK")).toEqual(["logic", "spatial"]);
     expect(getGameHomeTags("SPOT_CHANGE")).toEqual(["perception", "logic"]);
@@ -147,6 +152,7 @@ describe("game-catalog", () => {
     expect(getGameSuccessfulResultLabel("SYNC_PULSE")).toBe("clear");
     expect(getGameSuccessfulResultLabel("TAP_SAFE")).toBe("clear");
     expect(getGameSuccessfulResultLabel("TEMPO_HOLD")).toBe("clear");
+    expect(getGameSuccessfulResultLabel("TEMPO_WEAVE")).toBe("clear");
     expect(getGameSuccessfulResultLabel("TILE_INSTANT")).toBe("clear");
     expect(getGameSuccessfulResultLabel("ZONE_LOCK")).toBe("clear");
     expect(getGameSuccessfulResultLabel("SPOT_CHANGE")).toBe("clear");

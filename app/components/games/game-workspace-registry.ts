@@ -25,6 +25,7 @@ import { SpotChangeGameWorkspace } from "./spot-change/SpotChangeGameWorkspace";
 import { SyncPulseGameWorkspace } from "./sync-pulse/SyncPulseGameWorkspace";
 import { TapSafeGameWorkspace } from "./tap-safe/TapSafeGameWorkspace";
 import { TempoHoldGameWorkspace } from "./tempo-hold/TempoHoldGameWorkspace";
+import { TempoWeaveGameWorkspace } from "./tempo-weave/TempoWeaveGameWorkspace";
 import { TileInstantGameWorkspace } from "./tile-instant/TileInstantGameWorkspace";
 import { ZoneLockGameWorkspace } from "./zone-lock/ZoneLockGameWorkspace";
 import type { GameInstructions } from "./shared/GameInstructionsDialog";
@@ -370,6 +371,35 @@ const gameDefinitionByKey: Record<string, GameDefinition> = {
       previewSrc: "/images/games/tempo-hold-preview.svg",
     },
     workspace: TempoHoldGameWorkspace,
+  },
+  "tempo-weave": {
+    instructions: {
+      summary: "Watch both lane markers at once and tap each lane only while its marker crosses the center target zone.",
+      sections: [
+        {
+          title: "Run flow",
+          items: [
+            { label: "Start run", detail: "Choose a difficulty and press Start run to arm both lanes at the same time." },
+            { label: "Split attention", detail: "Each lane advances on its own tempo, so one success never pauses the other lane." },
+            { label: "Raise density", detail: "Long streaks shorten the next cycle on both lanes and raise the pressure." },
+          ],
+        },
+        {
+          title: "Lane controls",
+          items: [
+            { label: "Read the target zone", detail: "Hit only while the marker overlaps the center band. Perfect is tighter than good." },
+            { label: "Watch misses", detail: "Late taps and unpressed beats both count as misses and reset streak." },
+            { label: "Clear both lanes", detail: "The run clears only after both lane hit goals are complete." },
+          ],
+        },
+      ],
+      title: "Tempo Weave controls",
+    },
+    presentation: {
+      previewAlt: "Tempo Weave dual-lane rhythm board with independent lane markers and center hit zones",
+      previewSrc: "/images/games/tempo-weave-preview.svg",
+    },
+    workspace: TempoWeaveGameWorkspace,
   },
   "precision-drop": {
     instructions: {

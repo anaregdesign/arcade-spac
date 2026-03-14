@@ -50,6 +50,10 @@ const previewByGameKey: Record<string, Pick<HomeGameCard, "previewAlt" | "previe
     previewAlt: "Tempo Hold meter board with a glowing target zone and a long hold bar",
     previewSrc: "/images/games/tempo-hold-preview.svg",
   },
+  "tempo-weave": {
+    previewAlt: "Tempo Weave dual-lane rhythm board with independent lane markers and center hit zones",
+    previewSrc: "/images/games/tempo-weave-preview.svg",
+  },
   "tap-safe": {
     previewAlt: "Tap Safe wave board mixing safe targets and hazard objects with short-lived badges",
     previewSrc: "/images/games/tap-safe-preview.svg",

@@ -170,6 +170,15 @@ describe("home-hub selectors", () => {
       recommendationText: "Overlapping zone puzzle",
       shortDescription: "Toggle shared cells until every zone card reaches its target lock count",
     },
+    {
+      currentRank: null,
+      key: "tempo-weave",
+      metricValue: "0:53",
+      name: "Tempo Weave",
+      playCount: 3,
+      recommendationText: "Dual-lane rhythm split",
+      shortDescription: "Track both lanes and tap each one only while its marker crosses the center target zone",
+    },
   ];
 
   it("counts ranked and unplayed games from visible cards", () => {
@@ -339,6 +348,15 @@ describe("home-hub selectors", () => {
         previewSrc: "/images/games/zone-lock-preview.svg",
         recordLabel: "Best 0:58",
         runLabel: "2 runs",
+        statusLabel: "Played",
+      },
+      {
+        ...games[18],
+        previewAlt: "Tempo Weave dual-lane rhythm board with independent lane markers and center hit zones",
+        previewObjectPosition: undefined,
+        previewSrc: "/images/games/tempo-weave-preview.svg",
+        recordLabel: "Best 0:53",
+        runLabel: "3 runs",
         statusLabel: "Played",
       },
     ]);
