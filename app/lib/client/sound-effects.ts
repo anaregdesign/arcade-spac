@@ -1,18 +1,6 @@
-const MUTE_STORAGE_KEY = "arcade:sound-muted";
+import { readSoundMuted, writeSoundMuted } from "./infrastructure/browser/sound-mute-storage";
 
-function readMutedFromStorage(): boolean {
-  if (typeof window === "undefined") {
-    return false;
-  }
-
-  try {
-    return window.localStorage.getItem(MUTE_STORAGE_KEY) === "true";
-  } catch {
-    return false;
-  }
-}
-
-let mutedState: boolean = readMutedFromStorage();
+let mutedState: boolean = readSoundMuted();
 
 export function isSoundMuted(): boolean {
   return mutedState;
@@ -20,14 +8,7 @@ export function isSoundMuted(): boolean {
 
 export function setSoundMuted(value: boolean): void {
   mutedState = value;
-
-  if (typeof window !== "undefined") {
-    try {
-      window.localStorage.setItem(MUTE_STORAGE_KEY, String(value));
-    } catch {
-      // localStorage unavailable (private browsing, quota exceeded, etc.)
-    }
-  }
+  writeSoundMuted(value);
 }
 
 let sharedContext: AudioContext | null = null;
