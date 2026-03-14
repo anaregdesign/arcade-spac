@@ -1,3 +1,8 @@
+.minesweeper-copy {
+  margin: 0 auto 8px;
+  max-width: 24rem;
+}
+
 .minesweeper-shell {
   display: grid;
   gap: 6px;
@@ -67,6 +72,10 @@
 }
 
 @media (max-width: 640px) {
+  .minesweeper-copy {
+    max-width: 16rem;
+  }
+
   .mine-cell {
     width: clamp(28px, 8vw, 30px);
     height: clamp(28px, 8vw, 30px);

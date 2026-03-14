@@ -1,4 +1,5 @@
 import { useMinesweeperWorkspace } from "../../../lib/client/usecase/game-workspace/use-minesweeper-workspace";
+import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
 import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
 import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
@@ -45,6 +46,13 @@ export function MinesweeperGameWorkspace({ instructions, workspace }: GameWorksp
 
       <section className={["feature-card", sharedStyles["workspace-card"], sharedStyles["board-card"], sharedStyles["board-card-minimal"]].join(" ")} aria-label="Minesweeper board">
         <div className={sharedStyles["game-board-overlay-shell"]}>
+          <GameplayContextCue
+            className={styles["minesweeper-copy"]}
+            detail={screen.isFlagModeEnabled ? "Tap plants flags." : "Tap opens cells."}
+            phase={screen.isLiveRun ? "Sweep" : "Ready"}
+            title="Reveal every safe cell"
+            tone="logic"
+          />
           <div className={styles["minesweeper-shell"]}>
             {screen.minesweeper.board.map((row, rowIndex) => (
               <div className={styles["minesweeper-row"]} key={`row-${rowIndex}`}>
@@ -79,7 +87,7 @@ export function MinesweeperGameWorkspace({ instructions, workspace }: GameWorksp
           </div>
           <GameWorkspaceBoardOverlay
             actionLabel={screen.startActionLabel}
-            detail="Press Start run, or open any cell to begin this board."
+            detail="Open cells or switch to flag mode when needed."
             isVisible={screen.isRunIdle}
             onAction={screen.handleStartRun}
             title="Board ready"

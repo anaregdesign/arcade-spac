@@ -1,4 +1,5 @@
 import { useColorSweepWorkspace } from "../../../lib/client/usecase/game-workspace/use-color-sweep-workspace";
+import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
 import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
 import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
@@ -33,12 +34,16 @@ export function ColorSweepGameWorkspace({ instructions, workspace }: GameWorkspa
 
       <section className={["feature-card", sharedStyles["workspace-card"], sharedStyles["board-card"], sharedStyles["board-card-minimal"], styles["color-sweep-board-card"]].join(" ")} aria-label="Color Sweep board">
         <div className={[styles["color-sweep-shell"], sharedStyles["game-board-overlay-shell"]].join(" ")}>
+          <GameplayContextCue
+            className={styles["color-sweep-copy"]}
+            detail={`Target ${screen.targetColorLabel}.`}
+            phase={screen.isLiveRun ? "Sweep" : "Ready"}
+            title="Clear only the target color"
+            tone="target"
+          />
           <div className={styles["color-sweep-panel"]}>
             <div className={styles["color-sweep-legend"]}>
-              <div className={styles["color-sweep-target-copy"]}>
-                <p className="eyebrow">Target color</p>
-                <strong>{screen.targetColorLabel}</strong>
-              </div>
+              <strong className={styles["color-sweep-legend-label"]}>{screen.targetColorLabel}</strong>
               <span
                 aria-hidden="true"
                 className={[styles["color-sweep-swatch"], styles[`color-sweep-swatch-${screen.colorSweep.targetColorKey}`]].join(" ")}
@@ -69,7 +74,7 @@ export function ColorSweepGameWorkspace({ instructions, workspace }: GameWorkspa
           </div>
           <GameWorkspaceBoardOverlay
             actionLabel={screen.startActionLabel}
-            detail="Clear every tile that matches the target color before the timer runs out."
+            detail="Tap only the target color tiles."
             isVisible={screen.isRunIdle}
             onAction={screen.handleStartRun}
             title="Board ready"

@@ -1,4 +1,5 @@
 import { usePrecisionDropWorkspace } from "../../../lib/client/usecase/game-workspace/use-precision-drop-workspace";
+import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
 import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
 import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
@@ -31,6 +32,13 @@ export function PrecisionDropGameWorkspace({ instructions, workspace }: GameWork
 
       <section className={["feature-card", sharedStyles["workspace-card"], sharedStyles["board-card"], sharedStyles["board-card-minimal"], styles["precision-drop-board-card"]].join(" ")} aria-label="Precision Drop lane">
         <div className={[styles["precision-drop-shell"], sharedStyles["game-board-overlay-shell"]].join(" ")}>
+          <GameplayContextCue
+            className={styles["precision-drop-copy"]}
+            detail={`${screen.precisionDrop.speedPxPerSecond} px/s.`}
+            phase={screen.isLiveRun ? "Drop" : "Ready"}
+            title="Tap when the ball crosses the line"
+            tone="timing"
+          />
           <button
             aria-label={screen.isLiveRun ? "Tap when the ball overlaps the line" : "Precision Drop play area"}
             className={styles["precision-drop-lane"]}
@@ -53,7 +61,7 @@ export function PrecisionDropGameWorkspace({ instructions, workspace }: GameWork
           </button>
           <GameWorkspaceBoardOverlay
             actionLabel={screen.startActionLabel}
-            detail="Drop a ball, then tap when it overlaps the line."
+            detail="Tap once the ball reaches the line."
             isVisible={screen.isRunIdle}
             onAction={screen.handleStartRun}
             title="Precision Drop lane"

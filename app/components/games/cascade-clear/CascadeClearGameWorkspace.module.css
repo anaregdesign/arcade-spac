@@ -7,33 +7,9 @@
   gap: 1rem;
 }
 
-.cascade-summary-grid {
-  display: grid;
-  gap: 0.75rem;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
-.cascade-summary-card {
-  background: linear-gradient(145deg, rgb(236 254 255), rgb(255 255 255));
-  border: 1px solid rgb(6 182 212 / 0.16);
-  border-radius: 1rem;
-  display: grid;
-  gap: 0.24rem;
-  padding: 0.95rem 1rem;
-}
-
-.cascade-summary-label {
-  color: rgb(14 116 144 / 0.78);
-  font-size: 0.76rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.cascade-summary-value {
-  color: rgb(8 47 73);
-  font-size: 1.18rem;
-  font-weight: 800;
+.cascade-copy {
+  margin-inline: auto;
+  max-width: 32rem;
 }
 
 .cascade-grid-shell {
@@ -110,28 +86,9 @@
   min-height: 2.9rem;
 }
 
-.cascade-copy {
-  color: rgb(14 116 144 / 0.82);
-  font-size: 0.92rem;
-  margin: 0;
-}
-
 @media (max-width: 720px) {
-  .cascade-summary-grid {
-    gap: 0.5rem;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
-  .cascade-summary-card {
-    padding: 0.7rem 0.75rem;
-  }
-
-  .cascade-summary-label {
-    font-size: 0.68rem;
-  }
-
-  .cascade-summary-value {
-    font-size: 0.96rem;
+  .cascade-copy {
+    max-width: 17rem;
   }
 
   .column-trigger-row,
@@ -157,9 +114,5 @@
 
   .board-cell {
     border-radius: 0.8rem;
-  }
-
-  .cascade-copy {
-    font-size: 0.82rem;
   }
 }

@@ -3,7 +3,14 @@
 }
 
 .color-sweep-shell {
+  display: grid;
+  gap: 10px;
   width: 100%;
+}
+
+.color-sweep-copy {
+  margin-inline: auto;
+  max-width: 28rem;
 }
 
 .color-sweep-panel {
@@ -27,16 +34,7 @@
   background: color-mix(in srgb, var(--surface-card) 90%, rgba(255, 255, 255, 0.24));
 }
 
-.color-sweep-target-copy {
-  display: grid;
-  gap: 4px;
-}
-
-.color-sweep-target-copy :global(.eyebrow) {
-  margin: 0;
-}
-
-.color-sweep-target-copy strong {
+.color-sweep-legend-label {
   font-size: 1.2rem;
   color: var(--text-primary);
 }
@@ -126,6 +124,10 @@
   .color-sweep-panel {
     padding: 10px;
     border-radius: 22px;
+  }
+
+  .color-sweep-copy {
+    max-width: 16rem;
   }
 
   .color-sweep-grid {

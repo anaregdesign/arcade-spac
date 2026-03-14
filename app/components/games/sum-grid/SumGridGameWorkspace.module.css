@@ -3,7 +3,14 @@
 }
 
 .sum-grid-shell {
+  display: grid;
+  gap: 10px;
   min-height: 23rem;
+}
+
+.sum-grid-copy {
+  margin-inline: auto;
+  max-width: 28rem;
 }
 
 .sum-grid-stage {
@@ -81,6 +88,10 @@
 }
 
 @media (max-width: 720px) {
+  .sum-grid-copy {
+    max-width: 17rem;
+  }
+
   .sum-grid-main {
     grid-template-columns: minmax(0, 1fr);
   }

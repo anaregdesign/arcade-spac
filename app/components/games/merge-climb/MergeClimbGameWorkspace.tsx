@@ -1,4 +1,5 @@
 import { useMergeClimbWorkspace } from "../../../lib/client/usecase/game-workspace/use-merge-climb-workspace";
+import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
 import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
 import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
@@ -57,16 +58,13 @@ export function MergeClimbGameWorkspace({ instructions, workspace }: GameWorkspa
           data-next-spawn={screen.mergeClimb.nextSpawnValue}
           data-state={screen.mergeClimb.state}
         >
-          <div className={styles["merge-summary-grid"]}>
-            <article className={styles["merge-summary-card"]}>
-              <span className={styles["merge-summary-label"]}>Next spawn</span>
-              <strong className={styles["merge-summary-value"]}>{screen.mergeClimb.nextSpawnValue}</strong>
-            </article>
-            <article className={styles["merge-summary-card"]}>
-              <span className={styles["merge-summary-label"]}>Open cells</span>
-              <strong className={styles["merge-summary-value"]}>{screen.mergeClimb.emptyCellCount}</strong>
-            </article>
-          </div>
+          <GameplayContextCue
+            className={styles["merge-copy"]}
+            detail={`Next ${screen.mergeClimb.nextSpawnValue}.`}
+            phase={screen.isLiveRun ? "Merge" : "Ready"}
+            title="Swipe the board toward the goal tile"
+            tone="logic"
+          />
 
           <div
             className={styles["merge-board"]}
@@ -138,15 +136,11 @@ export function MergeClimbGameWorkspace({ instructions, workspace }: GameWorkspa
                 Right
               </button>
             </div>
-
-            <p className={styles["move-note"]}>
-              One merge per line, then a new spawn enters the board.
-            </p>
           </div>
 
           <GameWorkspaceBoardOverlay
             actionLabel={screen.startActionLabel}
-            detail="Reach the goal tile before the board locks. Every legal move adds one more spawn to the pressure queue."
+            detail="Merge toward the goal before the board locks."
             isVisible={screen.isRunIdle}
             onAction={screen.handleStartRun}
             title="Merge board ready"

@@ -3,7 +3,14 @@
 }
 
 .precision-drop-shell {
+  display: grid;
+  gap: 10px;
   width: 100%;
+}
+
+.precision-drop-copy {
+  margin-inline: auto;
+  max-width: 24rem;
 }
 
 .precision-drop-lane {
@@ -95,6 +102,10 @@
 }
 
 @media (max-width: 640px) {
+  .precision-drop-copy {
+    max-width: 16rem;
+  }
+
   .precision-drop-lane {
     min-height: 360px;
     border-radius: 22px;

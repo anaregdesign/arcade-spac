@@ -1,4 +1,5 @@
 import { useSumGridWorkspace } from "../../../lib/client/usecase/game-workspace/use-sum-grid-workspace";
+import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
 import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
 import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
@@ -29,6 +30,13 @@ export function SumGridGameWorkspace({ instructions, workspace }: GameWorkspaceC
 
       <section className={["feature-card", sharedStyles["workspace-card"], sharedStyles["board-card"], styles["sum-grid-board-card"]].join(" ")} aria-label="Sum Grid board">
         <div className={[styles["sum-grid-shell"], sharedStyles["game-board-overlay-shell"]].join(" ")}>
+          <GameplayContextCue
+            className={styles["sum-grid-copy"]}
+            detail={screen.sumGrid.selectedNumber === null ? "Pick a bank number first." : `Selected ${screen.sumGrid.selectedNumber}.`}
+            phase={screen.isLiveRun ? "Place" : "Ready"}
+            title="Match every row and column sum"
+            tone="logic"
+          />
           <div className={styles["sum-grid-stage"]}>
             <div className={styles["sum-grid-column-sums"]} style={{ gridTemplateColumns: `repeat(${screen.sumGrid.puzzle.columnCount}, minmax(0, 1fr))` }}>
               {screen.sumGrid.puzzle.columnSums.map((value, index) => (
@@ -74,7 +82,7 @@ export function SumGridGameWorkspace({ instructions, workspace }: GameWorkspaceC
           </div>
           <GameWorkspaceBoardOverlay
             actionLabel={screen.startActionLabel}
-            detail="Select a candidate number, place it into the grid, and satisfy every row and column sum before time runs out."
+            detail="Pick a bank number, then fill the grid to match every sum."
             isVisible={screen.isRunIdle}
             onAction={screen.handleStartRun}
             title="Grid ready"

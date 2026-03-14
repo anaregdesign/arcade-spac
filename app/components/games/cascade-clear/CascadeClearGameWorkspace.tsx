@@ -1,4 +1,5 @@
 import { useCascadeClearWorkspace } from "../../../lib/client/usecase/game-workspace/use-cascade-clear-workspace";
+import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
 import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
 import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
@@ -50,20 +51,13 @@ export function CascadeClearGameWorkspace({ instructions, workspace }: GameWorks
           data-state={screen.cascadeClear.state}
           data-target-score={screen.cascadeClear.targetScore}
         >
-          <div className={styles["cascade-summary-grid"]}>
-            <article className={styles["cascade-summary-card"]}>
-              <span className={styles["cascade-summary-label"]}>Last trigger</span>
-              <strong className={styles["cascade-summary-value"]}>{screen.cascadeClear.lastTriggerLabel}</strong>
-            </article>
-            <article className={styles["cascade-summary-card"]}>
-              <span className={styles["cascade-summary-label"]}>Score gain</span>
-              <strong className={styles["cascade-summary-value"]}>{screen.cascadeClear.lastScoreGain}</strong>
-            </article>
-            <article className={styles["cascade-summary-card"]}>
-              <span className={styles["cascade-summary-label"]}>Last cascade</span>
-              <strong className={styles["cascade-summary-value"]}>{screen.cascadeClear.lastCascadeDepth}</strong>
-            </article>
-          </div>
+          <GameplayContextCue
+            className={styles["cascade-copy"]}
+            detail={`${screen.cascadeClear.movesRemaining} triggers left.`}
+            phase={screen.isLiveRun ? "Trigger" : "Ready"}
+            title="Fire one row or column at a time"
+            tone="logic"
+          />
 
           <div className={styles["cascade-grid-shell"]}>
             <div className={styles["column-trigger-row"]}>
@@ -117,14 +111,9 @@ export function CascadeClearGameWorkspace({ instructions, workspace }: GameWorks
               ))}
             </div>
           </div>
-
-          <p className={styles["cascade-copy"]}>
-            Each trigger clears one whole rail, then the refill pattern decides how far the connected color chain will spread.
-          </p>
-
           <GameWorkspaceBoardOverlay
             actionLabel={screen.startActionLabel}
-            detail="Choose one row or one column per move. The best chain usually starts where the refill will connect three or more matching colors."
+            detail="Choose one row or column trigger per move."
             isVisible={screen.isRunIdle}
             onAction={screen.handleStartRun}
             title="Cascade board ready"
