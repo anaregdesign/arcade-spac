@@ -11,8 +11,15 @@
   position: relative;
   width: 100%;
   min-height: 420px;
+  padding: 0;
   isolation: isolate;
+  -webkit-appearance: none;
+  appearance: none;
+  border: 1px solid rgba(15, 23, 42, 0.12);
   border: 1px solid color-mix(in srgb, var(--surface-strong) 22%, transparent);
+  background:
+    radial-gradient(circle at top center, rgba(255, 255, 255, 0.5), transparent 48%),
+    linear-gradient(180deg, #edf2f5, #d3dde4);
   border-radius: 28px;
   background:
     radial-gradient(circle at top center, rgba(255, 255, 255, 0.5), transparent 48%),

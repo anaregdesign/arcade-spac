@@ -86,6 +86,8 @@ button {
   background: none;
   color: inherit;
   cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 :focus-visible {

@@ -34,7 +34,7 @@
 ## User-Visible Behavior
 
 - home で `Precision Drop` card が既存 game と同じ導線で表示される
-- game screen では `difficulty` を選んで `Start run` すると、ball が random な高さから落下し始め、下へ行くほど速くなる
+- game screen では idle 状態でも lane、target line、ball が視認でき、`difficulty` を選んで `Start run` すると、ball が random な高さから落下し始め、下へ行くほど速くなる
 - live run 中に play area を click または tap すると、その時点の `line offset` を計測して run を終了し、自動で result へ遷移する
 - `line offset` が小さいほど良い result として扱い、home、profile、result では best metric を `px` 表示する
 - ball が line を通過して play area の下端まで落ちても click されなかった場合、その run は miss として扱い、result へ自動遷移する
@@ -45,6 +45,8 @@
 ## Acceptance Criteria
 
 - ユーザは home から `Precision Drop` を選択して game screen を開ける
+- ユーザは run 開始前でも lane 内の ball と target line を視認できる
+- supported production browser では disabled 状態の lane が native button appearance に置き換わらず、custom board visuals を維持する
 - ユーザは mouse click と touch tap の両方で run を完了できる
 - live run 中の 1 回の click または tap で result が保存され、追加の confirm 操作なしに result screen へ遷移する
 - result screen では `Precision Drop` の primary metric が `px` 表示になり、time 表示にならない
@@ -56,6 +58,7 @@
 - run 開始前や result 遷移中の click は score に反映しない
 - route を離れても live run は自動で hit または miss として保存しない
 - random な開始高さでも ball が line より下から spawn しない
+- `color-mix()` や disabled form control styling 差分がある browser でも lane の主要 visual が消えない
 - narrow viewport でも play area 全体、line、ball、主要 actions が 1 画面内で操作できる
 - miss 後も replay 導線は直ちに利用できる
 
