@@ -64,6 +64,15 @@ describe("home-hub selectors", () => {
     },
     {
       currentRank: null,
+      key: "rotate-align",
+      metricValue: "0:59",
+      name: "Rotate Align",
+      playCount: 5,
+      recommendationText: "Route rotation sprint",
+      shortDescription: "Reconnect the path between start and end",
+    },
+    {
+      currentRank: null,
       key: "sequence-point",
       metricValue: "0:54",
       name: "Sequence Point",
@@ -145,6 +154,15 @@ describe("home-hub selectors", () => {
       },
       {
         ...games[6],
+        previewAlt: "Rotate Align path board with rotatable route tiles between start and end",
+        previewObjectPosition: undefined,
+        previewSrc: "/images/games/rotate-align-preview.svg",
+        recordLabel: "Best 0:59",
+        runLabel: "5 runs",
+        statusLabel: "Played",
+      },
+      {
+        ...games[7],
         previewAlt: "Sequence Point grid showing a fast memory sequence across lit points",
         previewObjectPosition: undefined,
         previewSrc: "/images/games/sequence-point-preview.svg",
@@ -153,7 +171,7 @@ describe("home-hub selectors", () => {
         statusLabel: "Played",
       },
       {
-        ...games[7],
+        ...games[8],
         previewAlt: "Hue Drift gradient row with a missing color step and answer swatches",
         previewObjectPosition: undefined,
         previewSrc: "/images/games/hue-drift-preview.svg",

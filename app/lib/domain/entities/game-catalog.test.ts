@@ -41,11 +41,13 @@ describe("game-catalog", () => {
     expect(resolveGameKey("HUE_DRIFT")).toBe("hue-drift");
     expect(resolveGameKey("COLOR_CENSUS")).toBe("color-census");
     expect(resolveGameKey("FLIP_MATCH")).toBe("flip-match");
+    expect(resolveGameKey("ROTATE_ALIGN")).toBe("rotate-align");
     expect(resolveGameKey("unknown-mode")).toBeNull();
 
     expect(toStoredGameKey("color-sweep")).toBe("COLOR_SWEEP");
     expect(toStoredGameKey("color-census")).toBe("COLOR_CENSUS");
     expect(toStoredGameKey("flip-match")).toBe("FLIP_MATCH");
+    expect(toStoredGameKey("rotate-align")).toBe("ROTATE_ALIGN");
     expect(toStoredGameKey("drop-ball")).toBe("DROP_LINE");
     expect(toStoredGameKey("orbit-tap")).toBe("ORBIT_TAP");
     expect(toStoredGameKey("spot-change")).toBe("SPOT_CHANGE");
@@ -61,6 +63,7 @@ describe("game-catalog", () => {
     expect(toRouteGameKey("HUE_DRIFT")).toBe("hue-drift");
     expect(toRouteGameKey("COLOR_CENSUS")).toBe("color-census");
     expect(toRouteGameKey("FLIP_MATCH")).toBe("flip-match");
+    expect(toRouteGameKey("ROTATE_ALIGN")).toBe("rotate-align");
     expect(toRouteGameKey("CUSTOM_MODE")).toBe("custom-mode");
   });
 
@@ -69,6 +72,7 @@ describe("game-catalog", () => {
     expect(getGameDefinition("ORBIT_TAP")?.name).toBe("Orbit Tap");
     expect(getGameDefinition("COLOR_CENSUS")?.name).toBe("Color Census");
     expect(getGameDefinition("FLIP_MATCH")?.name).toBe("Flip Match");
+    expect(getGameDefinition("ROTATE_ALIGN")?.name).toBe("Rotate Align");
     expect(getGameDefinition("SPOT_CHANGE")?.name).toBe("Spot Change");
     expect(getGameDefinition("SEQUENCE_POINT")?.name).toBe("Sequence Point");
     expect(getGameDefinition("HUE_DRIFT")?.name).toBe("Hue Drift");
@@ -81,6 +85,7 @@ describe("game-catalog", () => {
     expect(getGameHomeTags("ORBIT_TAP")).toEqual(["timing", "fast-start"]);
     expect(getGameHomeTags("COLOR_CENSUS")).toEqual(["memory", "perception"]);
     expect(getGameHomeTags("FLIP_MATCH")).toEqual(["logic", "spatial"]);
+    expect(getGameHomeTags("ROTATE_ALIGN")).toEqual(["logic", "spatial"]);
     expect(getGameHomeTags("SPOT_CHANGE")).toEqual(["perception", "logic"]);
     expect(getGameHomeTags("SEQUENCE_POINT")).toEqual(["memory", "fast-start"]);
     expect(getGameHomeTags("HUE_DRIFT")).toEqual(["perception", "logic"]);
@@ -89,6 +94,7 @@ describe("game-catalog", () => {
     expect(getGameSuccessfulResultLabel("DROP_LINE")).toBe("hit");
     expect(getGameSuccessfulResultLabel("COLOR_CENSUS")).toBe("clear");
     expect(getGameSuccessfulResultLabel("FLIP_MATCH")).toBe("clear");
+    expect(getGameSuccessfulResultLabel("ROTATE_ALIGN")).toBe("clear");
     expect(getGameSuccessfulResultLabel("SPOT_CHANGE")).toBe("clear");
     expect(getGameSuccessfulResultLabel("SEQUENCE_POINT")).toBe("clear");
     expect(getGameSuccessfulResultLabel("HUE_DRIFT")).toBe("clear");

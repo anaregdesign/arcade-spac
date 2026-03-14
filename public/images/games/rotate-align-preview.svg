@@ -1,0 +1,59 @@
+<svg width="640" height="360" viewBox="0 0 640 360" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="640" height="360" rx="32" fill="#0F172A"/>
+  <rect x="32" y="32" width="576" height="296" rx="28" fill="#111827"/>
+  <text x="60" y="72" fill="#E2E8F0" font-family="Arial, sans-serif" font-size="18" font-weight="700">Rotate Align</text>
+  <text x="60" y="98" fill="#94A3B8" font-family="Arial, sans-serif" font-size="15">Rotate the route until S reaches E</text>
+  <g transform="translate(90 122)">
+    <rect x="0" y="0" width="78" height="78" rx="18" fill="#1E293B"/>
+    <rect x="94" y="0" width="78" height="78" rx="18" fill="#1E293B"/>
+    <rect x="188" y="0" width="78" height="78" rx="18" fill="#1E293B"/>
+    <rect x="282" y="0" width="78" height="78" rx="18" fill="#1E293B"/>
+    <rect x="0" y="94" width="78" height="78" rx="18" fill="#1E293B"/>
+    <rect x="94" y="94" width="78" height="78" rx="18" fill="#1E293B"/>
+    <rect x="188" y="94" width="78" height="78" rx="18" fill="#1E293B"/>
+    <rect x="282" y="94" width="78" height="78" rx="18" fill="#1E293B"/>
+    <rect x="0" y="188" width="78" height="78" rx="18" fill="#1E293B"/>
+    <rect x="94" y="188" width="78" height="78" rx="18" fill="#1E293B"/>
+    <rect x="188" y="188" width="78" height="78" rx="18" fill="#1E293B"/>
+    <rect x="282" y="188" width="78" height="78" rx="18" fill="#1E293B"/>
+
+    <circle cx="-6" cy="39" r="15" fill="#22C55E"/>
+    <text x="-11" y="45" fill="#052E16" font-family="Arial, sans-serif" font-size="14" font-weight="700">S</text>
+    <circle cx="366" cy="227" r="15" fill="#F97316"/>
+    <text x="361" y="233" fill="#431407" font-family="Arial, sans-serif" font-size="14" font-weight="700">E</text>
+
+    <rect x="30" y="34" width="18" height="10" rx="5" fill="#67E8F9"/>
+    <rect x="34" y="30" width="10" height="48" rx="5" fill="#67E8F9"/>
+    <circle cx="39" cy="39" r="9" fill="#E0F2FE"/>
+
+    <rect x="124" y="34" width="42" height="10" rx="5" fill="#67E8F9"/>
+    <circle cx="145" cy="39" r="9" fill="#E0F2FE"/>
+
+    <rect x="218" y="34" width="10" height="42" rx="5" fill="#67E8F9"/>
+    <rect x="218" y="34" width="42" height="10" rx="5" fill="#67E8F9"/>
+    <circle cx="223" cy="39" r="9" fill="#E0F2FE"/>
+
+    <rect x="312" y="34" width="10" height="136" rx="5" fill="#67E8F9"/>
+    <circle cx="317" cy="39" r="9" fill="#E0F2FE"/>
+
+    <rect x="312" y="128" width="10" height="42" rx="5" fill="#67E8F9"/>
+    <rect x="274" y="128" width="48" height="10" rx="5" fill="#67E8F9"/>
+    <circle cx="317" cy="133" r="9" fill="#E0F2FE"/>
+
+    <rect x="218" y="128" width="66" height="10" rx="5" fill="#67E8F9"/>
+    <circle cx="251" cy="133" r="9" fill="#E0F2FE"/>
+
+    <rect x="124" y="128" width="10" height="42" rx="5" fill="#67E8F9"/>
+    <rect x="124" y="128" width="42" height="10" rx="5" fill="#67E8F9"/>
+    <circle cx="129" cy="133" r="9" fill="#E0F2FE"/>
+
+    <rect x="124" y="222" width="10" height="42" rx="5" fill="#67E8F9"/>
+    <circle cx="129" cy="227" r="9" fill="#E0F2FE"/>
+
+    <rect x="124" y="222" width="136" height="10" rx="5" fill="#67E8F9"/>
+    <circle cx="223" cy="227" r="9" fill="#E0F2FE"/>
+
+    <rect x="218" y="222" width="104" height="10" rx="5" fill="#67E8F9"/>
+    <circle cx="317" cy="227" r="9" fill="#E0F2FE"/>
+  </g>
+</svg>

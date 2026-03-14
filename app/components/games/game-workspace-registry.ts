@@ -14,6 +14,7 @@ import { PatternEchoGameWorkspace } from "./pattern-echo/PatternEchoGameWorkspac
 import { PrecisionDropGameWorkspace } from "./precision-drop/PrecisionDropGameWorkspace";
 import { PulseCountGameWorkspace } from "./pulse-count/PulseCountGameWorkspace";
 import { QuickSumGameWorkspace } from "./quick-sum/QuickSumGameWorkspace";
+import { RotateAlignGameWorkspace } from "./rotate-align/RotateAlignGameWorkspace";
 import { SequencePointGameWorkspace } from "./sequence-point/SequencePointGameWorkspace";
 import { ShapeMorphGameWorkspace } from "./shape-morph/ShapeMorphGameWorkspace";
 import { SpotChangeGameWorkspace } from "./spot-change/SpotChangeGameWorkspace";
@@ -128,6 +129,35 @@ const gameDefinitionByKey: Record<string, GameDefinition> = {
       previewSrc: "/images/games/flip-match-preview.svg",
     },
     workspace: FlipMatchGameWorkspace,
+  },
+  "rotate-align": {
+    instructions: {
+      summary: "Rotate the route tiles, reconnect the path from start to end, and clear every board in the sprint before the timer expires.",
+      sections: [
+        {
+          title: "Run flow",
+          items: [
+            { label: "Start run", detail: "Choose a difficulty and press Start run to load the first route board." },
+            { label: "Clear rounds", detail: "Each solved route advances directly to the next round until the full sprint is complete." },
+            { label: "Timeout", detail: "If the timer expires before every route is solved, the run is saved as not cleared and opens the Result screen automatically." },
+          ],
+        },
+        {
+          title: "Board controls",
+          items: [
+            { label: "Rotate one tile", detail: "Tap any route tile to rotate it 90 degrees clockwise." },
+            { label: "Read the path", detail: "The route clears only when the line runs cleanly from the start marker to the end marker." },
+            { label: "Read rotations", detail: "Every tile turn increases the rotations metric, so efficient path reading matters." },
+          ],
+        },
+      ],
+      title: "Rotate Align controls",
+    },
+    presentation: {
+      previewAlt: "Rotate Align path board with rotatable route tiles between start and end",
+      previewSrc: "/images/games/rotate-align-preview.svg",
+    },
+    workspace: RotateAlignGameWorkspace,
   },
   "precision-drop": {
     instructions: {

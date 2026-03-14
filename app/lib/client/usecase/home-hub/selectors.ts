@@ -30,6 +30,10 @@ const previewByGameKey: Record<string, Pick<HomeGameCard, "previewAlt" | "previe
     previewAlt: "Flip Match target and live card boards linked by a horizontal flip rule",
     previewSrc: "/images/games/flip-match-preview.svg",
   },
+  "rotate-align": {
+    previewAlt: "Rotate Align path board with rotatable route tiles between start and end",
+    previewSrc: "/images/games/rotate-align-preview.svg",
+  },
   minesweeper: {
     previewAlt: "Minesweeper board with opened cells and numbered hints",
     previewSrc: "/images/games/minesweeper-preview.png",
