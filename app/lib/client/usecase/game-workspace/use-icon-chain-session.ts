@@ -169,22 +169,22 @@ const difficultyConfig: Record<Difficulty, DifficultyConfig> = {
   EASY: {
     rounds: sequenceBank.EASY.map(buildRound),
     timeLimitSeconds: 42,
-    watchDurationMs: 1800,
+    watchDurationMs: 1320,
   },
   NORMAL: {
     rounds: sequenceBank.NORMAL.map(buildRound),
     timeLimitSeconds: 54,
-    watchDurationMs: 1600,
+    watchDurationMs: 1180,
   },
   HARD: {
     rounds: sequenceBank.HARD.map(buildRound),
     timeLimitSeconds: 68,
-    watchDurationMs: 1440,
+    watchDurationMs: 1040,
   },
   EXPERT: {
     rounds: sequenceBank.EXPERT.map(buildRound),
     timeLimitSeconds: 82,
-    watchDurationMs: 1280,
+    watchDurationMs: 940,
   },
 };
 

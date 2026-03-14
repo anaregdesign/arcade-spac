@@ -52,10 +52,10 @@ export type PositionLockRoundReview = {
 };
 
 const difficultyConfig: Record<Difficulty, DifficultyConfig> = {
-  EASY: { columnCount: 4, frameDurationMs: 340, initialTokenCount: 2, maxTokenCount: 3, reviewDurationMs: 900, roundCount: 3, rowCount: 3, timeLimitSeconds: 40 },
-  NORMAL: { columnCount: 4, frameDurationMs: 300, initialTokenCount: 2, maxTokenCount: 4, reviewDurationMs: 860, roundCount: 4, rowCount: 4, timeLimitSeconds: 52 },
-  HARD: { columnCount: 5, frameDurationMs: 270, initialTokenCount: 3, maxTokenCount: 5, reviewDurationMs: 820, roundCount: 5, rowCount: 4, timeLimitSeconds: 66 },
-  EXPERT: { columnCount: 5, frameDurationMs: 240, initialTokenCount: 3, maxTokenCount: 6, reviewDurationMs: 780, roundCount: 6, rowCount: 4, timeLimitSeconds: 80 },
+  EASY: { columnCount: 4, frameDurationMs: 260, initialTokenCount: 2, maxTokenCount: 3, reviewDurationMs: 760, roundCount: 3, rowCount: 3, timeLimitSeconds: 40 },
+  NORMAL: { columnCount: 4, frameDurationMs: 230, initialTokenCount: 2, maxTokenCount: 4, reviewDurationMs: 720, roundCount: 4, rowCount: 4, timeLimitSeconds: 52 },
+  HARD: { columnCount: 5, frameDurationMs: 210, initialTokenCount: 3, maxTokenCount: 5, reviewDurationMs: 680, roundCount: 5, rowCount: 4, timeLimitSeconds: 66 },
+  EXPERT: { columnCount: 5, frameDurationMs: 190, initialTokenCount: 3, maxTokenCount: 6, reviewDurationMs: 640, roundCount: 6, rowCount: 4, timeLimitSeconds: 80 },
 };
 
 const tokenThemes: TokenTheme[] = [
@@ -228,16 +228,7 @@ function createRound(config: DifficultyConfig, roundIndex: number): PositionLock
     }
 
     settledPositions[token.id] = token.targetPosition;
-    watchFrames.push({
-      activeTokenId: token.id,
-      positions: { ...settledPositions },
-    });
   }
-
-  watchFrames.push({
-    activeTokenId: tokens[tokens.length - 1]?.id ?? "amber",
-    positions: { ...settledPositions },
-  });
 
   return { tokens, watchFrames };
 }

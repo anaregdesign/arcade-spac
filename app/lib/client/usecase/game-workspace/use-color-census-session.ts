@@ -57,10 +57,10 @@ const colorPalette = [
 ] as const satisfies readonly CensusColor[];
 
 const difficultyConfig: Record<Difficulty, DifficultyConfig> = {
-  EASY: { columnCount: 4, minimumCountPerColor: 2, paletteSize: 4, roundCount: 3, rowCount: 4, timeLimitSeconds: 34, watchDurationMs: 1800 },
-  NORMAL: { columnCount: 5, minimumCountPerColor: 2, paletteSize: 4, roundCount: 4, rowCount: 4, timeLimitSeconds: 44, watchDurationMs: 1650 },
-  HARD: { columnCount: 5, minimumCountPerColor: 2, paletteSize: 5, roundCount: 5, rowCount: 5, timeLimitSeconds: 56, watchDurationMs: 1450 },
-  EXPERT: { columnCount: 6, minimumCountPerColor: 2, paletteSize: 5, roundCount: 6, rowCount: 5, timeLimitSeconds: 68, watchDurationMs: 1300 },
+  EASY: { columnCount: 4, minimumCountPerColor: 2, paletteSize: 4, roundCount: 3, rowCount: 4, timeLimitSeconds: 34, watchDurationMs: 1250 },
+  NORMAL: { columnCount: 5, minimumCountPerColor: 2, paletteSize: 4, roundCount: 4, rowCount: 4, timeLimitSeconds: 44, watchDurationMs: 1120 },
+  HARD: { columnCount: 5, minimumCountPerColor: 2, paletteSize: 5, roundCount: 5, rowCount: 5, timeLimitSeconds: 56, watchDurationMs: 980 },
+  EXPERT: { columnCount: 6, minimumCountPerColor: 2, paletteSize: 5, roundCount: 6, rowCount: 5, timeLimitSeconds: 68, watchDurationMs: 900 },
 };
 
 function buildCounts(totalCellCount: number, paletteSize: number, minimumCount: number) {

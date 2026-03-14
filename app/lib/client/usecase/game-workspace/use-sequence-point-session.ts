@@ -17,10 +17,10 @@ type DifficultyConfig = {
 };
 
 const difficultyConfig: Record<Difficulty, DifficultyConfig> = {
-  EASY: { columnCount: 3, flashDurationMs: 360, flashGapMs: 130, initialSequenceLength: 3, rowCount: 3, targetSequenceLength: 6, timeLimitSeconds: 34 },
-  NORMAL: { columnCount: 3, flashDurationMs: 320, flashGapMs: 120, initialSequenceLength: 4, rowCount: 3, targetSequenceLength: 8, timeLimitSeconds: 46 },
-  HARD: { columnCount: 4, flashDurationMs: 280, flashGapMs: 110, initialSequenceLength: 4, rowCount: 4, targetSequenceLength: 9, timeLimitSeconds: 58 },
-  EXPERT: { columnCount: 4, flashDurationMs: 240, flashGapMs: 90, initialSequenceLength: 5, rowCount: 4, targetSequenceLength: 11, timeLimitSeconds: 72 },
+  EASY: { columnCount: 3, flashDurationMs: 250, flashGapMs: 90, initialSequenceLength: 3, rowCount: 3, targetSequenceLength: 6, timeLimitSeconds: 34 },
+  NORMAL: { columnCount: 3, flashDurationMs: 220, flashGapMs: 80, initialSequenceLength: 4, rowCount: 3, targetSequenceLength: 8, timeLimitSeconds: 46 },
+  HARD: { columnCount: 4, flashDurationMs: 200, flashGapMs: 70, initialSequenceLength: 4, rowCount: 4, targetSequenceLength: 9, timeLimitSeconds: 58 },
+  EXPERT: { columnCount: 4, flashDurationMs: 180, flashGapMs: 60, initialSequenceLength: 5, rowCount: 4, targetSequenceLength: 11, timeLimitSeconds: 72 },
 };
 
 function buildSequence(pointCount: number, sequenceLength: number) {

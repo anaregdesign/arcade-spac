@@ -37,10 +37,10 @@ type DifficultyConfig = {
 };
 
 const difficultyConfig: Record<Difficulty, DifficultyConfig> = {
-  EASY: { columns: 3, flashDurationMs: 600, flashGapMs: 300, padCount: 6, sequenceLength: 4, timeLimitSeconds: 45 },
-  NORMAL: { columns: 3, flashDurationMs: 550, flashGapMs: 260, padCount: 9, sequenceLength: 6, timeLimitSeconds: 60 },
-  HARD: { columns: 3, flashDurationMs: 480, flashGapMs: 220, padCount: 9, sequenceLength: 8, timeLimitSeconds: 75 },
-  EXPERT: { columns: 3, flashDurationMs: 420, flashGapMs: 180, padCount: 9, sequenceLength: 10, timeLimitSeconds: 90 },
+  EASY: { columns: 3, flashDurationMs: 300, flashGapMs: 120, padCount: 6, sequenceLength: 4, timeLimitSeconds: 45 },
+  NORMAL: { columns: 3, flashDurationMs: 250, flashGapMs: 100, padCount: 9, sequenceLength: 6, timeLimitSeconds: 60 },
+  HARD: { columns: 3, flashDurationMs: 220, flashGapMs: 90, padCount: 9, sequenceLength: 8, timeLimitSeconds: 75 },
+  EXPERT: { columns: 3, flashDurationMs: 200, flashGapMs: 80, padCount: 9, sequenceLength: 10, timeLimitSeconds: 90 },
 };
 
 function buildPads(padCount: number): Pad[] {
