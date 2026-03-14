@@ -1,7 +1,7 @@
 import { useLoaderData } from "react-router";
 
 import type { Route } from "./+types/results.shared.$shareToken";
-import { AppShell } from "../components/AppShell";
+import { AppShell } from "../components/shared/AppShell";
 import { ResultScreen } from "../components/gameplay/ResultScreen";
 import { buildSharedHelpSections } from "../components/shared/help-content";
 import { requireCurrentUserId } from "../lib/server/infrastructure/auth/session.server";

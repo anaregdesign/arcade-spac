@@ -1,8 +1,8 @@
 import { Link } from "react-router";
 
-import { useAppShell } from "../lib/client/usecase/app-shell/use-app-shell";
-import { AppHelpDialog } from "./shared/AppHelpDialog";
-import type { AppHelpSection } from "./shared/help-content";
+import { useAppShell } from "../../lib/client/usecase/app-shell/use-app-shell";
+import { AppHelpDialog } from "./AppHelpDialog";
+import type { AppHelpSection } from "./help-content";
 
 type AppShellProps = {
   children: React.ReactNode;

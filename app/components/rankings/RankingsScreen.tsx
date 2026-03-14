@@ -1,7 +1,8 @@
 import { Link } from "react-router";
 
-import { useRankingsScreen } from "../lib/client/usecase/rankings-screen/use-rankings-screen";
-import type { GameKey } from "../lib/domain/entities/game-catalog";
+import { useRankingsScreen } from "../../lib/client/usecase/rankings-screen/use-rankings-screen";
+import type { GameKey } from "../../lib/domain/entities/game-catalog";
+import { SummaryCard } from "../shared/SummaryCard";
 import styles from "./RankingsScreen.module.css";
 
 type RankingsScreenProps = {
@@ -90,21 +91,24 @@ export function RankingsScreen({ filter, boardMeta, games, currentUserEntry, ent
       </section>
 
       <section className="summary-grid">
-        <article className="summary-card warm-card">
-          <p className="eyebrow">You</p>
-          <h2 className="section-title">{currentUserEntry ? `#${currentUserEntry.rank}` : "Unranked"}</h2>
-          <p>{currentUserEntry ? `${currentUserEntry.points} pts on ${boardMeta.boardLabel}` : "No rank yet"}</p>
-        </article>
-        <article className="summary-card cool-card">
-          <p className="eyebrow">Leader gap</p>
-          <h2 className="section-title">{currentUserEntry?.deltaToLeader ?? 0}</h2>
-          <p>{currentUserEntry ? currentUserEntry.leaderGapCopy : "No comparison yet."}</p>
-        </article>
-        <article className="summary-card neutral-card">
-          <p className="eyebrow">Next gap</p>
-          <h2 className="section-title">{currentUserEntry?.deltaToNext ?? 0}</h2>
-          <p>{currentUserEntry ? currentUserEntry.rivalGapCopy : "No rival yet"}</p>
-        </article>
+        <SummaryCard
+          description={currentUserEntry ? `${currentUserEntry.points} pts on ${boardMeta.boardLabel}` : "No rank yet"}
+          eyebrow="You"
+          title={currentUserEntry ? `#${currentUserEntry.rank}` : "Unranked"}
+          tone="warm"
+        />
+        <SummaryCard
+          description={currentUserEntry ? currentUserEntry.leaderGapCopy : "No comparison yet."}
+          eyebrow="Leader gap"
+          title={currentUserEntry?.deltaToLeader ?? 0}
+          tone="cool"
+        />
+        <SummaryCard
+          description={currentUserEntry ? currentUserEntry.rivalGapCopy : "No rival yet"}
+          eyebrow="Next gap"
+          title={currentUserEntry?.deltaToNext ?? 0}
+          tone="neutral"
+        />
       </section>
 
       <section className={["feature-card", styles["rankings-shell-card"]].join(" ")}>

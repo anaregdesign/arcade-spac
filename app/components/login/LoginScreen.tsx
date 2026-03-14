@@ -1,4 +1,4 @@
-import { useLoginScreen } from "../lib/client/usecase/login-screen/use-login-screen";
+import { useLoginScreen } from "../../lib/client/usecase/login-screen/use-login-screen";
 import styles from "./LoginScreen.module.css";
 
 type LoginOption = {

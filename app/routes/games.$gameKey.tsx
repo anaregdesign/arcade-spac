@@ -3,7 +3,7 @@ import { randomUUID } from "node:crypto";
 import { redirect, useLoaderData } from "react-router";
 
 import type { Route } from "./+types/games.$gameKey";
-import { AppShell } from "../components/AppShell";
+import { AppShell } from "../components/shared/AppShell";
 import { GameWorkspaceScreen } from "../components/gameplay/GameWorkspaceScreen";
 import { buildSharedHelpSections } from "../components/shared/help-content";
 import { resolveGameKey } from "../lib/domain/entities/game-catalog";

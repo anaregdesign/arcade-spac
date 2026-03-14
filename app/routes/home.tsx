@@ -1,8 +1,8 @@
 import { Link, useLoaderData } from "react-router";
 
 import type { Route } from "./+types/home";
-import { AppShell } from "../components/AppShell";
-import { HomeDashboard } from "../components/HomeDashboard";
+import { HomeDashboard } from "../components/home/HomeDashboard";
+import { AppShell } from "../components/shared/AppShell";
 import { buildSharedHelpSections } from "../components/shared/help-content";
 import { useHomeHub } from "../lib/client/usecase/home-hub/use-home-hub";
 import { requireCurrentUserId } from "../lib/server/infrastructure/auth/session.server";

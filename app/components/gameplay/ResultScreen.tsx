@@ -2,6 +2,7 @@ import { Form, Link } from "react-router";
 
 import { useResultScreen } from "../../lib/client/usecase/result-screen/use-result-screen";
 import sharedStyles from "../games/shared/GameWorkspaceShared.module.css";
+import { SummaryCard } from "../shared/SummaryCard";
 import styles from "./ResultScreen.module.css";
 
 type ResultScreenProps = {
@@ -114,10 +115,7 @@ export function ResultScreen({ result }: ResultScreenProps) {
 
       <section className={["summary-grid", styles["result-impact-grid"]].join(" ")} aria-label="Impact summary">
         {screen.impactCards.map((card) => (
-          <article key={card.key} className={["summary-card", styles["result-impact-card"]].join(" ")}>
-            <p className="eyebrow">{card.label}</p>
-            <h2 className="section-title">{card.value}</h2>
-          </article>
+          <SummaryCard key={card.key} className={styles["result-impact-card"]} eyebrow={card.label} title={card.value} />
         ))}
       </section>
 

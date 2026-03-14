@@ -1,6 +1,7 @@
 import { Form, Link } from "react-router";
 
-import { useProfileScreen } from "../lib/client/usecase/profile-screen/use-profile-screen";
+import { useProfileScreen } from "../../lib/client/usecase/profile-screen/use-profile-screen";
+import { SummaryCard } from "../shared/SummaryCard";
 import styles from "./ProfileScreen.module.css";
 
 type ProfileScreenProps = {
@@ -147,17 +148,20 @@ export function ProfileScreen({ profile, activity, overall, games, breakdown, gr
       </section>
 
       <section className="summary-grid">
-        <article className="summary-card warm-card">
-          <p className="eyebrow">Activity</p>
-          <h2 className="section-title">{activity.streakDays} day streak</h2>
-          <p>{activity.totalPlayCount} recorded plays</p>
-        </article>
+        <SummaryCard
+          description={`${activity.totalPlayCount} recorded plays`}
+          eyebrow="Activity"
+          title={`${activity.streakDays} day streak`}
+          tone="warm"
+        />
         {overall.map((summary) => (
-          <article key={summary.period} className="summary-card cool-card">
-            <p className="eyebrow">{summary.period === "SEASON" ? "Season" : "Lifetime"}</p>
-            <h2 className="section-title">{summary.totalPoints} pts</h2>
-            <p>{summary.currentRank ? `Rank #${summary.currentRank}` : "Unranked"} · {summary.recentPlaySummary}</p>
-          </article>
+          <SummaryCard
+            key={summary.period}
+            description={`${summary.currentRank ? `Rank #${summary.currentRank}` : "Unranked"} · ${summary.recentPlaySummary}`}
+            eyebrow={summary.period === "SEASON" ? "Season" : "Lifetime"}
+            title={`${summary.totalPoints} pts`}
+            tone="cool"
+          />
         ))}
       </section>
 
