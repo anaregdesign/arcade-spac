@@ -176,15 +176,60 @@
 
 @media (max-width: 720px) {
   .line-summary-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.55rem;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .line-summary-card {
+    padding: 0.65rem 0.7rem;
+  }
+
+  .line-summary-label {
+    font-size: 0.66rem;
+  }
+
+  .line-summary-value {
+    font-size: 0.92rem;
+  }
+
+  .pair-token {
+    font-size: 0.74rem;
+    padding: 0.35rem 0.55rem;
+  }
+
+  .pair-token-row {
+    order: 2;
+  }
+
+  .line-board-grid {
+    order: 3;
+  }
+
+  .action-row {
+    display: grid;
+    gap: 0.5rem;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    order: 4;
+  }
+
+  .utility-button {
+    padding: 0.55rem 0.65rem;
+    font-size: 0.8rem;
   }
 
   .line-cell {
-    min-height: 3.35rem;
+    min-height: 3rem;
+    border-radius: 0.8rem;
   }
 
   .line-node-label {
-    height: 1.65rem;
-    width: 1.65rem;
+    height: 1.5rem;
+    width: 1.5rem;
+    font-size: 0.82rem;
+  }
+
+  .line-copy {
+    font-size: 0.8rem;
+    order: 5;
   }
 }

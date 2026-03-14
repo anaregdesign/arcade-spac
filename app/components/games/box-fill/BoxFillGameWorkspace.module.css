@@ -204,11 +204,83 @@
 }
 
 @media (max-width: 760px) {
+  .box-fill-shell {
+    gap: 0.8rem;
+  }
+
+  .summary-grid {
+    gap: 0.55rem;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .summary-card {
+    padding: 0.65rem 0.7rem;
+  }
+
+  .summary-label {
+    font-size: 0.66rem;
+  }
+
+  .summary-value {
+    font-size: 0.92rem;
+  }
+
+  .action-row {
+    display: grid;
+    gap: 0.5rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    order: 3;
+  }
+
+  .utility-button {
+    padding: 0.55rem 0.7rem;
+    font-size: 0.84rem;
+  }
+
   .workspace-grid {
-    grid-template-columns: 1fr;
+    order: 2;
+    grid-template-columns: minmax(0, 1fr) minmax(6.8rem, 7.4rem);
+    align-items: start;
+  }
+
+  .board-panel {
+    order: 1;
+  }
+
+  .tray-panel {
+    order: 2;
+    padding: 0.75rem;
+  }
+
+  .board-panel {
+    padding: 0.75rem;
+  }
+
+  .tray-grid {
+    gap: 0.5rem;
   }
 
   .board-cell {
-    min-height: 3.35rem;
+    min-height: 2.85rem;
+    border-radius: 0.8rem;
+  }
+
+  .piece-card {
+    padding: 0.55rem 0.55rem;
+    border-radius: 0.8rem;
+  }
+
+  .piece-label {
+    font-size: 0.82rem;
+  }
+
+  .piece-meta,
+  .board-copy,
+  .panel-title {
+    font-size: 0.74rem;
+  }
+
+  .board-copy {
+    order: 4;
   }
 }
