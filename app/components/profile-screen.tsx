@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
 import { Form, Link } from "react-router";
 
+import { useProfileScreen } from "../lib/client/usecase/profile-screen/use-profile-screen";
 import styles from "./profile-screen.module.css";
 
 type ProfileScreenProps = {
@@ -62,41 +62,8 @@ type ProfileScreenProps = {
   }>;
 };
 
-function buildTrendPath(points: ProfileScreenProps["trend"]) {
-  if (points.length === 0) {
-    return "";
-  }
-
-  const values = points.map((point) => point.totalPointsDelta);
-  const min = Math.min(...values, 0);
-  const max = Math.max(...values, 1);
-  const range = max - min || 1;
-
-  return points
-    .map((point, index) => {
-      const x = points.length === 1 ? 0 : (index / (points.length - 1)) * 100;
-      const y = 100 - (((point.totalPointsDelta - min) / range) * 100);
-      return `${index === 0 ? "M" : "L"}${x},${y}`;
-    })
-    .join(" ");
-}
-
 export function ProfileScreen({ profile, activity, overall, games, breakdown, growthGuidance, trend }: ProfileScreenProps) {
-  const trendPath = buildTrendPath(trend);
-  const recentTrend = trend.slice(-3).reverse();
-  const [themePreference, setThemePreference] = useState<"LIGHT" | "DARK">(profile.themePreference);
-
-  useEffect(() => {
-    setThemePreference(profile.themePreference);
-  }, [profile.themePreference]);
-
-  useEffect(() => {
-    if (typeof document === "undefined") {
-      return;
-    }
-
-    document.body.dataset.theme = themePreference === "DARK" ? "dark" : "light";
-  }, [themePreference]);
+  const screen = useProfileScreen({ profile, trend });
 
   return (
     <div className="dashboard-stack">
@@ -159,8 +126,8 @@ export function ProfileScreen({ profile, activity, overall, games, breakdown, gr
                 <select
                   className="field-select"
                   name="themePreference"
-                  onChange={(event) => setThemePreference(event.currentTarget.value as "LIGHT" | "DARK")}
-                  value={themePreference}
+                  onChange={(event) => screen.handleThemePreferenceChange(event.currentTarget.value)}
+                  value={screen.themePreference}
                 >
                   <option value="LIGHT">Light</option>
                   <option value="DARK">Dark</option>
@@ -270,17 +237,17 @@ export function ProfileScreen({ profile, activity, overall, games, breakdown, gr
             <strong>{growthGuidance.title}</strong>
             <p className="compact-copy">{growthGuidance.detail}</p>
           </div>
-          {trendPath ? (
+          {screen.trendPath ? (
             <div className={styles["trend-chart-shell"]}>
               <svg viewBox="0 0 100 100" className={styles["trend-chart"]} preserveAspectRatio="none" aria-label="Recent score trend">
-                <path d={trendPath} fill="none" stroke="var(--surface-strong)" strokeWidth="3" vectorEffect="non-scaling-stroke" />
+                <path d={screen.trendPath} fill="none" stroke="var(--surface-strong)" strokeWidth="3" vectorEffect="non-scaling-stroke" />
               </svg>
             </div>
           ) : (
             <p className="compact-copy">No runs yet.</p>
           )}
           <div className={styles["trend-list"]}>
-            {recentTrend.map((item) => (
+            {screen.recentTrend.map((item) => (
               <article key={`${item.label}-${item.index}`} className={styles["recent-result-item"]}>
                 <div>
                   <strong>{item.gameName}</strong>
@@ -293,11 +260,11 @@ export function ProfileScreen({ profile, activity, overall, games, breakdown, gr
               </article>
             ))}
           </div>
-          {trend.length > 3 ? (
+          {screen.archivedTrend.length > 0 ? (
             <details className="disclosure-card">
               <summary>More</summary>
               <div className={["disclosure-body", styles["trend-list"]].join(" ")}>
-                {trend.slice(0, -3).reverse().map((item) => (
+                {screen.archivedTrend.map((item) => (
                   <article key={`${item.label}-${item.index}`} className={styles["recent-result-item"]}>
                     <div>
                       <strong>{item.gameName}</strong>

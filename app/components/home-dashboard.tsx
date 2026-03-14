@@ -1,35 +1,18 @@
 import { Link } from "react-router";
 
-import { getGamePresentation } from "./games/game-workspace-registry";
 import styles from "./home-dashboard.module.css";
-
-function getGameStatusLabel(game: {
-  currentRank: number | null;
-  playCount: number;
-}) {
-  if (game.currentRank) {
-    return `Rank #${game.currentRank}`;
-  }
-
-  return game.playCount > 0 ? "Played" : "New";
-}
-
-function getGameRecordLabel(game: {
-  metricValue: string;
-}) {
-  return game.metricValue === "No record yet" ? "No record" : `Best ${game.metricValue}`;
-}
 
 type HomeDashboardProps = {
   games: Array<{
     key: string;
-    metricLabel: string;
-    metricValue: string;
     name: string;
     playCount: number;
-    recommendationText: string | null;
-    shortDescription: string;
-    currentRank: number | null;
+    previewAlt: string | null;
+    previewObjectPosition?: string;
+    previewSrc: string | null;
+    recordLabel: string;
+    runLabel: string;
+    statusLabel: string;
   }>;
   hasMore: boolean;
   matchCount: number;
@@ -48,6 +31,8 @@ type HomeDashboardProps = {
     label: string;
     value: string;
   }>;
+  visibleRankedCount: number;
+  visibleUnplayedCount: number;
 };
 
 export function HomeDashboard({
@@ -63,6 +48,8 @@ export function HomeDashboard({
   sortOptions,
   tag,
   tagOptions,
+  visibleRankedCount,
+  visibleUnplayedCount,
 }: HomeDashboardProps) {
   return (
     <section className={["feature-card", styles["home-hub-card"]].join(" ")}>
@@ -99,13 +86,11 @@ export function HomeDashboard({
       </div>
       <div className={styles["home-hub-meta-row"]}>
         <span className="status-badge status-badge-neutral">{matchCount} games</span>
-        <span className="status-badge status-badge-neutral">{games.filter((game) => game.playCount === 0).length} visible unplayed</span>
-        <span className="status-badge status-badge-neutral">{games.filter((game) => game.currentRank).length} visible ranked</span>
+        <span className="status-badge status-badge-neutral">{visibleUnplayedCount} visible unplayed</span>
+        <span className="status-badge status-badge-neutral">{visibleRankedCount} visible ranked</span>
       </div>
       <div className={["game-grid", styles["home-game-grid"], styles["home-primary-grid"]].join(" ")}>
         {games.map((game) => {
-          const presentation = getGamePresentation(game.key);
-
           return (
             <article key={game.key} className={["game-card", styles["home-game-card"]].join(" ")}>
               <Link
@@ -114,13 +99,13 @@ export function HomeDashboard({
                 to={`/games/${game.key}`}
               >
                 <div className={styles["game-preview-frame"]}>
-                  {presentation ? (
+                  {game.previewSrc && game.previewAlt ? (
                     <img
-                      alt={presentation.previewAlt}
+                      alt={game.previewAlt}
                       className={styles["game-preview-image"]}
                       loading="lazy"
-                      src={presentation.previewSrc}
-                      style={{ objectPosition: presentation.previewObjectPosition ?? "center center" }}
+                      src={game.previewSrc}
+                      style={{ objectPosition: game.previewObjectPosition ?? "center center" }}
                     />
                   ) : (
                     <div className={styles["game-preview-fallback"]} aria-hidden="true">
@@ -131,12 +116,12 @@ export function HomeDashboard({
               </Link>
               <div className={styles["home-card-body"]}>
                 <div className={styles["home-card-status-row"]}>
-                  <span className="status-badge status-badge-neutral">{getGameStatusLabel(game)}</span>
-                  <span className="status-badge status-badge-neutral">{getGameRecordLabel(game)}</span>
+                  <span className="status-badge status-badge-neutral">{game.statusLabel}</span>
+                  <span className="status-badge status-badge-neutral">{game.recordLabel}</span>
                 </div>
                 <div className={styles["home-card-heading"]}>
                   <h3 className="card-title">{game.name}</h3>
-                  <span className={styles["home-card-kicker"]}>{game.playCount > 0 ? `${game.playCount} runs` : "First run"}</span>
+                  <span className={styles["home-card-kicker"]}>{game.runLabel}</span>
                 </div>
                 <Link className={["action-link", "action-link-primary", styles["home-card-action"]].join(" ")} to={`/games/${game.key}`}>
                   Play

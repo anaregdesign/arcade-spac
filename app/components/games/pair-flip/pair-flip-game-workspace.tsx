@@ -1,8 +1,4 @@
-import { useEffect, useRef } from "react";
-import { useNavigation, useSubmit } from "react-router";
-
-import { usePairFlipSession } from "../../../lib/client/usecase/game-workspace/use-pair-flip-session";
-import { playCardFlip, playCardMatch, playCardMismatch, playRunClear, playRunFail, playRunStart } from "../../../lib/client/sound-effects";
+import { usePairFlipWorkspace } from "../../../lib/client/usecase/game-workspace/use-pair-flip-workspace";
 import sharedStyles from "../shared/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../shared/GameWorkspaceBoardOverlay";
 import { GameWorkspaceControlsCard } from "../shared/GameWorkspaceControlsCard";
@@ -11,97 +7,27 @@ import { GameInstructionsDialog } from "../shared/game-instructions-dialog";
 import type { GameWorkspaceComponentProps } from "../shared/game-workspace-types";
 import styles from "./pair-flip-game-workspace.module.css";
 
-function formatDuration(totalSeconds: number) {
-  return `${Math.floor(totalSeconds / 60)}:${(totalSeconds % 60).toString().padStart(2, "0")}`;
-}
-
 export function PairFlipGameWorkspace({ instructions, workspace }: GameWorkspaceComponentProps) {
-  const navigation = useNavigation();
-  const submit = useSubmit();
-  const submittedOutcomeRef = useRef<"cleared" | "failed" | null>(null);
-  const pairFlip = usePairFlipSession(workspace.difficulty);
-  const isRunIdle = pairFlip.state === "idle";
-  const isLiveRun = pairFlip.state === "playing";
-  const isRunCleared = pairFlip.state === "cleared";
-  const isRunFailed = pairFlip.state === "failed";
-  const resultIntent = pairFlip.mismatchCount === 0 ? "completeClean" : "completeSteady";
-  const runStatusLabel = isRunCleared ? "Cleared" : isRunFailed ? "Timed out" : isLiveRun ? "Live" : "Ready";
-  const startActionLabel = isLiveRun ? "Running" : isRunCleared || isRunFailed ? "Start another board" : "Start run";
-  const timeLeftSeconds = Math.max(0, pairFlip.timeLimitSeconds - pairFlip.elapsedSeconds);
-  const saveStatusLabel = navigation.state === "submitting"
-    ? "Opening result"
-    : isRunCleared || isRunFailed
-      ? "Opening result"
-      : "Match every pair";
-
-  useEffect(() => {
-    workspace.setPlaying(pairFlip.state === "playing");
-  }, [pairFlip.state, workspace]);
-
-  const prevMatchedPairCountRef = useRef(pairFlip.matchedPairCount);
-  const prevMismatchCountRef = useRef(pairFlip.mismatchCount);
-
-  useEffect(() => {
-    const currentMatched = pairFlip.matchedPairCount;
-    const currentMismatch = pairFlip.mismatchCount;
-
-    if (currentMatched > prevMatchedPairCountRef.current) {
-      playCardMatch();
-    } else if (currentMismatch > prevMismatchCountRef.current) {
-      playCardMismatch();
-    }
-
-    prevMatchedPairCountRef.current = currentMatched;
-    prevMismatchCountRef.current = currentMismatch;
-  }, [pairFlip.matchedPairCount, pairFlip.mismatchCount]);
-
-  useEffect(() => {
-    if (pairFlip.state === "cleared") {
-      playRunClear();
-    } else if (pairFlip.state === "failed") {
-      playRunFail();
-    }
-  }, [pairFlip.state]);
-
-  useEffect(() => {
-    if (pairFlip.state !== "cleared" && pairFlip.state !== "failed") {
-      submittedOutcomeRef.current = null;
-      return;
-    }
-
-    if (submittedOutcomeRef.current === pairFlip.state) {
-      return;
-    }
-
-    submittedOutcomeRef.current = pairFlip.state;
-    workspace.finishRun();
-
-    const formData = new FormData();
-    formData.set("intent", pairFlip.state === "failed" ? "fail" : resultIntent);
-    formData.set("difficulty", workspace.difficulty);
-    formData.set("primaryMetric", String(pairFlip.elapsedSeconds));
-    formData.set("mistakeCount", String(pairFlip.mismatchCount));
-    submit(formData, { method: "post" });
-  }, [pairFlip.elapsedSeconds, pairFlip.mismatchCount, pairFlip.state, resultIntent, submit, workspace]);
+  const screen = usePairFlipWorkspace(workspace);
 
   return (
     <>
       <GameWorkspaceControlsCard
         difficulty={workspace.difficulty}
-        isDifficultyDisabled={isLiveRun}
+        isDifficultyDisabled={screen.isLiveRun}
         onDifficultyChange={workspace.changeDifficulty}
         primaryActions={(
           <GameInstructionsDialog instructions={instructions} />
         )}
         statusChips={(
           <>
-            <span className="status-badge status-badge-neutral">{runStatusLabel}</span>
-            <span className="status-badge status-badge-neutral">Left {formatDuration(timeLeftSeconds)}</span>
+            <span className="status-badge status-badge-neutral">{screen.runStatusLabel}</span>
+            <span className="status-badge status-badge-neutral">Left {screen.timeLeftLabel}</span>
             <span className="status-badge status-badge-neutral">
-              Matched {pairFlip.matchedPairCount}/{pairFlip.totalPairs}
+              Matched {screen.pairFlip.matchedPairCount}/{screen.pairFlip.totalPairs}
             </span>
-            <span className="status-badge status-badge-neutral">Pairs left {pairFlip.remainingPairs}</span>
-            <span className="status-badge status-badge-neutral">Mismatches {pairFlip.mismatchCount}</span>
+            <span className="status-badge status-badge-neutral">Pairs left {screen.pairFlip.remainingPairs}</span>
+            <span className="status-badge status-badge-neutral">Mismatches {screen.pairFlip.mismatchCount}</span>
           </>
         )}
       />
@@ -118,9 +44,9 @@ export function PairFlipGameWorkspace({ instructions, workspace }: GameWorkspace
             </div>
             <div
               className={styles["pair-flip-grid"]}
-              style={{ gridTemplateColumns: `repeat(${pairFlip.columns}, minmax(0, 1fr))` }}
+              style={{ gridTemplateColumns: `repeat(${screen.pairFlip.columns}, minmax(0, 1fr))` }}
             >
-              {pairFlip.board.flatMap((row, rowIndex) =>
+              {screen.pairFlip.board.flatMap((row, rowIndex) =>
                 row.map((card, columnIndex) => (
                   <button
                     aria-label={`Card ${rowIndex + 1}-${columnIndex + 1}`}
@@ -130,15 +56,7 @@ export function PairFlipGameWorkspace({ instructions, workspace }: GameWorkspace
                       card.isMatched ? styles["pair-flip-card-matched"] : "",
                     ].filter(Boolean).join(" ")}
                     key={card.id}
-                    onClick={() => {
-                      const card = pairFlip.board[rowIndex]?.[columnIndex];
-
-                      if (card && !card.isMatched && !card.isOpen && pairFlip.state === "playing") {
-                        playCardFlip();
-                      }
-
-                      pairFlip.tapCard(rowIndex, columnIndex);
-                    }}
+                    onClick={() => screen.handleCardPress(rowIndex, columnIndex)}
                     type="button"
                   >
                     <span className={styles["pair-flip-card-face"]}>
@@ -150,28 +68,18 @@ export function PairFlipGameWorkspace({ instructions, workspace }: GameWorkspace
             </div>
           </div>
           <GameWorkspaceBoardOverlay
-            actionLabel={startActionLabel}
+            actionLabel={screen.startActionLabel}
             detail="Start the board, then flip pairs and remember their positions before the timer expires."
-            isVisible={isRunIdle}
-            onAction={() => {
-              playRunStart();
-              workspace.beginRun();
-              pairFlip.beginRun();
-            }}
+            isVisible={screen.isRunIdle}
+            onAction={screen.handleStartRun}
             title="Board ready"
           />
         </div>
       </section>
 
       <GameWorkspaceFinishCard
-        detail={
-          isRunCleared
-            ? "The clear time and mismatch count were captured. The Result screen opens automatically."
-            : isRunFailed
-              ? "The timer expired before every pair was matched."
-              : "Two open cards lock the board briefly. Memorize each reveal so you can finish with fewer mismatches."
-        }
-        emphasis={saveStatusLabel}
+        detail={screen.finishDetail}
+        emphasis={screen.saveStatusLabel}
       />
     </>
   );

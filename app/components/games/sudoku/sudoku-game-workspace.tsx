@@ -1,8 +1,4 @@
-import { useEffect, useRef } from "react";
-import { Form, useNavigation, useSubmit } from "react-router";
-
-import { useSudokuSession } from "../../../lib/client/usecase/game-workspace/use-sudoku-session";
-import { playHintUse, playRunClear, playRunStart, playTapCorrect, playTapWrong } from "../../../lib/client/sound-effects";
+import { useSudokuWorkspace } from "../../../lib/client/usecase/game-workspace/use-sudoku-workspace";
 import sharedStyles from "../shared/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../shared/GameWorkspaceBoardOverlay";
 import { GameWorkspaceControlsCard } from "../shared/GameWorkspaceControlsCard";
@@ -11,100 +7,25 @@ import { GameInstructionsDialog } from "../shared/game-instructions-dialog";
 import type { GameWorkspaceComponentProps } from "../shared/game-workspace-types";
 import styles from "./sudoku-game-workspace.module.css";
 
-function formatDuration(totalSeconds: number) {
-  return `${Math.floor(totalSeconds / 60)}:${(totalSeconds % 60).toString().padStart(2, "0")}`;
-}
-
 export function SudokuGameWorkspace({ instructions, workspace }: GameWorkspaceComponentProps) {
-  const navigation = useNavigation();
-  const submit = useSubmit();
-  const submittedClearRef = useRef(false);
-  const sudoku = useSudokuSession(workspace.difficulty);
-  const isRunIdle = sudoku.state === "idle";
-  const isLiveRun = sudoku.state === "playing";
-  const isRunCleared = sudoku.state === "cleared";
-  const resultIntent = sudoku.mistakeCount === 0 && sudoku.hintCount === 0 ? "completeClean" : "completeSteady";
-  const runStatusLabel = isRunCleared ? "Solved" : isLiveRun ? "Live" : "Ready";
-  const startActionLabel = isLiveRun ? "Running" : isRunCleared ? "Start another puzzle" : "Start run";
-  const saveStatusLabel = navigation.state === "submitting"
-    ? "Opening result"
-    : isRunCleared ? "Opening result" : isLiveRun ? "Finish or solve" : "Solve to finish";
-
-  useEffect(() => {
-    workspace.setPlaying(sudoku.state === "playing");
-  }, [sudoku.state, workspace]);
-
-  useEffect(() => {
-    if (sudoku.state === "cleared") {
-      playRunClear();
-    }
-  }, [sudoku.state]);
-
-  const prevRemainingCellCountRef = useRef(sudoku.remainingCellCount);
-  const prevHintCountRef = useRef(sudoku.hintCount);
-  const prevMistakeCountRef = useRef(sudoku.mistakeCount);
-
-  useEffect(() => {
-    const currentRemaining = sudoku.remainingCellCount;
-    const prevRemaining = prevRemainingCellCountRef.current;
-    const currentHints = sudoku.hintCount;
-    const prevHints = prevHintCountRef.current;
-    const currentMistakes = sudoku.mistakeCount;
-    const prevMistakes = prevMistakeCountRef.current;
-
-    if (currentHints > prevHints) {
-      playHintUse();
-    } else if (currentRemaining < prevRemaining && sudoku.state === "playing") {
-      playTapCorrect();
-    }
-
-    if (currentMistakes > prevMistakes) {
-      playTapWrong();
-    }
-
-    prevRemainingCellCountRef.current = currentRemaining;
-    prevHintCountRef.current = currentHints;
-    prevMistakeCountRef.current = currentMistakes;
-  }, [sudoku.hintCount, sudoku.mistakeCount, sudoku.remainingCellCount, sudoku.state]);
-
-  useEffect(() => {
-    if (sudoku.state !== "cleared") {
-      submittedClearRef.current = false;
-      return;
-    }
-
-    if (submittedClearRef.current) {
-      return;
-    }
-
-    submittedClearRef.current = true;
-    workspace.finishRun();
-
-    const formData = new FormData();
-    formData.set("intent", resultIntent);
-    formData.set("difficulty", workspace.difficulty);
-    formData.set("primaryMetric", String(sudoku.elapsedSeconds));
-    formData.set("mistakeCount", String(sudoku.mistakeCount));
-    formData.set("hintCount", String(sudoku.hintCount));
-    submit(formData, { method: "post" });
-  }, [resultIntent, submit, sudoku.elapsedSeconds, sudoku.hintCount, sudoku.mistakeCount, sudoku.state, workspace]);
+  const screen = useSudokuWorkspace(workspace);
 
   return (
     <>
       <GameWorkspaceControlsCard
         difficulty={workspace.difficulty}
-        isDifficultyDisabled={isLiveRun}
+        isDifficultyDisabled={screen.isLiveRun}
         onDifficultyChange={workspace.changeDifficulty}
         primaryActions={(
           <GameInstructionsDialog instructions={instructions} />
         )}
         statusChips={(
           <>
-            <span className="status-badge status-badge-neutral">{runStatusLabel}</span>
-            <span className="status-badge status-badge-neutral">Time {formatDuration(sudoku.elapsedSeconds)}</span>
-            <span className="status-badge status-badge-neutral">Open {sudoku.remainingCellCount}</span>
-            <span className="status-badge status-badge-neutral">Mistakes {sudoku.mistakeCount}</span>
-            <span className="status-badge status-badge-neutral">Hints {sudoku.hintCount}</span>
+            <span className="status-badge status-badge-neutral">{screen.isRunCleared ? "Solved" : screen.isLiveRun ? "Live" : "Ready"}</span>
+            <span className="status-badge status-badge-neutral">Time {screen.timeLabel}</span>
+            <span className="status-badge status-badge-neutral">Open {screen.sudoku.remainingCellCount}</span>
+            <span className="status-badge status-badge-neutral">Mistakes {screen.sudoku.mistakeCount}</span>
+            <span className="status-badge status-badge-neutral">Hints {screen.sudoku.hintCount}</span>
           </>
         )}
       />
@@ -113,7 +34,7 @@ export function SudokuGameWorkspace({ instructions, workspace }: GameWorkspaceCo
         <div className={sharedStyles["game-board-overlay-shell"]}>
           <div className={styles["sudoku-shell"]}>
             <div className={styles["sudoku-board"]} role="grid" aria-label="Sudoku board">
-              {sudoku.board.map((row, rowIndex) =>
+              {screen.sudoku.board.map((row, rowIndex) =>
                 row.map((cell, colIndex) => (
                   <button
                     aria-label={`Sudoku cell ${rowIndex + 1}-${colIndex + 1}`}
@@ -127,9 +48,9 @@ export function SudokuGameWorkspace({ instructions, workspace }: GameWorkspaceCo
                       rowIndex === 8 ? styles["sudoku-cell-bottom-heavy"] : "",
                       colIndex === 8 ? styles["sudoku-cell-right-heavy"] : "",
                     ].filter(Boolean).join(" ")}
-                    disabled={!isLiveRun}
+                    disabled={!screen.isLiveRun}
                     key={`sudoku-${rowIndex}-${colIndex}`}
-                    onClick={() => sudoku.selectCell(rowIndex, colIndex)}
+                    onClick={() => screen.sudoku.selectCell(rowIndex, colIndex)}
                     type="button"
                   >
                     {cell.value > 0 ? cell.value : ""}
@@ -142,9 +63,9 @@ export function SudokuGameWorkspace({ instructions, workspace }: GameWorkspaceCo
                 {Array.from({ length: 9 }, (_, index) => (
                   <button
                     className={styles["sudoku-key"]}
-                    disabled={!isLiveRun}
+                    disabled={!screen.isLiveRun}
                     key={`digit-${index + 1}`}
-                    onClick={() => sudoku.applyDigit(index + 1)}
+                    onClick={() => screen.sudoku.applyDigit(index + 1)}
                     type="button"
                   >
                     {index + 1}
@@ -152,50 +73,33 @@ export function SudokuGameWorkspace({ instructions, workspace }: GameWorkspaceCo
                 ))}
               </div>
               <div className={["hero-actions", "compact-actions", sharedStyles["workspace-utility-actions"]].join(" ")}>
-                <button className="action-link action-link-secondary" disabled={!isLiveRun} onClick={() => sudoku.clearSelectedCell()} type="button">
+                <button className="action-link action-link-secondary" disabled={!screen.isLiveRun} onClick={() => screen.sudoku.clearSelectedCell()} type="button">
                   Clear cell
                 </button>
-                <button className="action-link action-link-primary" disabled={!isLiveRun} onClick={() => sudoku.useHint()} type="button">
+                <button className="action-link action-link-primary" disabled={!screen.isLiveRun} onClick={() => screen.sudoku.useHint()} type="button">
                   Use hint
                 </button>
               </div>
             </div>
           </div>
           <GameWorkspaceBoardOverlay
-            actionLabel={startActionLabel}
+            actionLabel={screen.startActionLabel}
             detail="Start the puzzle, then fill the board with the keypad or keyboard."
-            isVisible={isRunIdle}
-            onAction={() => {
-              playRunStart();
-              workspace.beginRun();
-              sudoku.beginRun();
-            }}
+            isVisible={screen.isRunIdle}
+            onAction={screen.handleStartRun}
             title="Puzzle ready"
           />
         </div>
       </section>
 
       <GameWorkspaceFinishCard
-        actions={isLiveRun ? (
-          <Form method="post" onSubmit={() => workspace.finishRun()}>
-            <input type="hidden" name="intent" value="fail" />
-            <input type="hidden" name="difficulty" value={workspace.difficulty} />
-            <input type="hidden" name="primaryMetric" value={String(sudoku.elapsedSeconds)} />
-            <input type="hidden" name="mistakeCount" value={String(sudoku.mistakeCount)} />
-            <input type="hidden" name="hintCount" value={String(sudoku.hintCount)} />
-            <button className="action-link action-link-secondary" type="submit">
+        actions={screen.isLiveRun ? (
+            <button className="action-link action-link-secondary" type="button" onClick={screen.handleFinishRun}>
               Finish run
             </button>
-          </Form>
         ) : null}
-        detail={
-          isRunCleared
-            ? "The Result screen opens automatically when the puzzle is solved."
-            : isLiveRun
-              ? "Solve the puzzle for a ranked clear, or finish now to open a not-cleared result."
-              : "Solve the puzzle to open the Result screen automatically."
-        }
-        emphasis={saveStatusLabel}
+        detail={screen.finishDetail}
+        emphasis={screen.saveStatusLabel}
       />
     </>
   );

@@ -1,4 +1,4 @@
-import { useId, useState } from "react";
+import { useGameInstructionsDialog } from "../../../lib/client/usecase/game-instructions-dialog/use-game-instructions-dialog";
 
 import styles from "./GameWorkspaceShared.module.css";
 
@@ -27,18 +27,17 @@ export function GameInstructionsDialog({
   instructions,
   triggerLabel = "How to play",
 }: GameInstructionsDialogProps) {
-  const [isOpen, setOpen] = useState(false);
-  const titleId = useId();
+  const dialog = useGameInstructionsDialog();
 
   return (
     <>
-      <button className="action-link action-link-secondary" type="button" onClick={() => setOpen(true)}>
+      <button className="action-link action-link-secondary" type="button" onClick={dialog.open}>
         {triggerLabel}
       </button>
-      {isOpen ? (
+      {dialog.isOpen ? (
         <section className="help-overlay" aria-label={`${instructions.title} help`}>
           <div
-            aria-labelledby={titleId}
+            aria-labelledby={dialog.titleId}
             aria-modal="true"
             className={["help-dialog", "feature-card", styles["game-instructions-dialog"]].join(" ")}
             role="dialog"
@@ -46,9 +45,9 @@ export function GameInstructionsDialog({
             <div className="section-heading">
               <div>
                 <p className="eyebrow">How to play</p>
-                <h2 className="section-title" id={titleId}>{instructions.title}</h2>
+                <h2 className="section-title" id={dialog.titleId}>{instructions.title}</h2>
               </div>
-              <button className="action-link action-link-secondary" type="button" onClick={() => setOpen(false)}>
+              <button className="action-link action-link-secondary" type="button" onClick={dialog.close}>
                 Close
               </button>
             </div>

@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from "react-router";
 
 import { readStoredHomeHubState, writeStoredHomeHubState } from "../../infrastructure/browser/home-hub-storage";
 import { getGameHomeTags } from "../../../domain/entities/game-catalog";
+import { countVisibleRankedGames, countVisibleUnplayedGames, toHomeGameCards } from "./selectors";
 
 type HomeGame = {
   bestCompetitivePoints: number;
@@ -242,6 +243,7 @@ export function useHomeHub(games: HomeGame[]) {
   const visibleGames = filteredGames.slice(0, visibleCount);
 
   const highlightedGame = visibleGames[0] ?? null;
+  const visibleGameCards = toHomeGameCards(visibleGames);
 
   return {
     clearFilters() {
@@ -272,6 +274,8 @@ export function useHomeHub(games: HomeGame[]) {
     ],
     tag,
     tagOptions,
-    visibleGames,
+    visibleGameCards,
+    visibleRankedCount: countVisibleRankedGames(visibleGames),
+    visibleUnplayedCount: countVisibleUnplayedGames(visibleGames),
   };
 }

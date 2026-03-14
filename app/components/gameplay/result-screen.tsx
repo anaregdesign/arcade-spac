@@ -1,6 +1,6 @@
 import { Form, Link } from "react-router";
 
-import { buildAlternateGameLinks } from "../../lib/domain/entities/game-catalog";
+import { useResultScreen } from "../../lib/client/usecase/result-screen/use-result-screen";
 import sharedStyles from "../games/shared/GameWorkspaceShared.module.css";
 import styles from "./result-screen.module.css";
 
@@ -46,41 +46,8 @@ type ResultScreenProps = {
   };
 };
 
-function getCompactStateCopy(result: ResultScreenProps["result"]) {
-  if (result.status === "PENDING_SAVE") {
-    return "Provisional until save retry";
-  }
-
-  if (result.status === "FAILED") {
-    return "History only, no ranking update";
-  }
-
-  if (result.status === "ABANDONED") {
-    return "Abandoned run, no ranking update";
-  }
-
-  return null;
-}
-
 export function ResultScreen({ result }: ResultScreenProps) {
-  const teamsShareHref = `https://teams.microsoft.com/share?href=${encodeURIComponent(result.shareUrl)}&msgText=${encodeURIComponent(result.shareText)}`;
-  const statusBadgeClass = result.status === "COMPLETED"
-    ? "status-badge status-badge-success"
-    : result.status === "PENDING_SAVE"
-      ? "status-badge status-badge-pending"
-      : "status-badge status-badge-neutral";
-  const alternateGames = buildAlternateGameLinks(result.gameKey);
-  const compactStateCopy = getCompactStateCopy(result);
-  const quickStats = [
-    { label: result.supportMetricLabel, value: result.supportMetricValue },
-    { label: "Vs best", value: result.selfBestDeltaLabel },
-    { label: "Board score", value: String(result.competitivePoints) },
-  ];
-  const impactCards = [
-    { key: "game-rank", label: "Game rank", value: result.impact.gameRank.value },
-    { key: "total-points", label: "Total points", value: result.impact.totalPoints.value },
-    { key: "overall-rank", label: "Overall rank", value: result.impact.overallRank.value },
-  ];
+  const screen = useResultScreen(result);
 
   return (
     <div className="dashboard-stack">
@@ -91,17 +58,17 @@ export function ResultScreen({ result }: ResultScreenProps) {
             <h2 className="section-title">{result.gameName} {result.difficulty.toLowerCase()}</h2>
           </div>
           <div className={styles["result-badge-row"]}>
-            <span className={statusBadgeClass}>{result.statusLabel}</span>
+            <span className={screen.statusBadgeClass}>{result.statusLabel}</span>
             <span className="status-badge status-badge-neutral">{result.selfBestBadge}</span>
           </div>
         </div>
         <div className={styles["result-score-stage"]} aria-label="Primary score">
           <p className={styles["result-score-label"]}>{result.primaryMetricLabel}</p>
           <p className={styles["result-score-value"]}>{result.primaryMetric}</p>
-          {compactStateCopy ? <p className={styles["result-state-inline"]}>{compactStateCopy}</p> : null}
+          {screen.compactStateCopy ? <p className={styles["result-state-inline"]}>{screen.compactStateCopy}</p> : null}
         </div>
         <dl className={styles["result-quick-grid"]} aria-label="Score summary">
-          {quickStats.map((item) => (
+          {screen.quickStats.map((item) => (
             <div key={item.label} className={styles["result-quick-item"]}>
               <dt>{item.label}</dt>
               <dd>{item.value}</dd>
@@ -123,7 +90,7 @@ export function ResultScreen({ result }: ResultScreenProps) {
           </Link>
           {result.viewerMode === "owner"
             ? result.canShare ? (
-              <a className="action-link action-link-secondary" href={teamsShareHref} target="_blank" rel="noreferrer">
+              <a className="action-link action-link-secondary" href={screen.teamsShareHref} target="_blank" rel="noreferrer">
                 <span aria-hidden="true" className="action-link-icon-mark">⇪</span>
                 <span>Share to Teams</span>
               </a>
@@ -146,7 +113,7 @@ export function ResultScreen({ result }: ResultScreenProps) {
       </section>
 
       <section className={["summary-grid", styles["result-impact-grid"]].join(" ")} aria-label="Impact summary">
-        {impactCards.map((card) => (
+        {screen.impactCards.map((card) => (
           <article key={card.key} className={["summary-card", styles["result-impact-card"]].join(" ")}>
             <p className="eyebrow">{card.label}</p>
             <h2 className="section-title">{card.value}</h2>
@@ -183,7 +150,7 @@ export function ResultScreen({ result }: ResultScreenProps) {
               </div>
               <div>
                 <dt>Share</dt>
-                <dd>{result.viewerMode === "owner" ? result.canShare ? "Ready" : "Locked" : "Owner only"}</dd>
+                <dd>{screen.shareStatusLabel}</dd>
                 </div>
               </dl>
             <div className={styles["result-detail-copy"]}>
@@ -194,9 +161,9 @@ export function ResultScreen({ result }: ResultScreenProps) {
               <p className="compact-copy">{result.impact.overallRank.note}</p>
               <p className="compact-copy">{result.shareAvailabilityNote}</p>
             </div>
-            {alternateGames.length > 0 ? (
+            {screen.alternateGames.length > 0 ? (
               <div className="hero-actions compact-action-strip">
-                {alternateGames.map((game) => (
+                {screen.alternateGames.map((game) => (
                   <Link key={game.key} className="action-link action-link-secondary" to={game.href}>
                     {game.label}
                   </Link>

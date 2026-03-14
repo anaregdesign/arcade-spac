@@ -1,3 +1,4 @@
+import { useLoginScreen } from "../lib/client/usecase/login-screen/use-login-screen";
 import styles from "./login-screen.module.css";
 
 type LoginOption = {
@@ -19,16 +20,16 @@ type LoginScreenProps = {
 };
 
 export function LoginScreen({ authMode, errorMessage, entraSignInHref, returnTo, users }: LoginScreenProps) {
-  const eyebrow = authMode === "entra" ? "🔐 Microsoft Entra ID" : "🧪 Local access";
+  const screen = useLoginScreen({ authMode });
 
   return (
     <main className={styles["login-shell"]}>
       <section className={styles["login-hero"]}>
-        <p className="eyebrow">{eyebrow}</p>
-        <h1>{authMode === "entra" ? "Sign in to Arcade" : "Choose a development identity"}</h1>
+        <p className="eyebrow">{screen.eyebrow}</p>
+        <h1>{screen.heroTitle}</h1>
         <div className={styles["login-meta-row"]}>
           {returnTo ? <span className="status-badge status-badge-neutral">Return {returnTo}</span> : null}
-          {authMode === "entra" ? <span className="status-badge status-badge-neutral">Organization sign-in</span> : <span className="status-badge status-badge-neutral">Seeded players</span>}
+          <span className="status-badge status-badge-neutral">{screen.rosterStatusLabel}</span>
         </div>
         <p className="hero-copy">
           Arcade is a sign-in-required game hub for quick game runs, shared rankings, and result review across organization accounts.
@@ -44,7 +45,7 @@ export function LoginScreen({ authMode, errorMessage, entraSignInHref, returnTo,
             <p className="compact-copy">{errorMessage}</p>
           </article>
         ) : null}
-        {authMode === "entra" && entraSignInHref ? (
+        {screen.showEntraActions && entraSignInHref ? (
           <div className="hero-actions">
             <a className="action-link action-link-primary" href={entraSignInHref}>
               Continue with Microsoft Entra ID
@@ -57,7 +58,7 @@ export function LoginScreen({ authMode, errorMessage, entraSignInHref, returnTo,
             </a>
           </div>
         ) : null}
-        {authMode === "local" ? (
+        {screen.showLocalRoster ? (
           <div className="hero-actions">
             <a className="action-link action-link-secondary" href="/privacy">
               Privacy
@@ -68,7 +69,7 @@ export function LoginScreen({ authMode, errorMessage, entraSignInHref, returnTo,
           </div>
         ) : null}
       </section>
-      {authMode === "local" ? (
+      {screen.showLocalRoster ? (
         <section className={styles["login-grid"]} aria-label="Available users">
           {users.map((user) => (
             <article key={user.id} className={styles["login-card"]}>

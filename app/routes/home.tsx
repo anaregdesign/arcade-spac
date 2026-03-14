@@ -51,7 +51,7 @@ export default function Home() {
       user={dashboard.user}
     >
       <HomeDashboard
-        games={hub.visibleGames}
+        games={hub.visibleGameCards}
         hasMore={hub.hasMore}
         matchCount={hub.matchCount}
         search={hub.search}
@@ -63,6 +63,8 @@ export default function Home() {
         sortOptions={hub.sortOptions}
         tag={hub.tag}
         tagOptions={hub.tagOptions}
+        visibleRankedCount={hub.visibleRankedCount}
+        visibleUnplayedCount={hub.visibleUnplayedCount}
       />
     </AppShell>
   );

@@ -1,7 +1,6 @@
-import { useEffect, useId, useState } from "react";
-import { Link, useLocation } from "react-router";
+import { Link } from "react-router";
 
-import { useSoundMute } from "../lib/client/usecase/sound/use-sound-mute";
+import { useAppShell } from "../lib/client/usecase/app-shell/use-app-shell";
 import { AppHelpDialog } from "./shared/AppHelpDialog";
 import type { AppHelpSection } from "./shared/help-content";
 
@@ -25,21 +24,8 @@ type AppShellProps = {
   };
 };
 
-const navItems = [
-  { key: "rankings", label: "Rankings", to: "/rankings" },
-  { key: "profile", label: "Profile", to: "/profile" },
-] as const;
-
 export function AppShell({ children, currentPath, sectionLabel, title, user, help }: AppShellProps) {
-  const [isHelpOpen, setHelpOpen] = useState(Boolean(help?.defaultOpen));
-  const [isMenuOpen, setMenuOpen] = useState(false);
-  const { muted, toggleMute } = useSoundMute();
-  const location = useLocation();
-  const navPanelId = useId();
-
-  useEffect(() => {
-    setMenuOpen(false);
-  }, [location.pathname, location.search]);
+  const shell = useAppShell({ defaultHelpOpen: help?.defaultOpen });
 
   return (
     <div className="page-shell">
@@ -56,22 +42,22 @@ export function AppShell({ children, currentPath, sectionLabel, title, user, hel
             </p>
           </div>
           <button
-            aria-label={muted ? "Unmute sounds" : "Mute sounds"}
-            aria-pressed={muted}
+            aria-label={shell.muted ? "Unmute sounds" : "Mute sounds"}
+            aria-pressed={shell.muted}
             className="mute-toggle"
             type="button"
-            onClick={toggleMute}
+            onClick={shell.toggleMute}
           >
-            <span aria-hidden="true">{muted ? "🔇" : "🔊"}</span>
+            <span aria-hidden="true">{shell.muted ? "🔇" : "🔊"}</span>
           </button>
           <button
-            aria-controls={navPanelId}
-            aria-expanded={isMenuOpen}
-            className={isMenuOpen ? "menu-toggle menu-toggle-open" : "menu-toggle"}
+            aria-controls={shell.navPanelId}
+            aria-expanded={shell.isMenuOpen}
+            className={shell.isMenuOpen ? "menu-toggle menu-toggle-open" : "menu-toggle"}
             type="button"
-            onClick={() => setMenuOpen((currentValue) => !currentValue)}
+            onClick={shell.handleMenuToggle}
           >
-            <span className="menu-toggle-label">{isMenuOpen ? "Close menu" : "Open menu"}</span>
+            <span className="menu-toggle-label">{shell.isMenuOpen ? "Close menu" : "Open menu"}</span>
             <span className="menu-toggle-icon" aria-hidden="true">
               <span className="menu-toggle-bar" />
               <span className="menu-toggle-bar" />
@@ -79,13 +65,13 @@ export function AppShell({ children, currentPath, sectionLabel, title, user, hel
             </span>
           </button>
         </div>
-        <div className={isMenuOpen ? "app-shell-panel app-shell-panel-open" : "app-shell-panel"} id={navPanelId}>
+        <div className={shell.isMenuOpen ? "app-shell-panel app-shell-panel-open" : "app-shell-panel"} id={shell.navPanelId}>
           <nav className="app-shell-nav" aria-label="Primary">
-            {navItems.map((item) => (
+            {shell.navItems.map((item) => (
               <Link
                 key={item.key}
                 className={item.key === currentPath ? "nav-pill nav-pill-active" : "nav-pill"}
-                onClick={() => setMenuOpen(false)}
+                onClick={shell.handleNavClick}
                 to={item.to}
               >
                 <span>{item.label}</span>
@@ -103,10 +89,7 @@ export function AppShell({ children, currentPath, sectionLabel, title, user, hel
               <button
                 className="action-link action-link-secondary"
                 type="button"
-                onClick={() => {
-                  setHelpOpen(true);
-                  setMenuOpen(false);
-                }}
+                onClick={shell.handleHelpClick}
               >
                 {help.triggerLabel ?? "Help"}
               </button>
@@ -124,8 +107,8 @@ export function AppShell({ children, currentPath, sectionLabel, title, user, hel
         <AppHelpDialog
           footer={help.footer}
           intro={help.intro}
-          isOpen={isHelpOpen}
-          onClose={() => setHelpOpen(false)}
+          isOpen={shell.isHelpOpen}
+          onClose={shell.closeHelp}
           sections={help.sections}
           title={help.title}
           titleEyebrow={help.titleEyebrow}

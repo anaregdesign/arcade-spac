@@ -1,5 +1,6 @@
 import { Link } from "react-router";
 
+import { useRankingsScreen } from "../lib/client/usecase/rankings-screen/use-rankings-screen";
 import type { GameKey } from "../lib/domain/entities/game-catalog";
 import styles from "./rankings-screen.module.css";
 
@@ -43,21 +44,8 @@ type RankingsScreenProps = {
   }>;
 };
 
-type RankingScope = RankingsScreenProps["filter"]["scope"];
-
-function buildRankingsHref(period: "SEASON" | "LIFETIME", scope: "overall" | GameKey) {
-  return `/rankings?period=${period.toLowerCase()}&scope=${scope}`;
-}
-
 export function RankingsScreen({ filter, boardMeta, games, currentUserEntry, entries }: RankingsScreenProps) {
-  const scopes = [
-    { key: "overall" as RankingScope, label: "Overall" },
-    ...games.map((game) => ({ key: game.key as RankingScope, label: game.name })),
-  ];
-  const periods = [
-    { key: "SEASON", label: "Season" },
-    { key: "LIFETIME", label: "Lifetime" },
-  ] as const;
+  const screen = useRankingsScreen({ filter, games });
 
   return (
     <div className="dashboard-stack">
@@ -73,22 +61,22 @@ export function RankingsScreen({ filter, boardMeta, games, currentUserEntry, ent
         </div>
         <div className={styles["filter-stack"]}>
           <div className={styles["pill-row"]}>
-            {scopes.map((scope) => (
+            {screen.scopes.map((scope) => (
               <Link
                 key={scope.key}
                 className={filter.scope === scope.key ? [styles["filter-pill"], styles["filter-pill-active"]].join(" ") : styles["filter-pill"]}
-                to={buildRankingsHref(filter.period, scope.key)}
+                to={scope.href}
               >
                 {scope.label}
               </Link>
             ))}
           </div>
           <div className={styles["pill-row"]}>
-            {periods.map((period) => (
+            {screen.periods.map((period) => (
               <Link
                 key={period.key}
                 className={filter.period === period.key ? [styles["filter-pill"], styles["filter-pill-active"]].join(" ") : styles["filter-pill"]}
-                to={buildRankingsHref(period.key, filter.scope)}
+                to={period.href}
               >
                 {period.label}
               </Link>
