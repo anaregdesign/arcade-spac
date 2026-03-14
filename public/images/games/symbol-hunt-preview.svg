@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" role="img" aria-labelledby="title desc">
+  <title id="title">Symbol Hunt preview</title>
+  <desc id="desc">A target symbol above a grid filled with matching and decoy symbols.</desc>
+  <rect width="320" height="200" rx="28" fill="#052e16"/>
+  <rect x="120" y="18" width="80" height="34" rx="12" fill="#16a34a"/>
+  <text x="160" y="42" fill="#f0fdf4" font-family="monospace" font-size="20" text-anchor="middle">✦</text>
+  <g transform="translate(72 64)" fill="#f0fdf4" font-family="monospace" font-size="20" text-anchor="middle">
+    <rect x="0" y="0" width="44" height="44" rx="10" fill="#15803d"/><text x="22" y="28">✦</text>
+    <rect x="54" y="0" width="44" height="44" rx="10" fill="#166534"/><text x="76" y="28">□</text>
+    <rect x="108" y="0" width="44" height="44" rx="10" fill="#166534"/><text x="130" y="28">◆</text>
+    <rect x="162" y="0" width="44" height="44" rx="10" fill="#15803d"/><text x="184" y="28">✦</text>
+    <rect x="0" y="54" width="44" height="44" rx="10" fill="#166534"/><text x="22" y="82">○</text>
+    <rect x="54" y="54" width="44" height="44" rx="10" fill="#15803d"/><text x="76" y="82">✦</text>
+    <rect x="108" y="54" width="44" height="44" rx="10" fill="#166534"/><text x="130" y="82">✕</text>
+    <rect x="162" y="54" width="44" height="44" rx="10" fill="#166534"/><text x="184" y="82">△</text>
+  </g>
+</svg>

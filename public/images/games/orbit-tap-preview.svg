@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" role="img" aria-labelledby="title desc">
+  <title id="title">Orbit Tap preview</title>
+  <desc id="desc">A ring with a highlighted gate and a bright marker orbiting near it.</desc>
+  <rect width="320" height="200" rx="28" fill="#0f172a"/>
+  <circle cx="160" cy="100" r="62" fill="none" stroke="#475569" stroke-width="12"/>
+  <path d="M160 38 A62 62 0 0 1 206 58" fill="none" stroke="#fbbf24" stroke-linecap="round" stroke-width="14"/>
+  <circle cx="213" cy="126" r="12" fill="#60a5fa"/>
+  <circle cx="213" cy="126" r="5" fill="#eff6ff"/>
+  <circle cx="160" cy="100" r="18" fill="#1e293b" stroke="#334155" stroke-width="4"/>
+  <text x="160" y="171" fill="#e2e8f0" font-family="monospace" font-size="16" text-anchor="middle">ORBIT TAP</text>
+</svg>

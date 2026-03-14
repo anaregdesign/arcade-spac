@@ -30,6 +30,14 @@ const previewByGameKey: Record<string, Pick<HomeGameCard, "previewAlt" | "previe
     previewAlt: "Number Chain board with numbered tiles that must be tapped in order",
     previewSrc: "/images/games/number-chain-preview.svg",
   },
+  "orbit-tap": {
+    previewAlt: "Orbit Tap ring with a moving marker and a highlighted gate",
+    previewSrc: "/images/games/orbit-tap-preview.svg",
+  },
+  "path-recall": {
+    previewAlt: "Path Recall board showing a remembered route across a grid",
+    previewSrc: "/images/games/path-recall-preview.svg",
+  },
   "pair-flip": {
     previewAlt: "Pair Flip board with memory cards being turned over to reveal matching symbols",
     previewSrc: "/images/games/pair-flip-preview.svg",
@@ -42,10 +50,42 @@ const previewByGameKey: Record<string, Pick<HomeGameCard, "previewAlt" | "previe
     previewAlt: "Falling ball above a target line in a vertical lane",
     previewSrc: "/images/games/precision-drop-preview.svg",
   },
+  "pulse-count": {
+    previewAlt: "Pulse Count signal orb with answer buttons beneath it",
+    previewSrc: "/images/games/pulse-count-preview.svg",
+  },
+  "quick-sum": {
+    previewAlt: "Quick Sum prompt card with arithmetic and multiple answer choices",
+    previewSrc: "/images/games/quick-sum-preview.svg",
+  },
+  "symbol-hunt": {
+    previewAlt: "Symbol Hunt board with a target symbol and a noisy symbol grid",
+    previewSrc: "/images/games/symbol-hunt-preview.svg",
+  },
   sudoku: {
     previewAlt: "Sudoku puzzle board with preset digits and empty cells",
     previewObjectPosition: "top center",
     previewSrc: "/images/games/sudoku-preview.png",
+  },
+  "target-trail": {
+    previewAlt: "Target Trail grid with one highlighted tile and visited cells behind it",
+    previewSrc: "/images/games/target-trail-preview.svg",
+  },
+  "light-grid": {
+    previewAlt: "Light Grid target and live boards shown side by side",
+    previewSrc: "/images/games/light-grid-preview.svg",
+  },
+  "tile-shift": {
+    previewAlt: "Tile Shift target board and live board with row and column controls",
+    previewSrc: "/images/games/tile-shift-preview.svg",
+  },
+  "stack-sort": {
+    previewAlt: "Stack Sort puzzle with colored token columns",
+    previewSrc: "/images/games/stack-sort-preview.svg",
+  },
+  "mirror-match": {
+    previewAlt: "Mirror Match target pattern next to an editable mirror board",
+    previewSrc: "/images/games/mirror-match-preview.svg",
   },
 };
 

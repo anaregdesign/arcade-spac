@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" role="img" aria-labelledby="title desc">
+  <title id="title">Path Recall preview</title>
+  <desc id="desc">A path highlighted across a square grid.</desc>
+  <rect width="320" height="200" rx="28" fill="#052e2b"/>
+  <g transform="translate(82 26)">
+    <rect x="0" y="0" width="44" height="44" rx="10" fill="#134e4a"/>
+    <rect x="52" y="0" width="44" height="44" rx="10" fill="#34d399"/>
+    <rect x="104" y="0" width="44" height="44" rx="10" fill="#134e4a"/>
+    <rect x="0" y="52" width="44" height="44" rx="10" fill="#34d399"/>
+    <rect x="52" y="52" width="44" height="44" rx="10" fill="#34d399"/>
+    <rect x="104" y="52" width="44" height="44" rx="10" fill="#134e4a"/>
+    <rect x="0" y="104" width="44" height="44" rx="10" fill="#134e4a"/>
+    <rect x="52" y="104" width="44" height="44" rx="10" fill="#34d399"/>
+    <rect x="104" y="104" width="44" height="44" rx="10" fill="#34d399"/>
+    <path d="M74 22 L22 74 L74 74 L126 126" fill="none" stroke="#d1fae5" stroke-linecap="round" stroke-linejoin="round" stroke-width="8"/>
+  </g>
+  <text x="160" y="184" fill="#d1fae5" font-family="monospace" font-size="16" text-anchor="middle">PATH RECALL</text>
+</svg>

@@ -1,0 +1,69 @@
+.shift-workspace-card {
+  min-height: 23rem;
+}
+
+.shift-shell {
+  min-height: 23rem;
+}
+
+.shift-columns {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.shift-panel {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.shift-board {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.shift-cell {
+  display: grid;
+  aspect-ratio: 1;
+  place-items: center;
+  border-radius: 0.9rem;
+  background: linear-gradient(145deg, rgba(88, 28, 135, 0.88), rgba(126, 34, 206, 0.78));
+  color: #faf5ff;
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.shift-controls-top {
+  display: grid;
+  gap: 0.65rem;
+  grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+}
+
+.shift-live-row {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: auto minmax(0, 1fr);
+}
+
+.shift-controls-side {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.shift-control {
+  min-height: 2.7rem;
+  min-width: 2.7rem;
+  border: none;
+  border-radius: 0.8rem;
+  background: rgba(233, 213, 255, 0.18);
+  color: #f5f3ff;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+@media (max-width: 840px) {
+  .shift-columns {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

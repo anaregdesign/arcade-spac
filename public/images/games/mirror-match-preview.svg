@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" role="img" aria-labelledby="title desc">
+  <title id="title">Mirror Match preview</title>
+  <desc id="desc">Two pattern grids showing a target and a mirrored editable board.</desc>
+  <rect width="320" height="200" rx="28" fill="#1a2e05"/>
+  <g transform="translate(48 44)">
+    <g fill="#365314">
+      <rect x="0" y="0" width="32" height="32" rx="8"/><rect x="40" y="0" width="32" height="32" rx="8"/><rect x="80" y="0" width="32" height="32" rx="8"/>
+      <rect x="0" y="40" width="32" height="32" rx="8"/><rect x="40" y="40" width="32" height="32" rx="8"/><rect x="80" y="40" width="32" height="32" rx="8"/>
+      <rect x="0" y="80" width="32" height="32" rx="8"/><rect x="40" y="80" width="32" height="32" rx="8"/><rect x="80" y="80" width="32" height="32" rx="8"/>
+    </g>
+    <g fill="#bef264">
+      <rect x="0" y="0" width="32" height="32" rx="8"/><rect x="80" y="0" width="32" height="32" rx="8"/>
+      <rect x="40" y="40" width="32" height="32" rx="8"/><rect x="0" y="80" width="32" height="32" rx="8"/>
+    </g>
+  </g>
+  <g transform="translate(182 44)">
+    <g fill="#365314">
+      <rect x="0" y="0" width="32" height="32" rx="8"/><rect x="40" y="0" width="32" height="32" rx="8"/><rect x="80" y="0" width="32" height="32" rx="8"/>
+      <rect x="0" y="40" width="32" height="32" rx="8"/><rect x="40" y="40" width="32" height="32" rx="8"/><rect x="80" y="40" width="32" height="32" rx="8"/>
+      <rect x="0" y="80" width="32" height="32" rx="8"/><rect x="40" y="80" width="32" height="32" rx="8"/><rect x="80" y="80" width="32" height="32" rx="8"/>
+    </g>
+    <g fill="#84cc16">
+      <rect x="80" y="0" width="32" height="32" rx="8"/><rect x="0" y="0" width="32" height="32" rx="8"/>
+      <rect x="40" y="40" width="32" height="32" rx="8"/><rect x="80" y="80" width="32" height="32" rx="8"/>
+    </g>
+  </g>
+</svg>

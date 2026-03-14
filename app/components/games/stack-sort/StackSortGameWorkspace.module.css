@@ -1,0 +1,64 @@
+.stack-board-card {
+  min-height: 24rem;
+}
+
+.stack-shell {
+  min-height: 24rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stack-grid {
+  display: grid;
+  width: 100%;
+  gap: 0.9rem;
+  grid-template-columns: repeat(auto-fit, minmax(4rem, 1fr));
+}
+
+.stack-column {
+  display: flex;
+  min-height: 17rem;
+  flex-direction: column-reverse;
+  justify-content: flex-start;
+  gap: 0.45rem;
+  border: none;
+  border-radius: 1.2rem;
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.5), rgba(15, 23, 42, 0.9));
+  cursor: pointer;
+  padding: 0.8rem 0.7rem;
+}
+
+.stack-column-selected {
+  box-shadow: inset 0 0 0 2px rgba(248, 250, 252, 0.72);
+}
+
+.stack-token {
+  display: block;
+  min-height: 2.6rem;
+  border-radius: 999px;
+}
+
+.stack-token-empty {
+  background: rgba(148, 163, 184, 0.16);
+}
+
+.stack-token-amber {
+  background: linear-gradient(145deg, #f59e0b, #fcd34d);
+}
+
+.stack-token-mint {
+  background: linear-gradient(145deg, #10b981, #6ee7b7);
+}
+
+.stack-token-plum {
+  background: linear-gradient(145deg, #8b5cf6, #c4b5fd);
+}
+
+.stack-token-rose {
+  background: linear-gradient(145deg, #fb7185, #fda4af);
+}
+
+.stack-token-sky {
+  background: linear-gradient(145deg, #38bdf8, #bae6fd);
+}

@@ -3,11 +3,21 @@ import type { ComponentType } from "react";
 import { ColorSweepGameWorkspace } from "./color-sweep/ColorSweepGameWorkspace";
 import { MinesweeperGameWorkspace } from "./minesweeper/MinesweeperGameWorkspace";
 import { NumberChainGameWorkspace } from "./number-chain/NumberChainGameWorkspace";
+import { OrbitTapGameWorkspace } from "./orbit-tap/OrbitTapGameWorkspace";
+import { PathRecallGameWorkspace } from "./path-recall/PathRecallGameWorkspace";
 import { PairFlipGameWorkspace } from "./pair-flip/PairFlipGameWorkspace";
 import { PatternEchoGameWorkspace } from "./pattern-echo/PatternEchoGameWorkspace";
 import { PrecisionDropGameWorkspace } from "./precision-drop/PrecisionDropGameWorkspace";
+import { PulseCountGameWorkspace } from "./pulse-count/PulseCountGameWorkspace";
+import { QuickSumGameWorkspace } from "./quick-sum/QuickSumGameWorkspace";
 import type { GameInstructions } from "./shared/GameInstructionsDialog";
 import { SudokuGameWorkspace } from "./sudoku/SudokuGameWorkspace";
+import { SymbolHuntGameWorkspace } from "./symbol-hunt/SymbolHuntGameWorkspace";
+import { LightGridGameWorkspace } from "./light-grid/LightGridGameWorkspace";
+import { StackSortGameWorkspace } from "./stack-sort/StackSortGameWorkspace";
+import { TargetTrailGameWorkspace } from "./target-trail/TargetTrailGameWorkspace";
+import { TileShiftGameWorkspace } from "./tile-shift/TileShiftGameWorkspace";
+import { MirrorMatchGameWorkspace } from "./mirror-match/MirrorMatchGameWorkspace";
 import type { GameWorkspaceComponentProps } from "./shared/game-workspace-types";
 
 type GamePresentation = {
@@ -81,6 +91,35 @@ const gameDefinitionByKey: Record<string, GameDefinition> = {
     },
     workspace: PrecisionDropGameWorkspace,
   },
+  "orbit-tap": {
+    instructions: {
+      summary: "Watch the marker circle the ring, tap while it passes through the highlighted gate, and chain enough hits to finish the run.",
+      sections: [
+        {
+          title: "Run flow",
+          items: [
+            { label: "Start run", detail: "Choose a difficulty and press Start run to start the orbit." },
+            { label: "Hit chain", detail: "Every tap that lands inside the gate records one clean hit and moves the gate to a new angle." },
+            { label: "Timeout", detail: "If the hit goal is not met before the timer expires, the run is saved as not cleared and opens the Result screen automatically." },
+          ],
+        },
+        {
+          title: "Board controls",
+          items: [
+            { label: "Tap on the gate", detail: "Tap when the moving marker overlaps the yellow gate on the orbit ring." },
+            { label: "Miss handling", detail: "Taps outside the gate raise the miss count but the run keeps going." },
+            { label: "Stay touch-safe", detail: "The full orbit pad is tappable on desktop and touch devices." },
+          ],
+        },
+      ],
+      title: "Orbit Tap controls",
+    },
+    presentation: {
+      previewAlt: "Orbit Tap ring with a moving marker and a highlighted gate",
+      previewSrc: "/images/games/orbit-tap-preview.svg",
+    },
+    workspace: OrbitTapGameWorkspace,
+  },
   minesweeper: {
     instructions: {
       summary: "Use a single tap to open cells and open the guide any time you need the core board controls again.",
@@ -109,6 +148,35 @@ const gameDefinitionByKey: Record<string, GameDefinition> = {
       previewSrc: "/images/games/minesweeper-preview.png",
     },
     workspace: MinesweeperGameWorkspace,
+  },
+  "target-trail": {
+    instructions: {
+      summary: "Follow the active target as it jumps to a new cell each time, keep misses low, and finish the trail before the timer expires.",
+      sections: [
+        {
+          title: "Run flow",
+          items: [
+            { label: "Start run", detail: "Choose a difficulty and press Start run to spawn the first live target." },
+            { label: "Follow the trail", detail: "Each correct tap moves the live target to a new tile." },
+            { label: "Timeout", detail: "If the full trail is not finished before the timer expires, the run is saved as not cleared and opens the Result screen automatically." },
+          ],
+        },
+        {
+          title: "Board controls",
+          items: [
+            { label: "Tap the live tile", detail: "Only the bright tile advances the trail." },
+            { label: "Read misses", detail: "Wrong taps increase the miss count but do not stop the run." },
+            { label: "Keep moving", detail: "Visited tiles stay dim so you can read how far the trail has progressed." },
+          ],
+        },
+      ],
+      title: "Target Trail controls",
+    },
+    presentation: {
+      previewAlt: "Target Trail grid with one highlighted tile and visited cells behind it",
+      previewSrc: "/images/games/target-trail-preview.svg",
+    },
+    workspace: TargetTrailGameWorkspace,
   },
   "number-chain": {
     instructions: {
@@ -139,6 +207,35 @@ const gameDefinitionByKey: Record<string, GameDefinition> = {
     },
     workspace: NumberChainGameWorkspace,
   },
+  "path-recall": {
+    instructions: {
+      summary: "Watch the path light up cell by cell, then replay the same cells in the same order before the timer expires.",
+      sections: [
+        {
+          title: "Run flow",
+          items: [
+            { label: "Start run", detail: "Choose a difficulty and press Start run to begin the watch phase." },
+            { label: "Watch phase", detail: "The path highlights one step at a time and the board stays read-only." },
+            { label: "Input phase", detail: "After the last flash, tap the same cells in the same order to finish the run." },
+          ],
+        },
+        {
+          title: "Board controls",
+          items: [
+            { label: "Memorize the path", detail: "Use the highlighted cells to remember the full route before input begins." },
+            { label: "Replay in order", detail: "Only the next correct cell advances the path." },
+            { label: "Wrong cells", detail: "Mistakes increase the wrong cell count but the run keeps going until clear or timeout." },
+          ],
+        },
+      ],
+      title: "Path Recall controls",
+    },
+    presentation: {
+      previewAlt: "Path Recall board showing a remembered route across a grid",
+      previewSrc: "/images/games/path-recall-preview.svg",
+    },
+    workspace: PathRecallGameWorkspace,
+  },
   "pair-flip": {
     instructions: {
       summary: "Flip two cards at a time, remember their positions, and match every pair before the timer expires.",
@@ -167,6 +264,64 @@ const gameDefinitionByKey: Record<string, GameDefinition> = {
       previewSrc: "/images/games/pair-flip-preview.svg",
     },
     workspace: PairFlipGameWorkspace,
+  },
+  "pulse-count": {
+    instructions: {
+      summary: "Count the flashes in each round, then choose the number you saw before the next watch phase begins.",
+      sections: [
+        {
+          title: "Run flow",
+          items: [
+            { label: "Start run", detail: "Choose a difficulty and press Start run to begin the first pulse round." },
+            { label: "Watch", detail: "The centre signal flashes a fixed number of times while the answer buttons stay disabled." },
+            { label: "Answer", detail: "Pick the count you saw and move straight into the next round until the full sprint is done." },
+          ],
+        },
+        {
+          title: "Board controls",
+          items: [
+            { label: "Count first", detail: "Only the watch phase shows the pulse signal." },
+            { label: "Pick one answer", detail: "Use the number buttons to answer after the watch phase ends." },
+            { label: "Wrong answers", detail: "Incorrect counts increase the wrong answer total but the run keeps going." },
+          ],
+        },
+      ],
+      title: "Pulse Count controls",
+    },
+    presentation: {
+      previewAlt: "Pulse Count signal orb with answer buttons beneath it",
+      previewSrc: "/images/games/pulse-count-preview.svg",
+    },
+    workspace: PulseCountGameWorkspace,
+  },
+  "quick-sum": {
+    instructions: {
+      summary: "Solve each arithmetic prompt from the answer grid, keep wrong answers low, and clear the sprint before the timer expires.",
+      sections: [
+        {
+          title: "Run flow",
+          items: [
+            { label: "Start run", detail: "Choose a difficulty and press Start run to load the first prompt." },
+            { label: "Solve each prompt", detail: "Every answer moves directly to the next prompt until the sprint is complete." },
+            { label: "Timeout", detail: "If the timer ends before every prompt is solved, the run is saved as not cleared and opens the Result screen automatically." },
+          ],
+        },
+        {
+          title: "Board controls",
+          items: [
+            { label: "Read the prompt", detail: "The current arithmetic prompt is shown in the centre of the board." },
+            { label: "Tap the answer", detail: "Choose one of the four answer buttons for each prompt." },
+            { label: "Wrong answers", detail: "Incorrect picks increase the wrong answer count but the sprint keeps moving." },
+          ],
+        },
+      ],
+      title: "Quick Sum controls",
+    },
+    presentation: {
+      previewAlt: "Quick Sum prompt card with arithmetic and multiple answer choices",
+      previewSrc: "/images/games/quick-sum-preview.svg",
+    },
+    workspace: QuickSumGameWorkspace,
   },
   "pattern-echo": {
     instructions: {
@@ -197,6 +352,151 @@ const gameDefinitionByKey: Record<string, GameDefinition> = {
       previewSrc: "/images/games/pattern-echo-preview.svg",
     },
     workspace: PatternEchoGameWorkspace,
+  },
+  "symbol-hunt": {
+    instructions: {
+      summary: "Find every copy of the target symbol, ignore the decoys, and clear the full board before the timer expires.",
+      sections: [
+        {
+          title: "Run flow",
+          items: [
+            { label: "Start run", detail: "Choose a difficulty and press Start run to randomize a new symbol board." },
+            { label: "Hunt the target", detail: "Tap every tile that matches the target symbol." },
+            { label: "Timeout", detail: "If any target symbol remains when the timer expires, the run is saved as not cleared and opens the Result screen automatically." },
+          ],
+        },
+        {
+          title: "Board controls",
+          items: [
+            { label: "Read the target", detail: "The target symbol stays visible above the board throughout the run." },
+            { label: "Tap carefully", detail: "Correct symbols disappear. Wrong taps increase the support metric." },
+            { label: "Stay touch-safe", detail: "Every symbol tile is a first-class tap target on desktop and touch devices." },
+          ],
+        },
+      ],
+      title: "Symbol Hunt controls",
+    },
+    presentation: {
+      previewAlt: "Symbol Hunt board with a target symbol and a noisy symbol grid",
+      previewSrc: "/images/games/symbol-hunt-preview.svg",
+    },
+    workspace: SymbolHuntGameWorkspace,
+  },
+  "light-grid": {
+    instructions: {
+      summary: "Match the live grid to the target by flipping one cell and its orthogonal neighbours with each move.",
+      sections: [
+        {
+          title: "Run flow",
+          items: [
+            { label: "Start run", detail: "Choose a difficulty and press Start run to generate a new target pattern." },
+            { label: "Match the target", detail: "The run clears as soon as the live grid matches the target grid." },
+            { label: "Timeout", detail: "If the timer expires before both grids match, the run is saved as not cleared and opens the Result screen automatically." },
+          ],
+        },
+        {
+          title: "Board controls",
+          items: [
+            { label: "Tap the live grid", detail: "Each tap flips the selected cell and its orthogonal neighbours." },
+            { label: "Read the target", detail: "The target grid stays visible next to the live grid for the full run." },
+            { label: "Moves", detail: "Every legal tap increases the move count shown in the status chips and result." },
+          ],
+        },
+      ],
+      title: "Light Grid controls",
+    },
+    presentation: {
+      previewAlt: "Light Grid target and live boards shown side by side",
+      previewSrc: "/images/games/light-grid-preview.svg",
+    },
+    workspace: LightGridGameWorkspace,
+  },
+  "tile-shift": {
+    instructions: {
+      summary: "Shift rows to the right and columns downward until the live board matches the target pattern.",
+      sections: [
+        {
+          title: "Run flow",
+          items: [
+            { label: "Start run", detail: "Choose a difficulty and press Start run to scramble the live board." },
+            { label: "Align the board", detail: "Use the row and column controls until the live board matches the target." },
+            { label: "Timeout", detail: "If the timer expires before the boards match, the run is saved as not cleared and opens the Result screen automatically." },
+          ],
+        },
+        {
+          title: "Board controls",
+          items: [
+            { label: "Shift a row", detail: "Use the row control to rotate that line one step to the right." },
+            { label: "Shift a column", detail: "Use the column control to rotate that line one step downward." },
+            { label: "Moves", detail: "Every shift counts as one move in the result summary." },
+          ],
+        },
+      ],
+      title: "Tile Shift controls",
+    },
+    presentation: {
+      previewAlt: "Tile Shift target board and live board with row and column controls",
+      previewSrc: "/images/games/tile-shift-preview.svg",
+    },
+    workspace: TileShiftGameWorkspace,
+  },
+  "stack-sort": {
+    instructions: {
+      summary: "Select a source stack, then a destination stack, and group every colour into its own stack before time runs out.",
+      sections: [
+        {
+          title: "Run flow",
+          items: [
+            { label: "Start run", detail: "Choose a difficulty and press Start run to load a new stack puzzle." },
+            { label: "Sort by colour", detail: "Move top tokens until every non-empty stack contains only one colour." },
+            { label: "Timeout", detail: "If the timer expires before the puzzle is sorted, the run is saved as not cleared and opens the Result screen automatically." },
+          ],
+        },
+        {
+          title: "Board controls",
+          items: [
+            { label: "Select source", detail: "Tap a stack with at least one token to select its top token." },
+            { label: "Select destination", detail: "Tap another stack to move the top token when the move is legal." },
+            { label: "Invalid moves", detail: "Illegal destinations do not move the token, and the run keeps going." },
+          ],
+        },
+      ],
+      title: "Stack Sort controls",
+    },
+    presentation: {
+      previewAlt: "Stack Sort puzzle with colored token columns",
+      previewSrc: "/images/games/stack-sort-preview.svg",
+    },
+    workspace: StackSortGameWorkspace,
+  },
+  "mirror-match": {
+    instructions: {
+      summary: "Use the target board as a reference and rebuild its mirrored pattern on the editable board before the timer expires.",
+      sections: [
+        {
+          title: "Run flow",
+          items: [
+            { label: "Start run", detail: "Choose a difficulty and press Start run to generate a new target and mirror board." },
+            { label: "Mirror the target", detail: "Toggle cells on the editable board until it matches the mirrored target pattern." },
+            { label: "Timeout", detail: "If the timer expires before the mirrored pattern is complete, the run is saved as not cleared and opens the Result screen automatically." },
+          ],
+        },
+        {
+          title: "Board controls",
+          items: [
+            { label: "Read the target", detail: "The target board stays visible on the left for the full run." },
+            { label: "Toggle the mirror", detail: "Tap a cell on the editable board to switch it on or off." },
+            { label: "Moves", detail: "Every toggle counts as one move in the result summary." },
+          ],
+        },
+      ],
+      title: "Mirror Match controls",
+    },
+    presentation: {
+      previewAlt: "Mirror Match target pattern next to an editable mirror board",
+      previewSrc: "/images/games/mirror-match-preview.svg",
+    },
+    workspace: MirrorMatchGameWorkspace,
   },
   sudoku: {
     instructions: {
