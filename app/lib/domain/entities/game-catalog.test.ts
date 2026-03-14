@@ -36,22 +36,26 @@ describe("game-catalog", () => {
     expect(resolveGameKey("drop-ball")).toBe("precision-drop");
     expect(resolveGameKey("drop_line")).toBe("precision-drop");
     expect(resolveGameKey("ORBIT_TAP")).toBe("orbit-tap");
+    expect(resolveGameKey("SPOT_CHANGE")).toBe("spot-change");
     expect(resolveGameKey("unknown-mode")).toBeNull();
 
     expect(toStoredGameKey("color-sweep")).toBe("COLOR_SWEEP");
     expect(toStoredGameKey("drop-ball")).toBe("DROP_LINE");
     expect(toStoredGameKey("orbit-tap")).toBe("ORBIT_TAP");
+    expect(toStoredGameKey("spot-change")).toBe("SPOT_CHANGE");
     expect(toStoredGameKey("custom-mode")).toBe("CUSTOM_MODE");
 
     expect(toRouteGameKey("COLOR_SWEEP")).toBe("color-sweep");
     expect(toRouteGameKey("drop_ball")).toBe("precision-drop");
     expect(toRouteGameKey("TARGET_TRAIL")).toBe("target-trail");
+    expect(toRouteGameKey("SPOT_CHANGE")).toBe("spot-change");
     expect(toRouteGameKey("CUSTOM_MODE")).toBe("custom-mode");
   });
 
   it("returns definitions and fallback metadata", () => {
     expect(getGameDefinition("DROP_LINE")?.name).toBe("Precision Drop");
     expect(getGameDefinition("ORBIT_TAP")?.name).toBe("Orbit Tap");
+    expect(getGameDefinition("SPOT_CHANGE")?.name).toBe("Spot Change");
     expect(getGameDefinition("custom-mode")).toBeNull();
 
     expect(getGameName("DROP_LINE")).toBe("Precision Drop");
@@ -59,9 +63,11 @@ describe("game-catalog", () => {
 
     expect(getGameHomeTags("DROP_LINE")).toEqual(["timing", "fast-start"]);
     expect(getGameHomeTags("ORBIT_TAP")).toEqual(["timing", "fast-start"]);
+    expect(getGameHomeTags("SPOT_CHANGE")).toEqual(["perception", "logic"]);
     expect(getGameHomeTags("custom-mode")).toEqual([]);
 
     expect(getGameSuccessfulResultLabel("DROP_LINE")).toBe("hit");
+    expect(getGameSuccessfulResultLabel("SPOT_CHANGE")).toBe("clear");
     expect(getGameSuccessfulResultLabel("custom-mode")).toBe("clear");
   });
 

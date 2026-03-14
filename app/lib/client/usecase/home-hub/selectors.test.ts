@@ -35,6 +35,15 @@ describe("home-hub selectors", () => {
       recommendationText: null,
       shortDescription: "Experimental",
     },
+    {
+      currentRank: null,
+      key: "spot-change",
+      metricValue: "1:05",
+      name: "Spot Change",
+      playCount: 2,
+      recommendationText: "Fresh comparison board",
+      shortDescription: "Find every difference",
+    },
   ];
 
   it("counts ranked and unplayed games from visible cards", () => {
@@ -70,6 +79,15 @@ describe("home-hub selectors", () => {
         recordLabel: "No record",
         runLabel: "First run",
         statusLabel: "New",
+      },
+      {
+        ...games[3],
+        previewAlt: "Spot Change original and changed scene boards with one highlighted difference",
+        previewObjectPosition: undefined,
+        previewSrc: "/images/games/spot-change-preview.svg",
+        recordLabel: "Best 1:05",
+        runLabel: "2 runs",
+        statusLabel: "Played",
       },
     ]);
   });

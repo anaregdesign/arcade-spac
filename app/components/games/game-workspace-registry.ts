@@ -12,6 +12,7 @@ import { PrecisionDropGameWorkspace } from "./precision-drop/PrecisionDropGameWo
 import { PulseCountGameWorkspace } from "./pulse-count/PulseCountGameWorkspace";
 import { QuickSumGameWorkspace } from "./quick-sum/QuickSumGameWorkspace";
 import { ShapeMorphGameWorkspace } from "./shape-morph/ShapeMorphGameWorkspace";
+import { SpotChangeGameWorkspace } from "./spot-change/SpotChangeGameWorkspace";
 import type { GameInstructions } from "./shared/GameInstructionsDialog";
 import { SwapSolveGameWorkspace } from "./swap-solve/SwapSolveGameWorkspace";
 import { SumGridGameWorkspace } from "./sum-grid/SumGridGameWorkspace";
@@ -181,6 +182,35 @@ const gameDefinitionByKey: Record<string, GameDefinition> = {
       previewSrc: "/images/games/hidden-find-preview.svg",
     },
     workspace: HiddenFindGameWorkspace,
+  },
+  "spot-change": {
+    instructions: {
+      summary: "Compare the original and changed scenes, tap every real difference on the changed board, and finish the full set before the timer expires.",
+      sections: [
+        {
+          title: "Run flow",
+          items: [
+            { label: "Start run", detail: "Choose a difficulty and press Start run to load the first comparison scene." },
+            { label: "Find every difference", detail: "Tap each changed tile on the changed board. The next round loads as soon as the full difference set is found." },
+            { label: "Timeout", detail: "If the timer expires before every round is cleared, the run is saved as not cleared and opens the Result screen automatically." },
+          ],
+        },
+        {
+          title: "Board controls",
+          items: [
+            { label: "Compare both boards", detail: "The original scene is read-only. Only the changed scene accepts taps." },
+            { label: "Tap changed tiles", detail: "Correct taps mark the found difference and move the round toward clear." },
+            { label: "Read misses", detail: "Wrong taps increase the miss count but the run keeps going." },
+          ],
+        },
+      ],
+      title: "Spot Change controls",
+    },
+    presentation: {
+      previewAlt: "Spot Change original and changed scene boards with one highlighted difference",
+      previewSrc: "/images/games/spot-change-preview.svg",
+    },
+    workspace: SpotChangeGameWorkspace,
   },
   "target-trail": {
     instructions: {

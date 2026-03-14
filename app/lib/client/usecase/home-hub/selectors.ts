@@ -62,6 +62,10 @@ const previewByGameKey: Record<string, Pick<HomeGameCard, "previewAlt" | "previe
     previewAlt: "Symbol Hunt board with a target symbol and a noisy symbol grid",
     previewSrc: "/images/games/symbol-hunt-preview.svg",
   },
+  "spot-change": {
+    previewAlt: "Spot Change original and changed scene boards with one highlighted difference",
+    previewSrc: "/images/games/spot-change-preview.svg",
+  },
   sudoku: {
     previewAlt: "Sudoku puzzle board with preset digits and empty cells",
     previewObjectPosition: "top center",

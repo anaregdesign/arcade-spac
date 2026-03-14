@@ -1,0 +1,51 @@
+<svg width="1200" height="720" viewBox="0 0 1200 720" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="720" rx="40" fill="#0F172A"/>
+  <rect x="60" y="72" width="510" height="576" rx="32" fill="#111827" stroke="#334155" stroke-width="2"/>
+  <rect x="630" y="72" width="510" height="576" rx="32" fill="#111827" stroke="#FB7185" stroke-width="2"/>
+  <text x="94" y="126" fill="#E2E8F0" font-family="sans-serif" font-size="28" font-weight="700">Original</text>
+  <text x="664" y="126" fill="#FFE4E6" font-family="sans-serif" font-size="28" font-weight="700">Changed</text>
+  <g font-family="sans-serif" font-size="68" font-weight="700" text-anchor="middle" dominant-baseline="middle">
+    <rect x="106" y="166" width="126" height="126" rx="24" fill="#1E293B"/>
+    <rect x="252" y="166" width="126" height="126" rx="24" fill="#1E293B"/>
+    <rect x="398" y="166" width="126" height="126" rx="24" fill="#1E293B"/>
+    <rect x="106" y="312" width="126" height="126" rx="24" fill="#1E293B"/>
+    <rect x="252" y="312" width="126" height="126" rx="24" fill="#1E293B"/>
+    <rect x="398" y="312" width="126" height="126" rx="24" fill="#1E293B"/>
+    <rect x="106" y="458" width="126" height="126" rx="24" fill="#1E293B"/>
+    <rect x="252" y="458" width="126" height="126" rx="24" fill="#1E293B"/>
+    <rect x="398" y="458" width="126" height="126" rx="24" fill="#1E293B"/>
+    <text x="169" y="229" fill="#38BDF8">▲</text>
+    <text x="315" y="229" fill="#FACC15">◆</text>
+    <text x="461" y="229" fill="#22C55E">✦</text>
+    <text x="169" y="375" fill="#F97316">●</text>
+    <text x="315" y="375" fill="#FB7185">■</text>
+    <text x="461" y="375" fill="#C084FC">✿</text>
+    <text x="169" y="521" fill="#38BDF8">✚</text>
+    <text x="315" y="521" fill="#FACC15">⬢</text>
+    <text x="461" y="521" fill="#22C55E">☼</text>
+  </g>
+  <g font-family="sans-serif" font-size="68" font-weight="700" text-anchor="middle" dominant-baseline="middle">
+    <rect x="676" y="166" width="126" height="126" rx="24" fill="#1E293B"/>
+    <rect x="822" y="166" width="126" height="126" rx="24" fill="#1E293B"/>
+    <rect x="968" y="166" width="126" height="126" rx="24" fill="#1E293B"/>
+    <rect x="676" y="312" width="126" height="126" rx="24" fill="#1E293B"/>
+    <rect x="822" y="312" width="126" height="126" rx="24" fill="#1E293B"/>
+    <rect x="968" y="312" width="126" height="126" rx="24" fill="#1E293B"/>
+    <rect x="676" y="458" width="126" height="126" rx="24" fill="#1E293B"/>
+    <rect x="822" y="458" width="126" height="126" rx="24" fill="#1E293B"/>
+    <rect x="968" y="458" width="126" height="126" rx="24" fill="#1E293B"/>
+    <text x="739" y="229" fill="#38BDF8">▲</text>
+    <text x="885" y="229" fill="#FACC15">◆</text>
+    <text x="1031" y="229" fill="#22C55E">✦</text>
+    <text x="739" y="375" fill="#F97316">●</text>
+    <text x="885" y="375" fill="#38BDF8">■</text>
+    <text x="1031" y="375" fill="#C084FC" transform="rotate(38 1031 375)">✿</text>
+    <text x="739" y="521" fill="#38BDF8" transform="translate(10 -8)">✚</text>
+    <text x="885" y="521" fill="#FACC15">⬢</text>
+    <text x="1031" y="521" fill="#22C55E">·</text>
+  </g>
+  <rect x="822" y="312" width="126" height="126" rx="24" stroke="#FB7185" stroke-width="6"/>
+  <rect x="968" y="312" width="126" height="126" rx="24" stroke="#FB7185" stroke-width="6"/>
+  <rect x="676" y="458" width="126" height="126" rx="24" stroke="#FB7185" stroke-width="6"/>
+  <rect x="968" y="458" width="126" height="126" rx="24" stroke="#FB7185" stroke-width="6"/>
+</svg>
