@@ -28,6 +28,8 @@ This skill owns planning artifacts and shared commit-log workflow, not app archi
 6. During implementation:
    - keep `/docs/plans/plan.md` checkboxes current
    - record changes in deliberate, reviewable commit units
+   - add new plan items when newly discovered required tasks appear during execution
+   - split existing plan items into smaller reviewable tasks when the work becomes clearer
    - revise the plan when technical findings change the execution path, sequencing, or slice boundaries
    - update the spec and plan if accepted behavior or execution sequence changes
 7. At completion:
@@ -49,6 +51,8 @@ This skill owns planning artifacts and shared commit-log workflow, not app archi
   - add `Subsection` when a section spans several reviewable slices
   - add `Sub-subsection` only when a subsection still needs a deeper ordered breakdown
 - Break work into the smallest meaningful reviewable steps and record them as checkboxes under the lowest useful heading.
+- Add newly discovered required tasks to `/docs/plans/plan.md` as soon as they are known instead of keeping them only in working memory.
+- Split or replace an existing checkbox with smaller reviewable tasks when implementation reveals a clearer breakdown.
 - Update checkboxes as work completes. Do not leave finished steps unchecked.
 - Remove or rewrite stale plan items when the work changes. Do not preserve obsolete steps just for history.
 - Revise `/docs/plans/plan.md` when implementation reveals a better technical path. Do not force execution to follow an outdated plan.
@@ -82,11 +86,15 @@ This skill owns planning artifacts and shared commit-log workflow, not app archi
 - Add `Sub-subsection` only when a subsection still needs another ordered layer.
 - Once the reframed goal is reviewed, plan against that higher-level goal rather than every repeated instruction line.
 - Keep plan items about delivery steps, not vague aspirations.
+- When execution reveals new required work for the current delivery unit, add it to the active plan under the right heading before or as you execute it.
+- When a coarse task becomes clearer during execution, replace it with smaller checkboxes under the lowest useful heading instead of leaving it vague.
 
 ### 3. Implement and keep the workflow current
 
 - Complete work one meaningful slice at a time.
 - Check off the matching plan checkbox as each slice is finished.
+- Add plan items for newly discovered required tasks as soon as they are identified.
+- Split broad tasks into smaller checkboxes when implementation reveals a better execution breakdown.
 - Update `/docs/plans/plan.md` if work is reordered, split, or moved between `Section`, `Subsection`, and `Sub-subsection` blocks.
 - Revise `/docs/plans/plan.md` when technical review or implementation findings change dependencies, sequencing, or slice boundaries.
 - Record progress in coherent commits that match the current execution slice.

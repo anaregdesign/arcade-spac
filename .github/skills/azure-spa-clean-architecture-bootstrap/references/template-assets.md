@@ -26,6 +26,7 @@ Use this reference when copying files from `assets/templates/` into a target rep
 - `assets/templates/infra/main.bicep`
 
 `assets/templates/infra/main.bicep` is the shared web-runtime baseline template. Extend it with Azure SQL resources only when the target app actually needs relational persistence.
+It keeps the Container App ingress public by default and includes Container Apps VNet integration so the hosted runtime can still reach private endpoints. Extend it with Azure SQL server, database, and `Private Endpoint` resources when the target app needs relational persistence. Add a Container Apps managed environment `Private Endpoint` only when the app ingress must also be private-only.
 
 ## Adoption Flow
 
@@ -40,4 +41,5 @@ Use this reference when copying files from `assets/templates/` into a target rep
 - Validate YAML files with a YAML parser.
 - Validate GitHub workflow files with `actionlint`.
 - Validate Bicep files with `az bicep build`.
+- Validate private DNS, VNet link, and `Private Endpoint` resources when relational persistence is enabled.
 - Validate the copied container image build locally or in CI.

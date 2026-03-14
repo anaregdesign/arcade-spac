@@ -13,6 +13,7 @@ This skill does not own `/docs/spec`, `/docs/plans/plan.md`, commit-log workflow
 Treat requests for "Microsoft auth" as `Microsoft Entra ID` only when the app actually needs user authentication. If the app does not need auth, skip the app registration and auth guidance.
 Prefer a secretless configuration model: do not introduce `.env` or `.env.example` for Azure-hosted apps. Put non-secret runtime configuration in Azure App Configuration, put secrets in Key Vault, use local `DefaultAzureCredential` during development, and use `ManagedIdentityCredential` for deployed app-to-Azure and Azure SQL authentication.
 Keeping the same database engine across environments is usually safer. When this skill adopts SQLite for developer speed, treat it as local-development-only storage and require Azure SQL Database for every Azure-hosted environment that persists relational data.
+For Azure-hosted relational traffic, keep the default assumption that the web app on Container Apps remains publicly reachable unless the product explicitly requires private-only ingress. Even with public app ingress, do not normalize Azure SQL firewall exceptions as the connectivity model. Use a VNet-integrated Container Apps environment and reach Azure SQL through `Private Endpoint` plus private DNS. If the app ingress itself must stay private-only, add a Container Apps managed environment `Private Endpoint` as a separate concern.
 Surface Azure prerequisites early. If the project will definitely require specific RBAC assignments, tenant or subscription access, SQL admin setup, App Configuration or Key Vault access, or an unavoidable Service Principal for deploy or migration paths, request those at the beginning of development instead of discovering them mid-implementation.
 When the app requires user authentication, prefer a real local sign-in path with a dev or test `Microsoft Entra ID` registration and test identities rather than a hidden development auth bypass.
 
@@ -32,6 +33,7 @@ When the app requires user authentication, prefer a real local sign-in path with
 2. Surface prerequisites before deep implementation:
    - list the Azure tenant, subscription, resource group scope, and RBAC assignments that are definitely required
    - identify any required SQL admin or migration identity setup
+   - identify the required VNet, subnet, private DNS, and `Private Endpoint` design for Container Apps to Azure SQL connectivity, and whether ingress must also be private-only
    - identify whether GitHub Actions OIDC setup or another unavoidable Service Principal is required
    - request these prerequisites at project start instead of waiting for release hardening
 3. Confirm the companion skill is installed:
@@ -112,6 +114,10 @@ When the app requires user authentication, prefer a real local sign-in path with
 - Use SQLite only for local development.
 - When the app is hosted on Azure and persists relational data, use Azure SQL Database rather than SQLite.
 - Prefer Azure SQL Database serverless for Azure-hosted relational persistence unless workload characteristics force another SKU.
+- Keep the default Container Apps endpoint public when the product is an internet-facing web app, and use VNet integration for outbound private connectivity.
+- Use a VNet-integrated Container Apps environment when the hosted runtime must reach Azure resources through `Private Endpoint`, including Azure SQL Database.
+- For Container Apps to Azure SQL connectivity, use Azure SQL `Private Endpoint` plus private DNS and keep Azure SQL public network access disabled. Do not treat SQL firewall rules or "Allow Azure services and resources to access this server" as the standard path.
+- Use a Container Apps managed environment `Private Endpoint` only when ingress itself must be private-only. Do not confuse that requirement with the separate need for private database connectivity.
 - Front-load known Azure prerequisites. Ask for required tenant access, subscription access, RBAC assignments, SQL admin setup, and any unavoidable Service Principal before substantial implementation begins.
 - When authentication is required, prefer `Microsoft Entra ID` over portal-only or ad hoc "Microsoft auth" descriptions, and keep the chosen `signInAudience` explicit.
 - Do not use `.env` or `.env.example` for Azure runtime configuration. Use Azure App Configuration for non-secret settings and Key Vault for secrets.
@@ -147,6 +153,7 @@ When the app requires user authentication, prefer a real local sign-in path with
 - Follow the sibling architecture references before adding cloud features.
 - Keep this skill focused on platform deltas after the companion skill has established code structure, UI rules, and verification gates.
 - Surface the Azure prerequisites now: required RBAC, tenant or subscription access, SQL admin setup, App Configuration or Key Vault access, and any unavoidable Service Principal or federated deploy identity.
+- Surface the networking prerequisites now: the Container Apps VNet plan, dedicated subnets, private DNS ownership, Azure SQL `Private Endpoint`, and whether ingress must also be private-only.
 - Ask for these prerequisites before the team gets deep into implementation so platform access does not become a late blocker.
 
 ### 2. Add cloud-facing repository structure intentionally
@@ -178,15 +185,19 @@ When the app requires user authentication, prefer a real local sign-in path with
 - Keep repository ports in the companion skill's domain layer, and place Azure SQL or SQL Server adapters in `app/lib/server/infrastructure/repositories/`.
 - Use SQLite for local development only, and keep Azure-hosted environments on Azure SQL Database. Do not plan to run a SQLite file inside Azure-hosted runtime environments.
 - Use local `DefaultAzureCredential` in development, and use `ManagedIdentityCredential` for deployed app-to-Azure and Azure SQL authentication when the driver path supports it.
+- For hosted database access, put Azure SQL behind a `Private Endpoint` in a dedicated subnet, link `privatelink.database.windows.net` to the VNet used by the Container Apps environment, and keep Azure SQL public network access disabled.
 - Keep migrations explicit and separate from app startup.
 - Treat the SQLite local-development path and Azure SQL Database hosted path as different providers that need explicit validation.
 - Keep `db_datareader` and `db_datawriter` on runtime identities. Reserve elevated roles for migration or admin identities.
+- Do not rely on SQL firewall rules or the broad "Allow Azure services" switch as the main connectivity model for production app traffic.
 
 ### 5. Prepare Azure deployment
 
 - Add a container-friendly `Dockerfile`.
 - Add `azure.yaml` and declarative infrastructure.
-- Prefer Container Apps, Managed Identity, Azure App Configuration, Key Vault, Application Insights, and, when relational persistence is required, Azure SQL Database serverless as the default platform set.
+- Keep the default Container Apps ingress public for internet-facing apps, and use VNet integration plus separate infrastructure and `Private Endpoint` subnets for private backing-service connectivity.
+- Prefer Container Apps, Managed Identity, Azure App Configuration, Key Vault, Application Insights, and, when relational persistence is required, Azure SQL Database serverless behind `Private Endpoint`, as the default platform set.
+- If ingress must be private-only, disable public network access on the Container Apps managed environment and front it with a Private Link-capable edge instead of reopening public ingress.
 - Add `/health` and keep probes cheap.
 - Keep resource naming, region choice, and scope boundaries deliberate.
 
@@ -205,7 +216,7 @@ When the app requires user authentication, prefer a real local sign-in path with
 - Validate workflow syntax and IaC before release.
 - When the app requires user authentication, verify the documented local sign-in path with the intended dev or test users before release.
 - If local development uses SQLite, verify the deployed environment has switched to Azure SQL Database before release.
-- Smoke-test the deployed revision and confirm callback URLs, health checks, Azure SQL Database connectivity, and migration state.
+- Smoke-test the deployed revision and confirm callback URLs, health checks, Azure SQL private DNS resolution, Azure SQL private connectivity, and migration state.
 
 ### 8. Operate and hand off cleanly
 
