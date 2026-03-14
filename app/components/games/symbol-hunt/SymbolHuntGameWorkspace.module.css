@@ -8,10 +8,9 @@
   gap: 1rem;
 }
 
-.hunt-legend {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+.hunt-copy {
+  margin-inline: auto;
+  max-width: 20rem;
 }
 
 .hunt-grid {
@@ -44,6 +43,10 @@
   .hunt-grid {
     gap: 0.5rem;
     width: min(100%, 18rem);
+  }
+
+  .hunt-copy {
+    max-width: 15rem;
   }
 
   .hunt-cell {

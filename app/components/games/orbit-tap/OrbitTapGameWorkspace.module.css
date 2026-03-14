@@ -3,7 +3,14 @@
 }
 
 .orbit-shell {
+  display: grid;
+  gap: 10px;
   min-height: 24rem;
+}
+
+.orbit-header {
+  margin-inline: auto;
+  max-width: 24rem;
 }
 
 .orbit-button {
@@ -65,22 +72,15 @@
   box-shadow: 0 0 1rem rgba(96, 165, 250, 0.9);
 }
 
-.orbit-copy {
-  position: absolute;
-  bottom: 1.5rem;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 0.92rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: rgba(224, 242, 254, 0.84);
-}
-
 @media (max-width: 720px) {
   .orbit-board-card,
   .orbit-shell,
   .orbit-button {
     min-height: 20rem;
+  }
+
+  .orbit-header {
+    max-width: 16rem;
   }
 
   .orbit-ring,

@@ -3,7 +3,14 @@
 }
 
 .pair-flip-shell {
+  display: grid;
+  gap: 10px;
   width: 100%;
+}
+
+.pair-flip-copy {
+  margin-inline: auto;
+  max-width: 24rem;
 }
 
 .pair-flip-panel {
@@ -15,37 +22,6 @@
   background:
     radial-gradient(circle at top center, rgba(255, 255, 255, 0.66), transparent 40%),
     linear-gradient(180deg, color-mix(in srgb, var(--surface-elevated) 88%, #d6dee6), color-mix(in srgb, var(--surface-card) 92%, #8797a6));
-}
-
-.pair-flip-legend {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-  padding: 14px 16px;
-  border-radius: 22px;
-  background: color-mix(in srgb, var(--surface-card) 92%, rgba(255, 255, 255, 0.2));
-}
-
-.pair-flip-target-copy {
-  display: grid;
-  gap: 4px;
-}
-
-.pair-flip-target-copy :global(.eyebrow) {
-  margin: 0;
-}
-
-.pair-flip-target-copy strong {
-  font-size: 1.18rem;
-  color: var(--text-primary);
-}
-
-.pair-flip-legend :global(.compact-copy) {
-  max-width: 280px;
-  margin: 0;
-  color: var(--text-secondary);
-  text-align: right;
 }
 
 .pair-flip-grid {
@@ -101,13 +77,7 @@
     border-radius: 22px;
   }
 
-  .pair-flip-legend {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-
-  .pair-flip-legend :global(.compact-copy) {
-    max-width: none;
-    text-align: left;
+  .pair-flip-copy {
+    max-width: 16rem;
   }
 }

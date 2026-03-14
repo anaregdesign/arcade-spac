@@ -1,4 +1,5 @@
 import { useSudokuWorkspace } from "../../../lib/client/usecase/game-workspace/use-sudoku-workspace";
+import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
 import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
 import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
@@ -32,6 +33,13 @@ export function SudokuGameWorkspace({ instructions, workspace }: GameWorkspaceCo
 
       <section className={["feature-card", sharedStyles["workspace-card"], sharedStyles["board-card"], sharedStyles["board-card-minimal"]].join(" ")} aria-label="Sudoku board">
         <div className={sharedStyles["game-board-overlay-shell"]}>
+          <GameplayContextCue
+            className={styles["sudoku-copy"]}
+            detail="Select a cell, then use the keypad."
+            phase={screen.isLiveRun ? "Solve" : "Ready"}
+            title="Fill the board without breaking Sudoku rules"
+            tone="logic"
+          />
           <div className={styles["sudoku-shell"]}>
             <div className={styles["sudoku-board"]} role="grid" aria-label="Sudoku board">
               {screen.sudoku.board.map((row, rowIndex) =>
@@ -84,7 +92,7 @@ export function SudokuGameWorkspace({ instructions, workspace }: GameWorkspaceCo
           </div>
           <GameWorkspaceBoardOverlay
             actionLabel={screen.startActionLabel}
-            detail="Start the puzzle, then fill the board with the keypad or keyboard."
+            detail="Fill the board with the keypad or keyboard."
             isVisible={screen.isRunIdle}
             onAction={screen.handleStartRun}
             title="Puzzle ready"

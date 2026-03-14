@@ -1,4 +1,5 @@
 import { usePathRecallWorkspace } from "../../../lib/client/usecase/game-workspace/use-path-recall-workspace";
+import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
 import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
 import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
@@ -29,6 +30,13 @@ export function PathRecallGameWorkspace({ instructions, workspace }: GameWorkspa
 
       <section className={["feature-card", sharedStyles["workspace-card"], sharedStyles["board-card"], styles["recall-board-card"]].join(" ")} aria-label="Path Recall board">
         <div className={[styles["recall-shell"], sharedStyles["game-board-overlay-shell"]].join(" ")}>
+          <GameplayContextCue
+            className={styles["recall-copy"]}
+            detail="Replay the same cells in the same order."
+            phase={screen.isLiveRun ? "Recall" : "Ready"}
+            title="Watch the path, then repeat it"
+            tone="memory"
+          />
           <div
             className={styles["recall-grid"]}
             style={{ gridTemplateColumns: `repeat(${screen.pathRecall.columnCount}, minmax(0, 1fr))` }}
@@ -59,7 +67,7 @@ export function PathRecallGameWorkspace({ instructions, workspace }: GameWorkspa
           </div>
           <GameWorkspaceBoardOverlay
             actionLabel={screen.startActionLabel}
-            detail="Watch the path, then replay the same cells in the same order."
+            detail="Watch, then replay the path."
             isVisible={screen.isRunIdle}
             onAction={screen.handleStartRun}
             title="Path ready"

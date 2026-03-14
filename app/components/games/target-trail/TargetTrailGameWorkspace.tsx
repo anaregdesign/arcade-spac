@@ -1,4 +1,5 @@
 import { useTargetTrailWorkspace } from "../../../lib/client/usecase/game-workspace/use-target-trail-workspace";
+import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
 import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
 import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
@@ -29,6 +30,13 @@ export function TargetTrailGameWorkspace({ instructions, workspace }: GameWorksp
 
       <section className={["feature-card", sharedStyles["workspace-card"], sharedStyles["board-card"], styles["trail-board-card"]].join(" ")} aria-label="Target Trail board">
         <div className={[styles["trail-shell"], sharedStyles["game-board-overlay-shell"]].join(" ")}>
+          <GameplayContextCue
+            className={styles["trail-copy"]}
+            detail="Tap the active target every jump."
+            phase={screen.isLiveRun ? "Track" : "Ready"}
+            title="Follow the moving target trail"
+            tone="target"
+          />
           <div
             className={styles["trail-grid"]}
             style={{ gridTemplateColumns: `repeat(${screen.targetTrail.columnCount}, minmax(0, 1fr))` }}
@@ -58,7 +66,7 @@ export function TargetTrailGameWorkspace({ instructions, workspace }: GameWorksp
           </div>
           <GameWorkspaceBoardOverlay
             actionLabel={screen.startActionLabel}
-            detail="Tap the highlighted target every time it jumps to a new tile."
+            detail="Tap the highlighted target after every jump."
             isVisible={screen.isRunIdle}
             onAction={screen.handleStartRun}
             title="Trail ready"

@@ -1,3 +1,8 @@
+.sudoku-copy {
+  margin: 0 auto 10px;
+  max-width: 26rem;
+}
+
 .sudoku-shell {
   display: grid;
   gap: 12px;
@@ -86,6 +91,10 @@
 }
 
 @media (max-width: 640px) {
+  .sudoku-copy {
+    max-width: 16rem;
+  }
+
   .sudoku-cell {
     font-size: 1rem;
   }

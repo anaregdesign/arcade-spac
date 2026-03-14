@@ -1,4 +1,5 @@
 import { useSymbolHuntWorkspace } from "../../../lib/client/usecase/game-workspace/use-symbol-hunt-workspace";
+import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
 import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
 import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
@@ -32,10 +33,13 @@ export function SymbolHuntGameWorkspace({ instructions, workspace }: GameWorkspa
 
       <section className={["feature-card", sharedStyles["workspace-card"], sharedStyles["board-card"], styles["hunt-board-card"]].join(" ")} aria-label="Symbol Hunt board">
         <div className={[styles["hunt-shell"], sharedStyles["game-board-overlay-shell"]].join(" ")}>
-          <div className={styles["hunt-legend"]}>
-            <p className="eyebrow">Target symbol</p>
-            <strong>{screen.symbolHunt.targetSymbol}</strong>
-          </div>
+          <GameplayContextCue
+            className={styles["hunt-copy"]}
+            detail={`Target ${screen.symbolHunt.targetSymbol}.`}
+            phase={screen.isLiveRun ? "Hunt" : "Ready"}
+            title="Tap every copy of the target symbol"
+            tone="target"
+          />
           <div
             className={styles["hunt-grid"]}
             style={{ gridTemplateColumns: `repeat(${screen.symbolHunt.columnCount}, minmax(0, 1fr))` }}
@@ -59,7 +63,7 @@ export function SymbolHuntGameWorkspace({ instructions, workspace }: GameWorkspa
           </div>
           <GameWorkspaceBoardOverlay
             actionLabel={screen.startActionLabel}
-            detail="Tap every copy of the target symbol before time runs out."
+            detail="Clear every copy of the target symbol."
             isVisible={screen.isRunIdle}
             onAction={screen.handleStartRun}
             title="Board ready"

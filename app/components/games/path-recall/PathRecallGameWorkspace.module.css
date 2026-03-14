@@ -4,9 +4,13 @@
 
 .recall-shell {
   min-height: 22rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: grid;
+  gap: 10px;
+  justify-items: center;
+}
+
+.recall-copy {
+  max-width: 20rem;
 }
 
 .recall-grid {

@@ -1,4 +1,5 @@
 import { useNumberChainWorkspace } from "../../../lib/client/usecase/game-workspace/use-number-chain-workspace";
+import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
 import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
 import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
@@ -34,14 +35,14 @@ export function NumberChainGameWorkspace({ instructions, workspace }: GameWorksp
 
       <section className={["feature-card", sharedStyles["workspace-card"], sharedStyles["board-card"], sharedStyles["board-card-minimal"], styles["number-chain-board-card"]].join(" ")} aria-label="Number Chain board">
         <div className={[styles["number-chain-shell"], sharedStyles["game-board-overlay-shell"]].join(" ")}>
+          <GameplayContextCue
+            className={styles["number-chain-copy"]}
+            detail={`Next ${screen.numberChain.nextNumber}.`}
+            phase={screen.isLiveRun ? "Tap" : "Ready"}
+            title="Tap the numbers in ascending order"
+            tone="target"
+          />
           <div className={styles["number-chain-panel"]}>
-            <div className={styles["number-chain-legend"]}>
-              <div className={styles["number-chain-target-copy"]}>
-                <p className="eyebrow">Next number</p>
-                <strong>{screen.numberChain.nextNumber}</strong>
-              </div>
-              <p className="compact-copy">Tap the numbers in ascending order before the timer expires.</p>
-            </div>
             <div
               className={styles["number-chain-grid"]}
               style={{ gridTemplateColumns: `repeat(${screen.numberChain.columns}, minmax(0, 1fr))` }}
@@ -67,7 +68,7 @@ export function NumberChainGameWorkspace({ instructions, workspace }: GameWorksp
           </div>
           <GameWorkspaceBoardOverlay
             actionLabel={screen.startActionLabel}
-            detail="Start the board, then tap the numbers in ascending order before time runs out."
+            detail="Tap the numbers in ascending order."
             isVisible={screen.isRunIdle}
             onAction={screen.handleStartRun}
             title="Board ready"

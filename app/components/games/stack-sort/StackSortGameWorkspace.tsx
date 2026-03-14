@@ -1,4 +1,5 @@
 import { useStackSortWorkspace } from "../../../lib/client/usecase/game-workspace/use-stack-sort-workspace";
+import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
 import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
 import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
@@ -28,6 +29,13 @@ export function StackSortGameWorkspace({ instructions, workspace }: GameWorkspac
 
       <section className={["feature-card", sharedStyles["workspace-card"], sharedStyles["board-card"], styles["stack-board-card"]].join(" ")} aria-label="Stack Sort board">
         <div className={[styles["stack-shell"], sharedStyles["game-board-overlay-shell"]].join(" ")}>
+          <GameplayContextCue
+            className={styles["stack-copy"]}
+            detail="Select source, then destination."
+            phase={screen.isLiveRun ? "Sort" : "Ready"}
+            title="Group each stack into one color"
+            tone="logic"
+          />
           <div className={styles["stack-grid"]}>
             {screen.stackSort.stacks.map((stack, stackIndex) => (
               <button
@@ -59,7 +67,7 @@ export function StackSortGameWorkspace({ instructions, workspace }: GameWorkspac
           </div>
           <GameWorkspaceBoardOverlay
             actionLabel={screen.startActionLabel}
-            detail="Select a source stack, then a destination stack, until every non-empty stack holds only one color."
+            detail="Sort every non-empty stack down to one color."
             isVisible={screen.isRunIdle}
             onAction={screen.handleStartRun}
             title="Stacks ready"

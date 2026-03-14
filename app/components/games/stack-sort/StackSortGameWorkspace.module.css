@@ -4,9 +4,14 @@
 
 .stack-shell {
   min-height: 24rem;
-  display: flex;
+  display: grid;
+  gap: 10px;
   align-items: center;
-  justify-content: center;
+  justify-items: center;
+}
+
+.stack-copy {
+  max-width: 20rem;
 }
 
 .stack-grid {

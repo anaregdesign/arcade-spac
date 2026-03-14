@@ -3,7 +3,14 @@
 }
 
 .number-chain-shell {
+  display: grid;
+  gap: 10px;
   width: 100%;
+}
+
+.number-chain-copy {
+  margin-inline: auto;
+  max-width: 24rem;
 }
 
 .number-chain-panel {
@@ -15,37 +22,6 @@
   background:
     radial-gradient(circle at top right, rgba(255, 255, 255, 0.68), transparent 40%),
     linear-gradient(180deg, color-mix(in srgb, var(--surface-elevated) 88%, #d1dce5), color-mix(in srgb, var(--surface-card) 92%, #8395a7));
-}
-
-.number-chain-legend {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-  padding: 14px 16px;
-  border-radius: 22px;
-  background: color-mix(in srgb, var(--surface-card) 92%, rgba(255, 255, 255, 0.2));
-}
-
-.number-chain-target-copy {
-  display: grid;
-  gap: 4px;
-}
-
-.number-chain-target-copy :global(.eyebrow) {
-  margin: 0;
-}
-
-.number-chain-target-copy strong {
-  font-size: 1.3rem;
-  color: var(--text-primary);
-}
-
-.number-chain-legend :global(.compact-copy) {
-  max-width: 260px;
-  margin: 0;
-  color: var(--text-secondary);
-  text-align: right;
 }
 
 .number-chain-grid {
@@ -90,13 +66,7 @@
     border-radius: 22px;
   }
 
-  .number-chain-legend {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-
-  .number-chain-legend :global(.compact-copy) {
-    max-width: none;
-    text-align: left;
+  .number-chain-copy {
+    max-width: 16rem;
   }
 }

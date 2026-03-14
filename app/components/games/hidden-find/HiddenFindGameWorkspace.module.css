@@ -8,15 +8,9 @@
   gap: 1rem;
 }
 
-.hidden-legend {
-  display: grid;
-  justify-items: center;
-  gap: 0.35rem;
-}
-
-.hidden-legend strong {
-  font-size: 2rem;
-  color: #f8fafc;
+.hidden-copy {
+  margin-inline: auto;
+  max-width: 20rem;
 }
 
 .hidden-grid {
@@ -54,8 +48,8 @@
     width: min(100%, 18rem);
   }
 
-  .hidden-legend strong {
-    font-size: 1.55rem;
+  .hidden-copy {
+    max-width: 15rem;
   }
 
   .hidden-cell {

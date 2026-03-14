@@ -1,4 +1,5 @@
 import { useHiddenFindWorkspace } from "../../../lib/client/usecase/game-workspace/use-hidden-find-workspace";
+import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
 import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
 import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
@@ -29,10 +30,13 @@ export function HiddenFindGameWorkspace({ instructions, workspace }: GameWorkspa
 
       <section className={["feature-card", sharedStyles["workspace-card"], sharedStyles["board-card"], styles["hidden-board-card"]].join(" ")} aria-label="Hidden Find board">
         <div className={[styles["hidden-shell"], sharedStyles["game-board-overlay-shell"]].join(" ")}>
-          <div className={styles["hidden-legend"]}>
-            <p className="eyebrow">Find this motif</p>
-            <strong>{screen.hiddenFind.currentScene.targetSymbol}</strong>
-          </div>
+          <GameplayContextCue
+            className={styles["hidden-copy"]}
+            detail={`Target ${screen.hiddenFind.currentScene.targetSymbol}.`}
+            phase={screen.isLiveRun ? "Scan" : "Ready"}
+            title="Find the exact motif"
+            tone="target"
+          />
           <div className={styles["hidden-grid"]} style={{ gridTemplateColumns: `repeat(${screen.hiddenFind.columnCount}, minmax(0, 1fr))` }}>
             {screen.hiddenFind.currentScene.board.flatMap((row, rowIndex) =>
               row.map((cell, columnIndex) => (
@@ -52,7 +56,7 @@ export function HiddenFindGameWorkspace({ instructions, workspace }: GameWorkspa
           </div>
           <GameWorkspaceBoardOverlay
             actionLabel={screen.startActionLabel}
-            detail="Each scene hides one exact motif inside a dense field of lookalikes. Wrong taps cost time, but the scene stays live."
+            detail="Find the exact motif without false taps."
             isVisible={screen.isRunIdle}
             onAction={screen.handleStartRun}
             title="Scene ready"

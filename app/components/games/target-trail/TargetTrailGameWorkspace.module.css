@@ -4,9 +4,13 @@
 
 .trail-shell {
   min-height: 22rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: grid;
+  gap: 10px;
+  justify-items: center;
+}
+
+.trail-copy {
+  max-width: 20rem;
 }
 
 .trail-grid {
