@@ -1,3 +1,35 @@
+const MUTE_STORAGE_KEY = "arcade:sound-muted";
+
+function readMutedFromStorage(): boolean {
+  if (typeof window === "undefined") {
+    return false;
+  }
+
+  try {
+    return window.localStorage.getItem(MUTE_STORAGE_KEY) === "true";
+  } catch {
+    return false;
+  }
+}
+
+let mutedState: boolean = readMutedFromStorage();
+
+export function isSoundMuted(): boolean {
+  return mutedState;
+}
+
+export function setSoundMuted(value: boolean): void {
+  mutedState = value;
+
+  if (typeof window !== "undefined") {
+    try {
+      window.localStorage.setItem(MUTE_STORAGE_KEY, String(value));
+    } catch {
+      // localStorage unavailable (private browsing, quota exceeded, etc.)
+    }
+  }
+}
+
 let sharedContext: AudioContext | null = null;
 
 function getAudioContext(): AudioContext | null {
@@ -29,6 +61,10 @@ function playTone(
   gainPeak: number = 0.3,
   endFrequency?: number,
 ): void {
+  if (mutedState) {
+    return;
+  }
+
   const ctx = getAudioContext();
 
   if (!ctx) {
@@ -66,6 +102,10 @@ type NoteSpec = {
 };
 
 function playSequence(notes: NoteSpec[]): void {
+  if (mutedState) {
+    return;
+  }
+
   const ctx = getAudioContext();
 
   if (!ctx) {
