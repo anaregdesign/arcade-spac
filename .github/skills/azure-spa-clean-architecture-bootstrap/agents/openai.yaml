@@ -1,4 +1,0 @@
-interface:
-  display_name: "Azure Spa Clean Architecture Bootstrap"
-  short_description: "Own Azure hosting, secretless config, SQL, IaC, and production release delivery"
-  default_prompt: "Use $azure-spa-clean-architecture-bootstrap together with $react-router-prisma-app-architecture when the work is primarily Azure Container Apps, Azure SQL Database, App Configuration, Key Vault, Managed Identity, workload identity, DefaultAzureCredential, Dockerfile, azure.yaml, Bicep, GitHub Actions OIDC, the GitHub `production` Environment, GHCR publishing, deploy_infra, deploy_app, smoke tests, or deployment verification. Do not use it for end-user Entra login contract design, app registration changes, or GitHub Copilot cloud access; use the sibling auth or Copilot skill instead."
