@@ -2,11 +2,11 @@
 
 ## Links
 - Program spec: /docs/spec/game-catalog-50-expansion-program.md
-- Current game spec: /docs/spec/games/bubble-spawn.md
+- Current game spec: /docs/spec/games/line-connect.md
 
 ## Section 1 - Catalog Recovery Audit
 - [x] Confirm the durable game-spec inventory covers 50 game specs plus 2 meta specs (`two-minute-expansion-wave`, expansion program support docs).
-- [x] Confirm the current app implementation exposes 43 playable games in `supportedGames` and `game-workspace-registry`.
+- [x] Confirm the current app implementation exposes 44 playable games in `supportedGames` and `game-workspace-registry`.
 - [x] Choose the next reviewable slice as one low-risk unimplemented game that fits the current shared result and UI architecture.
 
 ### Subsection 1.1 - Remaining backlog risk buckets
@@ -24,30 +24,30 @@
 ### Subsection 1.3 - Scope reconciliation to 50
 - [x] Keep the 50-game target fixed instead of expanding the program to 51 games after the `Relative Pitch` swap.
 - [x] Defer `Intercept Ball` beyond the 50-game target because its prediction-reflex loop overlaps more with `Bounce Angle` and `Gap Rush` than the remaining backlog overlaps with each other.
-- [x] Treat the remaining implementation scope as 7 games: `Block Tessellate`, `Box Fill`, `Bubble Spawn`, `Line Connect`, `Bounce Angle`, `Cascade Flip`, and `Gap Rush`.
+- [x] Treat the remaining implementation scope as 6 games: `Block Tessellate`, `Box Fill`, `Line Connect`, `Bounce Angle`, `Cascade Flip`, and `Gap Rush`.
 
 ### Subsection 1.4 - Melody audio foundation
 - [x] Add reusable equal-temperament note helpers so future melody and ear-training games can trigger arbitrary `sine` note pitches without hard-coded frequencies.
 - [x] Migrate `Relative Pitch` to the reusable `sine` note helper and remove generic tap sounds from its replay and candidate actions so only melodic cues remain.
 
-## Section 2 - Current Slice: Bubble Spawn
+## Section 2 - Current Slice: Line Connect
 ### Subsection 2.1 - Spec and planning alignment
-- [ ] Reconfirm `/docs/spec/games/bubble-spawn.md` so the survival loop, deterministic spawn/growth pattern, and current result metrics are explicit.
+- [ ] Reconfirm `/docs/spec/games/line-connect.md` so the segment-building interaction, deterministic no-cross validation, and current result metrics are explicit.
 - [x] Keep this active plan focused on the current slice and append new implementation tasks only when they become concrete.
 
 ### Subsection 2.2 - App integration
-- [ ] Add `Bubble Spawn` to the game catalog metadata and Home preview mapping.
+- [ ] Add `Line Connect` to the game catalog metadata and Home preview mapping.
 - [ ] Add the game registry entry, help content, and preview asset.
-- [ ] Implement the deterministic spawn/growth resolver and `Bubble Spawn` session/workspace Hook under `app/lib/client/usecase/game-workspace/`.
-- [ ] Implement the `Bubble Spawn` workspace Component and CSS under `app/components/games/bubble-spawn/`.
-- [ ] Add deterministic Playwright hooks for field state, saturation meter, chain bonus, and run completion without changing the visible UI.
-- [ ] Keep the field, status panel, and tap targets readable and touch-safe on narrow viewports.
+- [ ] Implement the deterministic pair/path resolver and `Line Connect` session/workspace Hook under `app/lib/client/usecase/game-workspace/`.
+- [ ] Implement the `Line Connect` workspace Component and CSS under `app/components/games/line-connect/`.
+- [ ] Add deterministic Playwright hooks for pair state, drawn segments, correction count, and run completion without changing the visible UI.
+- [ ] Keep the board, segment controls, and status panel readable and touch-safe on narrow viewports.
 - [ ] Update the touched catalog and Home selector tests for the new game metadata.
 
 ### Subsection 2.3 - Verification and slice closeout
 - [ ] Run targeted automated verification for the touched catalog and gameplay modules.
-- [ ] Run Playwright UI verification for `/games/bubble-spawn` and the Home card.
-- [ ] Commit the `Bubble Spawn` slice in one reviewable unit.
+- [ ] Run Playwright UI verification for `/games/line-connect` and the Home card.
+- [ ] Commit the `Line Connect` slice in one reviewable unit.
 
 ## Section 3 - Named Backlog
 - [x] `Spot Change` - implementation, automated verification, Playwright UI verification, and commit are complete.
@@ -55,7 +55,7 @@
 - [ ] `Block Tessellate` - keep the game unchecked until implementation, automated verification, and Playwright UI verification are complete.
 - [ ] `Bounce Angle` - keep the game unchecked until implementation, automated verification, and Playwright UI verification are complete.
 - [ ] `Box Fill` - keep the game unchecked until implementation, automated verification, and Playwright UI verification are complete.
-- [ ] `Bubble Spawn` - keep the game unchecked until implementation, automated verification, and Playwright UI verification are complete.
+- [x] `Bubble Spawn` - implementation, automated verification, Playwright UI verification, and commit are complete.
 - [x] `Cascade Clear` - implementation, automated verification, Playwright UI verification, and commit are complete.
 - [ ] `Cascade Flip` - keep the game unchecked until implementation, automated verification, and Playwright UI verification are complete.
 - [x] `Chain Trigger` - implementation, automated verification, Playwright UI verification, and commit are complete.

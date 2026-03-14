@@ -33,6 +33,7 @@ describe("game-catalog", () => {
     expect(isGameKey("COLOR_SWEEP")).toBe(false);
 
     expect(resolveGameKey("BEAT_MATCH")).toBe("beat-match");
+    expect(resolveGameKey("BUBBLE_SPAWN")).toBe("bubble-spawn");
     expect(resolveGameKey("CASCADE_CLEAR")).toBe("cascade-clear");
     expect(resolveGameKey("CHAIN_TRIGGER")).toBe("chain-trigger");
     expect(resolveGameKey("COLOR_SWEEP")).toBe("color-sweep");
@@ -61,6 +62,7 @@ describe("game-catalog", () => {
     expect(resolveGameKey("unknown-mode")).toBeNull();
 
     expect(toStoredGameKey("beat-match")).toBe("BEAT_MATCH");
+    expect(toStoredGameKey("bubble-spawn")).toBe("BUBBLE_SPAWN");
     expect(toStoredGameKey("cascade-clear")).toBe("CASCADE_CLEAR");
     expect(toStoredGameKey("chain-trigger")).toBe("CHAIN_TRIGGER");
     expect(toStoredGameKey("color-sweep")).toBe("COLOR_SWEEP");
@@ -88,6 +90,7 @@ describe("game-catalog", () => {
     expect(toStoredGameKey("custom-mode")).toBe("CUSTOM_MODE");
 
     expect(toRouteGameKey("BEAT_MATCH")).toBe("beat-match");
+    expect(toRouteGameKey("BUBBLE_SPAWN")).toBe("bubble-spawn");
     expect(toRouteGameKey("CASCADE_CLEAR")).toBe("cascade-clear");
     expect(toRouteGameKey("CHAIN_TRIGGER")).toBe("chain-trigger");
     expect(toRouteGameKey("COLOR_SWEEP")).toBe("color-sweep");
@@ -117,6 +120,7 @@ describe("game-catalog", () => {
 
   it("returns definitions and fallback metadata", () => {
     expect(getGameDefinition("BEAT_MATCH")?.name).toBe("Beat Match");
+    expect(getGameDefinition("BUBBLE_SPAWN")?.name).toBe("Bubble Spawn");
     expect(getGameDefinition("CASCADE_CLEAR")?.name).toBe("Cascade Clear");
     expect(getGameDefinition("CHAIN_TRIGGER")?.name).toBe("Chain Trigger");
     expect(getGameDefinition("DROP_LINE")?.name).toBe("Precision Drop");
@@ -146,6 +150,7 @@ describe("game-catalog", () => {
     expect(getGameName("custom-mode")).toBe("custom-mode");
 
     expect(getGameHomeTags("BEAT_MATCH")).toEqual(["timing", "rhythm"]);
+    expect(getGameHomeTags("BUBBLE_SPAWN")).toEqual(["reflex", "logic"]);
     expect(getGameHomeTags("CASCADE_CLEAR")).toEqual(["logic", "perception"]);
     expect(getGameHomeTags("CHAIN_TRIGGER")).toEqual(["logic", "spatial"]);
     expect(getGameHomeTags("DROP_LINE")).toEqual(["timing", "fast-start"]);
@@ -172,6 +177,7 @@ describe("game-catalog", () => {
     expect(getGameHomeTags("custom-mode")).toEqual([]);
 
     expect(getGameSuccessfulResultLabel("BEAT_MATCH")).toBe("clear");
+    expect(getGameSuccessfulResultLabel("BUBBLE_SPAWN")).toBe("clear");
     expect(getGameSuccessfulResultLabel("CASCADE_CLEAR")).toBe("clear");
     expect(getGameSuccessfulResultLabel("CHAIN_TRIGGER")).toBe("clear");
     expect(getGameSuccessfulResultLabel("DROP_LINE")).toBe("hit");

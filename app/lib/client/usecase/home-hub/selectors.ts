@@ -22,6 +22,10 @@ const previewByGameKey: Record<string, Pick<HomeGameCard, "previewAlt" | "previe
     previewAlt: "Beat Match lane board with a center hit zone and three rhythm lanes",
     previewSrc: "/images/games/beat-match-preview.svg",
   },
+  "bubble-spawn": {
+    previewAlt: "Bubble Spawn field with growing colored bubbles, dual pressure meters, and a highlighted best burst target",
+    previewSrc: "/images/games/bubble-spawn-preview.svg",
+  },
   "cascade-clear": {
     previewAlt: "Cascade Clear board with row and column trigger rails surrounding a color token grid",
     previewSrc: "/images/games/cascade-clear-preview.svg",

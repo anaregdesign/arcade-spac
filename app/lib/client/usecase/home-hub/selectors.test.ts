@@ -233,6 +233,15 @@ describe("home-hub selectors", () => {
       recommendationText: "Trigger-driven combo board",
       shortDescription: "Choose a row or column trigger that creates the biggest refill cascade and pushes the score target over the line",
     },
+    {
+      currentRank: null,
+      key: "bubble-spawn",
+      metricValue: "0:48",
+      name: "Bubble Spawn",
+      playCount: 2,
+      recommendationText: "Growth-pressure field loop",
+      shortDescription: "Manage a live bubble field where growth pulses and chain bursts compete for space and stability",
+    },
   ];
 
   it("counts ranked and unplayed games from visible cards", () => {
@@ -465,6 +474,15 @@ describe("home-hub selectors", () => {
         previewSrc: "/images/games/cascade-clear-preview.svg",
         recordLabel: "Best 1:02",
         runLabel: "1 runs",
+        statusLabel: "Played",
+      },
+      {
+        ...games[25],
+        previewAlt: "Bubble Spawn field with growing colored bubbles, dual pressure meters, and a highlighted best burst target",
+        previewObjectPosition: undefined,
+        previewSrc: "/images/games/bubble-spawn-preview.svg",
+        recordLabel: "Best 0:48",
+        runLabel: "2 runs",
         statusLabel: "Played",
       },
     ]);

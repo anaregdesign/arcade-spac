@@ -1,6 +1,7 @@
 import type { ComponentType } from "react";
 
 import { BeatMatchGameWorkspace } from "./beat-match/BeatMatchGameWorkspace";
+import { BubbleSpawnGameWorkspace } from "./bubble-spawn/BubbleSpawnGameWorkspace";
 import { CascadeClearGameWorkspace } from "./cascade-clear/CascadeClearGameWorkspace";
 import { ChainTriggerGameWorkspace } from "./chain-trigger/ChainTriggerGameWorkspace";
 import { ColorCensusGameWorkspace } from "./color-census/ColorCensusGameWorkspace";
@@ -87,6 +88,35 @@ const gameDefinitionByKey: Record<string, GameDefinition> = {
       previewSrc: "/images/games/beat-match-preview.svg",
     },
     workspace: BeatMatchGameWorkspace,
+  },
+  "bubble-spawn": {
+    instructions: {
+      summary: "Read which bubbles are swelling fastest, burst the best target before the next pressure pulse, and keep both saturation and stability meters moving in the right direction.",
+      sections: [
+        {
+          title: "Run flow",
+          items: [
+            { label: "Start run", detail: "Choose a difficulty and press Start run to open one deterministic pressure field with a fixed spawn sequence." },
+            { label: "Burst under pressure", detail: "Every pulse grows the field and spawns one more bubble. Connected or oversized bubbles burst wider chains and push stability further." },
+            { label: "Clear or fail", detail: "The run clears once the stability meter fills. If saturation reaches the field limit or the timer expires first, the run fails." },
+          ],
+        },
+        {
+          title: "Field controls",
+          items: [
+            { label: "Tap live bubbles", detail: "Only live bubbles can be burst, and every slot stays large enough for touch on desktop and narrow mobile screens." },
+            { label: "Watch the best target", detail: "The strongest current burst target is outlined so you can quickly read where the next chain value lives." },
+            { label: "Read the summaries", detail: "Largest threat, next spawn, last chain, stability, and saturation stay visible so pressure stays legible even while the board updates." },
+          ],
+        },
+      ],
+      title: "Bubble Spawn controls",
+    },
+    presentation: {
+      previewAlt: "Bubble Spawn field with growing colored bubbles, dual pressure meters, and a highlighted best burst target",
+      previewSrc: "/images/games/bubble-spawn-preview.svg",
+    },
+    workspace: BubbleSpawnGameWorkspace,
   },
   "cascade-clear": {
     instructions: {
