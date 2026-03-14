@@ -24,6 +24,7 @@
 - work-log 的な process 文言を current ideal state の requirement へ書き換える
 - Related doc への link は残しつつ、spec 本文は durable requirement だけを表す形に揃える
 - game-specific spec を除く non-game spec は、document intent ごとの category にまとめ、原則として 1 category あたり 1 file へ統合する
+- game-specific spec 以外で新しい requirement が必要になった場合も、まず既存の consolidated spec file へ吸収し、standalone non-game spec file は特別な理由がある場合だけ追加する
 - `screen-flow.md` は cross-cutting な flow companion として独立を維持してよい
 
 ## Non-Goals
@@ -38,6 +39,7 @@
 - spec の Links section は temporary execution artifact ではなく、関連する durable document への参照だけを持つ
 - spec の Acceptance Criteria と Constraints は、作業中の process ではなく完成後に成立しているべき条件を表す
 - `docs/spec/games/` は game-specific spec の置き場として維持し、それ以外の spec は category ごとの consolidated file、または独立を維持する `screen-flow.md` から辿れる
+- non-game requirement の追加時は、既存の category file に section を足して吸収するのが default であり、routine に spec file 数を増やさない
 
 ## Acceptance Criteria
 
@@ -46,6 +48,7 @@
 - `docs/spec/` 配下の spec に work-log 前提の durable でない記述が残らない
 - spec の本文だけを読めば、各 document の target behavior と acceptance criteria を current ideal state として解釈できる
 - non-game spec は category ごとに consolidated file へ整理され、例外として `screen-flow.md` だけが独立 spec として残る
+- game-specific spec を除き、special reason がない限り non-game spec file が増えない
 
 ## Edge Cases
 
@@ -58,6 +61,7 @@
 - `docs/spec/` の document structure は `spec-driven-workflow` の guidance に従う
 - execution sequencing や completed work の record は git と `docs/plans/` に残し、`docs/spec/` には残さない
 - spec 間の cross-link は切らさず、current ideal state を読む導線は維持する
+- game-specific specification を除く新規 requirement は、まず既存の consolidated spec file へ merge する
 
 ## Links
 
@@ -99,6 +103,7 @@
 - `docs/spec/games/` を開くと、phase 1 lineup の各ゲームについて 1 ファイルずつ専用 spec を辿れる
 - shared spec は cross-game rule と導線定義に集中し、個別ゲームの代表記録や support metric 一覧を長く内包しない
 - 個別ゲームの primary metric、support metric、失敗時の扱い、ランキング対象条件は、そのゲーム専用 spec にまとまっている
+- game-specific spec は、non-game spec file 数を増やさない repository policy の明示的な例外として扱われる
 
 ### Acceptance Criteria
 

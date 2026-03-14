@@ -235,6 +235,69 @@ Home の各ゲームパネルに表示する preview image で、盤面を囲う
 - Related: [product-specs.md#arcade-app-requirements](./product-specs.md#arcade-app-requirements)
 - Related: [screen-flow.md](./screen-flow.md)
 
+## Component View-Only Boundaries
+
+### Summary
+
+主要 screen と game workspace の UI は、見え方と操作結果を変えずに `components` を View-only として保ち、non-trivial client logic は `app/lib/client/usecase` 側で ownership を持つ。
+
+### User Problem
+
+- screen ごとの state、event handler、result submit、sound trigger、browser side effect が View と同じ file に混ざると、UI 変更時の影響範囲が読みづらい
+- 同じ UI を保った internal refactor でも、logic の置き場が揃っていないと regression の原因を追いにくい
+- shared shell や game workspace の振る舞いが component ごとに散ると、見た目を維持した refactor を継続しづらい
+
+### Users and Scenarios
+
+- プレイヤーは Home、Profile、Rankings、Result、Login、各 game workspace を従来どおり同じ見え方と操作感で使いたい
+- プレイヤーは game run 完了時に、clear / fail の結果に応じて従来どおり Result へ遷移したい
+- 開発者は UI を直すとき、presentational な `components` と interaction logic を別々に追える状態を保ちたい
+
+### Scope
+
+- `components` は render、accessibility wiring、visual branching に集中する
+- screen-level の derived view model、browser side effect、dialog / shell state、workspace submit orchestration は `app/lib/client/usecase` へ寄せる
+- game workspace は board 固有の rendering を `components` に残しつつ、run status・sound feedback・result submit は usecase 側で管理する
+
+### Non-Goals
+
+- Home、Profile、Rankings、Result、Login、game workspace の visual redesign
+- route、loader、action、domain rule、score formula の変更
+- user-facing copy や navigation path の変更
+
+### User-Visible Behavior
+
+- Home の search、filter、sort、show more、preview、play 導線は従来どおり動作する
+- App shell の menu、help dialog、sound mute、navigation は従来どおり使える
+- Profile の theme preview、profile edit form、trend 表示、game 別 performance 表示は従来どおり維持される
+- Rankings、Result、Login の copy、action、status 表示は従来どおり維持される
+- 各 game workspace では start overlay、difficulty 切り替え、play 中 status、sound feedback、clear / fail 後の自動 Result 遷移が従来どおり動作する
+
+### Acceptance Criteria
+
+- non-trivial state transition、derived view-model helper、browser side effect、result submit orchestration は `app/components/` 直下に残さない
+- `app/lib/client/usecase/` に screen / workspace ごとの public entry があり、component は View rendering を主責務にする
+- Home、Profile、Rankings、Result、Login、App shell、game instructions dialog の表示・操作結果に regression がない
+- 7 game workspace の run 開始、play 中、clear / fail、Result 遷移の挙動が変わらない
+
+### Edge Cases
+
+- Home の URL query / local storage restore / scroll restore は refactor 後も壊れない
+- Profile の theme preview は form 保存前でも即時反映される
+- shared result / pending result / direct game route から開いた screen でも app shell と Result の導線が崩れない
+- touch 前提の game でも Flag mode や tap feedback が従来どおり機能する
+
+### Constraints and Dependencies
+
+- canonical layout は `app/lib/client/usecase/<feature>/` を基準にする
+- `components` には tiny な View-only interaction を除く logic を持ち込まない
+- internal refactor であっても、user-visible behavior は変えずに維持する
+
+### Links
+
+- Related: [product-specs.md#arcade-app-requirements](./product-specs.md#arcade-app-requirements)
+- Related: [screen-flow.md](./screen-flow.md)
+
 ## CSS Module Adoption
 
 ### Summary

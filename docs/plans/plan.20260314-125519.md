@@ -1,7 +1,7 @@
 # Execution Plan
 
 ## Links
-- Spec: /docs/spec/component-view-layer-refactor.md
+- Spec: /docs/spec/ui-specs.md#component-view-only-boundaries
 
 ## Section 1 - Establish View-Only Boundaries
 - [x] Write the refactor spec for view-only components and create the active execution plan.
