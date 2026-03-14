@@ -11,6 +11,7 @@ import { PatternEchoGameWorkspace } from "./pattern-echo/PatternEchoGameWorkspac
 import { PrecisionDropGameWorkspace } from "./precision-drop/PrecisionDropGameWorkspace";
 import { PulseCountGameWorkspace } from "./pulse-count/PulseCountGameWorkspace";
 import { QuickSumGameWorkspace } from "./quick-sum/QuickSumGameWorkspace";
+import { ShapeMorphGameWorkspace } from "./shape-morph/ShapeMorphGameWorkspace";
 import type { GameInstructions } from "./shared/GameInstructionsDialog";
 import { SwapSolveGameWorkspace } from "./swap-solve/SwapSolveGameWorkspace";
 import { SumGridGameWorkspace } from "./sum-grid/SumGridGameWorkspace";
@@ -354,6 +355,35 @@ const gameDefinitionByKey: Record<string, GameDefinition> = {
       previewSrc: "/images/games/quick-sum-preview.svg",
     },
     workspace: QuickSumGameWorkspace,
+  },
+  "shape-morph": {
+    instructions: {
+      summary: "Read how the glyph changes from step to step, choose the next transformed shape, and finish the sprint before the timer expires.",
+      sections: [
+        {
+          title: "Run flow",
+          items: [
+            { label: "Start run", detail: "Choose a difficulty and press Start run to load the first morph prompt." },
+            { label: "Read the rule", detail: "Each prompt shows three steps of the same glyph changing through a single visual rule." },
+            { label: "Keep moving", detail: "Every answer advances to the next prompt until the sprint is complete or the timer expires." },
+          ],
+        },
+        {
+          title: "Board controls",
+          items: [
+            { label: "Compare each step", detail: "Track rotation, scale, or cuts across the sequence before looking at the answer choices." },
+            { label: "Tap one choice", detail: "Choose the glyph that should appear next in the sequence." },
+            { label: "Wrong answers", detail: "Incorrect choices increase the support metric but the sprint keeps going." },
+          ],
+        },
+      ],
+      title: "Shape Morph controls",
+    },
+    presentation: {
+      previewAlt: "Shape Morph prompt showing a sequence of evolving glyphs and four answer choices",
+      previewSrc: "/images/games/shape-morph-preview.svg",
+    },
+    workspace: ShapeMorphGameWorkspace,
   },
   "sum-grid": {
     instructions: {

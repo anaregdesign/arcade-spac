@@ -601,6 +601,35 @@ export const supportedGames = [
       zeroNote: "Zero-move mirror",
     },
   },
+  {
+    accentColor: "#8b5cf6",
+    homeTags: ["logic", "perception"],
+    id: "game-shape-morph",
+    key: "shape-morph",
+    name: "Shape Morph",
+    primaryMetric: {
+      bestLabel: "Best clear time",
+      completedLabel: "Clear time",
+      direction: "lower-better",
+      failedLabel: "Run time",
+      format: "duration_seconds",
+    },
+    rulesSummary: "Read the visual transform rule, choose the next glyph fast, and keep wrong answers low before the timer expires.",
+    shortDescription: "Predict the next transformed shape by reading how rotation, scale, or cuts change across the sequence.",
+    storedKey: "SHAPE_MORPH",
+    successfulResultLabel: "clear",
+    supportMetric: {
+      kind: "count",
+      label: "Wrong answers",
+      noun: "wrong answer",
+      noteVerb: "recorded",
+      recoveryVerb: "kept in recovery",
+      recoveryZeroNote: "Perfect morph kept in recovery.",
+      source: "mistakeCount",
+      zeroSummaryText: "no wrong answers",
+      zeroNote: "Perfect morph",
+    },
+  },
 ] as const satisfies ReadonlyArray<{
   accentColor: string;
   homeTags: readonly string[];
