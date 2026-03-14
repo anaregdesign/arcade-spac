@@ -72,6 +72,8 @@ Use only the levels the work actually needs.
 - Order `Section`, `Subsection`, and `Sub-subsection` blocks in the sequence they should be executed.
 - Keep the next executable lowest-level block near the top of the remaining plan.
 - Preserve true constraints and required sequencing, but do not turn every repeated instruction into its own checkbox.
+- Add new tasks to the active plan when execution uncovers required work that was not known during the initial draft.
+- Replace a coarse checkbox with smaller tasks when more detail becomes available and the finer breakdown improves execution clarity.
 - Rewrite the plan when the execution path changes instead of appending stale history.
 - If technical investigation reveals a better execution path, revise the plan to match the current best approach instead of preserving the original guess.
 - Update the spec only when accepted user-visible behavior changes; technical replanning by itself belongs in `/docs/plans/plan.md`.

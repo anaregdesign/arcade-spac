@@ -7,6 +7,7 @@ Use this reference when the app needs Azure workload identity, Azure App Configu
 - Keep end-user social login separate from Azure workload identity.
 - Use a GitHub Actions federated identity for deployment only.
 - Use a Container App Managed Identity for deployed runtime access to Azure resources and Azure SQL.
+- When the deployed runtime must reach Azure SQL over `Private Endpoint`, put the Container Apps environment in a delegated VNet subnet and plan a separate subnet for `Private Endpoint` resources plus private DNS linking.
 - Use a separate migration or admin identity for schema changes and elevated SQL work.
 
 ## Request Required Access Early
@@ -48,6 +49,7 @@ Use this reference when the app needs Azure workload identity, Azure App Configu
 - Keep auth-facing config explicit, but not file-backed: `MICROSOFT_ENTRA_CLIENT_ID`, `MICROSOFT_ENTRA_TENANT_ID`, callback URLs, and other non-secret values can live in checked-in config or Azure App Configuration; secrets stay in Key Vault.
 - Keep the local development auth path explicit in checked-in docs: which tenant, which app registration, which localhost callback URL, and which test users or groups are expected for developer sign-in.
 - Keep Azure identity IDs, App Configuration endpoints, DB host names, and callback URLs documented in README or deployment notes.
+- Keep the Azure SQL host name stable in config and let private DNS resolve it inside the Container Apps VNet. Do not switch app code to raw private IP addresses.
 - Keep GitHub Environment values separate from Azure runtime secrets.
 
 ## Verification
@@ -55,3 +57,4 @@ Use this reference when the app needs Azure workload identity, Azure App Configu
 - Verify local development succeeds after `az login` or `azd auth login` with no `.env` file present.
 - Verify the deploy identity can update the Azure hosting resource and nothing broader than necessary.
 - Verify local development still works through `DefaultAzureCredential` without claiming that the developer workstation has Managed Identity.
+- Verify the deployed Container Apps environment resolves the Azure SQL server FQDN to the private endpoint IP when private connectivity is required.

@@ -28,6 +28,8 @@ Example shape:
 ## 2. Keep the Plan Current During Execution
 
 - Check off plan tasks as they finish.
+- Add new tasks to `/docs/plans/plan.md` when newly discovered required work appears during execution.
+- Split broad tasks into smaller checkboxes when implementation reveals a clearer execution breakdown.
 - Update `/docs/plans/plan.md` when work is reordered, split, or moved between `Section`, `Subsection`, and `Sub-subsection` blocks.
 - Revise `/docs/plans/plan.md` when technical findings change dependencies, sequencing, or slice boundaries.
 - Record progress in coherent commit units that match the current execution slice.

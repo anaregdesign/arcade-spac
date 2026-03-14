@@ -7,6 +7,7 @@ Use this reference before release, after deployment, or when handing work back t
 - Confirm which Azure tenant, subscription, and resource scopes are definitely required.
 - Confirm which RBAC assignments are definitely required for developers, runtime identities, migration identities, and deploy identities.
 - Confirm whether Azure SQL Microsoft Entra admin setup is required.
+- Confirm the VNet, delegated subnet, private-endpoint subnet, private DNS ownership, and `Private Endpoint` approval model for Container Apps to Azure SQL traffic.
 - Confirm whether GitHub Actions OIDC setup is enough or whether an unavoidable Service Principal is still required.
 - Ask for those prerequisites early so they do not block implementation or release work later.
 
@@ -27,6 +28,8 @@ Use this reference before release, after deployment, or when handing work back t
 - Confirm App Configuration keys and Key Vault secrets match the runtime config contract.
 - When the app requires user authentication, confirm the documented local sign-in path still works with the intended dev or test identities.
 - Confirm the hosted environment uses Azure SQL Database rather than SQLite.
+- Confirm Azure SQL public network access is disabled when the hosted runtime is supposed to use the private path.
+- Confirm the Azure SQL server FQDN resolves to the private endpoint IP from the hosted network path.
 - Confirm migrations and critical persistence flows were validated against Azure SQL Database, not only against local SQLite.
 - Confirm the release workflow deploys the immutable release tag, not `latest`.
 
@@ -42,6 +45,7 @@ Use this reference before release, after deployment, or when handing work back t
 - Note any partial or failed resources that still need cleanup.
 - Note any manual Azure portal or app-registration changes that the user must complete.
 - Note any RBAC assignments that were added and their scope.
+- Note any private DNS zones, VNet links, or `Private Endpoint` approvals that were added.
 - Note any App Configuration keys, Key Vault secrets, or callback URLs that still need to be set by the user.
 
 ## Handoff

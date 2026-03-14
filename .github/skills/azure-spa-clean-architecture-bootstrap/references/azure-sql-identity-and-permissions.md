@@ -10,6 +10,14 @@ Use this reference when the app needs Azure SQL Database, `Managed Identity` acc
 - Grant runtime identities only the least privilege they need.
 - Reserve elevated roles for migration or break-glass identities.
 
+## Private Connectivity Is Part Of The Contract
+
+- Put Azure SQL behind a `Private Endpoint` in a dedicated subnet.
+- Link `privatelink.database.windows.net` to the VNet used by the Container Apps environment so the runtime keeps using `<server>.database.windows.net` while DNS resolves to the private IP.
+- Keep Azure SQL public network access disabled.
+- Do not use "Allow Azure services and resources to access this server" as the normal runtime connectivity model.
+- Keep the app ingress decision separate from database connectivity. A web app can stay publicly reachable while still reaching Azure SQL privately through VNet-integrated Container Apps.
+
 ## Keep Runtime and Migration Permissions Separate
 
 - Runtime app Managed Identity: prefer `db_datareader` and `db_datawriter`
@@ -27,5 +35,7 @@ Use this reference when the app needs Azure SQL Database, `Managed Identity` acc
 
 - Verify no Azure-hosted environment still points at SQLite.
 - Verify the deployed runtime Managed Identity can reach Azure SQL and only the intended database roles are granted.
+- Verify the Azure SQL server FQDN resolves to the private endpoint IP from the hosted network path.
+- Verify Azure SQL public network access is disabled and the private DNS zone is linked to the intended VNet.
 - Verify migrations and critical query paths against Azure SQL Database, not only against local SQLite.
 - Verify runtime and migration identities stay separate in docs, IaC, and operational runbooks.
