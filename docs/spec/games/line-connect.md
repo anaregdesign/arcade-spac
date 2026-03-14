@@ -2,20 +2,67 @@
 
 ## Summary
 
-paired node 同士を線でつなぎ、線の交差を避けながら board を完成させる connection puzzle。
+`Arcade` に `Line Connect` を追加する。paired node 同士を path でつなぎ、交差を避けながら board を完成させる connection-construction puzzle とする。
+
+## User Problem
+
+- path construction を主題にした drag/edit interaction が catalog に不足している
+- spatial puzzle の中でも「自分で線を作る」logic game を増やしたい
+
+## Users and Scenarios
+
+- 利用者は Home から `Line Connect` を開き、paired node を交差なく結びたい
+- 利用者は workspace で completed pairs、crossing errors、current path state を見ながら puzzle を解きたい
+- 利用者は Result、profile、rankings で `puzzles solved` と `path corrections` を確認したい
+
+## Scope
+
+- `Line Connect` を home、workspace、result、rankings、profile に統合する
+- primary metric は `puzzles solved`、support metric は `path corrections` とする
+- workspace では board node、drawn path、crossing state、remaining pair count を visible にする
+
+## Non-Goals
+
+- freehand sketch app
+- diagonal-anywhere drawing without rules
+- competitive race mode
 
 ## User-Visible Behavior
 
-- same-mark node pairs が board に置かれる
-- 利用者は drag で path を描いて pair を接続する
-- 全 pair 接続かつ no-cross で clear
+- idle overlay から run を開始すると、pair markers が置かれた compact board が表示される
+- 利用者は drag または touch-friendly segment drawing で path を描き、same-mark pair を接続する
+- path が交差したり invalid cell を通ると correction が必要になり、`path corrections` が増える
+- all pairs connected かつ no-cross state になると current puzzle が clear され、次の board に進む
+- quick overwrite、undo、path reset が軽快に機能する
+- 規定 puzzle 数を完了すると Result に遷移し、Result、profile、rankings では `puzzles solved` と `path corrections` を確認できる
 
 ## Acceptance Criteria
 
-- 2 分以内に複数 puzzle が進む
-- path overwrite や undo が軽快に動く
-- Result に puzzles solved と path corrections が出る
+- `Line Connect` card が Home に表示され、game route を開ける
+- 1 run は 2 分以内で clear または timeout が確定する
+- path drawing、crossing validation、overwrite or undo が visible に機能する
+- workspace 上で remaining pair count、crossing state、path correction count が更新される
+- Result、profile、rankings では `puzzles solved` と `path corrections` が保存される
+
+## Edge Cases
+
+- run 中以外の drawing input は state を変えない
+- touch device では drag unavailable な場合でも segment-by-segment path input fallback がある
+- same path state に対して validation outcome は deterministic である
+- narrow viewport でも board が horizontal overflow を起こさず、node touch target が十分大きい
+
+## Constraints and Dependencies
+
+- shared workspace card、board overlay、finish card、result flow を再利用する
+- deterministic Playwright selector を node pair、drawn segment、crossing state、undo action に付ける
+- path readability を優先し、color だけに依存せず pair marker を区別する
 
 ## Distinction
 
-- Path Recall の再現ではなく、即興 path construction logic
+- `Path Recall` の path replay ではなく、即興 path construction と crossing avoidance が主題
+- `Rotate Align` の tile orientation ではなく、line editing そのものが主題
+
+## Links
+
+- Related: [../product-specs.md#arcade-app-requirements](../product-specs.md#arcade-app-requirements)
+- Related: [../game-catalog-50-expansion-program.md](../game-catalog-50-expansion-program.md)

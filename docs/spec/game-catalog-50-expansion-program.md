@@ -2,7 +2,7 @@
 
 ## Summary
 
-Arcade の catalog を現行 17 本から 50 本へ拡張し、各ゲームが 2 分以内の 1 run で完結する短時間 browser game として遊べる状態にする。追加する 33 本は既存ゲーム群とも相互にも似すぎないよう mechanic family を分散させ、各ゲームごとに user-visible な individual spec、実装、UI verification、段階的 commit を残す。
+Arcade の catalog を現行 17 本から 50 本へ拡張し、各ゲームが 2 分以内の 1 run で完結する短時間 browser game として遊べる状態にする。追加する 33 本は既存ゲーム群とも相互にも似すぎないよう mechanic family を分散させ、timing、memory、logic、visual hunt、spatial transform、action precision、audio discrimination をまたぐ幅を持たせる。各ゲームごとに user-visible な individual spec、実装、UI verification、段階的 commit を残す。
 
 ## User Problem
 
@@ -13,7 +13,7 @@ Arcade の catalog を現行 17 本から 50 本へ拡張し、各ゲームが 2
 ## Users and Scenarios
 
 - 利用者は 2 分以内で完結する多様なゲームを次々に遊びたい
-- 利用者は同じ catalog 内で、timing、memory、logic、visual hunt、transformation など違う skill type を切り替えて遊びたい
+- 利用者は同じ catalog 内で、timing、memory、logic、visual hunt、transformation、audio discrimination など違う skill type を切り替えて遊びたい
 - 開発者は各ゲームの spec を先にレビューし、1 本ずつ UI verification 付きで導入したい
 
 ## Scope
@@ -35,6 +35,7 @@ Arcade の catalog を現行 17 本から 50 本へ拡張し、各ゲームが 2
 - 各ゲームは 2 分以内で clear または fail が確定する
 - 各ゲームには help/instructions、result summary、preview thumbnail がある
 - 似た入力や盤面が続きすぎず、catalog 内で skill family が分散している
+- rhythm とは異なる relative pitch / interval recognition 系の audio game も含まれている
 
 ## Acceptance Criteria
 
@@ -60,7 +61,7 @@ Arcade の catalog を現行 17 本から 50 本へ拡張し、各ゲームが 2
 ## Similarity Guardrails
 
 - 同じ primary interaction を使う場合でも board representation、decision model、failure pressure のうち少なくとも 2 つを変える
-- 既存 family と追加 family の偏りを避け、timing、memory、logic、visual search、spatial transform、action precision、growth strategy を分散させる
+- 既存 family と追加 family の偏りを避け、timing、memory、logic、visual search、spatial transform、action precision、growth strategy、audio discrimination を分散させる
 - `same input with different skin` のゲームは採用しない
 
 ## Links

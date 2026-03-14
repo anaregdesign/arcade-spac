@@ -2,20 +2,68 @@
 
 ## Summary
 
-small board 上で one move cascade を最大化して target score に届かせる combo puzzle。
+`Arcade` に `Cascade Clear` を追加する。small board 上で row または column trigger を選び、chain reaction を最大化して target score を超える combo planning puzzle とする。
+
+## User Problem
+
+- current catalog には deterministic logic puzzle は多いが、cascade resolver と score chase を主題にした game が不足している
+- 一手の選択が派手な chain outcome に変わる spectacle-heavy puzzle を加えたい
+
+## Users and Scenarios
+
+- 利用者は Home から `Cascade Clear` を開き、small board を読んで最も伸びる trigger を選びたい
+- 利用者は chain resolution を見ながら best cascade と remaining moves を管理したい
+- 利用者は Result、profile、rankings で `final score` と `best cascade` を確認したい
+
+## Scope
+
+- `Cascade Clear` を home、workspace、result、rankings、profile に統合する
+- primary metric は `final score`、support metric は `best cascade` とする
+- workspace では board、remaining moves、target score、last cascade summary を visible にする
+
+## Non-Goals
+
+- endless match-3 loop
+- randomized loot progression
+- full real-time arcade action
 
 ## User-Visible Behavior
 
-- 利用者は 1 手ごとに row/column を選んで trigger する
-- chain reaction で block が消えるほど score が伸びる
-- 規定手数内で target score に達すると clear
+- idle overlay から run を開始すると、small board と target score、remaining moves が表示される
+- 利用者は row または column trigger を選んで cascade を開始する
+- trigger 後は block clear、fall、secondary clear が deterministic に連続解決される
+- longer chain ほど score が大きく伸び、`best cascade` が更新される
+- move を使い切るまでに target score を超えると current board が clear され、次の puzzle に進む
+- score が届かないまま moves を使い切ると fail になるか、run quality が大きく下がる
+- Result、profile、rankings では `final score` と `best cascade` を確認できる
 
 ## Acceptance Criteria
 
-- 1 run は 2 分以内
-- combo chain が視覚的に追える
-- Result に best cascade と final score が出る
+- `Cascade Clear` card が Home に表示され、game route を開ける
+- 1 run は 2 分以内で clear または fail が確定する
+- chain resolution が step-by-step で visible であり、best cascade が読める
+- workspace 上で target score、current score、remaining moves、best cascade が更新される
+- Result、profile、rankings では `final score` と `best cascade` が保存される
+
+## Edge Cases
+
+- run 中以外の trigger input は state を変えない
+- resolution 中に duplicate trigger が受け付けられない
+- same board state なら同じ trigger は同じ cascade outcome を返す
+- narrow viewport でも board と score panel が見切れず readable である
+
+## Constraints and Dependencies
+
+- shared workspace card、board overlay、finish card、result flow を再利用する
+- deterministic Playwright selector を board state、trigger controls、cascade count、score summary に付ける
+- chain resolution は user が追える速度と visual summary を持つ
 
 ## Distinction
 
-- static clear ではなく、chain setup の一手最適化が中心
+- `Zone Lock` の static count reconciliation ではなく、one-trigger cascade resolver が主題
+- `Bubble Spawn` の live management ではなく、discrete combo planning と score chase が主題
+
+## Links
+
+- Related: [../product-specs.md#arcade-app-requirements](../product-specs.md#arcade-app-requirements)
+- Related: [../game-catalog-50-expansion-program.md](../game-catalog-50-expansion-program.md)

@@ -11,13 +11,19 @@
 
 ### Subsection 1.1 - Remaining backlog risk buckets
 - [x] `Low risk` bucket: `Chain Trigger`, `Icon Chain`, `Merge Climb` because they fit deterministic tap-first planning flows without physics or drag-heavy editing.
-- [x] `Medium risk` bucket: `Block Tessellate`, `Box Fill`, `Bubble Spawn`, `Cascade Clear`, `Line Connect` because they need either placement UX, chain-resolution tuning, or board-edit interactions beyond the current simplest patterns.
-- [x] `High risk` bucket: `Bounce Angle`, `Cascade Flip`, `Gap Rush`, `Intercept Ball`, `Obstacle Stream` because they depend on reflection, continuous movement, moving-board memory pressure, or collision-heavy survival loops that are harder to verify and keep touch-safe.
-- [x] Normalized spec inventory currently leaves 12 unimplemented slugs, which is 1 above the 50-game target, so scope reconciliation remains after the playable catalog reaches 50.
+- [x] `Medium risk` bucket: `Block Tessellate`, `Box Fill`, `Bubble Spawn`, `Cascade Clear`, `Line Connect`, `Relative Pitch` because they need either placement UX, chain-resolution tuning, board-edit interactions, or browser-audio coordination beyond the current simplest patterns.
+- [x] `High risk` bucket: `Bounce Angle`, `Cascade Flip`, `Gap Rush`, `Intercept Ball` because they depend on reflection, continuous movement, moving-board memory pressure, or collision-heavy survival loops that are harder to verify and keep touch-safe.
+- [x] Normalized spec inventory currently leaves 12 unimplemented slugs, which is still 1 above the 50-game target; `Relative Pitch` was added as a swap for `Obstacle Stream`, not as net-new scope.
+
+### Subsection 1.2 - Backlog spec redesign
+- [x] Rewrite the 12 unimplemented game specs so the backlog covers the currently missing mechanic families without collapsing into same-input variants.
+- [x] Replace one lower-yield reflex-survival backlog slot with `Relative Pitch` so audio discrimination enters the catalog without expanding the 50-game target.
+- [x] Keep the redesign bounded by implementation reality: preserve touch-safe interaction, deterministic verification hooks, and 2-minute run limits even when adding physics, drag, survival pressure, or audio playback.
+- [x] Re-check the rewritten backlog for balanced coverage across continuous action, physics, drag/editing, growth strategy, cascade systems, moving-board memory, survival-first scoring, and audio discrimination.
 
 ## Section 2 - Current Slice: Icon Chain
 ### Subsection 2.1 - Spec and planning alignment
-- [ ] Rewrite `/docs/spec/games/icon-chain.md` so the clue-based order reconstruction, result metrics, and touch-safe icon controls are explicit.
+- [x] Rewrite `/docs/spec/games/icon-chain.md` so the clue-based order reconstruction, result metrics, and touch-safe icon controls are explicit.
 - [ ] Keep this active plan focused on the current slice and append new implementation tasks only when they become concrete.
 
 ### Subsection 2.2 - App integration
@@ -53,9 +59,9 @@
 - [ ] `Intercept Ball` - keep the game unchecked until implementation, automated verification, and Playwright UI verification are complete.
 - [ ] `Line Connect` - keep the game unchecked until implementation, automated verification, and Playwright UI verification are complete.
 - [ ] `Merge Climb` - keep the game unchecked until implementation, automated verification, and Playwright UI verification are complete.
-- [ ] `Obstacle Stream` - keep the game unchecked until implementation, automated verification, and Playwright UI verification are complete.
 - [x] `Phase Lock` - implementation, automated verification, Playwright UI verification, and commit are complete.
 - [x] `Position Lock` - implementation, automated verification, Playwright UI verification, and commit are complete.
+- [ ] `Relative Pitch` - keep the game unchecked until implementation, automated verification, and Playwright UI verification are complete.
 - [x] `Rotate Align` - implementation, automated verification, Playwright UI verification, and commit are complete.
 - [x] `Sequence Point` - implementation, automated verification, Playwright UI verification, and commit are complete.
 - [x] `Spinner Aim` - implementation, automated verification, Playwright UI verification, and commit are complete.
