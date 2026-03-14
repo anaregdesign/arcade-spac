@@ -219,7 +219,16 @@ echo "Verified Azure SQL server ${sql_server_name} is not using the AllowAzureSe
 sql_entra_only="$(az sql server ad-only-auth get \
   --resource-group "${AZURE_RESOURCE_GROUP}" \
   --name "${sql_server_name}" \
-  -o json | node -e "const fs = require('node:fs'); const payload = JSON.parse(fs.readFileSync(0, 'utf8')); process.stdout.write(String(payload.azureADOnlyAuthentication ?? payload.azureAdOnlyAuthentication ?? ''))")"
+  --query azureADOnlyAuthentication \
+  -o tsv 2>/dev/null || true)"
+
+if [[ -z "${sql_entra_only}" ]]; then
+  sql_entra_only="$(az sql server ad-only-auth get \
+    --resource-group "${AZURE_RESOURCE_GROUP}" \
+    --name "${sql_server_name}" \
+    --query azureAdOnlyAuthentication \
+    -o tsv)"
+fi
 
 if [[ "${sql_entra_only}" != "true" ]]; then
   echo "Azure SQL server ${sql_server_name} is not configured for Entra-only authentication."
@@ -231,7 +240,8 @@ echo "Verified Azure SQL server ${sql_server_name} uses Entra-only authenticatio
 sql_entra_admin_login="$(az sql server ad-admin list \
   --resource-group "${AZURE_RESOURCE_GROUP}" \
   --server "${sql_server_name}" \
-  -o json | node -e "const fs = require('node:fs'); const payload = JSON.parse(fs.readFileSync(0, 'utf8')); process.stdout.write(payload[0]?.login ?? '')")"
+  --query "[0].login" \
+  -o tsv)"
 
 if [[ -z "${sql_entra_admin_login}" ]]; then
   echo "Azure SQL server ${sql_server_name} does not have an Entra administrator configured."
