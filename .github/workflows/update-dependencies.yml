@@ -1,0 +1,54 @@
+name: Update Dependencies
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * 1"
+
+concurrency:
+  group: update-dependencies
+  cancel-in-progress: false
+
+jobs:
+  update:
+    name: Vulnerability Check And Dependency Update
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v5
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check for vulnerabilities
+        run: npm audit --audit-level=moderate
+        continue-on-error: true
+
+      - name: Update dependencies to latest
+        run: |
+          npx --yes npm-check-updates --upgrade
+          npm install
+
+      - name: Open pull request with updated dependencies
+        uses: peter-evans/create-pull-request@v7
+        with:
+          commit-message: "chore: update dependencies to latest"
+          branch: chore/update-dependencies
+          title: "chore: update dependencies to latest"
+          body: |
+            Weekly automated dependency update.
+
+            - Ran `npm audit` to check for vulnerabilities
+            - Ran `npm-check-updates --upgrade` to update all dependencies to their latest versions
+            - Ran `npm install` to regenerate `package-lock.json`
+          labels: dependencies
+          delete-branch: true
