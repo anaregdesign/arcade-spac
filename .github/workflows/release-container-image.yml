@@ -140,6 +140,7 @@ jobs:
             --template-file ./infra/main.bicep \
             --parameters \
               appName="$AZURE_APP_NAME" \
+              manageRuntimeRoleAssignments=false \
               containerImage="${{ steps.discover.outputs.infra_image_ref }}" \
             --result-format ResourceIdOnly \
             --no-pretty-print \
@@ -217,6 +218,7 @@ jobs:
             --template-file ./infra/main.bicep \
             --parameters \
               appName="$AZURE_APP_NAME" \
+              manageRuntimeRoleAssignments=false \
               containerImage="$INFRA_IMAGE_REF" \
             --output none
 

@@ -119,6 +119,9 @@ Before a real hosted deployment, prepare all of the following:
   - `AZURE_SUBSCRIPTION_ID`
   - `AZURE_RESOURCE_GROUP`
   - `AZURE_APP_NAME`
+- Azure RBAC split:
+  - Day-to-day GitHub release identity: `Contributor` at the target resource-group scope
+  - Bootstrap operator or elevated provisioning path: `Role Based Access Control Administrator` or `User Access Administrator` when `manageRuntimeRoleAssignments=true`
 - Optional GitHub Environment variables for non-public or non-GHCR registry paths:
   - `CONTAINER_REGISTRY_SERVER`
   - `CONTAINER_REGISTRY_IDENTITY`
@@ -143,6 +146,7 @@ See `docs/repository-rename-runbook.md` for repository rename, GHCR namespace, a
 ## Next Steps
 
 - Sync App Configuration and Key Vault from a host that can reach the private data plane, then roll out the new private-network contract through the repository GitHub Workflow path.
+- Keep runtime Managed Identity RBAC bootstrap separate from day-to-day release delivery. Routine releases now pass `manageRuntimeRoleAssignments=false` and should not require `roleAssignments/write`.
 - Keep the `Quality Gates` workflow required on `main` once branch protection is configured.
 - Keep release notes, rollback data, and smoke verification steps synchronized with `docs/production-operations.md` after each production release.
 - Keep local auth verification aligned with a documented dev or test Entra registration when production-like sign-in coverage is required.

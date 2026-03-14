@@ -1,6 +1,7 @@
 param appName string = 'arcade'
 param location string = resourceGroup().location
 param containerImage string
+param manageRuntimeRoleAssignments bool = true
 param deploySql bool = false
 param sqlDatabaseName string = 'arcade'
 param sqlAdministratorLogin string = ''
@@ -490,7 +491,7 @@ resource sqlPrivateEndpointDnsZoneGroup 'Microsoft.Network/privateEndpoints/priv
   }
 }
 
-resource appConfigurationDataReaderAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+resource appConfigurationDataReaderAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (manageRuntimeRoleAssignments) {
   name: guid(appConfiguration.id, containerApp.name, appConfigDataReaderRoleDefinitionId)
   scope: appConfiguration
   properties: {
@@ -500,7 +501,7 @@ resource appConfigurationDataReaderAssignment 'Microsoft.Authorization/roleAssig
   }
 }
 
-resource keyVaultSecretsUserAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+resource keyVaultSecretsUserAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (manageRuntimeRoleAssignments) {
   name: guid(keyVault.id, containerApp.name, keyVaultSecretsUserRoleDefinitionId)
   scope: keyVault
   properties: {

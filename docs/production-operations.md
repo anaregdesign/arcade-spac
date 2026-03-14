@@ -22,6 +22,7 @@ This runbook records the repository-side production contract for Arcade on Azure
 
 - The repository contract was updated on March 14, 2026 to prefer Azure SQL private connectivity and `Entra-only` auth.
 - The repository contract now expects runtime config to be synced into private App Configuration and Key Vault before image rollout.
+- The repository release workflow now passes `manageRuntimeRoleAssignments=false`, so runtime App Configuration and Key Vault RBAC must be bootstrapped separately from day-to-day releases.
 - This workspace did not perform a production or shared-environment deployment.
 - After the next GitHub release deployment, refresh this file with the exact live image tag, revision, and any cloud-side deviations from the target contract.
 
@@ -183,4 +184,5 @@ sqlcmd -S sql-arcade-qddhfw4moexbm.database.windows.net -d arcade -G -Q "SELECT 
 - A previous outage on March 14, 2026 was caused by drift between the runtime's dependency on the Azure SQL public endpoint and the server's `publicNetworkAccess` setting.
 - The repository contract now removes that dependency instead of teaching operators to restore public access.
 - The GitHub release workflow now plans infra before deploy and keeps app rollout separate from infra convergence, but it still does not populate private App Configuration or Key Vault data-plane values.
+- The GitHub release workflow intentionally does not reconcile App Configuration or Key Vault role assignments for the runtime Managed Identity. Treat missing RBAC on those stores as bootstrap drift, not as a reason to broaden routine release permissions.
 - If the hosted rollout has not happened yet, treat any live public SQL dependency as configuration drift that still needs to be remediated through the GitHub workflow path.

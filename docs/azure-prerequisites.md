@@ -32,9 +32,10 @@ This checklist captures what is already scaffolded in the repository and what st
 - A Microsoft Entra ID tenant for the production `web` app registration
 - A Microsoft Entra ID user, group, or application that can be set as the Azure SQL Entra administrator
 - Permission to create workload identity federation between GitHub Actions and Azure
-- Azure RBAC for the deploy identity at the target resource-group scope:
+- Azure RBAC for the day-to-day release identity at the target resource-group scope:
   - `Contributor`
-  - `Role Based Access Control Administrator` or `User Access Administrator` because `infra/main.bicep` manages role assignments
+- Azure RBAC for bootstrap operators or any elevated provisioning path that runs `infra/main.bicep` with `manageRuntimeRoleAssignments=true`:
+  - `Role Based Access Control Administrator` or `User Access Administrator`
 - Network ownership or approval for:
   - the delegated Container Apps infrastructure subnet
   - the private-endpoint subnet
@@ -94,6 +95,7 @@ Recommended placement:
 - Key Vault secrets named `arcade-session-secret`, `entra-client-secret`, and `database-url`
 - App Configuration Key Vault references for `Arcade:ARCADE_SESSION_SECRET`, `Arcade:ENTRA_CLIENT_SECRET`, and `Arcade:DATABASE_URL`
 - Container App managed identity with App Configuration Data Reader and Key Vault Secrets User access
+- The day-to-day GitHub release workflow passes `manageRuntimeRoleAssignments=false`, so those runtime role assignments must already exist before routine releases.
 
 Current repository note:
 
@@ -103,6 +105,7 @@ Current repository note:
 - The GitHub release workflow does not treat GitHub variables or secrets as the runtime source of truth. It updates infra and the image rollout, but it does not populate the private App Configuration or Key Vault data plane.
 - `infra/main.bicep` no longer accepts runtime app secrets as deployment parameters. Runtime secrets must stay in Key Vault and App Configuration.
 - When `deploySql=true`, the sync script can derive a `DefaultAzureCredential`-backed `DATABASE_URL` from Azure SQL metadata when explicit `DATABASE_URL` is not provided.
+- The GitHub release workflow also passes `manageRuntimeRoleAssignments=false` so routine releases do not require `Microsoft.Authorization/roleAssignments/write`. Use an elevated bootstrap deployment when runtime RBAC assignments must be created or repaired.
 
 ## Azure SQL Provisioning Inputs
 
