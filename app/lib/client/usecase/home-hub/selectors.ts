@@ -46,6 +46,10 @@ const previewByGameKey: Record<string, Pick<HomeGameCard, "previewAlt" | "previe
     previewAlt: "Pattern Echo board with a 3x3 grid of coloured pads",
     previewSrc: "/images/games/pattern-echo-preview.svg",
   },
+  "sequence-point": {
+    previewAlt: "Sequence Point grid showing a fast memory sequence across lit points",
+    previewSrc: "/images/games/sequence-point-preview.svg",
+  },
   "precision-drop": {
     previewAlt: "Falling ball above a target line in a vertical lane",
     previewSrc: "/images/games/precision-drop-preview.svg",

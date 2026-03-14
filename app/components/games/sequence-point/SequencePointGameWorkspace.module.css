@@ -1,0 +1,78 @@
+.sequence-point-board-card {
+  min-height: 25rem;
+}
+
+.sequence-point-shell {
+  min-height: 25rem;
+  display: grid;
+}
+
+.sequence-point-panel {
+  display: grid;
+  gap: 1rem;
+  justify-items: center;
+}
+
+.sequence-point-copy {
+  display: grid;
+  gap: 0.35rem;
+  justify-items: center;
+  text-align: center;
+  max-width: 32rem;
+}
+
+.sequence-point-copy strong {
+  color: #f8fafc;
+  font-size: 1.1rem;
+}
+
+.sequence-point-grid {
+  display: grid;
+  gap: 0.9rem;
+  width: min(100%, 28rem);
+}
+
+.sequence-point-dot {
+  position: relative;
+  display: grid;
+  aspect-ratio: 1;
+  place-items: center;
+  border: none;
+  border-radius: 1rem;
+  background: radial-gradient(circle at top, rgba(30, 41, 59, 0.96), rgba(15, 23, 42, 0.9));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  cursor: pointer;
+}
+
+.sequence-point-dot:disabled {
+  cursor: default;
+  opacity: 1;
+}
+
+.sequence-point-core {
+  width: 34%;
+  height: 34%;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.34);
+  transition: transform 120ms ease, background-color 120ms ease, box-shadow 120ms ease;
+}
+
+.sequence-point-dot-flashing .sequence-point-core {
+  background: #60a5fa;
+  box-shadow: 0 0 0 0.45rem rgba(96, 165, 250, 0.18);
+  transform: scale(1.28);
+}
+
+.sequence-point-dot-recalled .sequence-point-core {
+  background: #22c55e;
+  box-shadow: 0 0 0 0.38rem rgba(34, 197, 94, 0.16);
+}
+
+.sequence-point-order {
+  position: absolute;
+  right: 0.5rem;
+  bottom: 0.45rem;
+  color: #e2e8f0;
+  font-size: 0.8rem;
+  font-weight: 700;
+}

@@ -44,6 +44,15 @@ describe("home-hub selectors", () => {
       recommendationText: "Fresh comparison board",
       shortDescription: "Find every difference",
     },
+    {
+      currentRank: null,
+      key: "sequence-point",
+      metricValue: "0:54",
+      name: "Sequence Point",
+      playCount: 4,
+      recommendationText: "Working memory sprint",
+      shortDescription: "Replay the point sequence",
+    },
   ];
 
   it("counts ranked and unplayed games from visible cards", () => {
@@ -87,6 +96,15 @@ describe("home-hub selectors", () => {
         previewSrc: "/images/games/spot-change-preview.svg",
         recordLabel: "Best 1:05",
         runLabel: "2 runs",
+        statusLabel: "Played",
+      },
+      {
+        ...games[4],
+        previewAlt: "Sequence Point grid showing a fast memory sequence across lit points",
+        previewObjectPosition: undefined,
+        previewSrc: "/images/games/sequence-point-preview.svg",
+        recordLabel: "Best 0:54",
+        runLabel: "4 runs",
         statusLabel: "Played",
       },
     ]);

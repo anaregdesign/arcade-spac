@@ -11,6 +11,7 @@ import { PatternEchoGameWorkspace } from "./pattern-echo/PatternEchoGameWorkspac
 import { PrecisionDropGameWorkspace } from "./precision-drop/PrecisionDropGameWorkspace";
 import { PulseCountGameWorkspace } from "./pulse-count/PulseCountGameWorkspace";
 import { QuickSumGameWorkspace } from "./quick-sum/QuickSumGameWorkspace";
+import { SequencePointGameWorkspace } from "./sequence-point/SequencePointGameWorkspace";
 import { ShapeMorphGameWorkspace } from "./shape-morph/ShapeMorphGameWorkspace";
 import { SpotChangeGameWorkspace } from "./spot-change/SpotChangeGameWorkspace";
 import type { GameInstructions } from "./shared/GameInstructionsDialog";
@@ -502,6 +503,35 @@ const gameDefinitionByKey: Record<string, GameDefinition> = {
       previewSrc: "/images/games/pattern-echo-preview.svg",
     },
     workspace: PatternEchoGameWorkspace,
+  },
+  "sequence-point": {
+    instructions: {
+      summary: "Watch the point sequence flash across the grid, then tap the same points in the same order through a growing memory sprint.",
+      sections: [
+        {
+          title: "Run flow",
+          items: [
+            { label: "Start run", detail: "Choose a difficulty and press Start run to begin the first watch phase." },
+            { label: "Grow the sequence", detail: "Each cleared round adds one more point to the next sequence." },
+            { label: "Timeout", detail: "If the timer expires before the final round is cleared, the run is saved as not cleared and opens the Result screen automatically." },
+          ],
+        },
+        {
+          title: "Board controls",
+          items: [
+            { label: "Watch first", detail: "The grid points flash in order during the watch phase. Input is ignored until the flash sequence ends." },
+            { label: "Replay in order", detail: "Tap the same points in the same order during the input phase." },
+            { label: "Read mistakes", detail: "Wrong taps increase the mistake count but the sprint keeps going." },
+          ],
+        },
+      ],
+      title: "Sequence Point controls",
+    },
+    presentation: {
+      previewAlt: "Sequence Point grid showing a fast memory sequence across lit points",
+      previewSrc: "/images/games/sequence-point-preview.svg",
+    },
+    workspace: SequencePointGameWorkspace,
   },
   "symbol-hunt": {
     instructions: {
