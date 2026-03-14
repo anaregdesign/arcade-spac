@@ -1,0 +1,91 @@
+.sum-grid-board-card {
+  min-height: 23rem;
+}
+
+.sum-grid-shell {
+  min-height: 23rem;
+}
+
+.sum-grid-stage {
+  display: grid;
+  gap: 1rem;
+  justify-items: center;
+}
+
+.sum-grid-column-sums,
+.sum-grid-board {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.sum-grid-main {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: auto minmax(0, 1fr);
+}
+
+.sum-grid-row-sums {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.sum-grid-sum-chip {
+  display: grid;
+  min-height: 3rem;
+  min-width: 3rem;
+  place-items: center;
+  border-radius: 0.8rem;
+  background: rgba(15, 23, 42, 0.72);
+  color: #f8fafc;
+  font-weight: 700;
+}
+
+.sum-grid-cell,
+.sum-grid-bank-button {
+  display: grid;
+  aspect-ratio: 1;
+  min-width: 3.2rem;
+  place-items: center;
+  border: none;
+  border-radius: 0.9rem;
+  background: linear-gradient(145deg, rgba(2, 132, 199, 0.92), rgba(6, 182, 212, 0.78));
+  color: #ecfeff;
+  cursor: pointer;
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.sum-grid-bank {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.sum-grid-bank-button {
+  aspect-ratio: auto;
+  min-height: 3rem;
+  min-width: 3rem;
+  padding: 0 0.85rem;
+}
+
+.sum-grid-bank-button-selected {
+  outline: 3px solid rgba(250, 204, 21, 0.95);
+  outline-offset: 2px;
+}
+
+.sum-grid-cell:disabled,
+.sum-grid-bank-button:disabled {
+  cursor: default;
+  opacity: 1;
+}
+
+@media (max-width: 720px) {
+  .sum-grid-main {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .sum-grid-row-sums {
+    grid-template-columns: repeat(auto-fit, minmax(3rem, 1fr));
+  }
+}

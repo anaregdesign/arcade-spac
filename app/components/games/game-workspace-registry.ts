@@ -13,6 +13,7 @@ import { PulseCountGameWorkspace } from "./pulse-count/PulseCountGameWorkspace";
 import { QuickSumGameWorkspace } from "./quick-sum/QuickSumGameWorkspace";
 import type { GameInstructions } from "./shared/GameInstructionsDialog";
 import { SwapSolveGameWorkspace } from "./swap-solve/SwapSolveGameWorkspace";
+import { SumGridGameWorkspace } from "./sum-grid/SumGridGameWorkspace";
 import { SudokuGameWorkspace } from "./sudoku/SudokuGameWorkspace";
 import { SymbolHuntGameWorkspace } from "./symbol-hunt/SymbolHuntGameWorkspace";
 import { LightGridGameWorkspace } from "./light-grid/LightGridGameWorkspace";
@@ -353,6 +354,35 @@ const gameDefinitionByKey: Record<string, GameDefinition> = {
       previewSrc: "/images/games/quick-sum-preview.svg",
     },
     workspace: QuickSumGameWorkspace,
+  },
+  "sum-grid": {
+    instructions: {
+      summary: "Select a candidate number, place it into the grid, and make every row and column sum match its target before the timer expires.",
+      sections: [
+        {
+          title: "Run flow",
+          items: [
+            { label: "Start run", detail: "Choose a difficulty and press Start run to load the first target grid." },
+            { label: "Clear grids", detail: "Solve each grid in sequence by placing all candidate numbers correctly. The Result screen opens automatically after the last grid." },
+            { label: "Timeout", detail: "If the timer ends before the full set is solved, the run is saved as not cleared and opens the Result screen automatically." },
+          ],
+        },
+        {
+          title: "Board controls",
+          items: [
+            { label: "Pick a number", detail: "Tap a candidate number in the bank to arm it." },
+            { label: "Place or remove", detail: "Tap an empty grid cell to place the selected number, or tap a filled cell to return that number to the bank." },
+            { label: "Read the targets", detail: "Each row and column shows its target sum beside the grid so you can validate the layout while you build." },
+          ],
+        },
+      ],
+      title: "Sum Grid controls",
+    },
+    presentation: {
+      previewAlt: "Sum Grid board showing row and column targets around a number grid",
+      previewSrc: "/images/games/sum-grid-preview.svg",
+    },
+    workspace: SumGridGameWorkspace,
   },
   "swap-solve": {
     instructions: {
