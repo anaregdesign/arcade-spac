@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { useNavigation, useSubmit } from "react-router";
 
 import { usePrecisionDropSession } from "../../../lib/client/usecase/game-workspace/use-precision-drop-session";
+import { playBallDrop, playRunClear, playRunFail, playRunStart } from "../../../lib/client/sound-effects";
 import sharedStyles from "../shared/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../shared/GameWorkspaceBoardOverlay";
 import { GameWorkspaceControlsCard } from "../shared/GameWorkspaceControlsCard";
@@ -45,6 +46,14 @@ export function PrecisionDropGameWorkspace({ instructions, workspace }: GameWork
   useEffect(() => {
     workspace.setPlaying(precisionDrop.state === "playing");
   }, [precisionDrop.state, workspace]);
+
+  useEffect(() => {
+    if (precisionDrop.state === "cleared") {
+      playRunClear();
+    } else if (precisionDrop.state === "failed") {
+      playRunFail();
+    }
+  }, [precisionDrop.state]);
 
   useEffect(() => {
     if (precisionDrop.state !== "cleared" && precisionDrop.state !== "failed") {
@@ -91,7 +100,10 @@ export function PrecisionDropGameWorkspace({ instructions, workspace }: GameWork
             aria-label={isLiveRun ? "Tap when the ball overlaps the line" : "Precision Drop play area"}
             className={styles["precision-drop-lane"]}
             disabled={!isLiveRun}
-            onClick={() => precisionDrop.captureHit()}
+            onClick={() => {
+              playBallDrop();
+              precisionDrop.captureHit();
+            }}
             type="button"
           >
             <span aria-hidden="true" className={styles["precision-drop-grid"]} />
@@ -112,6 +124,7 @@ export function PrecisionDropGameWorkspace({ instructions, workspace }: GameWork
             detail="Drop a ball, then tap when it overlaps the line."
             isVisible={isRunIdle}
             onAction={() => {
+              playRunStart();
               workspace.beginRun();
               precisionDrop.beginRun();
             }}

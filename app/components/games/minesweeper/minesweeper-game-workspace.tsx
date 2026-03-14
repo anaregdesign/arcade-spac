@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigation, useSubmit } from "react-router";
 
 import { useMinesweeperSession } from "../../../lib/client/usecase/game-workspace/use-minesweeper-session";
+import { playCellReveal, playFlagOff, playFlagOn, playMineExplode, playRunClear, playRunStart } from "../../../lib/client/sound-effects";
 import sharedStyles from "../shared/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../shared/GameWorkspaceBoardOverlay";
 import { GameWorkspaceControlsCard } from "../shared/GameWorkspaceControlsCard";
@@ -34,6 +35,13 @@ export function MinesweeperGameWorkspace({ instructions, workspace }: GameWorksp
   useEffect(() => {
     workspace.setPlaying(minesweeper.state === "playing");
   }, [minesweeper.state, workspace]);
+
+  useEffect(() => {
+    if (minesweeper.state === "cleared") {
+      playRunClear();
+    }
+    // "failed" state is handled by playMineExplode() in the cell click handler
+  }, [minesweeper.state]);
 
   useEffect(() => {
     if (!isLiveRun) {
@@ -115,18 +123,50 @@ export function MinesweeperGameWorkspace({ instructions, workspace }: GameWorksp
                     key={`cell-${rowIndex}-${columnIndex}`}
                     onClick={() => {
                       if (isFlagModeEnabled && isLiveRun) {
+                        const flagCell = minesweeper.board[rowIndex]?.[columnIndex];
+
+                        if (flagCell && !flagCell.isRevealed) {
+                          if (flagCell.isFlagged) {
+                            playFlagOff();
+                          } else {
+                            playFlagOn();
+                          }
+                        }
+
                         minesweeper.toggleFlag(rowIndex, columnIndex);
                         return;
                       }
 
                       if (minesweeper.state === "idle") {
+                        playRunStart();
                         workspace.beginRun();
+                      }
+
+                      const revealCell = minesweeper.board[rowIndex]?.[columnIndex];
+
+                      if (revealCell && !revealCell.isRevealed && !revealCell.isFlagged) {
+                        if (revealCell.hasMine) {
+                          playMineExplode();
+                        } else {
+                          playCellReveal();
+                        }
                       }
 
                       minesweeper.revealCell(rowIndex, columnIndex);
                     }}
                     onContextMenu={(event) => {
                       event.preventDefault();
+
+                      const flagCell = minesweeper.board[rowIndex]?.[columnIndex];
+
+                      if (flagCell && !flagCell.isRevealed) {
+                        if (flagCell.isFlagged) {
+                          playFlagOff();
+                        } else {
+                          playFlagOn();
+                        }
+                      }
+
                       minesweeper.toggleFlag(rowIndex, columnIndex);
                     }}
                     type="button"
@@ -150,6 +190,7 @@ export function MinesweeperGameWorkspace({ instructions, workspace }: GameWorksp
             detail="Press Start run, or open any cell to begin this board."
             isVisible={isRunIdle}
             onAction={() => {
+              playRunStart();
               workspace.beginRun();
               minesweeper.beginRun();
             }}

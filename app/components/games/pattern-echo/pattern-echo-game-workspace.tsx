@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { useNavigation, useSubmit } from "react-router";
 
 import { usePatternEchoSession } from "../../../lib/client/usecase/game-workspace/use-pattern-echo-session";
+import { playPadFlash, playRunClear, playRunFail, playRunStart, playTapCorrect, playTapWrong } from "../../../lib/client/sound-effects";
 import sharedStyles from "../shared/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../shared/GameWorkspaceBoardOverlay";
 import { GameWorkspaceControlsCard } from "../shared/GameWorkspaceControlsCard";
@@ -40,6 +41,46 @@ export function PatternEchoGameWorkspace({ instructions, workspace }: GameWorksp
   useEffect(() => {
     workspace.setPlaying(isLiveRun);
   }, [isLiveRun, workspace]);
+
+  useEffect(() => {
+    if (patternEcho.flashingPadIndex === null) {
+      return;
+    }
+
+    const pad = patternEcho.pads[patternEcho.flashingPadIndex];
+
+    if (pad) {
+      playPadFlash(pad.color);
+    }
+  }, [patternEcho.flashingPadIndex, patternEcho.pads]);
+
+  const prevInputStepRef = useRef(patternEcho.inputStep);
+  const prevWrongInputCountRef = useRef(patternEcho.wrongInputCount);
+
+  useEffect(() => {
+    if (patternEcho.state !== "inputting") {
+      prevInputStepRef.current = patternEcho.inputStep;
+      prevWrongInputCountRef.current = patternEcho.wrongInputCount;
+      return;
+    }
+
+    if (patternEcho.inputStep > prevInputStepRef.current) {
+      playTapCorrect();
+    } else if (patternEcho.wrongInputCount > prevWrongInputCountRef.current) {
+      playTapWrong();
+    }
+
+    prevInputStepRef.current = patternEcho.inputStep;
+    prevWrongInputCountRef.current = patternEcho.wrongInputCount;
+  }, [patternEcho.inputStep, patternEcho.state, patternEcho.wrongInputCount]);
+
+  useEffect(() => {
+    if (patternEcho.state === "cleared") {
+      playRunClear();
+    } else if (patternEcho.state === "failed") {
+      playRunFail();
+    }
+  }, [patternEcho.state]);
 
   useEffect(() => {
     if (patternEcho.state !== "cleared" && patternEcho.state !== "failed") {
@@ -130,6 +171,7 @@ export function PatternEchoGameWorkspace({ instructions, workspace }: GameWorksp
             detail="Start the board, then watch the sequence and reproduce it before time runs out."
             isVisible={isRunIdle}
             onAction={() => {
+              playRunStart();
               workspace.beginRun();
               patternEcho.beginRun();
             }}

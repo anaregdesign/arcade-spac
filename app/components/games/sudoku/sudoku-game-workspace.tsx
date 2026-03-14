@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { Form, useNavigation, useSubmit } from "react-router";
 
 import { useSudokuSession } from "../../../lib/client/usecase/game-workspace/use-sudoku-session";
+import { playHintUse, playRunClear, playRunStart, playTapCorrect, playTapWrong } from "../../../lib/client/sound-effects";
 import sharedStyles from "../shared/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../shared/GameWorkspaceBoardOverlay";
 import { GameWorkspaceControlsCard } from "../shared/GameWorkspaceControlsCard";
@@ -32,6 +33,39 @@ export function SudokuGameWorkspace({ instructions, workspace }: GameWorkspaceCo
   useEffect(() => {
     workspace.setPlaying(sudoku.state === "playing");
   }, [sudoku.state, workspace]);
+
+  useEffect(() => {
+    if (sudoku.state === "cleared") {
+      playRunClear();
+    }
+  }, [sudoku.state]);
+
+  const prevRemainingCellCountRef = useRef(sudoku.remainingCellCount);
+  const prevHintCountRef = useRef(sudoku.hintCount);
+  const prevMistakeCountRef = useRef(sudoku.mistakeCount);
+
+  useEffect(() => {
+    const currentRemaining = sudoku.remainingCellCount;
+    const prevRemaining = prevRemainingCellCountRef.current;
+    const currentHints = sudoku.hintCount;
+    const prevHints = prevHintCountRef.current;
+    const currentMistakes = sudoku.mistakeCount;
+    const prevMistakes = prevMistakeCountRef.current;
+
+    if (currentHints > prevHints) {
+      playHintUse();
+    } else if (currentRemaining < prevRemaining && sudoku.state === "playing") {
+      playTapCorrect();
+    }
+
+    if (currentMistakes > prevMistakes) {
+      playTapWrong();
+    }
+
+    prevRemainingCellCountRef.current = currentRemaining;
+    prevHintCountRef.current = currentHints;
+    prevMistakeCountRef.current = currentMistakes;
+  }, [sudoku.hintCount, sudoku.mistakeCount, sudoku.remainingCellCount, sudoku.state]);
 
   useEffect(() => {
     if (sudoku.state !== "cleared") {
@@ -132,6 +166,7 @@ export function SudokuGameWorkspace({ instructions, workspace }: GameWorkspaceCo
             detail="Start the puzzle, then fill the board with the keypad or keyboard."
             isVisible={isRunIdle}
             onAction={() => {
+              playRunStart();
               workspace.beginRun();
               sudoku.beginRun();
             }}

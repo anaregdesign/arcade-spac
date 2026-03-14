@@ -25,7 +25,6 @@
 
 ## Non-Goals
 
-- audio cue や sound effect の導入
 - sequence が徐々に長くなる infinite / escalation mode
 - daily challenge や preset sequence の導入
 - multi-player や co-op mode

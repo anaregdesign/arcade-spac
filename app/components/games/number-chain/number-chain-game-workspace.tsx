@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { useNavigation, useSubmit } from "react-router";
 
 import { useNumberChainSession } from "../../../lib/client/usecase/game-workspace/use-number-chain-session";
+import { playRunClear, playRunFail, playRunStart, playTapCorrect, playTapWrong } from "../../../lib/client/sound-effects";
 import sharedStyles from "../shared/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../shared/GameWorkspaceBoardOverlay";
 import { GameWorkspaceControlsCard } from "../shared/GameWorkspaceControlsCard";
@@ -36,6 +37,14 @@ export function NumberChainGameWorkspace({ instructions, workspace }: GameWorksp
   useEffect(() => {
     workspace.setPlaying(numberChain.state === "playing");
   }, [numberChain.state, workspace]);
+
+  useEffect(() => {
+    if (numberChain.state === "cleared") {
+      playRunClear();
+    } else if (numberChain.state === "failed") {
+      playRunFail();
+    }
+  }, [numberChain.state]);
 
   useEffect(() => {
     if (numberChain.state !== "cleared" && numberChain.state !== "failed") {
@@ -104,7 +113,17 @@ export function NumberChainGameWorkspace({ instructions, workspace }: GameWorksp
                       isLiveRun && cell.value === numberChain.nextNumber ? styles["number-chain-tile-next"] : "",
                     ].filter(Boolean).join(" ")}
                     key={cell.id}
-                    onClick={() => numberChain.tapCell(rowIndex, columnIndex)}
+                    onClick={() => {
+                      if (numberChain.state === "playing" && !cell.isCleared) {
+                        if (cell.value === numberChain.nextNumber) {
+                          playTapCorrect();
+                        } else {
+                          playTapWrong();
+                        }
+                      }
+
+                      numberChain.tapCell(rowIndex, columnIndex);
+                    }}
                     type="button"
                   >
                     {cell.isCleared ? "" : cell.value}
@@ -118,6 +137,7 @@ export function NumberChainGameWorkspace({ instructions, workspace }: GameWorksp
             detail="Start the board, then tap the numbers in ascending order before time runs out."
             isVisible={isRunIdle}
             onAction={() => {
+              playRunStart();
               workspace.beginRun();
               numberChain.beginRun();
             }}
