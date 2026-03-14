@@ -1,0 +1,22 @@
+<svg width="640" height="360" viewBox="0 0 640 360" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="640" height="360" rx="32" fill="#020617"/>
+  <rect x="28" y="28" width="584" height="304" rx="28" fill="url(#bg)"/>
+  <path d="M132 194L246 194L358 144L474 144" stroke="#38BDF8" stroke-width="8" stroke-linecap="round"/>
+  <path d="M246 110L358 144" stroke="#C084FC" stroke-width="8" stroke-linecap="round"/>
+  <circle cx="132" cy="194" r="34" fill="#FBBF24"/>
+  <circle cx="246" cy="194" r="30" fill="#0F172A" stroke="#38BDF8" stroke-width="8"/>
+  <circle cx="246" cy="110" r="30" fill="#0F172A" stroke="#C084FC" stroke-width="8"/>
+  <circle cx="358" cy="144" r="32" fill="#0F172A" stroke="#38BDF8" stroke-width="8"/>
+  <circle cx="474" cy="144" r="34" fill="#22D3EE"/>
+  <text x="132" y="201" fill="#0F172A" font-family="Arial, sans-serif" font-size="18" font-weight="700" text-anchor="middle">S</text>
+  <text x="246" y="200" fill="#E2E8F0" font-family="Arial, sans-serif" font-size="16" font-weight="700" text-anchor="middle">1/1</text>
+  <text x="246" y="116" fill="#E2E8F0" font-family="Arial, sans-serif" font-size="16" font-weight="700" text-anchor="middle">ARM</text>
+  <text x="358" y="150" fill="#E2E8F0" font-family="Arial, sans-serif" font-size="16" font-weight="700" text-anchor="middle">2/2</text>
+  <text x="474" y="151" fill="#082F49" font-family="Arial, sans-serif" font-size="16" font-weight="700" text-anchor="middle">W4</text>
+  <defs>
+    <linearGradient id="bg" x1="320" y1="28" x2="320" y2="332" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0F172A"/>
+      <stop offset="1" stop-color="#020617"/>
+    </linearGradient>
+  </defs>
+</svg>

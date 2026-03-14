@@ -1,6 +1,7 @@
 import type { ComponentType } from "react";
 
 import { BeatMatchGameWorkspace } from "./beat-match/BeatMatchGameWorkspace";
+import { ChainTriggerGameWorkspace } from "./chain-trigger/ChainTriggerGameWorkspace";
 import { ColorCensusGameWorkspace } from "./color-census/ColorCensusGameWorkspace";
 import { ColorSweepGameWorkspace } from "./color-sweep/ColorSweepGameWorkspace";
 import { FlipMatchGameWorkspace } from "./flip-match/FlipMatchGameWorkspace";
@@ -82,6 +83,35 @@ const gameDefinitionByKey: Record<string, GameDefinition> = {
       previewSrc: "/images/games/beat-match-preview.svg",
     },
     workspace: BeatMatchGameWorkspace,
+  },
+  "chain-trigger": {
+    instructions: {
+      summary: "Read the fixed source node, arm only the helper nodes you need, then fire the chain and watch the propagation wave by wave.",
+      sections: [
+        {
+          title: "Run flow",
+          items: [
+            { label: "Start run", detail: "Choose a difficulty and press Start run to open the first graph puzzle." },
+            { label: "Arm the helpers", detail: "Each puzzle allows only a small number of extra triggers, so every armed node is a deliberate commitment." },
+            { label: "Fire and adjust", detail: "If the chain stalls, dark nodes remain visible and you can re-arm the graph before firing again." },
+          ],
+        },
+        {
+          title: "Board controls",
+          items: [
+            { label: "Read thresholds", detail: "Every non-source node shows how many incoming signals it needs before it can fire." },
+            { label: "Tap to arm", detail: "Tap any non-source node to arm or disarm it for wave 1." },
+            { label: "Fire chain", detail: "Press Fire chain to resolve the graph deterministically and stamp each lit node with its activation wave." },
+          ],
+        },
+      ],
+      title: "Chain Trigger controls",
+    },
+    presentation: {
+      previewAlt: "Chain Trigger graph board with a source node, armed helper node, and propagation links",
+      previewSrc: "/images/games/chain-trigger-preview.svg",
+    },
+    workspace: ChainTriggerGameWorkspace,
   },
   "color-sweep": {
     instructions: {

@@ -33,6 +33,7 @@ describe("game-catalog", () => {
     expect(isGameKey("COLOR_SWEEP")).toBe(false);
 
     expect(resolveGameKey("BEAT_MATCH")).toBe("beat-match");
+    expect(resolveGameKey("CHAIN_TRIGGER")).toBe("chain-trigger");
     expect(resolveGameKey("COLOR_SWEEP")).toBe("color-sweep");
     expect(resolveGameKey("drop-ball")).toBe("precision-drop");
     expect(resolveGameKey("drop_line")).toBe("precision-drop");
@@ -56,6 +57,7 @@ describe("game-catalog", () => {
     expect(resolveGameKey("unknown-mode")).toBeNull();
 
     expect(toStoredGameKey("beat-match")).toBe("BEAT_MATCH");
+    expect(toStoredGameKey("chain-trigger")).toBe("CHAIN_TRIGGER");
     expect(toStoredGameKey("color-sweep")).toBe("COLOR_SWEEP");
     expect(toStoredGameKey("color-census")).toBe("COLOR_CENSUS");
     expect(toStoredGameKey("flip-match")).toBe("FLIP_MATCH");
@@ -78,6 +80,7 @@ describe("game-catalog", () => {
     expect(toStoredGameKey("custom-mode")).toBe("CUSTOM_MODE");
 
     expect(toRouteGameKey("BEAT_MATCH")).toBe("beat-match");
+    expect(toRouteGameKey("CHAIN_TRIGGER")).toBe("chain-trigger");
     expect(toRouteGameKey("COLOR_SWEEP")).toBe("color-sweep");
     expect(toRouteGameKey("drop_ball")).toBe("precision-drop");
     expect(toRouteGameKey("TARGET_TRAIL")).toBe("target-trail");
@@ -102,6 +105,7 @@ describe("game-catalog", () => {
 
   it("returns definitions and fallback metadata", () => {
     expect(getGameDefinition("BEAT_MATCH")?.name).toBe("Beat Match");
+    expect(getGameDefinition("CHAIN_TRIGGER")?.name).toBe("Chain Trigger");
     expect(getGameDefinition("DROP_LINE")?.name).toBe("Precision Drop");
     expect(getGameDefinition("ORBIT_TAP")?.name).toBe("Orbit Tap");
     expect(getGameDefinition("COLOR_CENSUS")?.name).toBe("Color Census");
@@ -126,6 +130,7 @@ describe("game-catalog", () => {
     expect(getGameName("custom-mode")).toBe("custom-mode");
 
     expect(getGameHomeTags("BEAT_MATCH")).toEqual(["timing", "rhythm"]);
+    expect(getGameHomeTags("CHAIN_TRIGGER")).toEqual(["logic", "spatial"]);
     expect(getGameHomeTags("DROP_LINE")).toEqual(["timing", "fast-start"]);
     expect(getGameHomeTags("ORBIT_TAP")).toEqual(["timing", "fast-start"]);
     expect(getGameHomeTags("COLOR_CENSUS")).toEqual(["memory", "perception"]);
@@ -147,6 +152,7 @@ describe("game-catalog", () => {
     expect(getGameHomeTags("custom-mode")).toEqual([]);
 
     expect(getGameSuccessfulResultLabel("BEAT_MATCH")).toBe("clear");
+    expect(getGameSuccessfulResultLabel("CHAIN_TRIGGER")).toBe("clear");
     expect(getGameSuccessfulResultLabel("DROP_LINE")).toBe("hit");
     expect(getGameSuccessfulResultLabel("COLOR_CENSUS")).toBe("clear");
     expect(getGameSuccessfulResultLabel("FLIP_MATCH")).toBe("clear");

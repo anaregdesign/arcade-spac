@@ -22,6 +22,10 @@ const previewByGameKey: Record<string, Pick<HomeGameCard, "previewAlt" | "previe
     previewAlt: "Beat Match lane board with a center hit zone and three rhythm lanes",
     previewSrc: "/images/games/beat-match-preview.svg",
   },
+  "chain-trigger": {
+    previewAlt: "Chain Trigger graph board with a source node, armed helper node, and propagation links",
+    previewSrc: "/images/games/chain-trigger-preview.svg",
+  },
   "color-sweep": {
     previewAlt: "Color Sweep board showing a target swatch and a grid of colored tiles",
     previewSrc: "/images/games/color-sweep-preview.svg",

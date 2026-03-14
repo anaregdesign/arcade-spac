@@ -2,31 +2,37 @@
 
 ## Links
 - Program spec: /docs/spec/game-catalog-50-expansion-program.md
-- Current game spec: /docs/spec/games/chain-trigger.md
+- Current game spec: /docs/spec/games/icon-chain.md
 
 ## Section 1 - Catalog Recovery Audit
 - [x] Confirm the durable game-spec inventory covers 50 game specs plus 2 meta specs (`two-minute-expansion-wave`, expansion program support docs).
-- [x] Confirm the current app implementation exposes 38 playable games in `supportedGames` and `game-workspace-registry`.
+- [x] Confirm the current app implementation exposes 39 playable games in `supportedGames` and `game-workspace-registry`.
 - [x] Choose the next reviewable slice as one low-risk unimplemented game that fits the current shared result and UI architecture.
 
-## Section 2 - Current Slice: Chain Trigger
+### Subsection 1.1 - Remaining backlog risk buckets
+- [x] `Low risk` bucket: `Chain Trigger`, `Icon Chain`, `Merge Climb` because they fit deterministic tap-first planning flows without physics or drag-heavy editing.
+- [x] `Medium risk` bucket: `Block Tessellate`, `Box Fill`, `Bubble Spawn`, `Cascade Clear`, `Line Connect` because they need either placement UX, chain-resolution tuning, or board-edit interactions beyond the current simplest patterns.
+- [x] `High risk` bucket: `Bounce Angle`, `Cascade Flip`, `Gap Rush`, `Intercept Ball`, `Obstacle Stream` because they depend on reflection, continuous movement, moving-board memory pressure, or collision-heavy survival loops that are harder to verify and keep touch-safe.
+- [x] Normalized spec inventory currently leaves 12 unimplemented slugs, which is 1 above the 50-game target, so scope reconciliation remains after the playable catalog reaches 50.
+
+## Section 2 - Current Slice: Icon Chain
 ### Subsection 2.1 - Spec and planning alignment
-- [ ] Rewrite `/docs/spec/games/chain-trigger.md` so the chain planning behavior, result metrics, and touch-safe node controls are explicit.
+- [ ] Rewrite `/docs/spec/games/icon-chain.md` so the clue-based order reconstruction, result metrics, and touch-safe icon controls are explicit.
 - [ ] Keep this active plan focused on the current slice and append new implementation tasks only when they become concrete.
 
 ### Subsection 2.2 - App integration
-- [ ] Add `Chain Trigger` to the game catalog metadata and Home preview mapping.
+- [ ] Add `Icon Chain` to the game catalog metadata and Home preview mapping.
 - [ ] Add the game registry entry, help content, and preview asset.
-- [ ] Implement the `Chain Trigger` session and workspace Hook under `app/lib/client/usecase/game-workspace/`.
-- [ ] Implement the `Chain Trigger` workspace Component and CSS under `app/components/games/chain-trigger/`.
-- [ ] Add deterministic Playwright hooks for node state, propagation outcome, trigger usage, and run completion without changing the visible UI.
-- [ ] Keep the board graph readable and touch-safe on narrow viewports.
+- [ ] Implement the `Icon Chain` session and workspace Hook under `app/lib/client/usecase/game-workspace/`.
+- [ ] Implement the `Icon Chain` workspace Component and CSS under `app/components/games/icon-chain/`.
+- [ ] Add deterministic Playwright hooks for clue state, selection order, wrong picks, and run completion without changing the visible UI.
+- [ ] Keep the icon clue board readable and touch-safe on narrow viewports.
 - [ ] Update the touched catalog and Home selector tests for the new game metadata.
 
 ### Subsection 2.3 - Verification and slice closeout
 - [ ] Run targeted automated verification for the touched catalog and gameplay modules.
-- [ ] Run Playwright UI verification for `/games/chain-trigger` and the Home card.
-- [ ] Commit the `Chain Trigger` slice in one reviewable unit.
+- [ ] Run Playwright UI verification for `/games/icon-chain` and the Home card.
+- [ ] Commit the `Icon Chain` slice in one reviewable unit.
 
 ## Section 3 - Named Backlog
 - [x] `Spot Change` - implementation, automated verification, Playwright UI verification, and commit are complete.
@@ -37,7 +43,7 @@
 - [ ] `Bubble Spawn` - keep the game unchecked until implementation, automated verification, and Playwright UI verification are complete.
 - [ ] `Cascade Clear` - keep the game unchecked until implementation, automated verification, and Playwright UI verification are complete.
 - [ ] `Cascade Flip` - keep the game unchecked until implementation, automated verification, and Playwright UI verification are complete.
-- [ ] `Chain Trigger` - keep the game unchecked until implementation, automated verification, and Playwright UI verification are complete.
+- [x] `Chain Trigger` - implementation, automated verification, Playwright UI verification, and commit are complete.
 - [x] `Color Census` - implementation, automated verification, Playwright UI verification, and commit are complete.
 - [x] `Flip Match` - implementation, automated verification, Playwright UI verification, and commit are complete.
 - [ ] `Gap Rush` - keep the game unchecked until implementation, automated verification, and Playwright UI verification are complete.
