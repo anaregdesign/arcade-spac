@@ -1,9 +1,9 @@
 .zone-lock-workspace-card {
-  min-height: 24rem;
+  min-height: 22.5rem;
 }
 
 .zone-lock-shell {
-  min-height: 24rem;
+  min-height: 22.5rem;
   display: grid;
   gap: 1rem;
 }
@@ -206,7 +206,7 @@
 
 @media (max-width: 640px) {
   .zone-lock-shell {
-    gap: 0.8rem;
+    gap: 0.65rem;
   }
 
   .zone-lock-copy strong {
@@ -219,7 +219,7 @@
   }
 
   .zone-lock-board-column {
-    gap: 0.6rem;
+    gap: 0.5rem;
   }
 
   .zone-lock-actions {
@@ -233,14 +233,14 @@
   }
 
   .zone-lock-board {
-    gap: 0.45rem;
+    gap: 0.4rem;
     order: 1;
   }
 
   .zone-lock-cell {
-    gap: 0.35rem;
-    min-height: 3.6rem;
-    padding: 0.42rem;
+    gap: 0.28rem;
+    min-height: 3.3rem;
+    padding: 0.36rem;
   }
 
   .zone-lock-cell-state {
@@ -255,7 +255,7 @@
 
   .zone-lock-zone-list {
     gap: 0.5rem;
-    max-height: 17rem;
+    max-height: 15.75rem;
     overflow: auto;
     padding-right: 0.15rem;
   }

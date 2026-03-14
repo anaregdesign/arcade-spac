@@ -1,9 +1,11 @@
 .sequence-point-board-card {
-  min-height: 25rem;
+  --gameplay-stage-inline-size: clamp(20rem, 46vw, 35rem);
+  --gameplay-card-minimal-inline-size: var(--gameplay-stage-inline-size);
+  min-height: 21rem;
 }
 
 .sequence-point-shell {
-  min-height: 25rem;
+  min-height: 21rem;
   display: grid;
 }
 
@@ -29,7 +31,7 @@
 .sequence-point-grid {
   display: grid;
   gap: 0.9rem;
-  width: min(100%, 28rem);
+  width: 100%;
 }
 
 .sequence-point-dot {

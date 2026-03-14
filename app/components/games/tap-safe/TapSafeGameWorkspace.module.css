@@ -1,9 +1,10 @@
 .tap-safe-board-card {
-  min-height: 28rem;
+  --gameplay-board-core-inline-size: clamp(20rem, 52vw, 37rem);
+  min-height: 24.5rem;
 }
 
 .tap-safe-shell {
-  min-height: 28rem;
+  min-height: 24.5rem;
   display: grid;
   gap: 1rem;
 }
@@ -62,7 +63,8 @@
 .tap-safe-grid {
   display: grid;
   gap: 0.7rem;
-  width: min(100%, 31rem);
+  width: 100%;
+  max-width: none;
   margin-inline: auto;
 }
 

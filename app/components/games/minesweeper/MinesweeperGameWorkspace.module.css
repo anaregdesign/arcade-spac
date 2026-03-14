@@ -4,6 +4,7 @@
 }
 
 .minesweeper-shell {
+  --mine-cell-size: clamp(2.5rem, 3.4vw, 3.15rem);
   display: grid;
   gap: 6px;
   width: fit-content;
@@ -21,8 +22,8 @@
 }
 
 .mine-cell {
-  width: 40px;
-  height: 40px;
+  width: var(--mine-cell-size);
+  height: var(--mine-cell-size);
   border: 1px solid var(--border-strong);
   border-radius: 12px;
   background: linear-gradient(180deg, var(--surface-elevated), color-mix(in srgb, var(--surface-elevated) 65%, #8ea6bb));
@@ -76,9 +77,11 @@
     max-width: 16rem;
   }
 
+  .minesweeper-shell {
+    --mine-cell-size: clamp(28px, 8vw, 30px);
+  }
+
   .mine-cell {
-    width: clamp(28px, 8vw, 30px);
-    height: clamp(28px, 8vw, 30px);
     border-radius: 10px;
   }
 

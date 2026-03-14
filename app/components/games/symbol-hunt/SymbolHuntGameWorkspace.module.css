@@ -1,9 +1,10 @@
 .hunt-board-card {
-  min-height: 22rem;
+  --gameplay-board-core-inline-size: clamp(20rem, 52vw, 37rem);
+  min-height: 20rem;
 }
 
 .hunt-shell {
-  min-height: 22rem;
+  min-height: 20rem;
   display: grid;
   gap: 1rem;
   align-content: start;
@@ -18,7 +19,8 @@
   display: grid;
   gap: 0.75rem;
   margin-inline: auto;
-  width: min(100%, 33rem);
+  width: 100%;
+  max-width: none;
 }
 
 .hunt-cell {

@@ -1,15 +1,21 @@
 .layout-sequence-stage {
-  --gameplay-layout-gap: 1rem;
-  --gameplay-layout-mobile-gap: 0.75rem;
+  --gameplay-layout-gap: var(--gameplay-stack-gap, 1rem);
+  --gameplay-layout-mobile-gap: var(--gameplay-stack-mobile-gap, 0.75rem);
+  --gameplay-layout-inline-size: var(--gameplay-stage-inline-size, clamp(20rem, 46vw, 35rem));
+  --gameplay-layout-mobile-inline-size: 100%;
+  --gameplay-layout-cue-inline-size: var(--gameplay-cue-inline-size, clamp(16rem, 44vw, 32rem));
+  --gameplay-layout-mobile-cue-inline-size: var(--gameplay-mobile-cue-inline-size, 100%);
   display: grid;
   gap: var(--gameplay-layout-gap);
   align-content: start;
   justify-items: stretch;
+  width: min(100%, var(--gameplay-layout-inline-size));
+  margin-inline: auto;
 }
 
 .layout-sequence-stage > :first-child {
   min-width: 0;
-  width: min(100%, 32rem);
+  width: min(100%, var(--gameplay-layout-cue-inline-size));
   justify-self: center;
 }
 
@@ -21,9 +27,10 @@
 @media (max-width: 640px) {
   .layout-sequence-stage.layout-sequence-stage {
     gap: var(--gameplay-layout-mobile-gap);
+    width: min(100%, var(--gameplay-layout-mobile-inline-size));
   }
 
   .layout-sequence-stage > :first-child {
-    width: 100%;
+    width: min(100%, var(--gameplay-layout-mobile-cue-inline-size));
   }
 }

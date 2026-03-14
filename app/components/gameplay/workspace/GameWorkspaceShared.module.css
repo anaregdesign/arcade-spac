@@ -1,4 +1,18 @@
 .workspace-card {
+  --gameplay-stack-gap: 1rem;
+  --gameplay-stack-mobile-gap: 0.75rem;
+  --gameplay-cue-inline-size: clamp(16rem, 44vw, 32rem);
+  --gameplay-mobile-cue-inline-size: 100%;
+  --gameplay-board-core-inline-size: clamp(20rem, 52vw, 40rem);
+  --gameplay-board-dock-inline-size: clamp(20rem, 48vw, 36rem);
+  --gameplay-stage-inline-size: clamp(20rem, 46vw, 35rem);
+  --gameplay-sidecar-main-fr: 1.2fr;
+  --gameplay-sidecar-side-fr: 0.9fr;
+  --gameplay-sidecar-desktop-min: 16rem;
+  --gameplay-sidecar-mobile-min: 7rem;
+  --gameplay-sidecar-mobile-max: 8rem;
+  --gameplay-choice-gap-token: 0.75rem;
+  --gameplay-choice-mobile-gap-token: 0.55rem;
   max-width: 1040px;
   width: min(100%, 1040px);
 }
@@ -152,7 +166,7 @@
 }
 
 .board-card-minimal {
-  width: fit-content;
+  width: min(100%, var(--gameplay-card-minimal-inline-size, fit-content));
   padding: 0;
   background: transparent;
 }

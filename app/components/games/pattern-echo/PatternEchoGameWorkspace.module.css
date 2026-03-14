@@ -1,5 +1,6 @@
 .pattern-echo-board-card {
-  width: min(100%, 540px);
+  --gameplay-stage-inline-size: clamp(20rem, 47vw, 37rem);
+  --gameplay-card-minimal-inline-size: var(--gameplay-stage-inline-size);
 }
 
 .pattern-echo-shell {

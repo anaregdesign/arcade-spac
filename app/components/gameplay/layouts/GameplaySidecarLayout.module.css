@@ -1,11 +1,11 @@
 .layout-sidecar {
-  --gameplay-layout-gap: 1rem;
-  --gameplay-layout-mobile-gap: 0.75rem;
-  --gameplay-layout-main-fr: 1.2fr;
-  --gameplay-layout-side-fr: 0.9fr;
-  --gameplay-layout-side-min: 16rem;
-  --gameplay-layout-mobile-side-min: 7rem;
-  --gameplay-layout-mobile-side-max: 8rem;
+  --gameplay-layout-gap: var(--gameplay-stack-gap, 1rem);
+  --gameplay-layout-mobile-gap: var(--gameplay-stack-mobile-gap, 0.75rem);
+  --gameplay-layout-main-fr: var(--gameplay-sidecar-main-fr, 1.2fr);
+  --gameplay-layout-side-fr: var(--gameplay-sidecar-side-fr, 0.9fr);
+  --gameplay-layout-side-min: var(--gameplay-sidecar-desktop-min, 16rem);
+  --gameplay-layout-mobile-side-min: var(--gameplay-sidecar-mobile-min, 7rem);
+  --gameplay-layout-mobile-side-max: var(--gameplay-sidecar-mobile-max, 8rem);
   display: grid;
   gap: var(--gameplay-layout-gap);
   grid-template-columns: minmax(0, var(--gameplay-layout-main-fr)) minmax(var(--gameplay-layout-side-min), var(--gameplay-layout-side-fr));

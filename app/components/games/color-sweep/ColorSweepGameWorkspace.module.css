@@ -1,5 +1,6 @@
 .color-sweep-board-card {
-  width: min(100%, 560px);
+  --gameplay-board-core-inline-size: clamp(21rem, 50vw, 40rem);
+  --gameplay-card-minimal-inline-size: var(--gameplay-board-core-inline-size);
 }
 
 .color-sweep-shell {

@@ -1,4 +1,5 @@
 .line-connect-board-card {
+  --gameplay-board-dock-inline-size: clamp(20rem, 50vw, 37rem);
   background:
     radial-gradient(circle at top, rgba(45, 212, 191, 0.16), transparent 38%),
     linear-gradient(180deg, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.92));
@@ -66,7 +67,8 @@
   display: grid;
   gap: 0.55rem;
   margin-inline: auto;
-  width: min(100%, 31rem);
+  width: 100%;
+  max-width: none;
 }
 
 .line-cell {
