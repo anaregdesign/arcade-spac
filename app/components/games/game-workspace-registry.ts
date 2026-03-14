@@ -9,6 +9,7 @@ import { GlowCycleGameWorkspace } from "./glow-cycle/GlowCycleGameWorkspace";
 import { HiddenFindGameWorkspace } from "./hidden-find/HiddenFindGameWorkspace";
 import { HueDriftGameWorkspace } from "./hue-drift/HueDriftGameWorkspace";
 import { IconChainGameWorkspace } from "./icon-chain/IconChainGameWorkspace";
+import { MergeClimbGameWorkspace } from "./merge-climb/MergeClimbGameWorkspace";
 import { MinesweeperGameWorkspace } from "./minesweeper/MinesweeperGameWorkspace";
 import { NumberChainGameWorkspace } from "./number-chain/NumberChainGameWorkspace";
 import { OrbitTapGameWorkspace } from "./orbit-tap/OrbitTapGameWorkspace";
@@ -142,6 +143,35 @@ const gameDefinitionByKey: Record<string, GameDefinition> = {
       previewSrc: "/images/games/icon-chain-preview.svg",
     },
     workspace: IconChainGameWorkspace,
+  },
+  "merge-climb": {
+    instructions: {
+      summary: "Slide the whole board in one direction, merge matching values once per move, and keep enough empty space alive to reach the goal tile.",
+      sections: [
+        {
+          title: "Run flow",
+          items: [
+            { label: "Start run", detail: "Choose a difficulty and press Start run to load the number board and fixed spawn queue." },
+            { label: "Grow the board", detail: "Every legal move slides all tiles, combines one matching pair per line, and adds a new spawn afterward." },
+            { label: "Clear or fail", detail: "Reach the goal tile before the timer expires or before the board locks into a state with no legal moves." },
+          ],
+        },
+        {
+          title: "Board controls",
+          items: [
+            { label: "Use direction buttons", detail: "Press Up, Left, Down, or Right to slide every tile across the board in that direction." },
+            { label: "Read the pressure", detail: "The summary panel keeps goal, max tile, next spawn, and empty-cell pressure visible the whole run." },
+            { label: "Stay touch-safe", detail: "The direction pad and board summaries stay large and readable on desktop and narrow mobile screens." },
+          ],
+        },
+      ],
+      title: "Merge Climb controls",
+    },
+    presentation: {
+      previewAlt: "Merge Climb number board with directional controls, a goal tile, and a next spawn panel",
+      previewSrc: "/images/games/merge-climb-preview.svg",
+    },
+    workspace: MergeClimbGameWorkspace,
   },
   "color-sweep": {
     instructions: {

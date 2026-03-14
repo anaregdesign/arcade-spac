@@ -36,6 +36,15 @@ describe("home-hub selectors", () => {
       shortDescription: "Read the reveal, then use the clue board to rebuild the hidden icon order from first to last",
     },
     {
+      currentRank: null,
+      key: "merge-climb",
+      metricValue: "0:41",
+      name: "Merge Climb",
+      playCount: 2,
+      recommendationText: "Growth-pressure merge board",
+      shortDescription: "Merge matching tiles into a higher value while the board fills with new spawns after every move",
+    },
+    {
       currentRank: 3,
       key: "color-sweep",
       metricValue: "0:42",
@@ -244,6 +253,15 @@ describe("home-hub selectors", () => {
       },
       {
         ...games[3],
+        previewAlt: "Merge Climb number board with directional controls, a goal tile, and a next spawn panel",
+        previewObjectPosition: undefined,
+        previewSrc: "/images/games/merge-climb-preview.svg",
+        recordLabel: "Best 0:41",
+        runLabel: "2 runs",
+        statusLabel: "Played",
+      },
+      {
+        ...games[4],
         previewAlt: "Color Sweep board showing a target swatch and a grid of colored tiles",
         previewObjectPosition: undefined,
         previewSrc: "/images/games/color-sweep-preview.svg",
@@ -252,7 +270,7 @@ describe("home-hub selectors", () => {
         statusLabel: "Rank #3",
       },
       {
-        ...games[4],
+        ...games[5],
         previewAlt: "Color Census mosaic with a hidden query asking which color appeared most",
         previewObjectPosition: undefined,
         previewSrc: "/images/games/color-census-preview.svg",
@@ -261,7 +279,7 @@ describe("home-hub selectors", () => {
         statusLabel: "Played",
       },
       {
-        ...games[5],
+        ...games[6],
         previewAlt: "Sudoku puzzle board with preset digits and empty cells",
         previewObjectPosition: "top center",
         previewSrc: "/images/games/sudoku-preview.png",
@@ -270,7 +288,7 @@ describe("home-hub selectors", () => {
         statusLabel: "Played",
       },
       {
-        ...games[6],
+        ...games[7],
         previewAlt: null,
         previewObjectPosition: undefined,
         previewSrc: null,
@@ -279,7 +297,7 @@ describe("home-hub selectors", () => {
         statusLabel: "New",
       },
       {
-        ...games[7],
+        ...games[8],
         previewAlt: "Flip Match target and live card boards linked by a horizontal flip rule",
         previewObjectPosition: undefined,
         previewSrc: "/images/games/flip-match-preview.svg",
@@ -288,7 +306,7 @@ describe("home-hub selectors", () => {
         statusLabel: "Played",
       },
       {
-        ...games[8],
+        ...games[9],
         previewAlt: "Spot Change original and changed scene boards with one highlighted difference",
         previewObjectPosition: undefined,
         previewSrc: "/images/games/spot-change-preview.svg",
@@ -297,7 +315,7 @@ describe("home-hub selectors", () => {
         statusLabel: "Played",
       },
       {
-        ...games[9],
+        ...games[10],
         previewAlt: "Rotate Align path board with rotatable route tiles between start and end",
         previewObjectPosition: undefined,
         previewSrc: "/images/games/rotate-align-preview.svg",
@@ -306,7 +324,7 @@ describe("home-hub selectors", () => {
         statusLabel: "Played",
       },
       {
-        ...games[10],
+        ...games[11],
         previewAlt: "Position Lock board with labeled tokens returning to remembered final cells",
         previewObjectPosition: undefined,
         previewSrc: "/images/games/position-lock-preview.svg",
@@ -315,7 +333,7 @@ describe("home-hub selectors", () => {
         statusLabel: "Played",
       },
       {
-        ...games[11],
+        ...games[12],
         previewAlt: "Phase Lock wheel stack with rotating markers and glowing target bands",
         previewObjectPosition: undefined,
         previewSrc: "/images/games/phase-lock-preview.svg",
@@ -324,7 +342,7 @@ describe("home-hub selectors", () => {
         statusLabel: "Played",
       },
       {
-        ...games[12],
+        ...games[13],
         previewAlt: "Sync Pulse dual ring board with two pulse circles collapsing into a shared sync pad",
         previewObjectPosition: undefined,
         previewSrc: "/images/games/sync-pulse-preview.svg",
@@ -333,7 +351,7 @@ describe("home-hub selectors", () => {
         statusLabel: "Played",
       },
       {
-        ...games[13],
+        ...games[14],
         previewAlt: "Glow Cycle node grid with a highlighted target orb and a shared sync meter",
         previewObjectPosition: undefined,
         previewSrc: "/images/games/glow-cycle-preview.svg",
@@ -342,7 +360,7 @@ describe("home-hub selectors", () => {
         statusLabel: "Played",
       },
       {
-        ...games[14],
+        ...games[15],
         previewAlt: "Tempo Hold meter board with a glowing target zone and a long hold bar",
         previewObjectPosition: undefined,
         previewSrc: "/images/games/tempo-hold-preview.svg",
@@ -351,7 +369,7 @@ describe("home-hub selectors", () => {
         statusLabel: "Played",
       },
       {
-        ...games[15],
+        ...games[16],
         previewAlt: "Tap Safe wave board mixing safe targets and hazard objects with short-lived badges",
         previewObjectPosition: undefined,
         previewSrc: "/images/games/tap-safe-preview.svg",
@@ -360,7 +378,7 @@ describe("home-hub selectors", () => {
         statusLabel: "Played",
       },
       {
-        ...games[16],
+        ...games[17],
         previewAlt: "Spinner Aim ring with a rotating launcher, target arc, and hazard arc",
         previewObjectPosition: undefined,
         previewSrc: "/images/games/spinner-aim-preview.svg",
@@ -369,7 +387,7 @@ describe("home-hub selectors", () => {
         statusLabel: "Played",
       },
       {
-        ...games[17],
+        ...games[18],
         previewAlt: "Sequence Point grid showing a fast memory sequence across lit points",
         previewObjectPosition: undefined,
         previewSrc: "/images/games/sequence-point-preview.svg",
@@ -378,7 +396,7 @@ describe("home-hub selectors", () => {
         statusLabel: "Played",
       },
       {
-        ...games[18],
+        ...games[19],
         previewAlt: "Hue Drift gradient row with a missing color step and answer swatches",
         previewObjectPosition: undefined,
         previewSrc: "/images/games/hue-drift-preview.svg",
@@ -387,7 +405,7 @@ describe("home-hub selectors", () => {
         statusLabel: "Played",
       },
       {
-        ...games[19],
+        ...games[20],
         previewAlt: "Tile Instant target memory board next to a shuffled live reconstruction board",
         previewObjectPosition: undefined,
         previewSrc: "/images/games/tile-instant-preview.svg",
@@ -396,7 +414,7 @@ describe("home-hub selectors", () => {
         statusLabel: "Played",
       },
       {
-        ...games[20],
+        ...games[21],
         previewAlt: "Zone Lock puzzle board with overlapping zone cards and lock-count targets",
         previewObjectPosition: undefined,
         previewSrc: "/images/games/zone-lock-preview.svg",
@@ -405,7 +423,7 @@ describe("home-hub selectors", () => {
         statusLabel: "Played",
       },
       {
-        ...games[21],
+        ...games[22],
         previewAlt: "Tempo Weave dual-lane rhythm board with independent lane markers and center hit zones",
         previewObjectPosition: undefined,
         previewSrc: "/images/games/tempo-weave-preview.svg",

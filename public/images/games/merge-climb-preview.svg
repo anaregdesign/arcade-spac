@@ -1,0 +1,26 @@
+<svg width="640" height="360" viewBox="0 0 640 360" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="640" height="360" rx="28" fill="#FFF7ED"/>
+  <rect x="36" y="36" width="364" height="288" rx="26" fill="#FFEDD5"/>
+  <rect x="56" y="56" width="96" height="96" rx="18" fill="#FDBA74"/>
+  <text x="104" y="113" text-anchor="middle" fill="#7C2D12" font-size="34" font-family="Arial, sans-serif" font-weight="700">8</text>
+  <rect x="170" y="56" width="96" height="96" rx="18" fill="#FDBA74"/>
+  <text x="218" y="113" text-anchor="middle" fill="#7C2D12" font-size="34" font-family="Arial, sans-serif" font-weight="700">8</text>
+  <rect x="284" y="56" width="96" height="96" rx="18" fill="#FFEDD5" stroke="#C2410C" stroke-opacity="0.18" stroke-dasharray="8 8"/>
+  <rect x="56" y="170" width="96" height="96" rx="18" fill="#FB923C"/>
+  <text x="104" y="227" text-anchor="middle" fill="white" font-size="34" font-family="Arial, sans-serif" font-weight="700">16</text>
+  <rect x="170" y="170" width="96" height="96" rx="18" fill="#FB923C"/>
+  <text x="218" y="227" text-anchor="middle" fill="white" font-size="34" font-family="Arial, sans-serif" font-weight="700">16</text>
+  <rect x="284" y="170" width="96" height="96" rx="18" fill="#FFEDD5" stroke="#C2410C" stroke-opacity="0.18" stroke-dasharray="8 8"/>
+  <rect x="430" y="54" width="170" height="90" rx="22" fill="white"/>
+  <text x="456" y="86" fill="#9A3412" font-size="18" font-family="Arial, sans-serif" font-weight="700">GOAL</text>
+  <text x="456" y="121" fill="#7C2D12" font-size="30" font-family="Arial, sans-serif" font-weight="700">32</text>
+  <rect x="430" y="160" width="170" height="70" rx="22" fill="white"/>
+  <text x="456" y="190" fill="#9A3412" font-size="18" font-family="Arial, sans-serif" font-weight="700">NEXT</text>
+  <text x="548" y="206" text-anchor="middle" fill="#C2410C" font-size="28" font-family="Arial, sans-serif" font-weight="700">2</text>
+  <rect x="430" y="246" width="54" height="54" rx="18" fill="#FFF7ED" stroke="#EA580C"/>
+  <text x="457" y="281" text-anchor="middle" fill="#C2410C" font-size="26" font-family="Arial, sans-serif" font-weight="700">↑</text>
+  <rect x="488" y="246" width="54" height="54" rx="18" fill="#FFF7ED" stroke="#EA580C"/>
+  <text x="515" y="281" text-anchor="middle" fill="#C2410C" font-size="26" font-family="Arial, sans-serif" font-weight="700">↓</text>
+  <rect x="546" y="246" width="54" height="54" rx="18" fill="#FFF7ED" stroke="#EA580C"/>
+  <text x="573" y="281" text-anchor="middle" fill="#C2410C" font-size="26" font-family="Arial, sans-serif" font-weight="700">→</text>
+</svg>

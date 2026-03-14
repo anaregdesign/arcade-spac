@@ -36,6 +36,7 @@ describe("game-catalog", () => {
     expect(resolveGameKey("CHAIN_TRIGGER")).toBe("chain-trigger");
     expect(resolveGameKey("COLOR_SWEEP")).toBe("color-sweep");
     expect(resolveGameKey("ICON_CHAIN")).toBe("icon-chain");
+    expect(resolveGameKey("MERGE_CLIMB")).toBe("merge-climb");
     expect(resolveGameKey("drop-ball")).toBe("precision-drop");
     expect(resolveGameKey("drop_line")).toBe("precision-drop");
     expect(resolveGameKey("ORBIT_TAP")).toBe("orbit-tap");
@@ -61,6 +62,7 @@ describe("game-catalog", () => {
     expect(toStoredGameKey("chain-trigger")).toBe("CHAIN_TRIGGER");
     expect(toStoredGameKey("color-sweep")).toBe("COLOR_SWEEP");
     expect(toStoredGameKey("icon-chain")).toBe("ICON_CHAIN");
+    expect(toStoredGameKey("merge-climb")).toBe("MERGE_CLIMB");
     expect(toStoredGameKey("color-census")).toBe("COLOR_CENSUS");
     expect(toStoredGameKey("flip-match")).toBe("FLIP_MATCH");
     expect(toStoredGameKey("phase-lock")).toBe("PHASE_LOCK");
@@ -85,6 +87,7 @@ describe("game-catalog", () => {
     expect(toRouteGameKey("CHAIN_TRIGGER")).toBe("chain-trigger");
     expect(toRouteGameKey("COLOR_SWEEP")).toBe("color-sweep");
     expect(toRouteGameKey("ICON_CHAIN")).toBe("icon-chain");
+    expect(toRouteGameKey("MERGE_CLIMB")).toBe("merge-climb");
     expect(toRouteGameKey("drop_ball")).toBe("precision-drop");
     expect(toRouteGameKey("TARGET_TRAIL")).toBe("target-trail");
     expect(toRouteGameKey("SPOT_CHANGE")).toBe("spot-change");
@@ -111,6 +114,7 @@ describe("game-catalog", () => {
     expect(getGameDefinition("CHAIN_TRIGGER")?.name).toBe("Chain Trigger");
     expect(getGameDefinition("DROP_LINE")?.name).toBe("Precision Drop");
     expect(getGameDefinition("ICON_CHAIN")?.name).toBe("Icon Chain");
+    expect(getGameDefinition("MERGE_CLIMB")?.name).toBe("Merge Climb");
     expect(getGameDefinition("ORBIT_TAP")?.name).toBe("Orbit Tap");
     expect(getGameDefinition("COLOR_CENSUS")?.name).toBe("Color Census");
     expect(getGameDefinition("FLIP_MATCH")?.name).toBe("Flip Match");
@@ -137,6 +141,7 @@ describe("game-catalog", () => {
     expect(getGameHomeTags("CHAIN_TRIGGER")).toEqual(["logic", "spatial"]);
     expect(getGameHomeTags("DROP_LINE")).toEqual(["timing", "fast-start"]);
     expect(getGameHomeTags("ICON_CHAIN")).toEqual(["logic", "memory"]);
+    expect(getGameHomeTags("MERGE_CLIMB")).toEqual(["logic", "spatial"]);
     expect(getGameHomeTags("ORBIT_TAP")).toEqual(["timing", "fast-start"]);
     expect(getGameHomeTags("COLOR_CENSUS")).toEqual(["memory", "perception"]);
     expect(getGameHomeTags("FLIP_MATCH")).toEqual(["logic", "spatial"]);
@@ -160,6 +165,7 @@ describe("game-catalog", () => {
     expect(getGameSuccessfulResultLabel("CHAIN_TRIGGER")).toBe("clear");
     expect(getGameSuccessfulResultLabel("DROP_LINE")).toBe("hit");
     expect(getGameSuccessfulResultLabel("ICON_CHAIN")).toBe("clear");
+    expect(getGameSuccessfulResultLabel("MERGE_CLIMB")).toBe("clear");
     expect(getGameSuccessfulResultLabel("COLOR_CENSUS")).toBe("clear");
     expect(getGameSuccessfulResultLabel("FLIP_MATCH")).toBe("clear");
     expect(getGameSuccessfulResultLabel("PHASE_LOCK")).toBe("clear");

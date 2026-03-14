@@ -13,12 +13,12 @@
 
 - 利用者は Home から `Merge Climb` を開き、少ない move で target value に到達したい
 - 利用者は workspace で max value、remaining space、move count を見ながら merge plan を立てたい
-- 利用者は Result、profile、rankings で `max value` と `moves used` を確認したい
+- 利用者は Result、profile、rankings で `clear time` と `moves used` を確認したい
 
 ## Scope
 
 - `Merge Climb` を home、workspace、result、rankings、profile に統合する
-- primary metric は `max value`、support metric は `moves used` とする
+- primary metric は `clear time`、support metric は `moves used` とする
 - workspace では board、next spawn pressure、current max value、remaining space を visible にする
 
 ## Non-Goals
@@ -34,7 +34,7 @@
 - every move の後に新しい tile が spawn し、remaining space pressure が上がる
 - goal threshold value に到達すると clear になり Result に遷移する
 - board が埋まり、もう merge できない状態になると fail になる
-- Result、profile、rankings では `max value` と `moves used` を確認できる
+- Result、profile、rankings では `clear time` と `moves used` を確認できる
 
 ## Acceptance Criteria
 
@@ -42,7 +42,7 @@
 - 1 run は 2 分以内で clear または fail が確定する
 - merge growth、space pressure、move efficiency の 3 要素が visible に機能する
 - workspace 上で current max value、moves used、remaining empty cells が更新される
-- Result、profile、rankings では `max value` と `moves used` が保存される
+- Result、profile、rankings では `clear time` と `moves used` が保存される
 
 ## Edge Cases
 
