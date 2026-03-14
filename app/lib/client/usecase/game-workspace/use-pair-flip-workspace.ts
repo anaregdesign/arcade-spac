@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 
-import { playCardFlip, playCardMatch, playCardMismatch, playRunClear, playRunFail, playRunStart } from "../../sound-effects";
+import { playCardFlip, playCardMatch, playCardMismatch, playRunClear, playRunFail, playRunStart } from "../../infrastructure/browser/sound-effects";
 import { formatDuration } from "./display";
 import { usePairFlipSession } from "./use-pair-flip-session";
 import { useTerminalResultSubmission } from "./use-terminal-result-submission";

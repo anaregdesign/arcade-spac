@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-import { playRunClear, playRunFail, playRunStart, playTapCorrect, playTapWrong } from "../../sound-effects";
+import { playRunClear, playRunFail, playRunStart, playTapCorrect, playTapWrong } from "../../infrastructure/browser/sound-effects";
 import { formatDuration } from "./display";
 import { useNumberChainSession } from "./use-number-chain-session";
 import { useTerminalResultSubmission } from "./use-terminal-result-submission";

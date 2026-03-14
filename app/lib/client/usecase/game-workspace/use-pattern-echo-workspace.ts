@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 
-import { playPadFlash, playRunClear, playRunFail, playRunStart, playTapCorrect, playTapWrong } from "../../sound-effects";
+import { playPadFlash, playRunClear, playRunFail, playRunStart, playTapCorrect, playTapWrong } from "../../infrastructure/browser/sound-effects";
 import { formatDuration } from "./display";
 import { usePatternEchoSession } from "./use-pattern-echo-session";
 import { useTerminalResultSubmission } from "./use-terminal-result-submission";

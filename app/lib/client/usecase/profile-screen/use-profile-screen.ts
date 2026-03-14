@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 
+import { applyDocumentThemePreference } from "../../infrastructure/browser/document-theme";
+
 type ThemePreference = "LIGHT" | "DARK";
 
 type TrendPoint = {
@@ -45,11 +47,7 @@ export function useProfileScreen(input: ProfileScreenInput) {
   }, [input.profile.themePreference]);
 
   useEffect(() => {
-    if (typeof document === "undefined") {
-      return;
-    }
-
-    document.body.dataset.theme = themePreference === "DARK" ? "dark" : "light";
+    applyDocumentThemePreference(themePreference);
   }, [themePreference]);
 
   return {

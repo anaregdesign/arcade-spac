@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-import { playBallDrop, playRunClear, playRunFail, playRunStart } from "../../sound-effects";
+import { playBallDrop, playRunClear, playRunFail, playRunStart } from "../../infrastructure/browser/sound-effects";
 import { formatElapsedMs } from "./display";
 import { usePrecisionDropSession } from "./use-precision-drop-session";
 import { useTerminalResultSubmission } from "./use-terminal-result-submission";

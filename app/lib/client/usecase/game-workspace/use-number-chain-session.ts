@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 
+import { clearBrowserInterval, startBrowserInterval } from "../../infrastructure/browser/timers";
+
 type Difficulty = "EASY" | "NORMAL" | "HARD" | "EXPERT";
 type SessionState = "idle" | "playing" | "cleared" | "failed";
 
@@ -68,7 +70,7 @@ export function useNumberChainSession(difficulty: Difficulty) {
       return undefined;
     }
 
-    const interval = window.setInterval(() => {
+    const interval = startBrowserInterval(() => {
       setElapsedSeconds((currentValue) => {
         const nextValue = Math.min(config.timeLimitSeconds, currentValue + 1);
 
@@ -80,7 +82,7 @@ export function useNumberChainSession(difficulty: Difficulty) {
       });
     }, 1000);
 
-    return () => window.clearInterval(interval);
+    return () => clearBrowserInterval(interval);
   }, [config.timeLimitSeconds, state]);
 
   function beginRun() {

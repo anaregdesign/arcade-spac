@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
 
+import { clearBrowserInterval, clearBrowserTimeout, startBrowserInterval, startBrowserTimeout } from "../../infrastructure/browser/timers";
+import { subscribeWindowKeydown } from "../../infrastructure/browser/window-keydown";
+
 type Difficulty = "EASY" | "NORMAL" | "HARD" | "EXPERT";
 
 type SessionState = "idle" | "playing" | "cleared";
@@ -103,11 +106,11 @@ export function useSudokuSession(difficulty: Difficulty) {
       return undefined;
     }
 
-    const interval = window.setInterval(() => {
+    const interval = startBrowserInterval(() => {
       setElapsedSeconds((value) => value + 1);
     }, 1000);
 
-    return () => window.clearInterval(interval);
+    return () => clearBrowserInterval(interval);
   }, [state]);
 
   useEffect(() => {
@@ -115,11 +118,11 @@ export function useSudokuSession(difficulty: Difficulty) {
       return undefined;
     }
 
-    const timeout = window.setTimeout(() => {
+    const timeout = startBrowserTimeout(() => {
       setWrongCellKey(null);
     }, 500);
 
-    return () => window.clearTimeout(timeout);
+    return () => clearBrowserTimeout(timeout);
   }, [wrongCellKey]);
 
   useEffect(() => {
@@ -146,8 +149,7 @@ export function useSudokuSession(difficulty: Difficulty) {
       }
     }
 
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    return subscribeWindowKeydown(handleKeyDown);
   }, [board, selectedCell, state]);
 
   function resetBoard() {

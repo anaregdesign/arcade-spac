@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
+import { cancelBrowserAnimationFrame, requestBrowserAnimationFrame } from "../../infrastructure/browser/timers";
+
 type Difficulty = "EASY" | "NORMAL" | "HARD" | "EXPERT";
 type SessionState = "idle" | "playing" | "cleared" | "failed";
 
@@ -44,7 +46,7 @@ export function usePrecisionDropSession(difficulty: Difficulty) {
     startedAtRef.current = null;
 
     if (animationFrameRef.current !== null) {
-      window.cancelAnimationFrame(animationFrameRef.current);
+      cancelBrowserAnimationFrame(animationFrameRef.current);
       animationFrameRef.current = null;
     }
   }, [difficulty]);
@@ -52,7 +54,7 @@ export function usePrecisionDropSession(difficulty: Difficulty) {
   useEffect(() => {
     if (state !== "playing") {
       if (animationFrameRef.current !== null) {
-        window.cancelAnimationFrame(animationFrameRef.current);
+        cancelBrowserAnimationFrame(animationFrameRef.current);
         animationFrameRef.current = null;
       }
 
@@ -85,14 +87,14 @@ export function usePrecisionDropSession(difficulty: Difficulty) {
       }
 
       setBallCenterY(nextBallCenterY);
-      animationFrameRef.current = window.requestAnimationFrame(tick);
+      animationFrameRef.current = requestBrowserAnimationFrame(tick);
     };
 
-    animationFrameRef.current = window.requestAnimationFrame(tick);
+    animationFrameRef.current = requestBrowserAnimationFrame(tick);
 
     return () => {
       if (animationFrameRef.current !== null) {
-        window.cancelAnimationFrame(animationFrameRef.current);
+        cancelBrowserAnimationFrame(animationFrameRef.current);
         animationFrameRef.current = null;
       }
     };
@@ -102,7 +104,7 @@ export function usePrecisionDropSession(difficulty: Difficulty) {
     const nextSpawnY = getRandomSpawnY(difficultySettings.spawnRange);
 
     if (animationFrameRef.current !== null) {
-      window.cancelAnimationFrame(animationFrameRef.current);
+      cancelBrowserAnimationFrame(animationFrameRef.current);
       animationFrameRef.current = null;
     }
 
@@ -121,7 +123,7 @@ export function usePrecisionDropSession(difficulty: Difficulty) {
     }
 
     if (animationFrameRef.current !== null) {
-      window.cancelAnimationFrame(animationFrameRef.current);
+      cancelBrowserAnimationFrame(animationFrameRef.current);
       animationFrameRef.current = null;
     }
 

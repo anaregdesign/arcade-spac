@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
+import { clearBrowserInterval, clearBrowserTimeout, startBrowserInterval, startBrowserTimeout } from "../../infrastructure/browser/timers";
+
 type Difficulty = "EASY" | "NORMAL" | "HARD" | "EXPERT";
 type SessionState = "idle" | "watching" | "inputting" | "cleared" | "failed";
 
@@ -68,11 +70,11 @@ export function usePatternEchoSession(difficulty: Difficulty) {
   useEffect(() => {
     return () => {
       for (const t of flashTimeoutsRef.current) {
-        window.clearTimeout(t);
+        clearBrowserTimeout(t);
       }
 
       if (timerIntervalRef.current !== null) {
-        window.clearInterval(timerIntervalRef.current);
+        clearBrowserInterval(timerIntervalRef.current);
       }
     };
   }, []);
@@ -80,14 +82,14 @@ export function usePatternEchoSession(difficulty: Difficulty) {
   useEffect(() => {
     if (state !== "watching" && state !== "inputting") {
       if (timerIntervalRef.current !== null) {
-        window.clearInterval(timerIntervalRef.current);
+        clearBrowserInterval(timerIntervalRef.current);
         timerIntervalRef.current = null;
       }
 
       return;
     }
 
-    timerIntervalRef.current = window.setInterval(() => {
+    timerIntervalRef.current = startBrowserInterval(() => {
       setElapsedSeconds((current) => {
         const next = Math.min(config.timeLimitSeconds, current + 1);
 
@@ -103,7 +105,7 @@ export function usePatternEchoSession(difficulty: Difficulty) {
 
     return () => {
       if (timerIntervalRef.current !== null) {
-        window.clearInterval(timerIntervalRef.current);
+        clearBrowserInterval(timerIntervalRef.current);
         timerIntervalRef.current = null;
       }
     };
@@ -111,7 +113,7 @@ export function usePatternEchoSession(difficulty: Difficulty) {
 
   function clearFlashTimeouts() {
     for (const t of flashTimeoutsRef.current) {
-      window.clearTimeout(t);
+      clearBrowserTimeout(t);
     }
 
     flashTimeoutsRef.current = [];
@@ -125,26 +127,32 @@ export function usePatternEchoSession(difficulty: Difficulty) {
 
     for (let step = 0; step < seq.length; step += 1) {
       const padIndex = seq[step];
-      const flashOn = window.setTimeout(() => {
+      const flashOn = startBrowserTimeout(() => {
         setFlashingPadIndex(padIndex);
       }, offset);
 
-      flashTimeoutsRef.current.push(flashOn);
+      if (flashOn !== null) {
+        flashTimeoutsRef.current.push(flashOn);
+      }
       offset += flashDurationMs;
 
-      const flashOff = window.setTimeout(() => {
+      const flashOff = startBrowserTimeout(() => {
         setFlashingPadIndex(null);
       }, offset);
 
-      flashTimeoutsRef.current.push(flashOff);
+      if (flashOff !== null) {
+        flashTimeoutsRef.current.push(flashOff);
+      }
       offset += flashGapMs;
     }
 
-    const finishWatch = window.setTimeout(() => {
+    const finishWatch = startBrowserTimeout(() => {
       setState((current) => (current === "watching" ? "inputting" : current));
     }, seq.length * stepDuration);
 
-    flashTimeoutsRef.current.push(finishWatch);
+    if (finishWatch !== null) {
+      flashTimeoutsRef.current.push(finishWatch);
+    }
   }
 
   function beginRun() {

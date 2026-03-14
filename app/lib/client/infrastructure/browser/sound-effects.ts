@@ -1,4 +1,4 @@
-import { readSoundMuted, writeSoundMuted } from "./infrastructure/browser/sound-mute-storage";
+import { readSoundMuted, writeSoundMuted } from "./sound-mute-storage";
 
 let mutedState: boolean = readSoundMuted();
 
@@ -115,8 +115,6 @@ function playSequence(notes: NoteSpec[]): void {
   }
 }
 
-// ─── Common run sounds ────────────────────────────────────────────────────────
-
 export function playRunStart(): void {
   playSequence([
     { duration: 0.08, frequency: 392, gain: 0.25, startAt: 0, type: "sine" },
@@ -136,8 +134,6 @@ export function playRunFail(): void {
   playTone(280, "sawtooth", 0.28, 0.2, 160);
 }
 
-// ─── Generic tap sounds ───────────────────────────────────────────────────────
-
 export function playTapCorrect(): void {
   playTone(660, "sine", 0.09, 0.2);
 }
@@ -145,8 +141,6 @@ export function playTapCorrect(): void {
 export function playTapWrong(): void {
   playTone(220, "square", 0.09, 0.15);
 }
-
-// ─── Pair Flip ────────────────────────────────────────────────────────────────
 
 export function playCardFlip(): void {
   playTone(440, "triangle", 0.06, 0.15);
@@ -162,8 +156,6 @@ export function playCardMatch(): void {
 export function playCardMismatch(): void {
   playTone(260, "square", 0.14, 0.14, 220);
 }
-
-// ─── Minesweeper ──────────────────────────────────────────────────────────────
 
 export function playCellReveal(): void {
   playTone(600, "triangle", 0.06, 0.12);
@@ -181,13 +173,9 @@ export function playFlagOff(): void {
   playTone(330, "triangle", 0.07, 0.12);
 }
 
-// ─── Sudoku ───────────────────────────────────────────────────────────────────
-
 export function playHintUse(): void {
   playTone(880, "sine", 0.18, 0.2);
 }
-
-// ─── Pattern Echo ─────────────────────────────────────────────────────────────
 
 const PAD_NOTES: Record<string, number> = {
   amber: 523,
@@ -206,8 +194,6 @@ export function playPadFlash(padColor: string): void {
 
   playTone(frequency, "sine", 0.2, 0.3);
 }
-
-// ─── Precision Drop ───────────────────────────────────────────────────────────
 
 export function playBallDrop(): void {
   playTone(380, "triangle", 0.1, 0.2, 280);

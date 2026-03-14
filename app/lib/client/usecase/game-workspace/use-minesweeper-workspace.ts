@@ -1,6 +1,6 @@
 import { useEffect, useState, type MouseEvent } from "react";
 
-import { playCellReveal, playFlagOff, playFlagOn, playMineExplode, playRunClear, playRunStart } from "../../sound-effects";
+import { playCellReveal, playFlagOff, playFlagOn, playMineExplode, playRunClear, playRunStart } from "../../infrastructure/browser/sound-effects";
 import { formatDuration } from "./display";
 import { useMinesweeperSession } from "./use-minesweeper-session";
 import { useTerminalResultSubmission } from "./use-terminal-result-submission";

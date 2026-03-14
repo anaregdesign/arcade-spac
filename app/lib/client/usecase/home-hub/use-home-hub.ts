@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router";
 
 import { readStoredHomeHubState, writeStoredHomeHubState } from "../../infrastructure/browser/home-hub-storage";
+import { readWindowScrollY, restoreWindowScroll, subscribeWindowScroll } from "../../infrastructure/browser/window-scroll";
 import { getGameHomeTags } from "../../../domain/entities/game-catalog";
 import { countVisibleRankedGames, countVisibleUnplayedGames, toHomeGameCards } from "./selectors";
 
@@ -199,7 +200,7 @@ export function useHomeHub(games: HomeGame[]) {
   useEffect(() => {
     const persist = () => {
       writeStoredHomeHubState({
-        scrollY: typeof window === "undefined" ? 0 : window.scrollY,
+        scrollY: readWindowScrollY(),
         search,
         sort,
         tag,
@@ -207,17 +208,11 @@ export function useHomeHub(games: HomeGame[]) {
     };
 
     persist();
-
-    if (typeof window === "undefined") {
-      return;
-    }
-
-    window.addEventListener("scroll", persist, { passive: true });
-    return () => window.removeEventListener("scroll", persist);
+    return subscribeWindowScroll(persist);
   }, [search, sort, tag]);
 
   useEffect(() => {
-    if (didRestoreScrollRef.current || typeof window === "undefined") {
+    if (didRestoreScrollRef.current) {
       return;
     }
 
@@ -229,7 +224,7 @@ export function useHomeHub(games: HomeGame[]) {
     }
 
     didRestoreScrollRef.current = true;
-    window.requestAnimationFrame(() => window.scrollTo({ top: stored.scrollY, behavior: "auto" }));
+    restoreWindowScroll(stored.scrollY);
   }, [search, sort, tag]);
 
   useEffect(() => {

@@ -258,6 +258,7 @@ Home の各ゲームパネルに表示する preview image で、盤面を囲う
 - `components` は render、accessibility wiring、visual branching に集中する
 - screen-level の derived view model、browser side effect、dialog / shell state、workspace submit orchestration は `app/lib/client/usecase` へ寄せる
 - game workspace は board 固有の rendering を `components` に残しつつ、run status・sound feedback・result submit は usecase 側で管理する
+- browser environment から取得する state、DOM update、browser event subscription、browser scheduler、browser-native payload 生成は `app/lib/client/infrastructure/browser/` の adapter へ集約する
 
 ### Non-Goals
 
@@ -272,11 +273,13 @@ Home の各ゲームパネルに表示する preview image で、盤面を囲う
 - Profile の theme preview、profile edit form、trend 表示、game 別 performance 表示は従来どおり維持される
 - Rankings、Result、Login の copy、action、status 表示は従来どおり維持される
 - 各 game workspace では start overlay、difficulty 切り替え、play 中 status、sound feedback、clear / fail 後の自動 Result 遷移が従来どおり動作する
+- Home の scroll restore、Profile の theme preview、Sudoku の keyboard input、各 game の timer / animation loop、sound playback は browser adapter 経由でも同じ体感を維持する
 
 ### Acceptance Criteria
 
 - non-trivial state transition、derived view-model helper、browser side effect、result submit orchestration は `app/components/` 直下に残さない
 - `app/lib/client/usecase/` に screen / workspace ごとの public entry があり、component は View rendering を主責務にする
+- `app/lib/client/usecase/` と `app/lib/client/` 配下に direct な `window` / `document` / `AudioContext` / `FormData` access を残さず、browser-specific integration は `app/lib/client/infrastructure/browser/` から呼ばれる
 - Home、Profile、Rankings、Result、Login、App shell、game instructions dialog の表示・操作結果に regression がない
 - 7 game workspace の run 開始、play 中、clear / fail、Result 遷移の挙動が変わらない
 
@@ -291,6 +294,7 @@ Home の各ゲームパネルに表示する preview image で、盤面を囲う
 
 - canonical layout は `app/lib/client/usecase/<feature>/` を基準にする
 - `components` には tiny な View-only interaction を除く logic を持ち込まない
+- browser-specific code は `app/lib/client/infrastructure/browser/` を leaf owner とし、usecase 側では adapter 経由で使う
 - internal refactor であっても、user-visible behavior は変えずに維持する
 
 ### Links

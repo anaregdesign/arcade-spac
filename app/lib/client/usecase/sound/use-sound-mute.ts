@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { isSoundMuted, setSoundMuted } from "../../sound-effects";
+import { isSoundMuted, setSoundMuted } from "../../infrastructure/browser/sound-effects";
 
 export function useSoundMute() {
   const [muted, setMuted] = useState(() => isSoundMuted());

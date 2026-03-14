@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
+import { clearBrowserInterval, clearBrowserTimeout, startBrowserInterval, startBrowserTimeout } from "../../infrastructure/browser/timers";
+
 type Difficulty = "EASY" | "NORMAL" | "HARD" | "EXPERT";
 type SessionState = "idle" | "playing" | "cleared" | "failed";
 
@@ -75,7 +77,7 @@ export function usePairFlipSession(difficulty: Difficulty) {
 
   useEffect(() => {
     if (mismatchTimeoutRef.current !== null) {
-      window.clearTimeout(mismatchTimeoutRef.current);
+      clearBrowserTimeout(mismatchTimeoutRef.current);
       mismatchTimeoutRef.current = null;
     }
 
@@ -91,7 +93,7 @@ export function usePairFlipSession(difficulty: Difficulty) {
       return undefined;
     }
 
-    const interval = window.setInterval(() => {
+    const interval = startBrowserInterval(() => {
       setElapsedSeconds((currentValue) => {
         const nextValue = Math.min(config.timeLimitSeconds, currentValue + 1);
 
@@ -103,18 +105,18 @@ export function usePairFlipSession(difficulty: Difficulty) {
       });
     }, 1000);
 
-    return () => window.clearInterval(interval);
+    return () => clearBrowserInterval(interval);
   }, [config.timeLimitSeconds, state]);
 
   useEffect(() => () => {
     if (mismatchTimeoutRef.current !== null) {
-      window.clearTimeout(mismatchTimeoutRef.current);
+      clearBrowserTimeout(mismatchTimeoutRef.current);
     }
   }, []);
 
   function beginRun() {
     if (mismatchTimeoutRef.current !== null) {
-      window.clearTimeout(mismatchTimeoutRef.current);
+      clearBrowserTimeout(mismatchTimeoutRef.current);
       mismatchTimeoutRef.current = null;
     }
 
@@ -172,7 +174,7 @@ export function usePairFlipSession(difficulty: Difficulty) {
     }
 
     setMismatchCount((currentValue) => currentValue + 1);
-    mismatchTimeoutRef.current = window.setTimeout(() => {
+    mismatchTimeoutRef.current = startBrowserTimeout(() => {
       setBoard((currentBoard) =>
         currentBoard.map((row) =>
           row.map((card) =>

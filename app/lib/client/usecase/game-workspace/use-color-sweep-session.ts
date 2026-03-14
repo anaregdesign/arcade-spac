@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 
+import { clearBrowserInterval, startBrowserInterval } from "../../infrastructure/browser/timers";
+
 type Difficulty = "EASY" | "NORMAL" | "HARD" | "EXPERT";
 type SessionState = "idle" | "playing" | "cleared" | "failed";
 type PaletteKey = "amber" | "coral" | "mint" | "plum" | "sky" | "slate";
@@ -121,7 +123,7 @@ export function useColorSweepSession(difficulty: Difficulty) {
       return undefined;
     }
 
-    const interval = window.setInterval(() => {
+    const interval = startBrowserInterval(() => {
       setElapsedSeconds((currentValue) => {
         const nextValue = Math.min(config.timeLimitSeconds, currentValue + 1);
 
@@ -133,7 +135,7 @@ export function useColorSweepSession(difficulty: Difficulty) {
       });
     }, 1000);
 
-    return () => window.clearInterval(interval);
+    return () => clearBrowserInterval(interval);
   }, [config.timeLimitSeconds, state]);
 
   function beginRun() {

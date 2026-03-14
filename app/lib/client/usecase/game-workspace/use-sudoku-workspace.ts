@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 
-import { playHintUse, playRunClear, playRunStart, playTapCorrect, playTapWrong } from "../../sound-effects";
+import { playHintUse, playRunClear, playRunStart, playTapCorrect, playTapWrong } from "../../infrastructure/browser/sound-effects";
 import { formatDuration } from "./display";
 import { useGameplayResultSubmitter } from "./use-gameplay-result-submitter";
 import { useSudokuSession } from "./use-sudoku-session";

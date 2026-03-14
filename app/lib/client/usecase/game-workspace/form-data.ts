@@ -10,20 +10,20 @@ export type GameplayResultSubmission = {
   primaryMetric: number;
 };
 
-export function createGameplayResultFormData(input: GameplayResultSubmission) {
-  const formData = new FormData();
-
-  formData.set("intent", input.intent);
-  formData.set("difficulty", input.difficulty);
-  formData.set("primaryMetric", String(input.primaryMetric));
+export function toGameplayResultFormEntries(input: GameplayResultSubmission): Array<[string, string]> {
+  const entries: Array<[string, string]> = [
+    ["intent", input.intent],
+    ["difficulty", input.difficulty],
+    ["primaryMetric", String(input.primaryMetric)],
+  ];
 
   if (input.mistakeCount !== undefined) {
-    formData.set("mistakeCount", String(input.mistakeCount));
+    entries.push(["mistakeCount", String(input.mistakeCount)]);
   }
 
   if (input.hintCount !== undefined) {
-    formData.set("hintCount", String(input.hintCount));
+    entries.push(["hintCount", String(input.hintCount)]);
   }
 
-  return formData;
+  return entries;
 }

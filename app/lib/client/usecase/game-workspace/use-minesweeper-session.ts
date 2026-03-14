@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 
+import { clearBrowserInterval, startBrowserInterval } from "../../infrastructure/browser/timers";
+
 type Difficulty = "EASY" | "NORMAL" | "HARD" | "EXPERT";
 
 type Cell = {
@@ -140,11 +142,11 @@ export function useMinesweeperSession(difficulty: Difficulty) {
       return undefined;
     }
 
-    const interval = window.setInterval(() => {
+    const interval = startBrowserInterval(() => {
       setElapsedSeconds((value) => value + 1);
     }, 1000);
 
-    return () => window.clearInterval(interval);
+    return () => clearBrowserInterval(interval);
   }, [state]);
 
   function resetBoard() {
