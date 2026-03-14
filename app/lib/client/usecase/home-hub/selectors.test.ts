@@ -109,6 +109,15 @@ describe("home-hub selectors", () => {
     },
     {
       currentRank: null,
+      key: "glow-cycle",
+      metricValue: "0:50",
+      name: "Glow Cycle",
+      playCount: 2,
+      recommendationText: "Visual rhythm crest",
+      shortDescription: "Tap the highlighted node only while the full pulse board crests together",
+    },
+    {
+      currentRank: null,
       key: "tempo-hold",
       metricValue: "1:01",
       name: "Tempo Hold",
@@ -289,6 +298,15 @@ describe("home-hub selectors", () => {
       },
       {
         ...games[11],
+        previewAlt: "Glow Cycle node grid with a highlighted target orb and a shared sync meter",
+        previewObjectPosition: undefined,
+        previewSrc: "/images/games/glow-cycle-preview.svg",
+        recordLabel: "Best 0:50",
+        runLabel: "2 runs",
+        statusLabel: "Played",
+      },
+      {
+        ...games[12],
         previewAlt: "Tempo Hold meter board with a glowing target zone and a long hold bar",
         previewObjectPosition: undefined,
         previewSrc: "/images/games/tempo-hold-preview.svg",
@@ -297,7 +315,7 @@ describe("home-hub selectors", () => {
         statusLabel: "Played",
       },
       {
-        ...games[12],
+        ...games[13],
         previewAlt: "Tap Safe wave board mixing safe targets and hazard objects with short-lived badges",
         previewObjectPosition: undefined,
         previewSrc: "/images/games/tap-safe-preview.svg",
@@ -306,7 +324,7 @@ describe("home-hub selectors", () => {
         statusLabel: "Played",
       },
       {
-        ...games[13],
+        ...games[14],
         previewAlt: "Spinner Aim ring with a rotating launcher, target arc, and hazard arc",
         previewObjectPosition: undefined,
         previewSrc: "/images/games/spinner-aim-preview.svg",
@@ -315,7 +333,7 @@ describe("home-hub selectors", () => {
         statusLabel: "Played",
       },
       {
-        ...games[14],
+        ...games[15],
         previewAlt: "Sequence Point grid showing a fast memory sequence across lit points",
         previewObjectPosition: undefined,
         previewSrc: "/images/games/sequence-point-preview.svg",
@@ -324,7 +342,7 @@ describe("home-hub selectors", () => {
         statusLabel: "Played",
       },
       {
-        ...games[15],
+        ...games[16],
         previewAlt: "Hue Drift gradient row with a missing color step and answer swatches",
         previewObjectPosition: undefined,
         previewSrc: "/images/games/hue-drift-preview.svg",
@@ -333,7 +351,7 @@ describe("home-hub selectors", () => {
         statusLabel: "Played",
       },
       {
-        ...games[16],
+        ...games[17],
         previewAlt: "Tile Instant target memory board next to a shuffled live reconstruction board",
         previewObjectPosition: undefined,
         previewSrc: "/images/games/tile-instant-preview.svg",
@@ -342,7 +360,7 @@ describe("home-hub selectors", () => {
         statusLabel: "Played",
       },
       {
-        ...games[17],
+        ...games[18],
         previewAlt: "Zone Lock puzzle board with overlapping zone cards and lock-count targets",
         previewObjectPosition: undefined,
         previewSrc: "/images/games/zone-lock-preview.svg",
@@ -351,7 +369,7 @@ describe("home-hub selectors", () => {
         statusLabel: "Played",
       },
       {
-        ...games[18],
+        ...games[19],
         previewAlt: "Tempo Weave dual-lane rhythm board with independent lane markers and center hit zones",
         previewObjectPosition: undefined,
         previewSrc: "/images/games/tempo-weave-preview.svg",

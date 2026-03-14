@@ -1,0 +1,319 @@
+.glow-cycle-board-card {
+  min-height: 30rem;
+}
+
+.glow-cycle-shell {
+  display: grid;
+  gap: 1rem;
+  min-height: 30rem;
+}
+
+.glow-cycle-copy {
+  display: grid;
+  gap: 0.35rem;
+  justify-items: center;
+  margin-inline: auto;
+  max-width: 38rem;
+  text-align: center;
+}
+
+.glow-cycle-copy strong {
+  color: #f8fafc;
+  font-size: 1.08rem;
+}
+
+.glow-cycle-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.glow-cycle-legend-target,
+.glow-cycle-legend-window,
+.glow-cycle-legend-status {
+  border-radius: 999px;
+  font-size: 0.84rem;
+  font-weight: 700;
+  padding: 0.5rem 0.8rem;
+}
+
+.glow-cycle-legend-target {
+  background: rgba(56, 189, 248, 0.18);
+  color: #bae6fd;
+}
+
+.glow-cycle-legend-window {
+  background: rgba(45, 212, 191, 0.16);
+  color: #ccfbf1;
+}
+
+.glow-cycle-legend-status {
+  background: rgba(148, 163, 184, 0.14);
+  color: #cbd5e1;
+}
+
+.glow-cycle-meter {
+  position: relative;
+  width: min(34rem, 100%);
+  height: 3rem;
+  margin-inline: auto;
+}
+
+.glow-cycle-meter-track {
+  position: absolute;
+  inset: 50% 0 auto;
+  height: 0.4rem;
+  transform: translateY(-50%);
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(15, 23, 42, 0.88), rgba(30, 41, 59, 0.72), rgba(15, 23, 42, 0.88));
+  box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.12);
+}
+
+.glow-cycle-meter-good,
+.glow-cycle-meter-perfect,
+.glow-cycle-meter-progress,
+.glow-cycle-meter-sync-marker {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.glow-cycle-meter-good,
+.glow-cycle-meter-perfect {
+  border-radius: 999px;
+}
+
+.glow-cycle-meter-good {
+  height: 0.92rem;
+  background: rgba(45, 212, 191, 0.2);
+}
+
+.glow-cycle-meter-perfect {
+  height: 1.24rem;
+  background: rgba(251, 191, 36, 0.28);
+}
+
+.glow-cycle-meter-sync-marker,
+.glow-cycle-meter-progress {
+  width: 0.8rem;
+  height: 0.8rem;
+  border-radius: 999px;
+}
+
+.glow-cycle-meter-sync-marker {
+  background: rgba(248, 250, 252, 0.92);
+  box-shadow: 0 0 0 0.24rem rgba(248, 250, 252, 0.14);
+}
+
+.glow-cycle-meter-progress {
+  background: #22d3ee;
+  box-shadow:
+    0 0 0 0.24rem rgba(34, 211, 238, 0.18),
+    0 0 1rem rgba(34, 211, 238, 0.28);
+}
+
+.glow-cycle-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+}
+
+.glow-cycle-node-card {
+  display: grid;
+  gap: 0.85rem;
+  padding: 1rem;
+  border-radius: 1.4rem;
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  background:
+    radial-gradient(circle at top, rgba(248, 250, 252, 0.08), rgba(15, 23, 42, 0) 54%),
+    linear-gradient(180deg, rgba(15, 23, 42, 0.92), rgba(15, 23, 42, 0.78));
+}
+
+.glow-cycle-node-card-target {
+  box-shadow: 0 0 0 1px rgba(125, 211, 252, 0.24);
+}
+
+.glow-cycle-node-card-target-perfect {
+  box-shadow:
+    0 0 0 1px rgba(251, 191, 36, 0.34),
+    0 0 1.4rem rgba(251, 191, 36, 0.16);
+}
+
+.glow-cycle-node-card-cyan {
+  background:
+    radial-gradient(circle at top, rgba(125, 211, 252, 0.2), rgba(15, 23, 42, 0) 54%),
+    linear-gradient(180deg, rgba(8, 47, 73, 0.86), rgba(15, 23, 42, 0.9));
+}
+
+.glow-cycle-node-card-amber {
+  background:
+    radial-gradient(circle at top, rgba(253, 230, 138, 0.22), rgba(15, 23, 42, 0) 54%),
+    linear-gradient(180deg, rgba(69, 26, 3, 0.88), rgba(15, 23, 42, 0.92));
+}
+
+.glow-cycle-node-card-pink {
+  background:
+    radial-gradient(circle at top, rgba(244, 114, 182, 0.2), rgba(15, 23, 42, 0) 54%),
+    linear-gradient(180deg, rgba(80, 7, 36, 0.88), rgba(15, 23, 42, 0.92));
+}
+
+.glow-cycle-node-card-lime {
+  background:
+    radial-gradient(circle at top, rgba(163, 230, 53, 0.2), rgba(15, 23, 42, 0) 54%),
+    linear-gradient(180deg, rgba(29, 78, 40, 0.88), rgba(15, 23, 42, 0.92));
+}
+
+.glow-cycle-node-card-violet {
+  background:
+    radial-gradient(circle at top, rgba(192, 132, 252, 0.2), rgba(15, 23, 42, 0) 54%),
+    linear-gradient(180deg, rgba(59, 7, 100, 0.88), rgba(15, 23, 42, 0.92));
+}
+
+.glow-cycle-node-card-sky {
+  background:
+    radial-gradient(circle at top, rgba(56, 189, 248, 0.2), rgba(15, 23, 42, 0) 54%),
+    linear-gradient(180deg, rgba(12, 74, 110, 0.88), rgba(15, 23, 42, 0.92));
+}
+
+.glow-cycle-node-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.glow-cycle-node-header strong {
+  color: #f8fafc;
+  font-size: 0.98rem;
+}
+
+.glow-cycle-node-meta {
+  display: grid;
+  gap: 0.25rem;
+  text-align: right;
+  color: #cbd5e1;
+  font-size: 0.78rem;
+}
+
+.glow-cycle-node-button {
+  position: relative;
+  display: grid;
+  min-height: 10rem;
+  justify-items: center;
+  align-content: center;
+  gap: 0.28rem;
+  border: none;
+  border-radius: 1.25rem;
+  background:
+    radial-gradient(circle at center, rgba(248, 250, 252, 0.06), rgba(15, 23, 42, 0.84) 62%),
+    rgba(2, 6, 23, 0.74);
+  color: #e2e8f0;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.glow-cycle-node-button:disabled {
+  cursor: default;
+}
+
+.glow-cycle-node-button-target {
+  box-shadow: inset 0 0 0 1px rgba(125, 211, 252, 0.26);
+}
+
+.glow-cycle-node-button-good .glow-cycle-node-stage {
+  opacity: 0.82;
+}
+
+.glow-cycle-node-button-perfect .glow-cycle-node-stage {
+  opacity: 1;
+}
+
+.glow-cycle-node-stage {
+  position: absolute;
+  inset: 50%;
+  width: 7rem;
+  height: 7rem;
+  transform: translate(-50%, -50%);
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(125, 211, 252, 0.24), rgba(45, 212, 191, 0.1) 48%, rgba(15, 23, 42, 0) 72%);
+  opacity: 0.42;
+  transition: opacity 120ms ease;
+}
+
+.glow-cycle-node-orb,
+.glow-cycle-node-ring {
+  position: absolute;
+  inset: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 999px;
+}
+
+.glow-cycle-node-orb {
+  width: 5rem;
+  height: 5rem;
+  background: radial-gradient(circle at 35% 35%, rgba(248, 250, 252, 0.98), rgba(34, 211, 238, 0.86) 38%, rgba(14, 116, 144, 0.34) 72%);
+  box-shadow:
+    0 0 1.6rem rgba(34, 211, 238, 0.26),
+    inset 0 -0.6rem 1rem rgba(14, 116, 144, 0.2);
+}
+
+.glow-cycle-node-ring {
+  width: 6.9rem;
+  height: 6.9rem;
+  border: 0.24rem solid rgba(226, 232, 240, 0.18);
+  box-shadow: 0 0 1rem rgba(148, 163, 184, 0.18);
+}
+
+.glow-cycle-node-button-label,
+.glow-cycle-node-button-copy {
+  position: relative;
+  z-index: 1;
+}
+
+.glow-cycle-node-button-label {
+  margin-top: 5.2rem;
+  font-size: 0.84rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.glow-cycle-node-button-copy {
+  color: #cbd5e1;
+  font-size: 0.76rem;
+  font-weight: 600;
+}
+
+@media (max-width: 720px) {
+  .glow-cycle-board-card,
+  .glow-cycle-shell {
+    min-height: 24rem;
+  }
+
+  .glow-cycle-grid {
+    grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
+  }
+
+  .glow-cycle-node-button {
+    min-height: 9.25rem;
+  }
+
+  .glow-cycle-node-stage {
+    width: 5.6rem;
+    height: 5.6rem;
+  }
+
+  .glow-cycle-node-orb {
+    width: 4rem;
+    height: 4rem;
+  }
+
+  .glow-cycle-node-ring {
+    width: 5.6rem;
+    height: 5.6rem;
+  }
+
+  .glow-cycle-node-button-label {
+    margin-top: 4.4rem;
+  }
+}

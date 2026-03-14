@@ -4,6 +4,7 @@ import { BeatMatchGameWorkspace } from "./beat-match/BeatMatchGameWorkspace";
 import { ColorCensusGameWorkspace } from "./color-census/ColorCensusGameWorkspace";
 import { ColorSweepGameWorkspace } from "./color-sweep/ColorSweepGameWorkspace";
 import { FlipMatchGameWorkspace } from "./flip-match/FlipMatchGameWorkspace";
+import { GlowCycleGameWorkspace } from "./glow-cycle/GlowCycleGameWorkspace";
 import { HiddenFindGameWorkspace } from "./hidden-find/HiddenFindGameWorkspace";
 import { HueDriftGameWorkspace } from "./hue-drift/HueDriftGameWorkspace";
 import { MinesweeperGameWorkspace } from "./minesweeper/MinesweeperGameWorkspace";
@@ -342,6 +343,35 @@ const gameDefinitionByKey: Record<string, GameDefinition> = {
       previewSrc: "/images/games/sync-pulse-preview.svg",
     },
     workspace: SyncPulseGameWorkspace,
+  },
+  "glow-cycle": {
+    instructions: {
+      summary: "Watch the pulse nodes breathe together, then tap only the highlighted target node while the board enters the shared sync window.",
+      sections: [
+        {
+          title: "Run flow",
+          items: [
+            { label: "Start run", detail: "Choose a difficulty and press Start run to light the first target cycle." },
+            { label: "Clear each cycle", detail: "A correct target tap advances the run immediately to the next target and pulse pattern." },
+            { label: "Recover from mistimes", detail: "Wrong node taps and off-sync taps add to the mistimed count, but the run keeps going until the timer ends." },
+          ],
+        },
+        {
+          title: "Board controls",
+          items: [
+            { label: "Read the target", detail: "Only one node is highlighted as the live target. The other nodes are decoys that still accept taps." },
+            { label: "Watch the sync meter", detail: "Use the shared meter to judge when the full board is near the glow crest. Perfect is tighter than good." },
+            { label: "Stay touch-safe", detail: "The node grid keeps large buttons and spacing so target selection stays reliable on desktop and mobile." },
+          ],
+        },
+      ],
+      title: "Glow Cycle controls",
+    },
+    presentation: {
+      previewAlt: "Glow Cycle node grid with a highlighted target orb and a shared sync meter",
+      previewSrc: "/images/games/glow-cycle-preview.svg",
+    },
+    workspace: GlowCycleGameWorkspace,
   },
   "tempo-hold": {
     instructions: {

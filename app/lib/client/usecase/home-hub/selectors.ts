@@ -46,6 +46,10 @@ const previewByGameKey: Record<string, Pick<HomeGameCard, "previewAlt" | "previe
     previewAlt: "Sync Pulse dual ring board with two pulse circles collapsing into a shared sync pad",
     previewSrc: "/images/games/sync-pulse-preview.svg",
   },
+  "glow-cycle": {
+    previewAlt: "Glow Cycle node grid with a highlighted target orb and a shared sync meter",
+    previewSrc: "/images/games/glow-cycle-preview.svg",
+  },
   "tempo-hold": {
     previewAlt: "Tempo Hold meter board with a glowing target zone and a long hold bar",
     previewSrc: "/images/games/tempo-hold-preview.svg",
