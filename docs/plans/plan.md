@@ -2,31 +2,31 @@
 
 ## Links
 - Program spec: /docs/spec/game-catalog-50-expansion-program.md
-- Current game spec: /docs/spec/games/spinner-aim.md
+- Current game spec: /docs/spec/games/phase-lock.md
 
 ## Section 1 - Catalog Recovery Audit
 - [x] Confirm the durable game-spec inventory covers 50 game specs plus 2 meta specs (`two-minute-expansion-wave`, expansion program support docs).
-- [x] Confirm the current app implementation exposes 29 playable games in `supportedGames` and `game-workspace-registry`.
+- [x] Confirm the current app implementation exposes 30 playable games in `supportedGames` and `game-workspace-registry`.
 - [x] Choose the next reviewable slice as one low-risk unimplemented game that fits the current shared result and UI architecture.
 
-## Section 2 - Current Slice: Spinner Aim
+## Section 2 - Current Slice: Phase Lock
 ### Subsection 2.1 - Spec and planning alignment
-- [ ] Rewrite `/docs/spec/games/spinner-aim.md` so the user-visible behavior, result metrics, and touch-safe angular readability are explicit.
+- [ ] Rewrite `/docs/spec/games/phase-lock.md` so the user-visible behavior, result metrics, and touch-safe wheel readability are explicit.
 - [x] Keep this active plan focused on the current slice and append new implementation tasks only when they become concrete.
 
 ### Subsection 2.2 - App integration
-- [ ] Add `Spinner Aim` to the game catalog metadata and Home preview mapping.
+- [ ] Add `Phase Lock` to the game catalog metadata and Home preview mapping.
 - [ ] Add the game registry entry, help content, and preview asset.
-- [ ] Implement the `Spinner Aim` session and workspace Hook under `app/lib/client/usecase/game-workspace/`.
-- [ ] Implement the `Spinner Aim` workspace Component and CSS under `app/components/games/spinner-aim/`.
-- [ ] Add deterministic Playwright hooks for angle and target state without changing the visible UI.
-- [ ] Align launcher, target ring, and hazard readability so the shot timing stays clear on narrow viewports.
+- [ ] Implement the `Phase Lock` session and workspace Hook under `app/lib/client/usecase/game-workspace/`.
+- [ ] Implement the `Phase Lock` workspace Component and CSS under `app/components/games/phase-lock/`.
+- [ ] Add deterministic Playwright hooks for wheel phase and lock windows without changing the visible UI.
+- [ ] Align multi-wheel target-band readability so the lock order stays clear on narrow viewports.
 - [ ] Update the touched catalog and Home selector tests for the new game metadata.
 
 ### Subsection 2.3 - Verification and slice closeout
 - [ ] Run targeted automated verification for the touched catalog and gameplay modules.
-- [ ] Run Playwright UI verification for `/games/spinner-aim` and the Home card.
-- [ ] Commit the `Spinner Aim` slice in one reviewable unit.
+- [ ] Run Playwright UI verification for `/games/phase-lock` and the Home card.
+- [ ] Commit the `Phase Lock` slice in one reviewable unit.
 
 ## Section 3 - Named Backlog
 - [x] `Spot Change` - implementation, automated verification, Playwright UI verification, and commit are complete.
@@ -52,7 +52,7 @@
 - [x] `Position Lock` - implementation, automated verification, Playwright UI verification, and commit are complete.
 - [x] `Rotate Align` - implementation, automated verification, Playwright UI verification, and commit are complete.
 - [x] `Sequence Point` - implementation, automated verification, Playwright UI verification, and commit are complete.
-- [ ] `Spinner Aim` - keep the game unchecked until implementation, automated verification, and Playwright UI verification are complete.
+- [x] `Spinner Aim` - implementation, automated verification, Playwright UI verification, and commit are complete.
 - [ ] `Sync Pulse` - keep the game unchecked until implementation, automated verification, and Playwright UI verification are complete.
 - [x] `Tap Safe` - implementation, automated verification, Playwright UI verification, and commit are complete.
 - [ ] `Tempo Hold` - keep the game unchecked until implementation, automated verification, and Playwright UI verification are complete.

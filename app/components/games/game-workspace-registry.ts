@@ -18,6 +18,7 @@ import { QuickSumGameWorkspace } from "./quick-sum/QuickSumGameWorkspace";
 import { RotateAlignGameWorkspace } from "./rotate-align/RotateAlignGameWorkspace";
 import { SequencePointGameWorkspace } from "./sequence-point/SequencePointGameWorkspace";
 import { ShapeMorphGameWorkspace } from "./shape-morph/ShapeMorphGameWorkspace";
+import { SpinnerAimGameWorkspace } from "./spinner-aim/SpinnerAimGameWorkspace";
 import { SpotChangeGameWorkspace } from "./spot-change/SpotChangeGameWorkspace";
 import { TapSafeGameWorkspace } from "./tap-safe/TapSafeGameWorkspace";
 import type { GameInstructions } from "./shared/GameInstructionsDialog";
@@ -218,6 +219,35 @@ const gameDefinitionByKey: Record<string, GameDefinition> = {
       previewSrc: "/images/games/tap-safe-preview.svg",
     },
     workspace: TapSafeGameWorkspace,
+  },
+  "spinner-aim": {
+    instructions: {
+      summary: "Watch the launcher rotate, fire only through the target arc, and avoid the hazard arc while you chase the hit goal.",
+      sections: [
+        {
+          title: "Run flow",
+          items: [
+            { label: "Start run", detail: "Choose a difficulty and press Start run to arm the launcher and first target arc." },
+            { label: "Fire shots", detail: "Each target hit advances the goal and opens the next target and hazard arrangement." },
+            { label: "Read penalties", detail: "Hazard hits and off-target shots both count as bad shots while the timer keeps running." },
+          ],
+        },
+        {
+          title: "Board controls",
+          items: [
+            { label: "Read the arcs", detail: "The green arc is the only safe window. The coral arc is a hazard and should never be hit." },
+            { label: "Fire once", detail: "Tap the board once to commit the current launcher angle as a shot." },
+            { label: "Stay mobile-safe", detail: "The full launcher board is a single touch target on desktop and mobile." },
+          ],
+        },
+      ],
+      title: "Spinner Aim controls",
+    },
+    presentation: {
+      previewAlt: "Spinner Aim ring with a rotating launcher, target arc, and hazard arc",
+      previewSrc: "/images/games/spinner-aim-preview.svg",
+    },
+    workspace: SpinnerAimGameWorkspace,
   },
   "precision-drop": {
     instructions: {

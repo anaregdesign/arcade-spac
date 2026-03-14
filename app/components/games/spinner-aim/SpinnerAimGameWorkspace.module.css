@@ -1,0 +1,195 @@
+.spinner-aim-board-card {
+  min-height: 26rem;
+}
+
+.spinner-aim-shell {
+  min-height: 26rem;
+  display: grid;
+  gap: 1rem;
+}
+
+.spinner-aim-copy {
+  display: grid;
+  gap: 0.35rem;
+  justify-items: center;
+  text-align: center;
+  max-width: 36rem;
+  margin-inline: auto;
+}
+
+.spinner-aim-copy strong {
+  color: #f8fafc;
+  font-size: 1.08rem;
+}
+
+.spinner-aim-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.spinner-aim-legend-target,
+.spinner-aim-legend-hazard,
+.spinner-aim-legend-neutral {
+  padding: 0.5rem 0.8rem;
+  border-radius: 999px;
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+.spinner-aim-legend-target {
+  background: rgba(22, 163, 74, 0.18);
+  color: #86efac;
+}
+
+.spinner-aim-legend-hazard {
+  background: rgba(251, 113, 133, 0.16);
+  color: #fda4af;
+}
+
+.spinner-aim-legend-neutral {
+  background: rgba(148, 163, 184, 0.14);
+  color: #cbd5e1;
+}
+
+.spinner-aim-button {
+  position: relative;
+  display: flex;
+  min-height: 22rem;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 1.75rem;
+  background:
+    radial-gradient(circle at center, rgba(20, 184, 166, 0.14), rgba(15, 23, 42, 0.94) 62%),
+    linear-gradient(145deg, rgba(56, 189, 248, 0.12), rgba(15, 23, 42, 0.9));
+  color: #e0f2fe;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.spinner-aim-button:disabled {
+  cursor: default;
+}
+
+.spinner-aim-ring,
+.spinner-aim-target-arc,
+.spinner-aim-hazard-arc {
+  position: absolute;
+  inset: 50%;
+  width: 16rem;
+  height: 16rem;
+}
+
+.spinner-aim-ring {
+  transform: translate(-50%, -50%);
+  border: 0.45rem solid rgba(148, 163, 184, 0.38);
+  border-radius: 999px;
+}
+
+.spinner-aim-target-arc,
+.spinner-aim-hazard-arc {
+  transform-origin: center center;
+}
+
+.spinner-aim-target-arc::before,
+.spinner-aim-hazard-arc::before {
+  content: "";
+  position: absolute;
+  left: calc(50% - 1.2rem);
+  top: -0.7rem;
+  width: 2.4rem;
+  height: 1.6rem;
+  border-radius: 999px;
+}
+
+.spinner-aim-target-arc::before {
+  background: linear-gradient(180deg, #86efac, #22c55e);
+  box-shadow: 0 0 1rem rgba(34, 197, 94, 0.5);
+}
+
+.spinner-aim-hazard-arc::before {
+  background: linear-gradient(180deg, #fda4af, #fb7185);
+  box-shadow: 0 0 1rem rgba(251, 113, 133, 0.48);
+}
+
+.spinner-aim-launcher {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 0.5rem;
+  height: 7.9rem;
+  transform-origin: center bottom;
+}
+
+.spinner-aim-launcher::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 0.36rem;
+  height: 100%;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: linear-gradient(180deg, #f8fafc, #38bdf8 64%, rgba(56, 189, 248, 0.08));
+  box-shadow: 0 0 1rem rgba(56, 189, 248, 0.34);
+}
+
+.spinner-aim-launcher-tip {
+  position: absolute;
+  left: 50%;
+  top: -0.1rem;
+  width: 1.1rem;
+  height: 1.1rem;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: radial-gradient(circle at 35% 35%, #f8fafc, #38bdf8 72%, #0f766e);
+  box-shadow: 0 0 0.8rem rgba(56, 189, 248, 0.58);
+}
+
+.spinner-aim-hub {
+  position: absolute;
+  inset: 50%;
+  width: 3.3rem;
+  height: 3.3rem;
+  transform: translate(-50%, -50%);
+  border-radius: 999px;
+  background: radial-gradient(circle at 35% 35%, rgba(248, 250, 252, 0.9), rgba(15, 23, 42, 0.96));
+  box-shadow: 0 0 0 0.4rem rgba(56, 189, 248, 0.08);
+}
+
+.spinner-aim-button-copy {
+  position: absolute;
+  bottom: 1.45rem;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0.42rem 0.85rem;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.78);
+  color: rgba(224, 242, 254, 0.9);
+  font-size: 0.86rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 720px) {
+  .spinner-aim-board-card,
+  .spinner-aim-shell,
+  .spinner-aim-button {
+    min-height: 20rem;
+  }
+
+  .spinner-aim-ring,
+  .spinner-aim-target-arc,
+  .spinner-aim-hazard-arc {
+    width: 12.8rem;
+    height: 12.8rem;
+  }
+
+  .spinner-aim-launcher {
+    height: 6.2rem;
+  }
+}

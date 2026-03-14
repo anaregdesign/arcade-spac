@@ -42,6 +42,10 @@ const previewByGameKey: Record<string, Pick<HomeGameCard, "previewAlt" | "previe
     previewAlt: "Rotate Align path board with rotatable route tiles between start and end",
     previewSrc: "/images/games/rotate-align-preview.svg",
   },
+  "spinner-aim": {
+    previewAlt: "Spinner Aim ring with a rotating launcher, target arc, and hazard arc",
+    previewSrc: "/images/games/spinner-aim-preview.svg",
+  },
   minesweeper: {
     previewAlt: "Minesweeper board with opened cells and numbered hints",
     previewSrc: "/images/games/minesweeper-preview.png",

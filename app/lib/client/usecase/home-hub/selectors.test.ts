@@ -91,6 +91,15 @@ describe("home-hub selectors", () => {
     },
     {
       currentRank: null,
+      key: "spinner-aim",
+      metricValue: "0:52",
+      name: "Spinner Aim",
+      playCount: 5,
+      recommendationText: "Angular timing drill",
+      shortDescription: "Fire when the rotating launcher lines up with the target arc",
+    },
+    {
+      currentRank: null,
       key: "sequence-point",
       metricValue: "0:54",
       name: "Sequence Point",
@@ -199,6 +208,15 @@ describe("home-hub selectors", () => {
       },
       {
         ...games[9],
+        previewAlt: "Spinner Aim ring with a rotating launcher, target arc, and hazard arc",
+        previewObjectPosition: undefined,
+        previewSrc: "/images/games/spinner-aim-preview.svg",
+        recordLabel: "Best 0:52",
+        runLabel: "5 runs",
+        statusLabel: "Played",
+      },
+      {
+        ...games[10],
         previewAlt: "Sequence Point grid showing a fast memory sequence across lit points",
         previewObjectPosition: undefined,
         previewSrc: "/images/games/sequence-point-preview.svg",
@@ -207,7 +225,7 @@ describe("home-hub selectors", () => {
         statusLabel: "Played",
       },
       {
-        ...games[10],
+        ...games[11],
         previewAlt: "Hue Drift gradient row with a missing color step and answer swatches",
         previewObjectPosition: undefined,
         previewSrc: "/images/games/hue-drift-preview.svg",
