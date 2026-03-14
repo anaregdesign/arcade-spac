@@ -82,6 +82,15 @@ describe("home-hub selectors", () => {
     },
     {
       currentRank: null,
+      key: "tap-safe",
+      metricValue: "0:44",
+      name: "Tap Safe",
+      playCount: 6,
+      recommendationText: "High-pressure filter drill",
+      shortDescription: "Tap only the safe targets across short hazard waves",
+    },
+    {
+      currentRank: null,
       key: "sequence-point",
       metricValue: "0:54",
       name: "Sequence Point",
@@ -181,6 +190,15 @@ describe("home-hub selectors", () => {
       },
       {
         ...games[8],
+        previewAlt: "Tap Safe wave board mixing safe targets and hazard objects with short-lived badges",
+        previewObjectPosition: undefined,
+        previewSrc: "/images/games/tap-safe-preview.svg",
+        recordLabel: "Best 0:44",
+        runLabel: "6 runs",
+        statusLabel: "Played",
+      },
+      {
+        ...games[9],
         previewAlt: "Sequence Point grid showing a fast memory sequence across lit points",
         previewObjectPosition: undefined,
         previewSrc: "/images/games/sequence-point-preview.svg",
@@ -189,7 +207,7 @@ describe("home-hub selectors", () => {
         statusLabel: "Played",
       },
       {
-        ...games[9],
+        ...games[10],
         previewAlt: "Hue Drift gradient row with a missing color step and answer swatches",
         previewObjectPosition: undefined,
         previewSrc: "/images/games/hue-drift-preview.svg",

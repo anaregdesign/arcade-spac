@@ -19,6 +19,7 @@ import { RotateAlignGameWorkspace } from "./rotate-align/RotateAlignGameWorkspac
 import { SequencePointGameWorkspace } from "./sequence-point/SequencePointGameWorkspace";
 import { ShapeMorphGameWorkspace } from "./shape-morph/ShapeMorphGameWorkspace";
 import { SpotChangeGameWorkspace } from "./spot-change/SpotChangeGameWorkspace";
+import { TapSafeGameWorkspace } from "./tap-safe/TapSafeGameWorkspace";
 import type { GameInstructions } from "./shared/GameInstructionsDialog";
 import { SwapSolveGameWorkspace } from "./swap-solve/SwapSolveGameWorkspace";
 import { SumGridGameWorkspace } from "./sum-grid/SumGridGameWorkspace";
@@ -188,6 +189,35 @@ const gameDefinitionByKey: Record<string, GameDefinition> = {
       previewSrc: "/images/games/position-lock-preview.svg",
     },
     workspace: PositionLockGameWorkspace,
+  },
+  "tap-safe": {
+    instructions: {
+      summary: "Filter each short wave, tap only the safe targets, and avoid the hazard objects while you race toward the hit goal.",
+      sections: [
+        {
+          title: "Run flow",
+          items: [
+            { label: "Start run", detail: "Choose a difficulty and press Start run to spawn the first wave." },
+            { label: "Clear the goal", detail: "Each safe target tap increases the goal progress. When the goal is reached, the Result screen opens automatically." },
+            { label: "Wave pressure", detail: "Hazard taps add a large penalty, while safe targets left behind when the wave refreshes add a small penalty." },
+          ],
+        },
+        {
+          title: "Board controls",
+          items: [
+            { label: "Read SAFE badges", detail: "Safe targets always show clear SAFE, OK, or GO badges in addition to their colour." },
+            { label: "Ignore hazards", detail: "Hazard objects use NO, HAZ, or RISK badges and should never be tapped." },
+            { label: "Stay mobile-safe", detail: "Every wave cell is a first-class tap target on desktop and touch devices." },
+          ],
+        },
+      ],
+      title: "Tap Safe controls",
+    },
+    presentation: {
+      previewAlt: "Tap Safe wave board mixing safe targets and hazard objects with short-lived badges",
+      previewSrc: "/images/games/tap-safe-preview.svg",
+    },
+    workspace: TapSafeGameWorkspace,
   },
   "precision-drop": {
     instructions: {

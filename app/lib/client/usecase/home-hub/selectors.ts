@@ -34,6 +34,10 @@ const previewByGameKey: Record<string, Pick<HomeGameCard, "previewAlt" | "previe
     previewAlt: "Position Lock board with labeled tokens returning to remembered final cells",
     previewSrc: "/images/games/position-lock-preview.svg",
   },
+  "tap-safe": {
+    previewAlt: "Tap Safe wave board mixing safe targets and hazard objects with short-lived badges",
+    previewSrc: "/images/games/tap-safe-preview.svg",
+  },
   "rotate-align": {
     previewAlt: "Rotate Align path board with rotatable route tiles between start and end",
     previewSrc: "/images/games/rotate-align-preview.svg",
