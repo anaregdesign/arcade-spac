@@ -23,6 +23,7 @@ import { SpinnerAimGameWorkspace } from "./spinner-aim/SpinnerAimGameWorkspace";
 import { SpotChangeGameWorkspace } from "./spot-change/SpotChangeGameWorkspace";
 import { SyncPulseGameWorkspace } from "./sync-pulse/SyncPulseGameWorkspace";
 import { TapSafeGameWorkspace } from "./tap-safe/TapSafeGameWorkspace";
+import { TempoHoldGameWorkspace } from "./tempo-hold/TempoHoldGameWorkspace";
 import type { GameInstructions } from "./shared/GameInstructionsDialog";
 import { SwapSolveGameWorkspace } from "./swap-solve/SwapSolveGameWorkspace";
 import { SumGridGameWorkspace } from "./sum-grid/SumGridGameWorkspace";
@@ -308,6 +309,35 @@ const gameDefinitionByKey: Record<string, GameDefinition> = {
       previewSrc: "/images/games/sync-pulse-preview.svg",
     },
     workspace: SyncPulseGameWorkspace,
+  },
+  "tempo-hold": {
+    instructions: {
+      summary: "Read the target hold duration, press and hold the pad, then release inside the target zone before the meter runs past it.",
+      sections: [
+        {
+          title: "Run flow",
+          items: [
+            { label: "Start run", detail: "Choose a difficulty and press Start run to reveal the first target hold duration." },
+            { label: "Release each round", detail: "Every release resolves the current round as perfect, good, or miss and immediately loads the next target." },
+            { label: "Read misses", detail: "Misses still advance the round, so the run stays fast and the timer remains the real pressure." },
+          ],
+        },
+        {
+          title: "Board controls",
+          items: [
+            { label: "Press and hold", detail: "Hold the central pad to grow the meter toward the target zone." },
+            { label: "Release on tempo", detail: "Let go while the meter sits in the bright target zone to earn a perfect or good release." },
+            { label: "Read the meter", detail: "The meter shows the full hold range, the wider target zone, and the tighter perfect zone at the same time." },
+          ],
+        },
+      ],
+      title: "Tempo Hold controls",
+    },
+    presentation: {
+      previewAlt: "Tempo Hold meter board with a glowing target zone and a long hold bar",
+      previewSrc: "/images/games/tempo-hold-preview.svg",
+    },
+    workspace: TempoHoldGameWorkspace,
   },
   "precision-drop": {
     instructions: {

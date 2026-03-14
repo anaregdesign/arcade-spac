@@ -100,6 +100,15 @@ describe("home-hub selectors", () => {
     },
     {
       currentRank: null,
+      key: "tempo-hold",
+      metricValue: "1:01",
+      name: "Tempo Hold",
+      playCount: 1,
+      recommendationText: "Release timing ladder",
+      shortDescription: "Hold, then release when the meter reaches the target duration",
+    },
+    {
+      currentRank: null,
       key: "tap-safe",
       metricValue: "0:44",
       name: "Tap Safe",
@@ -235,6 +244,15 @@ describe("home-hub selectors", () => {
       },
       {
         ...games[10],
+        previewAlt: "Tempo Hold meter board with a glowing target zone and a long hold bar",
+        previewObjectPosition: undefined,
+        previewSrc: "/images/games/tempo-hold-preview.svg",
+        recordLabel: "Best 1:01",
+        runLabel: "1 runs",
+        statusLabel: "Played",
+      },
+      {
+        ...games[11],
         previewAlt: "Tap Safe wave board mixing safe targets and hazard objects with short-lived badges",
         previewObjectPosition: undefined,
         previewSrc: "/images/games/tap-safe-preview.svg",
@@ -243,7 +261,7 @@ describe("home-hub selectors", () => {
         statusLabel: "Played",
       },
       {
-        ...games[11],
+        ...games[12],
         previewAlt: "Spinner Aim ring with a rotating launcher, target arc, and hazard arc",
         previewObjectPosition: undefined,
         previewSrc: "/images/games/spinner-aim-preview.svg",
@@ -252,7 +270,7 @@ describe("home-hub selectors", () => {
         statusLabel: "Played",
       },
       {
-        ...games[12],
+        ...games[13],
         previewAlt: "Sequence Point grid showing a fast memory sequence across lit points",
         previewObjectPosition: undefined,
         previewSrc: "/images/games/sequence-point-preview.svg",
@@ -261,7 +279,7 @@ describe("home-hub selectors", () => {
         statusLabel: "Played",
       },
       {
-        ...games[13],
+        ...games[14],
         previewAlt: "Hue Drift gradient row with a missing color step and answer swatches",
         previewObjectPosition: undefined,
         previewSrc: "/images/games/hue-drift-preview.svg",

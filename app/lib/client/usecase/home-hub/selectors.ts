@@ -42,6 +42,10 @@ const previewByGameKey: Record<string, Pick<HomeGameCard, "previewAlt" | "previe
     previewAlt: "Sync Pulse dual ring board with two pulse circles collapsing into a shared sync pad",
     previewSrc: "/images/games/sync-pulse-preview.svg",
   },
+  "tempo-hold": {
+    previewAlt: "Tempo Hold meter board with a glowing target zone and a long hold bar",
+    previewSrc: "/images/games/tempo-hold-preview.svg",
+  },
   "tap-safe": {
     previewAlt: "Tap Safe wave board mixing safe targets and hazard objects with short-lived badges",
     previewSrc: "/images/games/tap-safe-preview.svg",

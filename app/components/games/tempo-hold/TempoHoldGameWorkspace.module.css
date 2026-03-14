@@ -1,0 +1,195 @@
+.tempo-hold-board-card {
+  min-height: 26rem;
+}
+
+.tempo-hold-shell {
+  min-height: 26rem;
+  display: grid;
+  gap: 1rem;
+}
+
+.tempo-hold-copy {
+  display: grid;
+  gap: 0.35rem;
+  justify-items: center;
+  text-align: center;
+  max-width: 38rem;
+  margin-inline: auto;
+}
+
+.tempo-hold-copy strong {
+  color: #f8fafc;
+  font-size: 1.08rem;
+}
+
+.tempo-hold-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.tempo-hold-legend-target,
+.tempo-hold-legend-perfect,
+.tempo-hold-legend-status {
+  padding: 0.5rem 0.8rem;
+  border-radius: 999px;
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+.tempo-hold-legend-target {
+  background: rgba(251, 191, 36, 0.18);
+  color: #fde68a;
+}
+
+.tempo-hold-legend-perfect {
+  background: rgba(45, 212, 191, 0.18);
+  color: #99f6e4;
+}
+
+.tempo-hold-legend-status {
+  background: rgba(148, 163, 184, 0.14);
+  color: #cbd5e1;
+}
+
+.tempo-hold-button {
+  display: grid;
+  gap: 1.25rem;
+  width: 100%;
+  min-height: 21rem;
+  padding: 1.6rem;
+  border: none;
+  border-radius: 1.75rem;
+  background:
+    radial-gradient(circle at 50% 18%, rgba(250, 204, 21, 0.18), rgba(15, 23, 42, 0) 42%),
+    linear-gradient(180deg, rgba(15, 23, 42, 0.96), rgba(30, 41, 59, 0.92));
+  color: #fefce8;
+  cursor: pointer;
+  text-align: left;
+}
+
+.tempo-hold-button:disabled {
+  cursor: default;
+}
+
+.tempo-hold-button-holding {
+  box-shadow: inset 0 0 0 0.1rem rgba(250, 204, 21, 0.2);
+}
+
+.tempo-hold-button-good {
+  box-shadow:
+    inset 0 0 0 0.14rem rgba(45, 212, 191, 0.3),
+    0 0 1.2rem rgba(45, 212, 191, 0.12);
+}
+
+.tempo-hold-button-perfect {
+  box-shadow:
+    inset 0 0 0 0.16rem rgba(167, 243, 208, 0.42),
+    0 0 1.6rem rgba(167, 243, 208, 0.2);
+}
+
+.tempo-hold-button-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.tempo-hold-target-label,
+.tempo-hold-window-label {
+  font-size: 0.92rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.tempo-hold-target-label {
+  color: #fde68a;
+}
+
+.tempo-hold-window-label {
+  color: #cbd5e1;
+}
+
+.tempo-hold-meter {
+  position: relative;
+  display: block;
+  width: 100%;
+  min-height: 7rem;
+  padding-top: 2.3rem;
+}
+
+.tempo-hold-meter-track,
+.tempo-hold-meter-good-zone,
+.tempo-hold-meter-perfect-zone,
+.tempo-hold-meter-fill {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1.45rem;
+  border-radius: 999px;
+}
+
+.tempo-hold-meter-track {
+  top: 2.8rem;
+  background: rgba(51, 65, 85, 0.86);
+}
+
+.tempo-hold-meter-good-zone,
+.tempo-hold-meter-perfect-zone {
+  top: 2.8rem;
+  right: auto;
+}
+
+.tempo-hold-meter-good-zone {
+  background: rgba(250, 204, 21, 0.24);
+}
+
+.tempo-hold-meter-perfect-zone {
+  background: rgba(45, 212, 191, 0.48);
+  box-shadow: 0 0 0.9rem rgba(45, 212, 191, 0.22);
+}
+
+.tempo-hold-meter-fill {
+  top: 2.8rem;
+  right: auto;
+  background: linear-gradient(90deg, #f59e0b, #facc15 55%, #99f6e4);
+  box-shadow: 0 0 1rem rgba(250, 204, 21, 0.18);
+}
+
+.tempo-hold-readout {
+  display: grid;
+  gap: 0.24rem;
+  justify-items: center;
+  text-align: center;
+}
+
+.tempo-hold-readout strong {
+  color: #fef9c3;
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.tempo-hold-readout span {
+  color: #cbd5e1;
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+
+@media (max-width: 720px) {
+  .tempo-hold-board-card,
+  .tempo-hold-shell,
+  .tempo-hold-button {
+    min-height: 20rem;
+  }
+
+  .tempo-hold-button {
+    padding: 1.2rem;
+  }
+
+  .tempo-hold-readout strong {
+    font-size: 1.7rem;
+  }
+}
