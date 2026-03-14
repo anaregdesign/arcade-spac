@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router";
 
 import { readStoredHomeHubState, writeStoredHomeHubState } from "../../infrastructure/browser/home-hub-storage";
@@ -153,8 +153,10 @@ function createSearchParams(input: { search: string; sort: string; tag: string }
 export function useHomeHub(games: HomeGame[]) {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const didAttemptRestoreRef = useRef(false);
-  const didRestoreScrollRef = useRef(false);
+  const [didAttemptRestore, setDidAttemptRestore] = useState(false);
+  const [didRestoreScroll, setDidRestoreScroll] = useState(false);
+  const [loadMoreTrigger, setLoadMoreTrigger] = useState<HTMLDivElement | null>(null);
+  const [hasScrolledDown, setHasScrolledDown] = useState(false);
   const [visibleCount, setVisibleCount] = useState(6);
 
   const search = searchParams.get("q") ?? "";
@@ -175,11 +177,11 @@ export function useHomeHub(games: HomeGame[]) {
   ];
 
   useEffect(() => {
-    if (didAttemptRestoreRef.current) {
+    if (didAttemptRestore) {
       return;
     }
 
-    didAttemptRestoreRef.current = true;
+    setDidAttemptRestore(true);
 
     const hasExplicitState = searchParams.has("q") || searchParams.has("tag") || searchParams.has("sort");
 
@@ -195,12 +197,18 @@ export function useHomeHub(games: HomeGame[]) {
 
     const next = createSearchParams(stored);
     navigate(`/home?${next.toString()}`, { replace: true });
-  }, [navigate, searchParams]);
+  }, [didAttemptRestore, navigate, searchParams]);
 
   useEffect(() => {
     const persist = () => {
+      const scrollY = readWindowScrollY();
+
+      if (scrollY > 0) {
+        setHasScrolledDown(true);
+      }
+
       writeStoredHomeHubState({
-        scrollY: readWindowScrollY(),
+        scrollY,
         search,
         sort,
         tag,
@@ -212,20 +220,21 @@ export function useHomeHub(games: HomeGame[]) {
   }, [search, sort, tag]);
 
   useEffect(() => {
-    if (didRestoreScrollRef.current) {
+    if (didRestoreScroll) {
       return;
     }
 
     const stored = readStoredHomeHubState();
 
     if (stored.search !== search || stored.sort !== sort || stored.tag !== tag || stored.scrollY <= 0) {
-      didRestoreScrollRef.current = true;
+      setDidRestoreScroll(true);
       return;
     }
 
-    didRestoreScrollRef.current = true;
+    setDidRestoreScroll(true);
+    setHasScrolledDown(true);
     restoreWindowScroll(stored.scrollY);
-  }, [search, sort, tag]);
+  }, [didRestoreScroll, search, sort, tag]);
 
   useEffect(() => {
     setVisibleCount(6);
@@ -236,6 +245,38 @@ export function useHomeHub(games: HomeGame[]) {
     .filter((game) => tag === "all" || getTagSetForGame(game).includes(tag))
     .sort((left, right) => compareGames(sort, left, right));
   const visibleGames = filteredGames.slice(0, visibleCount);
+  const hasMore = filteredGames.length > visibleCount;
+
+  useEffect(() => {
+    if (!loadMoreTrigger || !hasMore || !hasScrolledDown || typeof IntersectionObserver === "undefined") {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const isVisible = entries.some((entry) => entry.isIntersecting);
+
+        if (!isVisible) {
+          return;
+        }
+
+        setVisibleCount((current) => {
+          const nextCount = Math.min(current + 6, filteredGames.length);
+          return nextCount === current ? current : nextCount;
+        });
+      },
+      {
+        rootMargin: "160px 0px",
+      },
+    );
+
+    observer.observe(loadMoreTrigger);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [filteredGames.length, hasScrolledDown, loadMoreTrigger]);
+ 
 
   const highlightedGame = visibleGames[0] ?? null;
   const visibleGameCards = toHomeGameCards(visibleGames);
@@ -245,8 +286,9 @@ export function useHomeHub(games: HomeGame[]) {
       setSearchParams(createSearchParams({ search: "", sort: "recommended", tag: "all" }));
     },
     highlightedGame,
-    hasMore: filteredGames.length > visibleCount,
+    hasMore,
     matchCount: filteredGames.length,
+    loadMoreTriggerRef: setLoadMoreTrigger,
     search,
     showMore() {
       setVisibleCount((current) => current + 6);

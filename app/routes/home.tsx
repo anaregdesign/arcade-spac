@@ -53,6 +53,7 @@ export default function Home() {
       <HomeDashboard
         games={hub.visibleGameCards}
         hasMore={hub.hasMore}
+        loadMoreTriggerRef={hub.loadMoreTriggerRef}
         matchCount={hub.matchCount}
         search={hub.search}
         showMore={hub.showMore}

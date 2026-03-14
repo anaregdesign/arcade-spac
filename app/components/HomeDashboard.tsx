@@ -15,6 +15,7 @@ type HomeDashboardProps = {
     statusLabel: string;
   }>;
   hasMore: boolean;
+  loadMoreTriggerRef: (node: HTMLDivElement | null) => void;
   matchCount: number;
   search: string;
   showMore: () => void;
@@ -38,6 +39,7 @@ type HomeDashboardProps = {
 export function HomeDashboard({
   games,
   hasMore,
+  loadMoreTriggerRef,
   matchCount,
   search,
   showMore,
@@ -138,7 +140,7 @@ export function HomeDashboard({
         </article>
       ) : null}
       {hasMore ? (
-        <div className="hero-actions compact-actions">
+        <div ref={loadMoreTriggerRef} className="hero-actions compact-actions">
           <button className="action-link action-link-secondary" type="button" onClick={showMore}>
             Show more games
           </button>
