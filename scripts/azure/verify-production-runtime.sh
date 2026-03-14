@@ -108,7 +108,7 @@ assert_private_dns_a_record() {
   record_ip="$(az network private-dns record-set a list \
     --resource-group "${AZURE_RESOURCE_GROUP}" \
     --zone-name "${zone_name}" \
-    --query "[?name=='${record_name}'].arecords[0].ipv4Address | [0]" \
+    --query "[?name=='${record_name}'].aRecords[0].ipv4Address | [0]" \
     -o tsv)"
 
   if [[ -z "${record_ip}" ]]; then
@@ -126,10 +126,9 @@ assert_private_endpoint_for_resource() {
   local record_name="$4"
   local private_endpoint_name
 
-  private_endpoint_name="$(az resource list \
+  private_endpoint_name="$(az network private-endpoint list \
     --resource-group "${AZURE_RESOURCE_GROUP}" \
-    --resource-type Microsoft.Network/privateEndpoints \
-    --query "[?contains(properties.privateLinkServiceConnections[0].properties.privateLinkServiceId, '${resource_fragment}')].name | [0]" \
+    --query "[?privateLinkServiceConnections[0].privateLinkServiceId != null && contains(privateLinkServiceConnections[0].privateLinkServiceId, '${resource_fragment}')].name | [0]" \
     -o tsv)"
 
   if [[ -z "${private_endpoint_name}" ]]; then
@@ -219,7 +218,7 @@ echo "Verified Azure SQL server ${sql_server_name} is not using the AllowAzureSe
 
 sql_entra_only="$(az sql server ad-only-auth get \
   --resource-group "${AZURE_RESOURCE_GROUP}" \
-  --server "${sql_server_name}" \
+  --name "${sql_server_name}" \
   -o json | node -e "const fs = require('node:fs'); const payload = JSON.parse(fs.readFileSync(0, 'utf8')); process.stdout.write(String(payload.azureADOnlyAuthentication ?? payload.azureAdOnlyAuthentication ?? ''))")"
 
 if [[ "${sql_entra_only}" != "true" ]]; then
@@ -345,6 +344,7 @@ if [[ "${EXPECTED_PRIVATE_CONFIG_STORES}" == "true" ]]; then
     "${key_vault_name}"
 
   if [[ -n "${AZURE_CONTAINER_APP_NAME:-}" ]]; then
+    assert_container_app_env_value "${AZURE_CONTAINER_APP_NAME}" 'AZURE_CONTAINER_APP_NAME' "${AZURE_CONTAINER_APP_NAME}"
     assert_container_app_env_value "${AZURE_CONTAINER_APP_NAME}" 'AZURE_APPCONFIG_ENDPOINT' "${app_configuration_endpoint}"
     assert_container_app_env_value "${AZURE_CONTAINER_APP_NAME}" 'AZURE_KEY_VAULT_URI' "${key_vault_uri}"
   fi

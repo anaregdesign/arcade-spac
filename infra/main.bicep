@@ -52,7 +52,6 @@ param environmentVariables array = [
 ]
 param tags object = {}
 
-var hasEntraClientSecret = !empty(entraClientSecret)
 var logAnalyticsWorkspaceName = 'law-${appName}'
 var applicationInsightsName = 'appi-${appName}'
 var managedEnvironmentName = 'cae-${appName}'
@@ -71,8 +70,6 @@ var keyVaultPrivateEndpointName = 'pep-${keyVaultName}'
 var keyVaultPrivateDnsZoneName = 'privatelink${replace(environment().suffixes.keyvaultDns, '.vault.', '.vaultcore.')}'
 var sqlMigrationIdentityName = take('id-sql-migrate-${appName}', 24)
 var sqlServerFqdn = '${sqlServerName}${environment().suffixes.sqlServerHostname}'
-var sqlManagedIdentityConnectionString = 'sqlserver://${sqlServerFqdn};database=${sqlDatabaseName};authentication=ActiveDirectoryManagedIdentity;encrypt=true;trustServerCertificate=false'
-var effectiveDatabaseUrl = deploySql ? sqlManagedIdentityConnectionString : databaseUrl
 var appConfigDataReaderRoleDefinitionId = subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '516239f1-63e1-4d78-a4de-a74fb236a071')
 var keyVaultSecretsUserRoleDefinitionId = subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '4633458b-17de-408a-b874-0445c86b69e6')
 
@@ -324,26 +321,6 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
         targetPort: containerPort
         transport: 'auto'
       }
-      secrets: concat(
-        [
-          {
-            name: 'arcade-session-secret'
-            value: sessionSecret
-          }
-          {
-            name: 'database-url'
-            value: effectiveDatabaseUrl
-          }
-        ],
-        authMode == 'entra' && hasEntraClientSecret
-          ? [
-              {
-                name: 'azure-client-secret'
-                value: entraClientSecret
-              }
-            ]
-          : []
-      )
     }
     template: {
       containers: [
@@ -357,6 +334,10 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
                 value: applicationInsights.properties.ConnectionString
               }
               {
+                name: 'AZURE_CONTAINER_APP_NAME'
+                value: containerAppName
+              }
+              {
                 name: 'AZURE_APPCONFIG_ENDPOINT'
                 value: appConfiguration.properties.endpoint
               }
@@ -365,42 +346,10 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
                 value: keyVault.properties.vaultUri
               }
               {
-                name: 'ARCADE_AUTH_MODE'
-                value: authMode
-              }
-              {
-                name: 'PUBLIC_APP_URL'
-                value: publicAppUrl
-              }
-              {
-                name: 'ENTRA_TENANT_ID'
+                name: 'AZURE_TENANT_ID'
                 value: entraTenantId
               }
-              {
-                name: 'ENTRA_AUTHORITY_TENANT'
-                value: entraAuthorityTenant
-              }
-              {
-                name: 'ARCADE_SESSION_SECRET'
-                secretRef: 'arcade-session-secret'
-              }
-              {
-                name: 'DATABASE_URL'
-                secretRef: 'database-url'
-              }
             ],
-            authMode == 'entra' && hasEntraClientSecret
-              ? [
-                  {
-                    name: 'ENTRA_CLIENT_ID'
-                    value: entraClientId
-                  }
-                  {
-                    name: 'ENTRA_CLIENT_SECRET'
-                    secretRef: 'azure-client-secret'
-                  }
-                ]
-              : [],
             environmentVariables
           )
           probes: [
@@ -456,21 +405,27 @@ resource sqlServer 'Microsoft.Sql/servers@2021-11-01-preview' = if (deploySql) {
   name: sqlServerName
   location: location
   tags: tags
-  properties: {
-    administratorLogin: sqlAdministratorLogin
-    administratorLoginPassword: sqlAdministratorPassword
-    minimalTlsVersion: '1.2'
-    publicNetworkAccess: 'Disabled'
-    version: '12.0'
-    administrators: {
-      administratorType: 'ActiveDirectory'
-      azureADOnlyAuthentication: sqlEnableEntraOnlyAuthentication
-      login: sqlEntraAdminLogin
-      principalType: sqlEntraAdminPrincipalType
-      sid: sqlEntraAdminObjectId
-      tenantId: sqlEntraAdminTenantId
-    }
-  }
+  properties: union(
+    {
+      administratorLogin: sqlAdministratorLogin
+      minimalTlsVersion: '1.2'
+      publicNetworkAccess: 'Disabled'
+      version: '12.0'
+      administrators: {
+        administratorType: 'ActiveDirectory'
+        azureADOnlyAuthentication: sqlEnableEntraOnlyAuthentication
+        login: sqlEntraAdminLogin
+        principalType: sqlEntraAdminPrincipalType
+        sid: sqlEntraAdminObjectId
+        tenantId: sqlEntraAdminTenantId
+      }
+    },
+    empty(sqlAdministratorPassword)
+      ? {}
+      : {
+          administratorLoginPassword: sqlAdministratorPassword
+        }
+  )
 }
 
 resource sqlDatabase 'Microsoft.Sql/servers/databases@2021-11-01-preview' = if (deploySql) {

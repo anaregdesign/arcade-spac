@@ -90,7 +90,7 @@ Current repository note:
 - `npm run azure:sync:runtime-config` is the repository-supported sync path for App Configuration and Key Vault.
 - Run that sync only from a host that can reach the private App Configuration and Key Vault data plane.
 - The GitHub release workflow updates the image and verifies runtime state, but it does not populate the private App Configuration or Key Vault data plane.
-- When `deploySql=true`, the sync script can derive a managed-identity `DATABASE_URL` from Azure SQL metadata when explicit `DATABASE_URL` is not provided.
+- When `deploySql=true`, the sync script can derive a `DefaultAzureCredential`-backed `DATABASE_URL` from Azure SQL metadata when explicit `DATABASE_URL` is not provided.
 
 ## Azure SQL Provisioning Inputs
 

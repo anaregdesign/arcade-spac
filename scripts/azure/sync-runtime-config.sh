@@ -142,7 +142,7 @@ resolve_database_url() {
   local sql_database_name
   sql_database_name="$(resolve_sql_database_name "${sql_server_name}")"
 
-  printf 'sqlserver://%s;database=%s;authentication=ActiveDirectoryManagedIdentity;encrypt=true;trustServerCertificate=false\n' \
+  printf 'sqlserver://%s;database=%s;authentication=DefaultAzureCredential;encrypt=true;trustServerCertificate=false\n' \
     "${sql_server_fqdn}" \
     "${sql_database_name}"
 }
@@ -183,13 +183,24 @@ set_appconfig_value() {
   local key="$1"
   local value="$2"
 
+  if [[ "${#appconfig_label_args[@]}" -gt 0 ]]; then
+    az appconfig kv set \
+      --auth-mode login \
+      --endpoint "${AZURE_APPCONFIG_ENDPOINT}" \
+      --key "${APP_CONFIGURATION_KEY_PREFIX}${key}" \
+      --value "${value}" \
+      --yes \
+      "${appconfig_label_args[@]}" \
+      --output none
+    return
+  fi
+
   az appconfig kv set \
     --auth-mode login \
     --endpoint "${AZURE_APPCONFIG_ENDPOINT}" \
     --key "${APP_CONFIGURATION_KEY_PREFIX}${key}" \
     --value "${value}" \
     --yes \
-    "${appconfig_label_args[@]}" \
     --output none
 }
 
@@ -197,13 +208,24 @@ set_appconfig_keyvault_reference() {
   local key="$1"
   local secret_identifier="$2"
 
+  if [[ "${#appconfig_label_args[@]}" -gt 0 ]]; then
+    az appconfig kv set-keyvault \
+      --auth-mode login \
+      --endpoint "${AZURE_APPCONFIG_ENDPOINT}" \
+      --key "${APP_CONFIGURATION_KEY_PREFIX}${key}" \
+      --secret-identifier "${secret_identifier}" \
+      --yes \
+      "${appconfig_label_args[@]}" \
+      --output none
+    return
+  fi
+
   az appconfig kv set-keyvault \
     --auth-mode login \
     --endpoint "${AZURE_APPCONFIG_ENDPOINT}" \
     --key "${APP_CONFIGURATION_KEY_PREFIX}${key}" \
     --secret-identifier "${secret_identifier}" \
     --yes \
-    "${appconfig_label_args[@]}" \
     --output none
 }
 

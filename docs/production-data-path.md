@@ -13,7 +13,7 @@ This document records the repository contract for Arcade's hosted relational pat
 Before Azure deployment is treated as production-ready, all of the following must be true:
 
 1. `DATABASE_URL` points to Azure SQL or another hosted SQL Server compatible endpoint and does not use a SQLite-style `file:` URL.
-2. The hosted Azure SQL path uses `Microsoft Entra ID` authentication, with `authentication=ActiveDirectoryManagedIdentity` for the Bicep-managed runtime path.
+2. The hosted Azure SQL path uses `Microsoft Entra ID` authentication, with `authentication=DefaultAzureCredential` for the managed runtime path so Prisma can resolve the Container Apps identity without driver-specific MSI endpoint wiring.
 3. Azure SQL public network access is `Disabled`, and the runtime reaches `<server>.database.windows.net` through `Private Endpoint` plus private DNS.
 4. The hosted runtime resolves `Arcade:*` App Configuration keys and the Key Vault-backed `ARCADE_SESSION_SECRET`, `DATABASE_URL`, and `ENTRA_CLIENT_SECRET` values through a managed configuration path rather than repo files.
 5. Database migrations can be applied through a production-safe command path that is separate from app startup.
