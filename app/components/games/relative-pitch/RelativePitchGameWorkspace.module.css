@@ -94,8 +94,51 @@
 }
 
 @media (max-width: 720px) {
+  .pitch-shell {
+    gap: 0.8rem;
+  }
+
+  .pitch-header {
+    gap: 0.55rem;
+  }
+
+  .pitch-hero {
+    gap: 0.2rem;
+    padding: 0.8rem 0.9rem;
+  }
+
+  .pitch-value {
+    font-size: 1.05rem;
+  }
+
+  .phase-copy {
+    font-size: 0.82rem;
+  }
+
   .replay-row,
   .candidate-grid {
-    grid-template-columns: 1fr;
+    gap: 0.55rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .replay-button {
+    border-radius: 0.9rem;
+    font-size: 0.84rem;
+    min-height: 2.85rem;
+    padding: 0.72rem 0.8rem;
+  }
+
+  .candidate-button {
+    border-radius: 0.95rem;
+    min-height: 5.4rem;
+    padding: 0.8rem;
+  }
+
+  .candidate-id {
+    font-size: 1.2rem;
+  }
+
+  .candidate-copy {
+    font-size: 0.78rem;
   }
 }

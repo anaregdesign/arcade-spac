@@ -116,18 +116,44 @@
 
 @media (max-width: 720px) {
   .cascade-summary-grid {
-    grid-template-columns: 1fr;
+    gap: 0.5rem;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .cascade-summary-card {
+    padding: 0.7rem 0.75rem;
+  }
+
+  .cascade-summary-label {
+    font-size: 0.68rem;
+  }
+
+  .cascade-summary-value {
+    font-size: 0.96rem;
   }
 
   .column-trigger-row,
   .board-row {
     gap: 0.35rem;
-    grid-template-columns: 3.4rem repeat(5, minmax(0, 1fr));
+    grid-template-columns: 2.85rem repeat(5, minmax(0, 1fr));
   }
 
   .trigger-button,
   .rail-spacer,
   .board-cell {
-    min-height: 2.8rem;
+    min-height: 2.45rem;
+  }
+
+  .trigger-button {
+    border-radius: 0.75rem;
+    font-size: 0.78rem;
+  }
+
+  .board-cell {
+    border-radius: 0.8rem;
+  }
+
+  .cascade-copy {
+    font-size: 0.82rem;
   }
 }

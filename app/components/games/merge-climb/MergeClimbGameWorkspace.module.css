@@ -112,11 +112,35 @@
 
 @media (max-width: 720px) {
   .merge-summary-grid {
-    grid-template-columns: 1fr;
+    gap: 0.5rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .merge-summary-card {
+    padding: 0.7rem 0.75rem;
+  }
+
+  .merge-summary-label {
+    font-size: 0.68rem;
+  }
+
+  .merge-summary-value {
+    font-size: 1rem;
   }
 
   .merge-board {
-    width: min(100%, 22rem);
+    gap: 0.45rem;
+    padding: 0.65rem;
+    width: min(100%, 18.6rem);
+  }
+
+  .merge-cell {
+    border-radius: 0.8rem;
+    min-height: 3.1rem;
+  }
+
+  .direction-panel {
+    gap: 0.5rem;
   }
 
   .direction-grid {
@@ -125,6 +149,16 @@
   }
 
   .direction-button {
+    font-size: 0.88rem;
+    min-height: 2.85rem;
     min-width: 0;
+  }
+
+  .direction-spacer {
+    min-height: 2.85rem;
+  }
+
+  .move-note {
+    font-size: 0.78rem;
   }
 }
