@@ -1,4 +1,6 @@
 import { readSoundMuted, writeSoundMuted } from "./sound-mute-storage";
+import type { MusicalPitch } from "./note-frequencies";
+import { resolvePitchFrequency } from "./note-frequencies";
 
 let mutedState: boolean = readSoundMuted();
 
@@ -199,13 +201,25 @@ export function playBallDrop(): void {
   playTone(380, "triangle", 0.1, 0.2, 280);
 }
 
-export function playPitchNote(frequency: number): void {
-  playTone(frequency, "sine", 0.22, 0.24);
+type SineToneSpec = {
+  duration: number;
+  gain?: number;
+  pitch: MusicalPitch;
+  startAt?: number;
+};
+
+export function playSineNote(spec: SineToneSpec): void {
+  playTone(resolvePitchFrequency(spec.pitch), "sine", spec.duration, spec.gain ?? 0.24);
 }
 
-export function playPitchInterval(anchorFrequency: number, targetFrequency: number): void {
-  playSequence([
-    { duration: 0.24, frequency: anchorFrequency, gain: 0.24, startAt: 0, type: "sine" },
-    { duration: 0.28, frequency: targetFrequency, gain: 0.28, startAt: 0.42, type: "sine" },
-  ]);
+export function playSineSequence(notes: SineToneSpec[]): void {
+  playSequence(
+    notes.map((note) => ({
+      duration: note.duration,
+      frequency: resolvePitchFrequency(note.pitch),
+      gain: note.gain ?? 0.24,
+      startAt: note.startAt ?? 0,
+      type: "sine" as const,
+    })),
+  );
 }

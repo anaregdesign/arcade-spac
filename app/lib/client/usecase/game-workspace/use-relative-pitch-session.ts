@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
-import { playPitchInterval, playPitchNote } from "../../infrastructure/browser/sound-effects";
+import { toMidiNoteNumber, transposeMidiNoteNumber } from "../../infrastructure/browser/note-frequencies";
+import { playSineNote, playSineSequence } from "../../infrastructure/browser/sound-effects";
 import { clearBrowserInterval, clearBrowserTimeout, startBrowserInterval, startBrowserTimeout, type BrowserTimeoutHandle } from "../../infrastructure/browser/timers";
 
 type Difficulty = "EASY" | "NORMAL" | "HARD" | "EXPERT";
@@ -13,8 +14,8 @@ type Candidate = {
 };
 
 type Round = {
-  anchorFrequency: number;
-  baseFrequency: number;
+  anchorNote: string;
+  baseNote: string;
   candidates: Candidate[];
   id: string;
   intervalSemitoneOffset: number;
@@ -29,8 +30,8 @@ const difficultyConfig: Record<Difficulty, DifficultyConfig> = {
   EASY: {
     rounds: [
       {
-        anchorFrequency: 261.63,
-        baseFrequency: 220,
+        anchorNote: "C4",
+        baseNote: "A3",
         candidates: [
           { id: "A", semitoneOffset: 4 },
           { id: "B", semitoneOffset: 7 },
@@ -40,8 +41,8 @@ const difficultyConfig: Record<Difficulty, DifficultyConfig> = {
         intervalSemitoneOffset: 7,
       },
       {
-        anchorFrequency: 293.66,
-        baseFrequency: 246.94,
+        anchorNote: "D4",
+        baseNote: "B3",
         candidates: [
           { id: "A", semitoneOffset: 3 },
           { id: "B", semitoneOffset: 4 },
@@ -51,8 +52,8 @@ const difficultyConfig: Record<Difficulty, DifficultyConfig> = {
         intervalSemitoneOffset: 4,
       },
       {
-        anchorFrequency: 329.63,
-        baseFrequency: 277.18,
+        anchorNote: "E4",
+        baseNote: "C#4",
         candidates: [
           { id: "A", semitoneOffset: 5 },
           { id: "B", semitoneOffset: 7 },
@@ -67,8 +68,8 @@ const difficultyConfig: Record<Difficulty, DifficultyConfig> = {
   NORMAL: {
     rounds: [
       {
-        anchorFrequency: 261.63,
-        baseFrequency: 207.65,
+        anchorNote: "C4",
+        baseNote: "G#3",
         candidates: [
           { id: "A", semitoneOffset: 4 },
           { id: "B", semitoneOffset: 7 },
@@ -79,8 +80,8 @@ const difficultyConfig: Record<Difficulty, DifficultyConfig> = {
         intervalSemitoneOffset: 8,
       },
       {
-        anchorFrequency: 293.66,
-        baseFrequency: 246.94,
+        anchorNote: "D4",
+        baseNote: "B3",
         candidates: [
           { id: "A", semitoneOffset: 2 },
           { id: "B", semitoneOffset: 4 },
@@ -91,8 +92,8 @@ const difficultyConfig: Record<Difficulty, DifficultyConfig> = {
         intervalSemitoneOffset: 5,
       },
       {
-        anchorFrequency: 349.23,
-        baseFrequency: 261.63,
+        anchorNote: "F4",
+        baseNote: "C4",
         candidates: [
           { id: "A", semitoneOffset: 1 },
           { id: "B", semitoneOffset: 3 },
@@ -103,8 +104,8 @@ const difficultyConfig: Record<Difficulty, DifficultyConfig> = {
         intervalSemitoneOffset: 3,
       },
       {
-        anchorFrequency: 392,
-        baseFrequency: 293.66,
+        anchorNote: "G4",
+        baseNote: "D4",
         candidates: [
           { id: "A", semitoneOffset: 5 },
           { id: "B", semitoneOffset: 7 },
@@ -120,8 +121,8 @@ const difficultyConfig: Record<Difficulty, DifficultyConfig> = {
   HARD: {
     rounds: [
       {
-        anchorFrequency: 261.63,
-        baseFrequency: 174.61,
+        anchorNote: "C4",
+        baseNote: "F3",
         candidates: [
           { id: "A", semitoneOffset: 1 },
           { id: "B", semitoneOffset: 2 },
@@ -132,8 +133,8 @@ const difficultyConfig: Record<Difficulty, DifficultyConfig> = {
         intervalSemitoneOffset: 2,
       },
       {
-        anchorFrequency: 329.63,
-        baseFrequency: 220,
+        anchorNote: "E4",
+        baseNote: "A3",
         candidates: [
           { id: "A", semitoneOffset: 5 },
           { id: "B", semitoneOffset: 6 },
@@ -144,8 +145,8 @@ const difficultyConfig: Record<Difficulty, DifficultyConfig> = {
         intervalSemitoneOffset: 6,
       },
       {
-        anchorFrequency: 349.23,
-        baseFrequency: 233.08,
+        anchorNote: "F4",
+        baseNote: "Bb3",
         candidates: [
           { id: "A", semitoneOffset: 7 },
           { id: "B", semitoneOffset: 8 },
@@ -156,8 +157,8 @@ const difficultyConfig: Record<Difficulty, DifficultyConfig> = {
         intervalSemitoneOffset: 9,
       },
       {
-        anchorFrequency: 392,
-        baseFrequency: 261.63,
+        anchorNote: "G4",
+        baseNote: "C4",
         candidates: [
           { id: "A", semitoneOffset: 3 },
           { id: "B", semitoneOffset: 4 },
@@ -168,8 +169,8 @@ const difficultyConfig: Record<Difficulty, DifficultyConfig> = {
         intervalSemitoneOffset: 5,
       },
       {
-        anchorFrequency: 440,
-        baseFrequency: 293.66,
+        anchorNote: "A4",
+        baseNote: "D4",
         candidates: [
           { id: "A", semitoneOffset: 4 },
           { id: "B", semitoneOffset: 6 },
@@ -185,8 +186,8 @@ const difficultyConfig: Record<Difficulty, DifficultyConfig> = {
   EXPERT: {
     rounds: [
       {
-        anchorFrequency: 261.63,
-        baseFrequency: 174.61,
+        anchorNote: "C4",
+        baseNote: "F3",
         candidates: [
           { id: "A", semitoneOffset: 1 },
           { id: "B", semitoneOffset: 2 },
@@ -197,8 +198,8 @@ const difficultyConfig: Record<Difficulty, DifficultyConfig> = {
         intervalSemitoneOffset: 1,
       },
       {
-        anchorFrequency: 293.66,
-        baseFrequency: 196,
+        anchorNote: "D4",
+        baseNote: "G3",
         candidates: [
           { id: "A", semitoneOffset: 5 },
           { id: "B", semitoneOffset: 6 },
@@ -209,8 +210,8 @@ const difficultyConfig: Record<Difficulty, DifficultyConfig> = {
         intervalSemitoneOffset: 6,
       },
       {
-        anchorFrequency: 329.63,
-        baseFrequency: 233.08,
+        anchorNote: "E4",
+        baseNote: "Bb3",
         candidates: [
           { id: "A", semitoneOffset: 7 },
           { id: "B", semitoneOffset: 8 },
@@ -221,8 +222,8 @@ const difficultyConfig: Record<Difficulty, DifficultyConfig> = {
         intervalSemitoneOffset: 8,
       },
       {
-        anchorFrequency: 349.23,
-        baseFrequency: 246.94,
+        anchorNote: "F4",
+        baseNote: "B3",
         candidates: [
           { id: "A", semitoneOffset: 4 },
           { id: "B", semitoneOffset: 5 },
@@ -233,8 +234,8 @@ const difficultyConfig: Record<Difficulty, DifficultyConfig> = {
         intervalSemitoneOffset: 5,
       },
       {
-        anchorFrequency: 392,
-        baseFrequency: 261.63,
+        anchorNote: "G4",
+        baseNote: "C4",
         candidates: [
           { id: "A", semitoneOffset: 2 },
           { id: "B", semitoneOffset: 3 },
@@ -245,8 +246,8 @@ const difficultyConfig: Record<Difficulty, DifficultyConfig> = {
         intervalSemitoneOffset: 4,
       },
       {
-        anchorFrequency: 440,
-        baseFrequency: 293.66,
+        anchorNote: "A4",
+        baseNote: "D4",
         candidates: [
           { id: "A", semitoneOffset: 8 },
           { id: "B", semitoneOffset: 9 },
@@ -263,6 +264,10 @@ const difficultyConfig: Record<Difficulty, DifficultyConfig> = {
 
 function frequencyFromSemitone(baseFrequency: number, semitoneOffset: number) {
   return baseFrequency * 2 ** (semitoneOffset / 12);
+}
+
+function buildTransposedPitch(note: string, semitoneOffset: number) {
+  return { midi: transposeMidiNoteNumber(toMidiNoteNumber(note), semitoneOffset) } as const;
 }
 
 export function useRelativePitchSession(difficulty: Difficulty) {
@@ -321,9 +326,12 @@ export function useRelativePitchSession(difficulty: Difficulty) {
     clearBrowserTimeout(introPhaseTimeoutRef.current);
     clearBrowserTimeout(introBaseTimeoutRef.current);
     setAudioPhase("intro");
-    playPitchInterval(round.anchorFrequency, frequencyFromSemitone(round.anchorFrequency, round.intervalSemitoneOffset));
+    playSineSequence([
+      { duration: 0.24, gain: 0.24, pitch: { note: round.anchorNote }, startAt: 0 },
+      { duration: 0.28, gain: 0.28, pitch: buildTransposedPitch(round.anchorNote, round.intervalSemitoneOffset), startAt: 0.42 },
+    ]);
     introBaseTimeoutRef.current = startBrowserTimeout(() => {
-      playPitchNote(round.baseFrequency);
+      playSineNote({ duration: 0.22, gain: 0.24, pitch: { note: round.baseNote } });
     }, 820);
     introPhaseTimeoutRef.current = startBrowserTimeout(() => {
       setAudioPhase("choice");
@@ -345,7 +353,10 @@ export function useRelativePitchSession(difficulty: Difficulty) {
     }
 
     setReplayCount((current) => current + 1);
-    playPitchInterval(currentRound.anchorFrequency, frequencyFromSemitone(currentRound.anchorFrequency, currentRound.intervalSemitoneOffset));
+    playSineSequence([
+      { duration: 0.24, gain: 0.24, pitch: { note: currentRound.anchorNote }, startAt: 0 },
+      { duration: 0.28, gain: 0.28, pitch: buildTransposedPitch(currentRound.anchorNote, currentRound.intervalSemitoneOffset), startAt: 0.42 },
+    ]);
     return "replayed" as const;
   }
 
@@ -355,7 +366,7 @@ export function useRelativePitchSession(difficulty: Difficulty) {
     }
 
     setReplayCount((current) => current + 1);
-    playPitchNote(currentRound.baseFrequency);
+    playSineNote({ duration: 0.22, gain: 0.24, pitch: { note: currentRound.baseNote } });
     return "replayed" as const;
   }
 
@@ -370,7 +381,10 @@ export function useRelativePitchSession(difficulty: Difficulty) {
       return "ignored" as const;
     }
 
-    playPitchInterval(currentRound.baseFrequency, frequencyFromSemitone(currentRound.baseFrequency, candidate.semitoneOffset));
+    playSineSequence([
+      { duration: 0.22, gain: 0.24, pitch: { note: currentRound.baseNote }, startAt: 0 },
+      { duration: 0.28, gain: 0.28, pitch: buildTransposedPitch(currentRound.baseNote, candidate.semitoneOffset), startAt: 0.36 },
+    ]);
 
     if (candidateId !== correctCandidateId) {
       setWrongPickCount((current) => current + 1);

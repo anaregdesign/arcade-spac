@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-import { playRunClear, playRunFail, playRunStart, playTapCorrect, playTapWrong } from "../../infrastructure/browser/sound-effects";
+import { playRunClear, playRunFail, playRunStart } from "../../infrastructure/browser/sound-effects";
 import { formatDuration } from "./display";
 import type { GameWorkspaceController } from "./use-game-workspace";
 import { useRelativePitchSession } from "./use-relative-pitch-session";
@@ -45,23 +45,13 @@ export function useRelativePitchWorkspace(workspace: GameWorkspaceController) {
         ? `The timer expired after ${relativePitch.roundsSolvedCount} of ${relativePitch.totalRoundCount} rounds with ${relativePitch.replayCount} replays used.`
         : "Listen to the reference jump, hear the new base note, then choose the candidate that recreates the same interval.",
     handleCandidatePress(candidateId: string) {
-      const result = relativePitch.chooseCandidate(candidateId);
-
-      if (result === "advanced" || result === "cleared") {
-        playTapCorrect();
-      } else if (result === "wrong") {
-        playTapWrong();
-      }
+      relativePitch.chooseCandidate(candidateId);
     },
     handleReplayBase() {
-      if (relativePitch.replayBase() === "replayed") {
-        playTapCorrect();
-      }
+      relativePitch.replayBase();
     },
     handleReplayReference() {
-      if (relativePitch.replayReference() === "replayed") {
-        playTapCorrect();
-      }
+      relativePitch.replayReference();
     },
     handleStartRun() {
       playRunStart();
