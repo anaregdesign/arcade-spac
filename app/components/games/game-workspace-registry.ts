@@ -2,6 +2,7 @@ import type { ComponentType } from "react";
 
 import { BeatMatchGameWorkspace } from "./beat-match/BeatMatchGameWorkspace";
 import { BlockTessellateGameWorkspace } from "./block-tessellate/BlockTessellateGameWorkspace";
+import { BounceAngleGameWorkspace } from "./bounce-angle/BounceAngleGameWorkspace";
 import { BoxFillGameWorkspace } from "./box-fill/BoxFillGameWorkspace";
 import { BubbleSpawnGameWorkspace } from "./bubble-spawn/BubbleSpawnGameWorkspace";
 import { CascadeClearGameWorkspace } from "./cascade-clear/CascadeClearGameWorkspace";
@@ -120,6 +121,35 @@ const gameDefinitionByKey: Record<string, GameDefinition> = {
       previewSrc: "/images/games/block-tessellate-preview.svg",
     },
     workspace: BlockTessellateGameWorkspace,
+  },
+  "bounce-angle": {
+    instructions: {
+      summary: "Choose one fixed angle pad, read how the side walls will redirect the shot, and launch only when the path should land in the green top pocket.",
+      sections: [
+        {
+          title: "Run flow",
+          items: [
+            { label: "Start run", detail: "Choose a difficulty and press Start run to load the first ricochet board with a visible target pocket and hazard pockets." },
+            { label: "Select then launch", detail: "Only one angle is armed at a time. Launch resolves the full rebound instantly and leaves the trace on the board for the next read." },
+            { label: "Clear or fail", detail: "Clear every board in the set before the timer expires. Every launch counts toward the result metric, even when it lands in a neutral pocket." },
+          ],
+        },
+        {
+          title: "Ricochet controls",
+          items: [
+            { label: "Read the top pockets", detail: "The green pocket is the goal, coral pockets are hazards, and the rest are neutral exits that still cost a shot." },
+            { label: "Use fixed angle pads", detail: "Each pad fires the same deterministic path every time, so the puzzle is about reflection planning rather than drag aim." },
+            { label: "Watch the trace", detail: "The last launch leaves a full rebound line and bounce markers behind so you can infer the next adjustment." },
+          ],
+        },
+      ],
+      title: "Bounce Angle controls",
+    },
+    presentation: {
+      previewAlt: "Bounce Angle ricochet board with a traced bank shot, target pocket, and fixed angle chooser",
+      previewSrc: "/images/games/bounce-angle-preview.svg",
+    },
+    workspace: BounceAngleGameWorkspace,
   },
   "box-fill": {
     instructions: {

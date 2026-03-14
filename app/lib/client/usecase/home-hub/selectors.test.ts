@@ -269,6 +269,15 @@ describe("home-hub selectors", () => {
       recommendationText: "Gravity placement sprint",
       shortDescription: "Rotate and slide a falling piece queue so each silhouette is sealed without resetting the board",
     },
+    {
+      currentRank: null,
+      key: "bounce-angle",
+      metricValue: "0:57",
+      name: "Bounce Angle",
+      playCount: 3,
+      recommendationText: "Ricochet geometry sprint",
+      shortDescription: "Choose one fixed angle and let the side-wall ricochet carry the ball into the correct pocket",
+    },
   ];
 
   it("counts ranked and unplayed games from visible cards", () => {
@@ -537,6 +546,15 @@ describe("home-hub selectors", () => {
         previewSrc: "/images/games/block-tessellate-preview.svg",
         recordLabel: "Best 1:09",
         runLabel: "2 runs",
+        statusLabel: "Played",
+      },
+      {
+        ...games[29],
+        previewAlt: "Bounce Angle ricochet board with a traced bank shot, target pocket, and fixed angle chooser",
+        previewObjectPosition: undefined,
+        previewSrc: "/images/games/bounce-angle-preview.svg",
+        recordLabel: "Best 0:57",
+        runLabel: "3 runs",
         statusLabel: "Played",
       },
     ]);

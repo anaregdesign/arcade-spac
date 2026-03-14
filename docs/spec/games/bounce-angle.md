@@ -12,7 +12,7 @@
 ## Users and Scenarios
 
 - 利用者は Home から `Bounce Angle` を開き、wall layout と hazard を見て最適な bank shot を選びたい
-- 利用者は workspace で aim angle、remaining shot count、last bounce path を確認しながら puzzle を解きたい
+- 利用者は workspace で selected angle、shots used、last bounce path を確認しながら puzzle を解きたい
 - 利用者は Result、profile、rankings で `clear time` と `shots used` を確認したい
 
 ## Scope
@@ -30,7 +30,7 @@
 ## User-Visible Behavior
 
 - idle overlay から run を開始すると、compact ricochet puzzle が表示される
-- 利用者は touch-safe aim controls で launcher angle を刻みながら調整し、`Launch` で 1 回だけ ball を撃つ
+- 利用者は touch-safe fixed angle controls で one-shot ricochet を選び、`Launch` で 1 回だけ ball を撃つ
 - ball は wall で反射し、deterministic な path を辿る
 - ball が goal pocket に入ると current puzzle が clear され、次の layout に進む
 - ball が hazard や dead end に落ちた場合は `shots used` が増え、利用者は angle を調整して再挑戦できる
@@ -42,7 +42,7 @@
 - `Bounce Angle` card が Home に表示され、game route を開ける
 - 1 run は 2 分以内に clear または timeout が確定する
 - direct shot では届かず、1 回以上の bank shot が必要な puzzle を含む
-- workspace 上で aim angle、last path trace、goal pocket、hazard が readable に表示される
+- workspace 上で selected angle、last path trace、goal pocket、hazard が readable に表示される
 - Result、profile、rankings では `clear time` と `shots used` が保存される
 
 ## Edge Cases
@@ -55,7 +55,7 @@
 ## Constraints and Dependencies
 
 - shared workspace card、board overlay、finish card、result flow を再利用する
-- deterministic Playwright selector を launcher、launch action、goal state、last path trace に付ける
+- deterministic Playwright selector を angle chooser、launch action、goal state、last path trace に付ける
 - reflection は visible に追える速度と path trace を持つ
 
 ## Distinction

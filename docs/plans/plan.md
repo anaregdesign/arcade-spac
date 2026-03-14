@@ -2,11 +2,11 @@
 
 ## Links
 - Program spec: /docs/spec/game-catalog-50-expansion-program.md
-- Current game spec: /docs/spec/games/bounce-angle.md
+- Current game spec: /docs/spec/games/cascade-flip.md
 
 ## Section 1 - Catalog Recovery Audit
 - [x] Confirm the durable game-spec inventory covers 50 game specs plus 2 meta specs (`two-minute-expansion-wave`, expansion program support docs).
-- [x] Confirm the current app implementation exposes 47 playable games in `supportedGames` and `game-workspace-registry`.
+- [x] Confirm the current app implementation exposes 48 playable games in `supportedGames` and `game-workspace-registry`.
 - [x] Choose the next reviewable slice as one low-risk unimplemented game that fits the current shared result and UI architecture.
 
 ### Subsection 1.1 - Remaining backlog risk buckets
@@ -24,36 +24,36 @@
 ### Subsection 1.3 - Scope reconciliation to 50
 - [x] Keep the 50-game target fixed instead of expanding the program to 51 games after the `Relative Pitch` swap.
 - [x] Defer `Intercept Ball` beyond the 50-game target because its prediction-reflex loop overlaps more with `Bounce Angle` and `Gap Rush` than the remaining backlog overlaps with each other.
-- [x] Treat the remaining implementation scope as 3 games: `Bounce Angle`, `Cascade Flip`, and `Gap Rush`.
+- [x] Treat the remaining implementation scope as 2 games: `Cascade Flip` and `Gap Rush`.
 
 ### Subsection 1.4 - Melody audio foundation
 - [x] Add reusable equal-temperament note helpers so future melody and ear-training games can trigger arbitrary `sine` note pitches without hard-coded frequencies.
 - [x] Migrate `Relative Pitch` to the reusable `sine` note helper and remove generic tap sounds from its replay and candidate actions so only melodic cues remain.
 
-## Section 2 - Current Slice: Bounce Angle
+## Section 2 - Current Slice: Cascade Flip
 ### Subsection 2.1 - Spec and planning alignment
-- [ ] Reconfirm `/docs/spec/games/bounce-angle.md` so the fixed-angle bank shot, rebound rule, and result metrics are explicit.
+- [ ] Reconfirm `/docs/spec/games/cascade-flip.md` so the moving-board memory cadence, flip rule, and result metrics are explicit.
 - [x] Keep this active plan focused on the current slice and append new implementation tasks only when they become concrete.
 
 ### Subsection 2.2 - App integration
-- [ ] Add `Bounce Angle` to the game catalog metadata and Home preview mapping.
+- [ ] Add `Cascade Flip` to the game catalog metadata and Home preview mapping.
 - [ ] Add the game registry entry, help content, and preview asset.
-- [ ] Implement the deterministic bank-shot resolver and `Bounce Angle` session/workspace Hook under `app/lib/client/usecase/game-workspace/`.
-- [ ] Implement the `Bounce Angle` workspace Component and CSS under `app/components/games/bounce-angle/`.
-- [ ] Add deterministic Playwright hooks for selected angle, rebound preview, shot resolution, and run completion without changing the visible UI.
-- [ ] Keep the lane, angle chooser, and rebound preview readable and touch-safe on narrow viewports.
+- [ ] Implement the deterministic moving-board memory resolver and `Cascade Flip` session/workspace Hook under `app/lib/client/usecase/game-workspace/`.
+- [ ] Implement the `Cascade Flip` workspace Component and CSS under `app/components/games/cascade-flip/`.
+- [ ] Add deterministic Playwright hooks for board phase, active answer set, flip resolution, and run completion without changing the visible UI.
+- [ ] Keep the board motion, answer controls, and result summaries readable and touch-safe on narrow viewports.
 - [ ] Update the touched catalog and Home selector tests for the new game metadata.
 
 ### Subsection 2.3 - Verification and slice closeout
 - [ ] Run targeted automated verification for the touched catalog and gameplay modules.
-- [ ] Run Playwright UI verification for `/games/bounce-angle` and the Home card.
-- [ ] Commit the `Bounce Angle` slice in one reviewable unit.
+- [ ] Run Playwright UI verification for `/games/cascade-flip` and the Home card.
+- [ ] Commit the `Cascade Flip` slice in one reviewable unit.
 
 ## Section 3 - Named Backlog
 - [x] `Spot Change` - implementation, automated verification, Playwright UI verification, and commit are complete.
 - [x] `Beat Match` - implementation, automated verification, Playwright UI verification, and commit are complete.
 - [x] `Block Tessellate` - implementation, automated verification, Playwright UI verification, and commit are complete.
-- [ ] `Bounce Angle` - keep the game unchecked until implementation, automated verification, and Playwright UI verification are complete.
+- [x] `Bounce Angle` - implementation, automated verification, Playwright UI verification, and commit are complete.
 - [x] `Box Fill` - implementation, automated verification, Playwright UI verification, and commit are complete.
 - [x] `Bubble Spawn` - implementation, automated verification, Playwright UI verification, and commit are complete.
 - [x] `Cascade Clear` - implementation, automated verification, Playwright UI verification, and commit are complete.

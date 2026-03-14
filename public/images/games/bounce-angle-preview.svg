@@ -1,0 +1,36 @@
+<svg width="640" height="480" viewBox="0 0 640 480" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="640" height="480" rx="36" fill="#EFF6FF"/>
+  <rect x="34" y="34" width="572" height="412" rx="28" fill="url(#bg)" stroke="#3B82F6" stroke-opacity="0.2"/>
+  <rect x="86" y="84" width="304" height="300" rx="28" fill="#F8FBFF" stroke="#1D4ED8" stroke-width="3"/>
+  <g>
+    <rect x="124" y="72" width="26" height="16" rx="6" fill="#CBD5E1" stroke="#475569" stroke-width="2"/>
+    <rect x="156" y="72" width="26" height="16" rx="6" fill="#86EFAC" stroke="#166534" stroke-width="2"/>
+    <rect x="188" y="72" width="26" height="16" rx="6" fill="#CBD5E1" stroke="#475569" stroke-width="2"/>
+    <rect x="292" y="72" width="26" height="16" rx="6" fill="#CBD5E1" stroke="#475569" stroke-width="2"/>
+    <rect x="324" y="72" width="26" height="16" rx="6" fill="#FCA5A5" stroke="#991B1B" stroke-width="2"/>
+    <rect x="356" y="72" width="26" height="16" rx="6" fill="#CBD5E1" stroke="#475569" stroke-width="2"/>
+  </g>
+  <path d="M238 348L118 162L86 114" stroke="#0EA5E9" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="118" cy="162" r="8" fill="#0EA5E9" stroke="white" stroke-width="4"/>
+  <circle cx="238" cy="348" r="12" fill="#2563EB" stroke="#EFF6FF" stroke-width="5"/>
+  <rect x="430" y="92" width="134" height="76" rx="22" fill="white" stroke="#3B82F6" stroke-opacity="0.18"/>
+  <text x="456" y="126" fill="#1D4ED8" font-family="sans-serif" font-size="18" font-weight="700">Target pocket</text>
+  <text x="456" y="152" fill="#0F172A" font-family="sans-serif" font-size="34" font-weight="800">B</text>
+  <rect x="430" y="186" width="134" height="76" rx="22" fill="white" stroke="#3B82F6" stroke-opacity="0.18"/>
+  <text x="456" y="220" fill="#1D4ED8" font-family="sans-serif" font-size="18" font-weight="700">Selected angle</text>
+  <text x="456" y="246" fill="#0F172A" font-family="sans-serif" font-size="26" font-weight="800">Bank left</text>
+  <g>
+    <rect x="430" y="286" width="62" height="52" rx="16" fill="white" stroke="#3B82F6" stroke-opacity="0.24"/>
+    <rect x="502" y="286" width="62" height="52" rx="16" fill="white" stroke="#3B82F6" stroke-opacity="0.24"/>
+    <rect x="430" y="348" width="134" height="52" rx="16" fill="#2563EB"/>
+    <text x="450" y="319" fill="#1D4ED8" font-family="sans-serif" font-size="16" font-weight="700">Soft left</text>
+    <text x="515" y="319" fill="#1D4ED8" font-family="sans-serif" font-size="16" font-weight="700">Bank left</text>
+    <text x="476" y="380" fill="#EFF6FF" font-family="sans-serif" font-size="18" font-weight="700">Launch</text>
+  </g>
+  <defs>
+    <linearGradient id="bg" x1="90" y1="58" x2="560" y2="430" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#EFF6FF"/>
+      <stop offset="1" stop-color="#DBEAFE"/>
+    </linearGradient>
+  </defs>
+</svg>
