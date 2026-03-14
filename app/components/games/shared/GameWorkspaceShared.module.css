@@ -77,17 +77,18 @@
 
 .board-card {
   max-width: 1120px;
-  width: fit-content;
+  width: min(100%, 1120px);
 }
 
 .board-card-minimal {
+  width: fit-content;
   padding: 0;
   background: transparent;
 }
 
 .game-board-overlay-shell {
   position: relative;
-  width: fit-content;
+  width: 100%;
   max-width: 100%;
 }
 
