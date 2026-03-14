@@ -6,14 +6,27 @@ param cpu int = 1
 param memory string = '2Gi'
 param environmentVariables array = []
 param tags object = {}
+param healthProbePath string = '/health'
 param vnetAddressPrefix string = '10.0.0.0/16'
 param containerAppsInfrastructureSubnetPrefix string = '10.0.0.0/23'
 param privateEndpointSubnetPrefix string = '10.0.2.0/24'
+param enablePrivateConfigStoreEndpoints bool = true
+param appConfigurationPrivateDnsZoneName string = 'privatelink.azconfig.io'
 param deployAzureSql bool = false
 param sqlAdministratorLogin string = ''
 @secure()
 param sqlAdministratorPassword string = ''
 param sqlDatabaseName string = 'app'
+param sqlEnableEntraOnlyAuthentication bool = true
+param sqlEntraAdminLogin string = ''
+param sqlEntraAdminObjectId string = ''
+param sqlEntraAdminTenantId string = tenant().tenantId
+@allowed([
+  'User'
+  'Group'
+  'Application'
+])
+param sqlEntraAdminPrincipalType string = 'Group'
 
 var logAnalyticsWorkspaceName = 'law-${appName}'
 var applicationInsightsName = 'appi-${appName}'
@@ -28,6 +41,9 @@ var privateEndpointSubnetName = 'snet-pe'
 var sqlServerName = toLower(take('sql-${appName}-${uniqueString(resourceGroup().id)}', 63))
 var sqlPrivateEndpointName = 'pep-${sqlServerName}'
 var sqlPrivateDnsZoneName = 'privatelink${environment().suffixes.sqlServerHostname}'
+var appConfigurationPrivateEndpointName = 'pep-${appConfigurationName}'
+var keyVaultPrivateEndpointName = 'pep-${keyVaultName}'
+var keyVaultPrivateDnsZoneName = 'privatelink${replace(environment().suffixes.keyvaultDns, '.vault.', '.vaultcore.')}'
 var appConfigDataReaderRoleDefinitionId = subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '516239f1-63e1-4d78-a4de-a74fb236a071')
 var keyVaultSecretsUserRoleDefinitionId = subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '4633458b-17de-408a-b874-0445c86b69e6')
 
@@ -101,7 +117,7 @@ resource appConfiguration 'Microsoft.AppConfiguration/configurationStores@2024-0
   }
   properties: {
     disableLocalAuth: true
-    publicNetworkAccess: 'Enabled'
+    publicNetworkAccess: enablePrivateConfigStoreEndpoints ? 'Disabled' : 'Enabled'
     softDeleteRetentionInDays: 7
   }
 }
@@ -118,8 +134,118 @@ resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
     }
     enableRbacAuthorization: true
     enablePurgeProtection: true
-    publicNetworkAccess: 'Enabled'
+    publicNetworkAccess: enablePrivateConfigStoreEndpoints ? 'Disabled' : 'Enabled'
     softDeleteRetentionInDays: 90
+  }
+}
+
+resource appConfigurationPrivateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' = if (enablePrivateConfigStoreEndpoints) {
+  name: appConfigurationPrivateDnsZoneName
+  location: 'global'
+  properties: {}
+}
+
+resource appConfigurationPrivateDnsZoneVirtualNetworkLink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2020-06-01' = if (enablePrivateConfigStoreEndpoints) {
+  parent: appConfigurationPrivateDnsZone
+  name: '${virtualNetworkName}-link'
+  location: 'global'
+  properties: {
+    registrationEnabled: false
+    virtualNetwork: {
+      id: virtualNetwork.id
+    }
+  }
+}
+
+resource appConfigurationPrivateEndpoint 'Microsoft.Network/privateEndpoints@2024-05-01' = if (enablePrivateConfigStoreEndpoints) {
+  name: appConfigurationPrivateEndpointName
+  location: location
+  tags: tags
+  properties: {
+    subnet: {
+      id: privateEndpointSubnet.id
+    }
+    privateLinkServiceConnections: [
+      {
+        name: '${appConfigurationPrivateEndpointName}-connection'
+        properties: {
+          privateLinkServiceId: appConfiguration.id
+          groupIds: [
+            'configurationStores'
+          ]
+        }
+      }
+    ]
+  }
+}
+
+resource appConfigurationPrivateEndpointDnsZoneGroup 'Microsoft.Network/privateEndpoints/privateDnsZoneGroups@2024-05-01' = if (enablePrivateConfigStoreEndpoints) {
+  parent: appConfigurationPrivateEndpoint
+  name: 'default'
+  properties: {
+    privateDnsZoneConfigs: [
+      {
+        name: 'appconfig'
+        properties: {
+          privateDnsZoneId: appConfigurationPrivateDnsZone.id
+        }
+      }
+    ]
+  }
+}
+
+resource keyVaultPrivateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' = if (enablePrivateConfigStoreEndpoints) {
+  name: keyVaultPrivateDnsZoneName
+  location: 'global'
+  properties: {}
+}
+
+resource keyVaultPrivateDnsZoneVirtualNetworkLink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2020-06-01' = if (enablePrivateConfigStoreEndpoints) {
+  parent: keyVaultPrivateDnsZone
+  name: '${virtualNetworkName}-link'
+  location: 'global'
+  properties: {
+    registrationEnabled: false
+    virtualNetwork: {
+      id: virtualNetwork.id
+    }
+  }
+}
+
+resource keyVaultPrivateEndpoint 'Microsoft.Network/privateEndpoints@2024-05-01' = if (enablePrivateConfigStoreEndpoints) {
+  name: keyVaultPrivateEndpointName
+  location: location
+  tags: tags
+  properties: {
+    subnet: {
+      id: privateEndpointSubnet.id
+    }
+    privateLinkServiceConnections: [
+      {
+        name: '${keyVaultPrivateEndpointName}-connection'
+        properties: {
+          privateLinkServiceId: keyVault.id
+          groupIds: [
+            'vault'
+          ]
+        }
+      }
+    ]
+  }
+}
+
+resource keyVaultPrivateEndpointDnsZoneGroup 'Microsoft.Network/privateEndpoints/privateDnsZoneGroups@2024-05-01' = if (enablePrivateConfigStoreEndpoints) {
+  parent: keyVaultPrivateEndpoint
+  name: 'default'
+  properties: {
+    privateDnsZoneConfigs: [
+      {
+        name: 'keyvault'
+        properties: {
+          privateDnsZoneId: keyVaultPrivateDnsZone.id
+        }
+      }
+    ]
   }
 }
 
@@ -186,6 +312,41 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
             ],
             environmentVariables
           )
+          probes: [
+            {
+              type: 'Startup'
+              httpGet: {
+                path: healthProbePath
+                port: containerPort
+              }
+              initialDelaySeconds: 5
+              periodSeconds: 5
+              timeoutSeconds: 3
+              failureThreshold: 48
+            }
+            {
+              type: 'Readiness'
+              httpGet: {
+                path: healthProbePath
+                port: containerPort
+              }
+              initialDelaySeconds: 3
+              periodSeconds: 10
+              timeoutSeconds: 3
+              failureThreshold: 6
+            }
+            {
+              type: 'Liveness'
+              httpGet: {
+                path: healthProbePath
+                port: containerPort
+              }
+              initialDelaySeconds: 10
+              periodSeconds: 15
+              timeoutSeconds: 3
+              failureThreshold: 4
+            }
+          ]
           resources: {
             cpu: cpu
             memory: memory
@@ -210,6 +371,14 @@ resource sqlServer 'Microsoft.Sql/servers@2021-11-01-preview' = if (deployAzureS
     minimalTlsVersion: '1.2'
     publicNetworkAccess: 'Disabled'
     version: '12.0'
+    administrators: {
+      administratorType: 'ActiveDirectory'
+      azureADOnlyAuthentication: sqlEnableEntraOnlyAuthentication
+      login: sqlEntraAdminLogin
+      principalType: sqlEntraAdminPrincipalType
+      sid: sqlEntraAdminObjectId
+      tenantId: sqlEntraAdminTenantId
+    }
   }
 }
 

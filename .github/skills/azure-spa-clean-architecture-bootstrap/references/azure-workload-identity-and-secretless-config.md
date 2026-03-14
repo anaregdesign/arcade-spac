@@ -23,6 +23,7 @@ Use this reference when the app needs Azure workload identity, Azure App Configu
 - Keep non-secret runtime settings in Azure App Configuration.
 - Keep secrets such as confidential client secrets, API keys, and connection secrets in Key Vault.
 - Bootstrap Azure App Configuration with Microsoft Entra ID rather than connection strings whenever possible.
+- For hosted environments, prefer App Configuration and Key Vault `Private Endpoint` access over public data-plane access.
 - The Azure App Configuration endpoint is not a secret and can live in checked-in code, checked-in config files, or platform app settings when needed for bootstrap.
 
 ## Use Local `DefaultAzureCredential` During Development
@@ -30,6 +31,7 @@ Use this reference when the app needs Azure workload identity, Azure App Configu
 - Run `az login` or `azd auth login` locally and use `DefaultAzureCredential` for the local development path.
 - Grant the developer identity only the minimum local roles it needs, such as App Configuration Data Reader and Key Vault Secrets User where appropriate.
 - Use the same Azure App Configuration and Key Vault path in local development that production will use, instead of creating a separate `.env`-driven config path.
+- If production App Configuration or Key Vault are private-only, document the required VPN, private network path, or dedicated dev resources explicitly. Do not reopen production config stores to the public internet just to simplify local bootstrap.
 - If a `web` app needs a confidential client secret locally, fetch it from Key Vault through `DefaultAzureCredential` rather than copying it into a local file.
 - Keep local development documentation explicit about what the developer must sign in to and which Azure resources are read at startup.
 - Inference from Microsoft guidance: keep `DefaultAzureCredential` for local development convenience, but do not describe that local path as Managed Identity. Use Managed Identity only in deployed Azure environments.
@@ -50,6 +52,7 @@ Use this reference when the app needs Azure workload identity, Azure App Configu
 - Keep the local development auth path explicit in checked-in docs: which tenant, which app registration, which localhost callback URL, and which test users or groups are expected for developer sign-in.
 - Keep Azure identity IDs, App Configuration endpoints, DB host names, and callback URLs documented in README or deployment notes.
 - Keep the Azure SQL host name stable in config and let private DNS resolve it inside the Container Apps VNet. Do not switch app code to raw private IP addresses.
+- Keep the hosted App Configuration and Key Vault host names stable in config and let private DNS resolve them in Azure when private endpoints are enabled.
 - Keep GitHub Environment values separate from Azure runtime secrets.
 
 ## Verification
@@ -58,3 +61,4 @@ Use this reference when the app needs Azure workload identity, Azure App Configu
 - Verify the deploy identity can update the Azure hosting resource and nothing broader than necessary.
 - Verify local development still works through `DefaultAzureCredential` without claiming that the developer workstation has Managed Identity.
 - Verify the deployed Container Apps environment resolves the Azure SQL server FQDN to the private endpoint IP when private connectivity is required.
+- Verify the hosted runtime reaches App Configuration and Key Vault through the intended private endpoint path when private config stores are enabled.
