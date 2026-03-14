@@ -75,26 +75,56 @@ resolve_app_url() {
   printf 'https://%s\n' "${container_app_fqdn}"
 }
 
-assert_resource_public_network_access() {
-  local resource_type="$1"
-  local resource_name="$2"
-  local expected="$3"
-  local label="$4"
+get_app_configuration_value() {
+  local store_name="$1"
+  local query="$2"
+
+  az appconfig show \
+    --resource-group "${AZURE_RESOURCE_GROUP}" \
+    --name "${store_name}" \
+    --query "${query}" \
+    -o tsv
+}
+
+get_key_vault_value() {
+  local vault_name="$1"
+  local query="$2"
+
+  az keyvault show \
+    --resource-group "${AZURE_RESOURCE_GROUP}" \
+    --name "${vault_name}" \
+    --query "${query}" \
+    -o tsv
+}
+
+assert_app_configuration_public_network_access() {
+  local store_name="$1"
+  local expected="$2"
   local actual
 
-  actual="$(az resource show \
-    --resource-group "${AZURE_RESOURCE_GROUP}" \
-    --resource-type "${resource_type}" \
-    --name "${resource_name}" \
-    --query properties.publicNetworkAccess \
-    -o tsv)"
+  actual="$(get_app_configuration_value "${store_name}" 'publicNetworkAccess')"
 
   if [[ "${actual}" != "${expected}" ]]; then
-    echo "${label} ${resource_name} publicNetworkAccess is ${actual}, expected ${expected}."
+    echo "App Configuration ${store_name} publicNetworkAccess is ${actual}, expected ${expected}."
     exit 1
   fi
 
-  echo "Verified ${label} ${resource_name} publicNetworkAccess=${actual}."
+  echo "Verified App Configuration ${store_name} publicNetworkAccess=${actual}."
+}
+
+assert_key_vault_public_network_access() {
+  local vault_name="$1"
+  local expected="$2"
+  local actual
+
+  actual="$(get_key_vault_value "${vault_name}" 'properties.publicNetworkAccess')"
+
+  if [[ "${actual}" != "${expected}" ]]; then
+    echo "Key Vault ${vault_name} publicNetworkAccess is ${actual}, expected ${expected}."
+    exit 1
+  fi
+
+  echo "Verified Key Vault ${vault_name} publicNetworkAccess=${actual}."
 }
 
 assert_private_dns_zone_linked_to_vnet() {
@@ -325,33 +355,13 @@ assert_private_endpoint_for_resource \
 if [[ "${EXPECTED_PRIVATE_CONFIG_STORES}" == "true" ]]; then
   app_configuration_name="$(require_single_resource_name 'Microsoft.AppConfiguration/configurationStores' 'App Configuration store')"
   key_vault_name="$(require_single_resource_name 'Microsoft.KeyVault/vaults' 'Key Vault')"
-  app_configuration_id="$(az resource show \
-    --resource-group "${AZURE_RESOURCE_GROUP}" \
-    --resource-type 'Microsoft.AppConfiguration/configurationStores' \
-    --name "${app_configuration_name}" \
-    --query id \
-    -o tsv)"
-  key_vault_id="$(az resource show \
-    --resource-group "${AZURE_RESOURCE_GROUP}" \
-    --resource-type 'Microsoft.KeyVault/vaults' \
-    --name "${key_vault_name}" \
-    --query id \
-    -o tsv)"
-  app_configuration_endpoint="$(az resource show \
-    --resource-group "${AZURE_RESOURCE_GROUP}" \
-    --resource-type 'Microsoft.AppConfiguration/configurationStores' \
-    --name "${app_configuration_name}" \
-    --query properties.endpoint \
-    -o tsv)"
-  key_vault_uri="$(az resource show \
-    --resource-group "${AZURE_RESOURCE_GROUP}" \
-    --resource-type 'Microsoft.KeyVault/vaults' \
-    --name "${key_vault_name}" \
-    --query properties.vaultUri \
-    -o tsv)"
+  app_configuration_id="$(get_app_configuration_value "${app_configuration_name}" 'id')"
+  key_vault_id="$(get_key_vault_value "${key_vault_name}" 'id')"
+  app_configuration_endpoint="$(get_app_configuration_value "${app_configuration_name}" 'endpoint')"
+  key_vault_uri="$(get_key_vault_value "${key_vault_name}" 'properties.vaultUri')"
 
-  assert_resource_public_network_access 'Microsoft.AppConfiguration/configurationStores' "${app_configuration_name}" 'Disabled' 'App Configuration'
-  assert_resource_public_network_access 'Microsoft.KeyVault/vaults' "${key_vault_name}" 'Disabled' 'Key Vault'
+  assert_app_configuration_public_network_access "${app_configuration_name}" 'Disabled'
+  assert_key_vault_public_network_access "${key_vault_name}" 'Disabled'
 
   if [[ -n "${container_apps_vnet_id}" ]]; then
     assert_private_dns_zone_linked_to_vnet "${APP_CONFIGURATION_PRIVATE_DNS_ZONE_NAME}" "${container_apps_vnet_id}"
