@@ -26,6 +26,7 @@ type HomeTagOption = {
 
 const preferredTagOrder = [
   "fast-start",
+  "audio",
   "logic",
   "timing",
   "memory",
@@ -39,6 +40,7 @@ const preferredTagOrder = [
 ] as const;
 
 const tagLabelByValue: Record<string, string> = {
+  audio: "Audio",
   "fast-start": "Fast start",
   logic: "Logic",
   memory: "Memory",

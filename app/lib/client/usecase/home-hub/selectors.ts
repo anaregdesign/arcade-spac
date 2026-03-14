@@ -34,6 +34,10 @@ const previewByGameKey: Record<string, Pick<HomeGameCard, "previewAlt" | "previe
     previewAlt: "Merge Climb number board with directional controls, a goal tile, and a next spawn panel",
     previewSrc: "/images/games/merge-climb-preview.svg",
   },
+  "relative-pitch": {
+    previewAlt: "Relative Pitch panel with replay controls and four candidate pads around a current round prompt",
+    previewSrc: "/images/games/relative-pitch-preview.svg",
+  },
   "color-sweep": {
     previewAlt: "Color Sweep board showing a target swatch and a grid of colored tiles",
     previewSrc: "/images/games/color-sweep-preview.svg",

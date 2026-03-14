@@ -21,6 +21,7 @@ import { PositionLockGameWorkspace } from "./position-lock/PositionLockGameWorks
 import { PrecisionDropGameWorkspace } from "./precision-drop/PrecisionDropGameWorkspace";
 import { PulseCountGameWorkspace } from "./pulse-count/PulseCountGameWorkspace";
 import { QuickSumGameWorkspace } from "./quick-sum/QuickSumGameWorkspace";
+import { RelativePitchGameWorkspace } from "./relative-pitch/RelativePitchGameWorkspace";
 import { RotateAlignGameWorkspace } from "./rotate-align/RotateAlignGameWorkspace";
 import { SequencePointGameWorkspace } from "./sequence-point/SequencePointGameWorkspace";
 import { ShapeMorphGameWorkspace } from "./shape-morph/ShapeMorphGameWorkspace";
@@ -172,6 +173,35 @@ const gameDefinitionByKey: Record<string, GameDefinition> = {
       previewSrc: "/images/games/merge-climb-preview.svg",
     },
     workspace: MergeClimbGameWorkspace,
+  },
+  "relative-pitch": {
+    instructions: {
+      summary: "Listen to the reference interval, hear the new base note, then choose the candidate that recreates the same jump from that new base.",
+      sections: [
+        {
+          title: "Run flow",
+          items: [
+            { label: "Start run", detail: "Choose a difficulty and press Start run to unlock browser audio and play the first reference interval." },
+            { label: "Listen then choose", detail: "Each round plays the reference jump, then the new base note, and only then unlocks the candidate pads." },
+            { label: "Clear or fail", detail: "Finish every audio round before the timer expires. Extra replays stay visible in the result summary." },
+          ],
+        },
+        {
+          title: "Audio controls",
+          items: [
+            { label: "Replay reference", detail: "Use Replay reference to hear the original anchor-to-target jump again when you need another comparison." },
+            { label: "Replay base", detail: "Use Replay base to hear only the new base note again before you commit a candidate." },
+            { label: "Choose one pad", detail: "Each candidate pad plays the new base plus its answer note and immediately locks in that choice for the round." },
+          ],
+        },
+      ],
+      title: "Relative Pitch controls",
+    },
+    presentation: {
+      previewAlt: "Relative Pitch panel with replay controls and four candidate pads around a current round prompt",
+      previewSrc: "/images/games/relative-pitch-preview.svg",
+    },
+    workspace: RelativePitchGameWorkspace,
   },
   "color-sweep": {
     instructions: {

@@ -1,0 +1,18 @@
+<svg width="640" height="360" viewBox="0 0 640 360" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="640" height="360" rx="28" fill="#FAF5FF"/>
+  <rect x="40" y="42" width="560" height="96" rx="24" fill="white"/>
+  <text x="72" y="82" fill="#7C3AED" font-size="18" font-family="Arial, sans-serif" font-weight="700">MATCH THE SAME JUMP</text>
+  <text x="72" y="118" fill="#4C1D95" font-size="30" font-family="Arial, sans-serif" font-weight="700">Relative Pitch</text>
+  <rect x="40" y="156" width="270" height="64" rx="20" fill="#EDE9FE"/>
+  <text x="175" y="196" text-anchor="middle" fill="#5B21B6" font-size="24" font-family="Arial, sans-serif" font-weight="700">Replay reference</text>
+  <rect x="330" y="156" width="270" height="64" rx="20" fill="#EDE9FE"/>
+  <text x="465" y="196" text-anchor="middle" fill="#5B21B6" font-size="24" font-family="Arial, sans-serif" font-weight="700">Replay base</text>
+  <rect x="40" y="240" width="128" height="78" rx="22" fill="#DDD6FE"/>
+  <text x="104" y="290" text-anchor="middle" fill="#4C1D95" font-size="34" font-family="Arial, sans-serif" font-weight="700">A</text>
+  <rect x="184" y="240" width="128" height="78" rx="22" fill="#DDD6FE"/>
+  <text x="248" y="290" text-anchor="middle" fill="#4C1D95" font-size="34" font-family="Arial, sans-serif" font-weight="700">B</text>
+  <rect x="328" y="240" width="128" height="78" rx="22" fill="#DDD6FE"/>
+  <text x="392" y="290" text-anchor="middle" fill="#4C1D95" font-size="34" font-family="Arial, sans-serif" font-weight="700">C</text>
+  <rect x="472" y="240" width="128" height="78" rx="22" fill="#DDD6FE"/>
+  <text x="536" y="290" text-anchor="middle" fill="#4C1D95" font-size="34" font-family="Arial, sans-serif" font-weight="700">D</text>
+</svg>

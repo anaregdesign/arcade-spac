@@ -2,7 +2,7 @@
 
 ## Links
 - Program spec: /docs/spec/game-catalog-50-expansion-program.md
-- Current game spec: /docs/spec/games/merge-climb.md
+- Current game spec: /docs/spec/games/relative-pitch.md
 
 ## Section 1 - Catalog Recovery Audit
 - [x] Confirm the durable game-spec inventory covers 50 game specs plus 2 meta specs (`two-minute-expansion-wave`, expansion program support docs).
@@ -26,24 +26,25 @@
 - [x] Defer `Intercept Ball` beyond the 50-game target because its prediction-reflex loop overlaps more with `Bounce Angle` and `Gap Rush` than the remaining backlog overlaps with each other.
 - [x] Treat the remaining implementation scope as 10 games: `Merge Climb`, `Relative Pitch`, `Cascade Clear`, `Block Tessellate`, `Box Fill`, `Bubble Spawn`, `Line Connect`, `Bounce Angle`, `Cascade Flip`, and `Gap Rush`.
 
-## Section 2 - Current Slice: Merge Climb
+## Section 2 - Current Slice: Relative Pitch
 ### Subsection 2.1 - Spec and planning alignment
-- [x] Rewrite `/docs/spec/games/merge-climb.md` so the merge growth, result metrics, and touch-safe move controls are explicit.
+- [x] Rewrite `/docs/spec/games/relative-pitch.md` so the browser-audio flow, deterministic round structure, and current result metrics are explicit.
 - [x] Keep this active plan focused on the current slice and append new implementation tasks only when they become concrete.
 
 ### Subsection 2.2 - App integration
-- [x] Add `Merge Climb` to the game catalog metadata and Home preview mapping.
+- [x] Add `Relative Pitch` to the game catalog metadata and Home preview mapping.
 - [x] Add the game registry entry, help content, and preview asset.
-- [x] Implement the `Merge Climb` session and workspace Hook under `app/lib/client/usecase/game-workspace/`.
-- [x] Implement the `Merge Climb` workspace Component and CSS under `app/components/games/merge-climb/`.
-- [x] Add deterministic Playwright hooks for board state, direction input, max value, and run completion without changing the visible UI.
-- [x] Keep the merge board and move controls readable and touch-safe on narrow viewports.
+- [x] Extend browser sound support only as far as needed for two-note interval playback and base-note replay.
+- [x] Implement the `Relative Pitch` session and workspace Hook under `app/lib/client/usecase/game-workspace/`.
+- [x] Implement the `Relative Pitch` workspace Component and CSS under `app/components/games/relative-pitch/`.
+- [x] Add deterministic Playwright hooks for round id, candidate id, replay count, audio phase, and run completion without changing the visible UI.
+- [x] Keep the replay controls and candidate pads readable and touch-safe on narrow viewports.
 - [x] Update the touched catalog and Home selector tests for the new game metadata.
 
 ### Subsection 2.3 - Verification and slice closeout
 - [x] Run targeted automated verification for the touched catalog and gameplay modules.
-- [x] Run Playwright UI verification for `/games/merge-climb` and the Home card.
-- [ ] Commit the `Merge Climb` slice in one reviewable unit.
+- [x] Run Playwright UI verification for `/games/relative-pitch` and the Home card.
+- [ ] Commit the `Relative Pitch` slice in one reviewable unit.
 
 ## Section 3 - Named Backlog
 - [x] `Spot Change` - implementation, automated verification, Playwright UI verification, and commit are complete.
@@ -66,7 +67,7 @@
 - [x] `Merge Climb` - implementation, automated verification, Playwright UI verification, and commit are complete.
 - [x] `Phase Lock` - implementation, automated verification, Playwright UI verification, and commit are complete.
 - [x] `Position Lock` - implementation, automated verification, Playwright UI verification, and commit are complete.
-- [ ] `Relative Pitch` - keep the game unchecked until implementation, automated verification, and Playwright UI verification are complete.
+- [x] `Relative Pitch` - implementation, automated verification, Playwright UI verification, and commit are complete.
 - [x] `Rotate Align` - implementation, automated verification, Playwright UI verification, and commit are complete.
 - [x] `Sequence Point` - implementation, automated verification, Playwright UI verification, and commit are complete.
 - [x] `Spinner Aim` - implementation, automated verification, Playwright UI verification, and commit are complete.

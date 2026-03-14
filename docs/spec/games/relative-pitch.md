@@ -13,12 +13,12 @@
 
 - 利用者は Home から `Relative Pitch` を開き、2 つの note の距離感を聴いて覚えたい
 - 利用者は reference phrase、new base note、candidate note を replay しながら正しい interval match を選びたい
-- 利用者は Result、profile、rankings で `rounds solved` と `replays used` を確認したい
+- 利用者は Result、profile、rankings で `clear time` と `replays used` を確認したい
 
 ## Scope
 
 - `Relative Pitch` を home、workspace、result、rankings、profile に統合する
-- primary metric は `rounds solved`、support metric は `replays used` とする
+- primary metric は `clear time`、support metric は `replays used` とする
 - workspace では reference phrase、current base note、candidate pads、round progress、replay count を visible にする
 
 ## Non-Goals
@@ -43,7 +43,7 @@
 - 1 run は 2 分以内に clear または fail が確定する
 - reference interval、new base note、candidate selection の 3 段が明確に分かれている
 - rhythm accuracy ではなく interval relation の識別が主題になっている
-- Result、profile、rankings では `rounds solved` と `replays used` が保存される
+- Result、profile、rankings では `clear time` と `replays used` が保存される
 
 ## Edge Cases
 
