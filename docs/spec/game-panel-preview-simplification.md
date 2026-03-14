@@ -48,6 +48,4 @@ Home の各ゲームパネルに表示する preview image で、盤面を囲う
 ## Links
 
 - Related: [product-requirements.md](./product-requirements.md)
-- Plan: [../plans/plan.20260313-222200.md](../plans/plan.20260313-222200.md)
-
 

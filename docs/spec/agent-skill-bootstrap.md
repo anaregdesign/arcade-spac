@@ -8,7 +8,7 @@ Repository-scoped Copilot agent skills are vendored under `.github/skills/` so t
 
 - The repository needs local copies of the current Copilot skill set so instructions resolve inside the workspace.
 - The skill directories must stay in a specific layout because sibling skills may use relative links to shared references.
-- The repository-level Copilot instructions, specs, and archived plans need to describe only the supported local skill inventory.
+- The repository-level Copilot instructions and specs need to describe only the supported local skill inventory.
 - Contributors need one current description of which skills are available and how they are combined by concern.
 
 ## Users and Scenarios
@@ -22,13 +22,13 @@ Repository-scoped Copilot agent skills are vendored under `.github/skills/` so t
 - Keep the current local skill inventory synchronized under `.github/skills/`: `react-router-prisma-app-architecture`, `azure-app-platform-delivery`, `entra-user-auth-registration`, `copilot-azure-cloud-access`, and `spec-driven-workflow`.
 - Preserve sibling relative references between skill directories after generation or synchronization.
 - Keep `.github/copilot-instructions.md`, `AGENTS.md`, and this spec aligned on skill roles, preferred invocation order, and spec workflow expectations for this repository.
-- Remove stale references to retired local skills from repository docs and archived plans.
+- Remove stale references to retired local skills from repository docs.
 
 ## Non-Goals
 
 - Changing application runtime behavior.
 - Choosing between overlapping Azure skills dynamically beyond documenting the repository default.
-- Introducing new repository workflows outside the requested skill inventory and instruction alignment updates.
+- Introducing new repository workflows outside the supported skill inventory and instruction alignment updates.
 
 ## User-Visible Behavior
 
@@ -36,28 +36,29 @@ Repository-scoped Copilot agent skills are vendored under `.github/skills/` so t
 - Relative references between sibling skills continue to resolve after the sync.
 - `.github/copilot-instructions.md` and `AGENTS.md` tell Copilot to start non-trivial application-development work with `spec-driven-workflow`, then add `react-router-prisma-app-architecture` for app-code architecture guidance, and then add the Azure, Entra, and Copilot cloud-access skills only for the task categories that require them.
 - The repository instructions treat `azure-app-platform-delivery` as the Azure extension for default task routing in this repository.
-- Repository docs and archived plans describe only the supported local skill inventory.
+- Repository docs describe only the supported local skill inventory.
 
 ## Acceptance Criteria
 
 - The five current skill directories exist under `.github/skills/`.
 - The vendored skill directories preserve any required sibling-relative references.
 - `.github/copilot-instructions.md`, `AGENTS.md`, and this spec agree on `spec-driven-workflow` first for non-trivial work and on the default companion-skill order that follows it.
-- No repository files describe or list retired local skills.
-- The final work summary can list the installed skill directories under `.github/skills/` and describe the default routing expectations captured in repository instructions.
+- Repository docs and specs do not describe or list retired local skills.
+- Repository instructions and specs consistently describe the default routing expectations captured in this document.
 
 ## Edge Cases
 
 - If destination skill directories already exist, they are replaced or synchronized to the upstream repository version instead of merged manually.
 - If one source skill contains directories not present in another, the sync preserves only what exists in the corresponding upstream source directory.
-- If docs or archived plans still reflect an older inventory, they are rewritten to the currently supported set.
+- If any repository doc still reflects an older inventory, it is rewritten to the currently supported set.
 
 ## Constraints and Dependencies
 
 - The default invocation order for non-trivial repository work starts with `spec-driven-workflow`, then adds `react-router-prisma-app-architecture`, then `azure-app-platform-delivery` when Azure delivery work applies, then `entra-user-auth-registration`, then `copilot-azure-cloud-access` for the matching deltas.
-- The work is tracked in `/docs/plans/plan.md` during implementation and archived when complete.
+- Repository instructions and specs must stay aligned on supported skill inventory and invocation order.
 - The vendored skill directories under `.github/skills/` must remain stable enough that sibling relative links continue to resolve.
 
 ## Links
 
-- Plan: [plan.20260314-113831.md](../plans/plan.20260314-113831.md)
+- Related: [../../.github/copilot-instructions.md](../../.github/copilot-instructions.md)
+- Related: [../../AGENTS.md](../../AGENTS.md)

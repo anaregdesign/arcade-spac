@@ -44,7 +44,7 @@
 - app code は `tenantId + objectId` を前提に user identity を扱い、multi-tenant user collision を避ける
 - local verification が通る
 - production deploy 後の `/health` と smoke test が成功する
-- relevant spec / operations docs が current behavior に更新されている
+- relevant spec / operations docs が multi-tenant sign-in behavior を反映している
 
 ## Edge Cases
 
@@ -56,7 +56,6 @@
 
 - 既存の server-side OIDC callback と cookie session を維持する
 - production DB は multi-tenant identity key に対応する schema へ更新する
-- `/docs/plan.md` を execution tracker として使い、完了後に削除する
 
 ## Links
 

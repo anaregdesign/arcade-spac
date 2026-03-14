@@ -2,11 +2,11 @@
 
 ## Summary
 
-`Arcade` の Azure hosting を、Azure SQL public endpoint 依存から `Private Endpoint` 前提の構成へ切り替え、`Microsoft Entra ID` を前提にした runtime contract と運用手順を現在の skill の best practice に揃える。
+`Arcade` の Azure hosting を、Azure SQL public endpoint 依存から `Private Endpoint` 前提の構成へ切り替え、`Microsoft Entra ID` を前提にした runtime contract と運用手順を `azure-app-platform-delivery` の best practice に揃える。
 
 ## User Problem
 
-- 現在の Azure SQL connectivity は public endpoint と `AllowAzureServices` firewall rule に依存しており、skill の推奨構成と一致していない
+- 現在の Azure SQL connectivity は public endpoint と `AllowAzureServices` firewall rule に依存しており、`azure-app-platform-delivery` の推奨構成と一致していない
 - App Configuration と Key Vault も public access 前提のままで、Azure 側の private networking 方針とずれている
 - repository の verification と runbook も public SQL contract を正としているため、private path への移行後に誤った運用を誘発する
 
@@ -63,11 +63,10 @@
 - deploy path は引き続き GitHub Workflow を使い、local agent から production deploy は行わない
 - Azure SQL `Microsoft Entra ID` admin、VNet、subnet、private DNS、private endpoint approval は Azure side prerequisite として必要になる
 - live Azure resource への config 同期は private data plane に到達できる host が必要で、image deploy は release workflow に依存する
-- `/docs/plans/plan.md` を execution tracker として使い、完了後は archive する
 
 ## Links
 
+- Related Skill: [../../.github/skills/azure-app-platform-delivery/SKILL.md](../../.github/skills/azure-app-platform-delivery/SKILL.md)
 - Related: [product-requirements.md](./product-requirements.md)
 - Related: [production-recovery-and-redeploy.md](./production-recovery-and-redeploy.md)
 - Related: [../azure-prerequisites.md](../azure-prerequisites.md)
-- Plan: [../plans/plan.20260314-100034.md](../plans/plan.20260314-100034.md)

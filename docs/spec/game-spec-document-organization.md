@@ -52,6 +52,5 @@
 
 ## Links
 
-- Plan Archive: [../plans/plan.20260313-210932.md](../plans/plan.20260313-210932.md)
 - Requirements: [product-requirements.md](./product-requirements.md)
 - Flow: [screen-flow.md](./screen-flow.md)

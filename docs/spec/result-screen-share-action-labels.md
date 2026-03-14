@@ -54,4 +54,3 @@
 ## Links
 
 - Related: [result-screen-score-focus.md](./result-screen-score-focus.md)
-- Plan: [../plans/plan.20260313-221400.md](../plans/plan.20260313-221400.md)

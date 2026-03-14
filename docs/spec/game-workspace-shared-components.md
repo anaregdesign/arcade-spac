@@ -56,7 +56,6 @@
 
 - shared UI は `app/components/games/shared/` 配下の React Component として配置する
 - 各 game workspace の session Hook や submit logic は維持し、presentational な共通化に留める
-- `/docs/plan.md` で execution を追跡し、完了後は削除する
 
 ## Links
 

@@ -49,7 +49,6 @@
 
 ## Constraints and Dependencies
 
-- Active execution tracking is maintained in `/docs/plans/plan.md`
 - `app/root.tsx` の global stylesheet import は維持し、global CSS の entry point は変えない
 - 既存の build / typecheck command を使って検証する
 
