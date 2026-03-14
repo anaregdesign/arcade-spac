@@ -1,5 +1,6 @@
 import { useBeatMatchWorkspace } from "../../../lib/client/usecase/game-workspace/use-beat-match-workspace";
 import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
+import { GameplayTapControlLayout } from "../../gameplay/layouts/GameplayTapControlLayout";
 import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
 import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
@@ -66,6 +67,7 @@ export function BeatMatchGameWorkspace({ instructions, workspace }: GameWorkspac
 
       <section className={["feature-card", sharedStyles["workspace-card"], sharedStyles["board-card"], styles["beat-match-board-card"]].join(" ")} aria-label="Beat Match board">
         <div className={[styles["beat-match-shell"], sharedStyles["game-board-overlay-shell"]].join(" ")}>
+          <GameplayTapControlLayout>
           <GameplayContextCue className={styles["beat-match-copy"]} phase="Timing" title="Hit the lit lane in the center zone" tone="timing" />
 
           <div className={styles["beat-match-legend"]}>
@@ -127,6 +129,7 @@ export function BeatMatchGameWorkspace({ instructions, workspace }: GameWorkspac
             </div>
           </div>
 
+          </GameplayTapControlLayout>
           <GameWorkspaceBoardOverlay
             actionLabel={screen.startActionLabel}
             detail="Watch the timing marker approach the center zone, then tap the highlighted lane to keep your combo alive."

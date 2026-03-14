@@ -1,11 +1,7 @@
-.flip-workspace-card {
-  min-height: 24rem;
-}
-
 .flip-shell {
-  min-height: 24rem;
   display: grid;
   gap: 1rem;
+  align-content: start;
 }
 
 .flip-copy {

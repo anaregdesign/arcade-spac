@@ -1,5 +1,7 @@
 import { useRelativePitchWorkspace } from "../../../lib/client/usecase/game-workspace/use-relative-pitch-workspace";
-import { GameplayChoiceGrid } from "../../gameplay/GameplayLayoutVariants";
+import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
+import { GameplayChoiceGrid } from "../../gameplay/layouts/GameplayChoiceGrid";
+import { GameplaySequenceStageLayout } from "../../gameplay/layouts/GameplaySequenceStageLayout";
 import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
 import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
@@ -41,15 +43,19 @@ export function RelativePitchGameWorkspace({ instructions, workspace }: GameWork
           data-round-id={screen.relativePitch.currentRound.id}
           data-state={screen.relativePitch.state}
         >
+          <GameplaySequenceStageLayout>
+            <GameplayContextCue
+              phase={screen.relativePitch.audioPhase === "choice" ? "Choose" : "Listen"}
+              title="Match the same jump from the new base note"
+              tone={screen.relativePitch.audioPhase === "choice" ? "target" : "watch"}
+            />
           <div className={styles["pitch-header"]}>
             <article className={styles["pitch-hero"]}>
-              <span className={styles["pitch-label"]}>Current prompt</span>
-              <strong className={styles["pitch-value"]}>Match the same jump from the new base note.</strong>
-              <p className={styles["phase-copy"]}>
+              <strong className={styles["pitch-value"]}>
                 {screen.relativePitch.audioPhase === "intro"
-                  ? "Listen to the reference interval and the new base note before choosing."
-                  : "Candidate pads are live. Each tap plays the new base plus that candidate note and commits the answer."}
-              </p>
+                  ? "Listen to the reference interval and the new base."
+                  : "Tap a candidate to hear it from the new base and lock in the answer."}
+              </strong>
             </article>
 
             <div className={styles["replay-row"]}>
@@ -91,6 +97,7 @@ export function RelativePitchGameWorkspace({ instructions, workspace }: GameWork
               </button>
             ))}
           </GameplayChoiceGrid>
+          </GameplaySequenceStageLayout>
 
           <GameWorkspaceBoardOverlay
             actionLabel={screen.startActionLabel}

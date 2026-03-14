@@ -1,5 +1,6 @@
 import { useGlowCycleWorkspace } from "../../../lib/client/usecase/game-workspace/use-glow-cycle-workspace";
 import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
+import { GameplayTapControlLayout } from "../../gameplay/layouts/GameplayTapControlLayout";
 import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
 import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
@@ -119,6 +120,7 @@ export function GlowCycleGameWorkspace({ instructions, workspace }: GameWorkspac
           data-window-spread={screen.glowCycle.windowSpreadPercent}
           data-glow-cycle-root="true"
         >
+          <GameplayTapControlLayout>
           <GameplayContextCue
             className={styles["glow-cycle-copy"]}
             detail="Ignore decoys."
@@ -211,6 +213,7 @@ export function GlowCycleGameWorkspace({ instructions, workspace }: GameWorkspac
             ))}
           </div>
 
+          </GameplayTapControlLayout>
           <GameWorkspaceBoardOverlay
             actionLabel={screen.startActionLabel}
             detail="Start the run, watch the shared sync meter cross the glow crest, and tap only the highlighted node once the full board glows together."

@@ -1,5 +1,6 @@
 import { useCascadeClearWorkspace } from "../../../lib/client/usecase/game-workspace/use-cascade-clear-workspace";
 import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
+import { GameplayDirectBoardLayout } from "../../gameplay/layouts/GameplayDirectBoardLayout";
 import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
 import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
@@ -51,6 +52,7 @@ export function CascadeClearGameWorkspace({ instructions, workspace }: GameWorks
           data-state={screen.cascadeClear.state}
           data-target-score={screen.cascadeClear.targetScore}
         >
+          <GameplayDirectBoardLayout>
           <GameplayContextCue
             className={styles["cascade-copy"]}
             detail={`${screen.cascadeClear.movesRemaining} triggers left.`}
@@ -111,6 +113,7 @@ export function CascadeClearGameWorkspace({ instructions, workspace }: GameWorks
               ))}
             </div>
           </div>
+          </GameplayDirectBoardLayout>
           <GameWorkspaceBoardOverlay
             actionLabel={screen.startActionLabel}
             detail="Choose one row or column trigger per move."

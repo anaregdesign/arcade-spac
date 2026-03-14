@@ -1,5 +1,6 @@
 import { usePairFlipWorkspace } from "../../../lib/client/usecase/game-workspace/use-pair-flip-workspace";
 import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
+import { GameplayDirectBoardLayout } from "../../gameplay/layouts/GameplayDirectBoardLayout";
 import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
 import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
@@ -35,6 +36,7 @@ export function PairFlipGameWorkspace({ instructions, workspace }: GameWorkspace
 
       <section className={["feature-card", sharedStyles["workspace-card"], sharedStyles["board-card"], sharedStyles["board-card-minimal"], styles["pair-flip-board-card"]].join(" ")} aria-label="Pair Flip board">
         <div className={[styles["pair-flip-shell"], sharedStyles["game-board-overlay-shell"]].join(" ")}>
+          <GameplayDirectBoardLayout>
           <GameplayContextCue
             className={styles["pair-flip-copy"]}
             detail="Open two cards at a time."
@@ -68,6 +70,7 @@ export function PairFlipGameWorkspace({ instructions, workspace }: GameWorkspace
               )}
             </div>
           </div>
+          </GameplayDirectBoardLayout>
           <GameWorkspaceBoardOverlay
             actionLabel={screen.startActionLabel}
             detail="Flip pairs and remember their positions."

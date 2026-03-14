@@ -1,5 +1,6 @@
 import { useBubbleSpawnWorkspace } from "../../../lib/client/usecase/game-workspace/use-bubble-spawn-workspace";
 import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
+import { GameplayDirectBoardLayout } from "../../gameplay/layouts/GameplayDirectBoardLayout";
 import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
 import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
@@ -60,6 +61,7 @@ export function BubbleSpawnGameWorkspace({ instructions, workspace }: GameWorksp
           data-state={screen.bubbleSpawn.state}
           data-target-stability={screen.bubbleSpawn.targetStability}
         >
+          <GameplayDirectBoardLayout>
           <GameplayContextCue
             className={styles["bubble-spawn-copy"]}
             detail="Best burst target is marked."
@@ -126,6 +128,7 @@ export function BubbleSpawnGameWorkspace({ instructions, workspace }: GameWorksp
             ))}
           </div>
 
+          </GameplayDirectBoardLayout>
           <GameWorkspaceBoardOverlay
             actionLabel={screen.startActionLabel}
             detail="Burst the biggest cluster before saturation tops out."

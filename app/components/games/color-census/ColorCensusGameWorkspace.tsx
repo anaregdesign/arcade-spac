@@ -1,7 +1,8 @@
 import { useColorCensusWorkspace } from "../../../lib/client/usecase/game-workspace/use-color-census-workspace";
 import type { CensusColor } from "../../../lib/client/usecase/game-workspace/use-color-census-session";
 import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
-import { GameplayChoiceGrid } from "../../gameplay/GameplayLayoutVariants";
+import { GameplayChoiceGrid } from "../../gameplay/layouts/GameplayChoiceGrid";
+import { GameplaySequenceStageLayout } from "../../gameplay/layouts/GameplaySequenceStageLayout";
 import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
 import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
@@ -39,7 +40,7 @@ export function ColorCensusGameWorkspace({ instructions, workspace }: GameWorksp
 
       <section className={["feature-card", sharedStyles["workspace-card"], sharedStyles["board-card"], styles["census-board-card"]].join(" ")} aria-label="Color Census board">
         <div className={[styles["census-shell"], sharedStyles["game-board-overlay-shell"]].join(" ")}>
-          <div className={styles["census-stage"]}>
+          <GameplaySequenceStageLayout className={styles["census-stage"]}>
             <GameplayContextCue
               className={styles["census-copy"]}
               detail={
@@ -122,7 +123,7 @@ export function ColorCensusGameWorkspace({ instructions, workspace }: GameWorksp
                 </GameplayChoiceGrid>
               </div>
             )}
-          </div>
+          </GameplaySequenceStageLayout>
           <GameWorkspaceBoardOverlay
             actionLabel={screen.startActionLabel}
             detail="Memorize the mosaic before it fades, then answer the majority or exact-count query from memory."

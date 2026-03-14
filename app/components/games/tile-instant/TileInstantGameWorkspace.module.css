@@ -1,11 +1,7 @@
-.tile-instant-workspace-card {
-  min-height: 24rem;
-}
-
 .tile-instant-shell {
-  min-height: 24rem;
   display: grid;
   gap: 1rem;
+  align-content: start;
 }
 
 .tile-instant-copy {

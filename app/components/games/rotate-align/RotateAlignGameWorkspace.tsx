@@ -1,6 +1,7 @@
 import type { RotateAlignCell } from "../../../lib/client/usecase/game-workspace/use-rotate-align-session";
 import { useRotateAlignWorkspace } from "../../../lib/client/usecase/game-workspace/use-rotate-align-workspace";
 import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
+import { GameplayDirectBoardLayout } from "../../gameplay/layouts/GameplayDirectBoardLayout";
 import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
 import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
@@ -130,6 +131,7 @@ export function RotateAlignGameWorkspace({ instructions, workspace }: GameWorksp
 
       <section className={["feature-card", sharedStyles["workspace-card"], sharedStyles["board-card"], styles["route-workspace-card"]].join(" ")} aria-label="Rotate Align board">
         <div className={[styles["route-shell"], sharedStyles["game-board-overlay-shell"]].join(" ")}>
+          <GameplayDirectBoardLayout>
           <GameplayContextCue
             className={styles["route-copy"]}
             detail="Each tap turns one tile clockwise."
@@ -147,6 +149,7 @@ export function RotateAlignGameWorkspace({ instructions, workspace }: GameWorksp
               )),
             )}
           </div>
+          </GameplayDirectBoardLayout>
           <GameWorkspaceBoardOverlay
             actionLabel={screen.startActionLabel}
             detail="Rotate the path tiles clockwise until the route connects the start marker to the end marker."

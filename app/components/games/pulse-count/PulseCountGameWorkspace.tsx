@@ -1,5 +1,7 @@
 import { usePulseCountWorkspace } from "../../../lib/client/usecase/game-workspace/use-pulse-count-workspace";
-import { GameplayChoiceGrid } from "../../gameplay/GameplayLayoutVariants";
+import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
+import { GameplayChoiceGrid } from "../../gameplay/layouts/GameplayChoiceGrid";
+import { GameplaySequenceStageLayout } from "../../gameplay/layouts/GameplaySequenceStageLayout";
 import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
 import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
@@ -30,7 +32,12 @@ export function PulseCountGameWorkspace({ instructions, workspace }: GameWorkspa
 
       <section className={["feature-card", sharedStyles["workspace-card"], sharedStyles["board-card"], styles["pulse-board-card"]].join(" ")} aria-label="Pulse Count board">
         <div className={[styles["pulse-shell"], sharedStyles["game-board-overlay-shell"]].join(" ")}>
-          <div className={styles["pulse-stage"]}>
+          <GameplaySequenceStageLayout className={styles["pulse-stage"]}>
+            <GameplayContextCue
+              phase={screen.isWatching ? "Watch" : screen.isAnswering ? "Answer" : "Ready"}
+              title={screen.isWatching ? "Count every flash" : "Choose the pulse count"}
+              tone={screen.isWatching ? "watch" : "logic"}
+            />
             <div className={[styles["pulse-signal"], screen.pulseCount.isSignalLit ? styles["pulse-signal-lit"] : ""].join(" ")} aria-hidden="true" />
             <p className={styles["pulse-stage-label"]}>
               {screen.isWatching ? "Count every flash" : screen.isAnswering ? "How many pulses?" : "Ready to count"}
@@ -50,7 +57,7 @@ export function PulseCountGameWorkspace({ instructions, workspace }: GameWorkspa
                 ))}
               </GameplayChoiceGrid>
             ) : null}
-          </div>
+          </GameplaySequenceStageLayout>
           <GameWorkspaceBoardOverlay
             actionLabel={screen.startActionLabel}
             detail="Count the flashes, then pick the number you saw."

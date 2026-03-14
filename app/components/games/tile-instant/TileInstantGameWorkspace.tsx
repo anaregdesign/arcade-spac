@@ -1,6 +1,6 @@
 import { useTileInstantWorkspace } from "../../../lib/client/usecase/game-workspace/use-tile-instant-workspace";
 import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
-import { GameplayTwinPanelLayout } from "../../gameplay/GameplayLayoutVariants";
+import { GameplayTwinPanelLayout } from "../../gameplay/layouts/GameplayTwinPanelLayout";
 import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
 import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
@@ -65,7 +65,7 @@ export function TileInstantGameWorkspace({ instructions, workspace }: GameWorksp
         )}
       />
 
-      <section className={["feature-card", sharedStyles["workspace-card"], sharedStyles["board-card"], styles["tile-instant-workspace-card"]].join(" ")} aria-label="Tile Instant board">
+      <section className={["feature-card", sharedStyles["workspace-card"], sharedStyles["board-card"]].join(" ")} aria-label="Tile Instant board">
         <div
           className={[styles["tile-instant-shell"], sharedStyles["game-board-overlay-shell"]].join(" ")}
           data-round={screen.tileInstant.currentRoundIndex}

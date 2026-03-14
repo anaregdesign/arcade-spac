@@ -1,5 +1,6 @@
 import { useSudokuWorkspace } from "../../../lib/client/usecase/game-workspace/use-sudoku-workspace";
 import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
+import { GameplayDirectBoardLayout } from "../../gameplay/layouts/GameplayDirectBoardLayout";
 import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
 import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
@@ -33,6 +34,7 @@ export function SudokuGameWorkspace({ instructions, workspace }: GameWorkspaceCo
 
       <section className={["feature-card", sharedStyles["workspace-card"], sharedStyles["board-card"], sharedStyles["board-card-minimal"]].join(" ")} aria-label="Sudoku board">
         <div className={sharedStyles["game-board-overlay-shell"]}>
+          <GameplayDirectBoardLayout>
           <GameplayContextCue
             className={styles["sudoku-copy"]}
             detail="Select a cell, then use the keypad."
@@ -90,6 +92,7 @@ export function SudokuGameWorkspace({ instructions, workspace }: GameWorkspaceCo
               </div>
             </div>
           </div>
+          </GameplayDirectBoardLayout>
           <GameWorkspaceBoardOverlay
             actionLabel={screen.startActionLabel}
             detail="Fill the board with the keypad or keyboard."

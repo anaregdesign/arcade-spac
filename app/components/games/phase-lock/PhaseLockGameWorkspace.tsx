@@ -1,5 +1,6 @@
 import { usePhaseLockWorkspace } from "../../../lib/client/usecase/game-workspace/use-phase-lock-workspace";
 import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
+import { GameplayTapControlLayout } from "../../gameplay/layouts/GameplayTapControlLayout";
 import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
 import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
@@ -48,6 +49,7 @@ export function PhaseLockGameWorkspace({ instructions, workspace }: GameWorkspac
 
       <section className={["feature-card", sharedStyles["workspace-card"], sharedStyles["board-card"], styles["phase-lock-board-card"]].join(" ")} aria-label="Phase Lock board">
         <div className={[styles["phase-lock-shell"], sharedStyles["game-board-overlay-shell"]].join(" ")}>
+          <GameplayTapControlLayout>
           <GameplayContextCue
             className={styles["phase-lock-copy"]}
             detail="Misses keep the wheel live."
@@ -115,6 +117,7 @@ export function PhaseLockGameWorkspace({ instructions, workspace }: GameWorkspac
             </span>
           </button>
 
+          </GameplayTapControlLayout>
           <GameWorkspaceBoardOverlay
             actionLabel={screen.startActionLabel}
             detail="Watch the highlighted wheel and press Lock current wheel only while its marker passes through the target band."

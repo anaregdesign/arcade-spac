@@ -1,5 +1,6 @@
 import { usePatternEchoWorkspace } from "../../../lib/client/usecase/game-workspace/use-pattern-echo-workspace";
 import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
+import { GameplaySequenceStageLayout } from "../../gameplay/layouts/GameplaySequenceStageLayout";
 import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
 import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
@@ -34,7 +35,7 @@ export function PatternEchoGameWorkspace({ instructions, workspace }: GameWorksp
 
       <section className={["feature-card", sharedStyles["workspace-card"], sharedStyles["board-card"], sharedStyles["board-card-minimal"], styles["pattern-echo-board-card"]].join(" ")} aria-label="Pattern Echo board">
         <div className={[styles["pattern-echo-shell"], sharedStyles["game-board-overlay-shell"]].join(" ")}>
-          <div className={styles["pattern-echo-panel"]}>
+          <GameplaySequenceStageLayout className={styles["pattern-echo-panel"]}>
             <div className={styles["pattern-echo-legend"]}>
               <GameplayContextCue
                 detail={screen.isInputting ? "Wrong taps still count." : screen.isWatching ? "Input unlocks next." : undefined}
@@ -68,7 +69,7 @@ export function PatternEchoGameWorkspace({ instructions, workspace }: GameWorksp
                 );
               })}
             </div>
-          </div>
+          </GameplaySequenceStageLayout>
           <GameWorkspaceBoardOverlay
             actionLabel={screen.startActionLabel}
             detail="Start the board, then watch the sequence and reproduce it before time runs out."

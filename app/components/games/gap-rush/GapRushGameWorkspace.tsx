@@ -1,5 +1,6 @@
 import { useGapRushWorkspace } from "../../../lib/client/usecase/game-workspace/use-gap-rush-workspace";
-import { GameplaySidecarLayout } from "../../gameplay/GameplayLayoutVariants";
+import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
+import { GameplaySidecarLayout } from "../../gameplay/layouts/GameplaySidecarLayout";
 import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
 import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
@@ -66,20 +67,12 @@ export function GapRushGameWorkspace({ instructions, workspace }: GameWorkspaceC
           data-state={screen.gapRush.state}
           data-wall-progress={screen.gapRush.wallProgress.toFixed(3)}
         >
-          <div className={styles["summary-grid"]}>
-            <article className={styles["summary-card"]}>
-              <span className={styles["summary-label"]}>Current speed</span>
-              <strong className={styles["summary-value"]}>{screen.gapRush.currentSpeed.toFixed(2)}x</strong>
-            </article>
-            <article className={styles["summary-card"]}>
-              <span className={styles["summary-label"]}>Next gap</span>
-              <strong className={styles["summary-value"]}>{screen.gapRush.nextGapLane === null ? "Finish" : `Lane ${screen.gapRush.nextGapLane + 1}`}</strong>
-            </article>
-            <article className={styles["summary-card"]}>
-              <span className={styles["summary-label"]}>Last action</span>
-              <strong className={styles["summary-value"]}>{screen.gapRush.lastActionLabel}</strong>
-            </article>
-          </div>
+          <GameplayContextCue
+            detail={screen.gapRush.nextGapLane === null ? "Final wall ahead." : `Next gap: lane ${screen.gapRush.nextGapLane + 1}.`}
+            phase={screen.isLiveRun ? "Glide" : "Ready"}
+            title="Set the next lane early and stay centered in the opening"
+            tone="target"
+          />
 
           <GameplaySidecarLayout className={styles["workspace-grid"]} desktopMain="1.25fr" desktopSide="0.9fr" desktopSideMin="15rem" mobileSideMin="7.8rem" mobileSideMax="8.6rem">
             <div className={styles["corridor-panel"]}>
@@ -113,9 +106,6 @@ export function GapRushGameWorkspace({ instructions, workspace }: GameWorkspaceC
                   style={{ left: toPercent(screen.gapRush.avatarPosition, screen.gapRush.laneCount) }}
                 />
               </div>
-              <p className={styles["panel-copy"]}>
-                Tap one lane pad early. The runner glides continuously, so late corrections cost more as the corridor accelerates.
-              </p>
             </div>
 
             <div className={styles["control-panel"]}>
@@ -138,9 +128,6 @@ export function GapRushGameWorkspace({ instructions, workspace }: GameWorkspaceC
                   </button>
                 ))}
               </div>
-              <p className={styles["panel-copy"]}>
-                Perfect passes come from centering the runner in the gap, not merely surviving at the edge of the opening.
-              </p>
             </div>
           </GameplaySidecarLayout>
 

@@ -1,5 +1,6 @@
 import { useNumberChainWorkspace } from "../../../lib/client/usecase/game-workspace/use-number-chain-workspace";
 import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
+import { GameplayDirectBoardLayout } from "../../gameplay/layouts/GameplayDirectBoardLayout";
 import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
 import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
@@ -35,6 +36,7 @@ export function NumberChainGameWorkspace({ instructions, workspace }: GameWorksp
 
       <section className={["feature-card", sharedStyles["workspace-card"], sharedStyles["board-card"], sharedStyles["board-card-minimal"], styles["number-chain-board-card"]].join(" ")} aria-label="Number Chain board">
         <div className={[styles["number-chain-shell"], sharedStyles["game-board-overlay-shell"]].join(" ")}>
+          <GameplayDirectBoardLayout>
           <GameplayContextCue
             className={styles["number-chain-copy"]}
             detail={`Next ${screen.numberChain.nextNumber}.`}
@@ -66,6 +68,7 @@ export function NumberChainGameWorkspace({ instructions, workspace }: GameWorksp
               )}
             </div>
           </div>
+          </GameplayDirectBoardLayout>
           <GameWorkspaceBoardOverlay
             actionLabel={screen.startActionLabel}
             detail="Tap the numbers in ascending order."

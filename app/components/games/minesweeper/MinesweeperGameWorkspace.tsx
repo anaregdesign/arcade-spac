@@ -1,5 +1,6 @@
 import { useMinesweeperWorkspace } from "../../../lib/client/usecase/game-workspace/use-minesweeper-workspace";
 import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
+import { GameplayDirectBoardLayout } from "../../gameplay/layouts/GameplayDirectBoardLayout";
 import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
 import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
@@ -46,6 +47,7 @@ export function MinesweeperGameWorkspace({ instructions, workspace }: GameWorksp
 
       <section className={["feature-card", sharedStyles["workspace-card"], sharedStyles["board-card"], sharedStyles["board-card-minimal"]].join(" ")} aria-label="Minesweeper board">
         <div className={sharedStyles["game-board-overlay-shell"]}>
+          <GameplayDirectBoardLayout>
           <GameplayContextCue
             className={styles["minesweeper-copy"]}
             detail={screen.isFlagModeEnabled ? "Tap plants flags." : "Tap opens cells."}
@@ -85,6 +87,7 @@ export function MinesweeperGameWorkspace({ instructions, workspace }: GameWorksp
               </div>
             ))}
           </div>
+          </GameplayDirectBoardLayout>
           <GameWorkspaceBoardOverlay
             actionLabel={screen.startActionLabel}
             detail="Open cells or switch to flag mode when needed."

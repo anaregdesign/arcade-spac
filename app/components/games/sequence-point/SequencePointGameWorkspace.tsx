@@ -1,5 +1,6 @@
 import { useSequencePointWorkspace } from "../../../lib/client/usecase/game-workspace/use-sequence-point-workspace";
 import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
+import { GameplaySequenceStageLayout } from "../../gameplay/layouts/GameplaySequenceStageLayout";
 import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
 import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
@@ -38,7 +39,7 @@ export function SequencePointGameWorkspace({ instructions, workspace }: GameWork
 
       <section className={["feature-card", sharedStyles["workspace-card"], sharedStyles["board-card"], sharedStyles["board-card-minimal"], styles["sequence-point-board-card"]].join(" ")} aria-label="Sequence Point board">
         <div className={[styles["sequence-point-shell"], sharedStyles["game-board-overlay-shell"]].join(" ")}>
-          <div className={styles["sequence-point-panel"]}>
+          <GameplaySequenceStageLayout className={styles["sequence-point-panel"]}>
             <GameplayContextCue
               className={styles["sequence-point-copy"]}
               detail={screen.isWatching ? "Input unlocks next." : screen.isInputting ? "Mistakes do not stop the run." : "Sequence grows each round."}
@@ -76,7 +77,7 @@ export function SequencePointGameWorkspace({ instructions, workspace }: GameWork
                 );
               })}
             </div>
-          </div>
+          </GameplaySequenceStageLayout>
           <GameWorkspaceBoardOverlay
             actionLabel={screen.startActionLabel}
             detail="Watch the sequence of lit points, then replay the same points in the same order."

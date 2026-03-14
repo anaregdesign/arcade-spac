@@ -1,9 +1,7 @@
-.shift-workspace-card {
-  min-height: 23rem;
-}
-
 .shift-shell {
-  min-height: 23rem;
+  display: grid;
+  gap: 1rem;
+  align-content: start;
 }
 
 .shift-columns {

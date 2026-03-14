@@ -1,5 +1,6 @@
 import { useLightGridWorkspace } from "../../../lib/client/usecase/game-workspace/use-light-grid-workspace";
-import { GameplayTwinPanelLayout } from "../../gameplay/GameplayLayoutVariants";
+import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
+import { GameplayTwinPanelLayout } from "../../gameplay/layouts/GameplayTwinPanelLayout";
 import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
 import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
@@ -66,6 +67,12 @@ export function LightGridGameWorkspace({ instructions, workspace }: GameWorkspac
 
       <section className={["feature-card", sharedStyles["workspace-card"], sharedStyles["board-card"], styles["grid-workspace-card"]].join(" ")} aria-label="Light Grid board">
         <div className={[styles["grid-shell"], sharedStyles["game-board-overlay-shell"]].join(" ")}>
+          <GameplayContextCue
+            detail="Each tap flips the center cell plus its orthogonal neighbors."
+            phase={screen.isLiveRun ? "Solve" : "Ready"}
+            title="Flip the live grid until it matches the target"
+            tone="logic"
+          />
           <GameplayTwinPanelLayout className={styles["grid-columns"]}>
             <GridBoard board={screen.lightGrid.targetGrid} columnCount={screen.lightGrid.columnCount} title="Target" />
             <GridBoard board={screen.lightGrid.liveGrid} columnCount={screen.lightGrid.columnCount} onCellPress={screen.handleCellPress} title="Live" />

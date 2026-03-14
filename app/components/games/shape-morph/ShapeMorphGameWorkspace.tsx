@@ -1,6 +1,8 @@
 import { useShapeMorphWorkspace } from "../../../lib/client/usecase/game-workspace/use-shape-morph-workspace";
 import type { Glyph } from "../../../lib/client/usecase/game-workspace/use-shape-morph-session";
-import { GameplayChoiceGrid } from "../../gameplay/GameplayLayoutVariants";
+import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
+import { GameplayChoiceGrid } from "../../gameplay/layouts/GameplayChoiceGrid";
+import { GameplaySequenceStageLayout } from "../../gameplay/layouts/GameplaySequenceStageLayout";
 import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
 import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
@@ -80,11 +82,12 @@ export function ShapeMorphGameWorkspace({ instructions, workspace }: GameWorkspa
 
       <section className={["feature-card", sharedStyles["workspace-card"], sharedStyles["board-card"], styles["shape-morph-board-card"]].join(" ")} aria-label="Shape Morph board">
         <div className={[styles["shape-morph-shell"], sharedStyles["game-board-overlay-shell"]].join(" ")}>
-          <div className={styles["shape-morph-stage"]}>
-            <div>
-              <p className="eyebrow">Read the rule</p>
-              <strong>{screen.shapeMorph.currentProblem.promptLabel}</strong>
-            </div>
+          <GameplaySequenceStageLayout className={styles["shape-morph-stage"]}>
+            <GameplayContextCue
+              phase="Read"
+              title={screen.shapeMorph.currentProblem.promptLabel}
+              tone="logic"
+            />
             <div className={styles["shape-morph-sequence"]}>
               {screen.shapeMorph.currentProblem.promptGlyphs.map((glyph, index) => (
                 <div className={styles["shape-morph-sequence-card"]} key={`prompt-glyph-${index}`}>
@@ -111,7 +114,7 @@ export function ShapeMorphGameWorkspace({ instructions, workspace }: GameWorkspa
                 </button>
               ))}
             </GameplayChoiceGrid>
-          </div>
+          </GameplaySequenceStageLayout>
           <GameWorkspaceBoardOverlay
             actionLabel={screen.startActionLabel}
             detail="Track how the glyph changes from step to step, then choose the next transformed shape before the timer expires."

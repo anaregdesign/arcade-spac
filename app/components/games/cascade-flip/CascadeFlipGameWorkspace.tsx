@@ -1,5 +1,6 @@
 import { useCascadeFlipWorkspace } from "../../../lib/client/usecase/game-workspace/use-cascade-flip-workspace";
 import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
+import { GameplaySequenceStageLayout } from "../../gameplay/layouts/GameplaySequenceStageLayout";
 import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
 import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
@@ -51,61 +52,63 @@ export function CascadeFlipGameWorkspace({ instructions, workspace }: GameWorksp
           data-solution-card-id={screen.cascadeFlip.solutionCardId ?? ""}
           data-state={screen.cascadeFlip.state}
         >
-          <GameplayContextCue
-            className={styles["cascade-flip-copy"]}
-            detail={screen.isRevealPhase ? "Watch the full order." : "Tap the next unresolved card."}
-            phase={screen.isRevealPhase ? "Watch" : "Tap"}
-            title={screen.isRevealPhase ? "Memorize the reveal strip" : "Follow the target order in the stream"}
-            tone={screen.isRevealPhase ? "memory" : "tap"}
-          />
+          <GameplaySequenceStageLayout>
+            <GameplayContextCue
+              className={styles["cascade-flip-copy"]}
+              detail={screen.isRevealPhase ? "Watch the full order." : "Tap the next unresolved card."}
+              phase={screen.isRevealPhase ? "Watch" : "Tap"}
+              title={screen.isRevealPhase ? "Memorize the reveal strip" : "Follow the target order in the stream"}
+              tone={screen.isRevealPhase ? "memory" : "tap"}
+            />
 
-          <div className={styles["workspace-grid"]}>
-            <div className={styles["sequence-panel"]}>
-              <p className={styles["panel-title"]}>Target order</p>
-              <div className={styles["sequence-strip"]}>
-                {screen.cascadeFlip.sequenceCards.map((card) => (
-                  <span
-                    className={[
-                      styles["sequence-card"],
-                      getThemeClass(card.themeId),
-                      card.isCurrent ? styles["sequence-card-current"] : "",
-                      card.isResolved ? styles["sequence-card-resolved"] : "",
-                    ].filter(Boolean).join(" ")}
-                    key={card.id}
-                  >
-                    {card.label}
-                  </span>
-                ))}
+            <div className={styles["workspace-grid"]}>
+              <div className={styles["sequence-panel"]}>
+                <p className={styles["panel-title"]}>Target order</p>
+                <div className={styles["sequence-strip"]}>
+                  {screen.cascadeFlip.sequenceCards.map((card) => (
+                    <span
+                      className={[
+                        styles["sequence-card"],
+                        getThemeClass(card.themeId),
+                        card.isCurrent ? styles["sequence-card-current"] : "",
+                        card.isResolved ? styles["sequence-card-resolved"] : "",
+                      ].filter(Boolean).join(" ")}
+                      key={card.id}
+                    >
+                      {card.label}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <div className={styles["stream-panel"]}>
+                <p className={styles["panel-title"]}>Moving stream</p>
+                <div className={styles["stream-grid"]}>
+                  {screen.cascadeFlip.visibleCards.map((card) => (
+                    <button
+                      className={[
+                        styles["stream-card"],
+                        getThemeClass(card.themeId),
+                        card.isResolved ? styles["stream-card-resolved"] : "",
+                        card.isSolution ? styles["stream-card-solution"] : "",
+                      ].filter(Boolean).join(" ")}
+                      data-card-id={card.id}
+                      data-card-lane={card.laneIndex}
+                      data-card-row={card.rowIndex}
+                      data-card-symbol={card.label}
+                      data-is-solution={card.isSolution ? "true" : "false"}
+                      disabled={!screen.isInputPhase || card.isResolved}
+                      key={card.id}
+                      onClick={() => screen.handleCardPress(card.id)}
+                      type="button"
+                    >
+                      <span className={styles["stream-card-label"]}>{card.label}</span>
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
-
-            <div className={styles["stream-panel"]}>
-              <p className={styles["panel-title"]}>Moving stream</p>
-              <div className={styles["stream-grid"]}>
-                {screen.cascadeFlip.visibleCards.map((card) => (
-                  <button
-                    className={[
-                      styles["stream-card"],
-                      getThemeClass(card.themeId),
-                      card.isResolved ? styles["stream-card-resolved"] : "",
-                      card.isSolution ? styles["stream-card-solution"] : "",
-                    ].filter(Boolean).join(" ")}
-                    data-card-id={card.id}
-                    data-card-lane={card.laneIndex}
-                    data-card-row={card.rowIndex}
-                    data-card-symbol={card.label}
-                    data-is-solution={card.isSolution ? "true" : "false"}
-                    disabled={!screen.isInputPhase || card.isResolved}
-                    key={card.id}
-                    onClick={() => screen.handleCardPress(card.id)}
-                    type="button"
-                  >
-                    <span className={styles["stream-card-label"]}>{card.label}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
+          </GameplaySequenceStageLayout>
 
           <GameWorkspaceBoardOverlay
             actionLabel={screen.startActionLabel}

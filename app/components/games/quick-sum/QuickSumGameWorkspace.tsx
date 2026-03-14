@@ -1,5 +1,7 @@
 import { useQuickSumWorkspace } from "../../../lib/client/usecase/game-workspace/use-quick-sum-workspace";
-import { GameplayChoiceGrid } from "../../gameplay/GameplayLayoutVariants";
+import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
+import { GameplayChoiceGrid } from "../../gameplay/layouts/GameplayChoiceGrid";
+import { GameplaySequenceStageLayout } from "../../gameplay/layouts/GameplaySequenceStageLayout";
 import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
 import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
@@ -30,8 +32,8 @@ export function QuickSumGameWorkspace({ instructions, workspace }: GameWorkspace
 
       <section className={["feature-card", sharedStyles["workspace-card"], sharedStyles["board-card"], styles["sum-board-card"]].join(" ")} aria-label="Quick Sum board">
         <div className={[styles["sum-shell"], sharedStyles["game-board-overlay-shell"]].join(" ")}>
-          <div className={styles["sum-stage"]}>
-            <p className="eyebrow">Solve the prompt</p>
+          <GameplaySequenceStageLayout className={styles["sum-stage"]}>
+            <GameplayContextCue phase="Solve" title="Pick the correct total" tone="logic" />
             <strong className={styles["sum-prompt"]}>{screen.quickSum.currentProblem?.prompt ?? "0 + 0"}</strong>
             {screen.quickSum.currentProblem ? (
               <GameplayChoiceGrid className={styles["sum-answer-grid"]}>
@@ -48,7 +50,7 @@ export function QuickSumGameWorkspace({ instructions, workspace }: GameWorkspace
                 ))}
               </GameplayChoiceGrid>
             ) : null}
-          </div>
+          </GameplaySequenceStageLayout>
           <GameWorkspaceBoardOverlay
             actionLabel={screen.startActionLabel}
             detail="Answer each prompt as fast as you can without stacking wrong answers."

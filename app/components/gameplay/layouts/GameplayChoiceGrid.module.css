@@ -1,0 +1,20 @@
+.layout-choice-grid {
+  --gameplay-choice-gap: 0.75rem;
+  --gameplay-choice-mobile-gap: 0.55rem;
+  --gameplay-choice-columns: 2;
+  --gameplay-choice-mobile-columns: 2;
+  display: grid;
+  gap: var(--gameplay-choice-gap);
+  grid-template-columns: repeat(var(--gameplay-choice-columns), minmax(0, 1fr));
+}
+
+.layout-choice-grid > * {
+  min-width: 0;
+}
+
+@media (max-width: 720px) {
+  .layout-choice-grid.layout-choice-grid {
+    gap: var(--gameplay-choice-mobile-gap);
+    grid-template-columns: repeat(var(--gameplay-choice-mobile-columns), minmax(0, 1fr));
+  }
+}

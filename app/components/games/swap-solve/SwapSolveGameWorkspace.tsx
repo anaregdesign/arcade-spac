@@ -1,5 +1,6 @@
 import { useSwapSolveWorkspace } from "../../../lib/client/usecase/game-workspace/use-swap-solve-workspace";
-import { GameplayTwinPanelLayout } from "../../gameplay/GameplayLayoutVariants";
+import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
+import { GameplayTwinPanelLayout } from "../../gameplay/layouts/GameplayTwinPanelLayout";
 import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
 import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
@@ -44,6 +45,12 @@ export function SwapSolveGameWorkspace({ instructions, workspace }: GameWorkspac
 
       <section className={["feature-card", sharedStyles["workspace-card"], sharedStyles["board-card"], styles["swap-workspace-card"]].join(" ")} aria-label="Swap Solve board">
         <div className={[styles["swap-shell"], sharedStyles["game-board-overlay-shell"]].join(" ")}>
+          <GameplayContextCue
+            detail={`Budget: ${screen.swapSolve.swapBudget} swaps.`}
+            phase={screen.isLiveRun ? "Swap" : "Ready"}
+            title="Swap two live tiles at a time until both boards match"
+            tone="swap"
+          />
           <GameplayTwinPanelLayout className={styles["swap-columns"]}>
             <div className={styles["swap-panel"]}>
               <p className="eyebrow">Target</p>

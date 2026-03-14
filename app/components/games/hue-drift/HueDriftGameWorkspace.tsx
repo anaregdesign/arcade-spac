@@ -1,7 +1,8 @@
 import { useHueDriftWorkspace } from "../../../lib/client/usecase/game-workspace/use-hue-drift-workspace";
 import type { DriftColor } from "../../../lib/client/usecase/game-workspace/use-hue-drift-session";
 import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
-import { GameplayChoiceGrid } from "../../gameplay/GameplayLayoutVariants";
+import { GameplayChoiceGrid } from "../../gameplay/layouts/GameplayChoiceGrid";
+import { GameplaySequenceStageLayout } from "../../gameplay/layouts/GameplaySequenceStageLayout";
 import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
 import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
@@ -40,7 +41,7 @@ export function HueDriftGameWorkspace({ instructions, workspace }: GameWorkspace
 
       <section className={["feature-card", sharedStyles["workspace-card"], sharedStyles["board-card"], styles["hue-drift-board-card"]].join(" ")} aria-label="Hue Drift board">
         <div className={[styles["hue-drift-shell"], sharedStyles["game-board-overlay-shell"]].join(" ")}>
-          <div className={styles["hue-drift-stage"]}>
+          <GameplaySequenceStageLayout className={styles["hue-drift-stage"]}>
             <GameplayContextCue
               className={styles["hue-drift-copy"]}
               detail="Pick the missing swatch."
@@ -76,7 +77,7 @@ export function HueDriftGameWorkspace({ instructions, workspace }: GameWorkspace
                 </button>
               ))}
             </GameplayChoiceGrid>
-          </div>
+          </GameplaySequenceStageLayout>
           <GameWorkspaceBoardOverlay
             actionLabel={screen.startActionLabel}
             detail="Read the color progression, then choose the missing swatch before the timer expires."

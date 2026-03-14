@@ -1,0 +1,28 @@
+.layout-direct-board {
+  --gameplay-layout-gap: 1rem;
+  --gameplay-layout-mobile-gap: 0.75rem;
+  display: grid;
+  gap: var(--gameplay-layout-gap);
+  align-content: start;
+  justify-items: center;
+}
+
+.layout-direct-board > :first-child {
+  min-width: 0;
+  width: min(100%, 32rem);
+}
+
+.layout-direct-board > :not(:first-child) {
+  min-width: 0;
+  width: 100%;
+}
+
+@media (max-width: 640px) {
+  .layout-direct-board.layout-direct-board {
+    gap: var(--gameplay-layout-mobile-gap);
+  }
+
+  .layout-direct-board > :first-child {
+    width: 100%;
+  }
+}

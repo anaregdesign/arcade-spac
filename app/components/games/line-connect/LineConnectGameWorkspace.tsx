@@ -1,5 +1,6 @@
 import { useLineConnectWorkspace } from "../../../lib/client/usecase/game-workspace/use-line-connect-workspace";
 import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
+import { GameplayTapControlLayout } from "../../gameplay/layouts/GameplayTapControlLayout";
 import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
 import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
@@ -53,6 +54,7 @@ export function LineConnectGameWorkspace({ instructions, workspace }: GameWorksp
           data-solution-next-slot={screen.lineConnect.solutionNextSlot}
           data-state={screen.lineConnect.state}
         >
+          <GameplayTapControlLayout>
           <GameplayContextCue
             className={styles["line-connect-copy"]}
             detail={`Active pair ${screen.lineConnect.activePairLabel}.`}
@@ -123,6 +125,7 @@ export function LineConnectGameWorkspace({ instructions, workspace }: GameWorksp
             ))}
           </div>
 
+          </GameplayTapControlLayout>
           <GameWorkspaceBoardOverlay
             actionLabel={screen.startActionLabel}
             detail="Route one pair at a time until every node is linked."

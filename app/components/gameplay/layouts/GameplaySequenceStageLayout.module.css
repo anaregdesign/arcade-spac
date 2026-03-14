@@ -1,0 +1,29 @@
+.layout-sequence-stage {
+  --gameplay-layout-gap: 1rem;
+  --gameplay-layout-mobile-gap: 0.75rem;
+  display: grid;
+  gap: var(--gameplay-layout-gap);
+  align-content: start;
+  justify-items: stretch;
+}
+
+.layout-sequence-stage > :first-child {
+  min-width: 0;
+  width: min(100%, 32rem);
+  justify-self: center;
+}
+
+.layout-sequence-stage > :not(:first-child) {
+  min-width: 0;
+  width: 100%;
+}
+
+@media (max-width: 640px) {
+  .layout-sequence-stage.layout-sequence-stage {
+    gap: var(--gameplay-layout-mobile-gap);
+  }
+
+  .layout-sequence-stage > :first-child {
+    width: 100%;
+  }
+}

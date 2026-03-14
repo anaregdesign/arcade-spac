@@ -1,5 +1,6 @@
 import { useTileShiftWorkspace } from "../../../lib/client/usecase/game-workspace/use-tile-shift-workspace";
-import { GameplayTwinPanelLayout } from "../../gameplay/GameplayLayoutVariants";
+import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
+import { GameplayTwinPanelLayout } from "../../gameplay/layouts/GameplayTwinPanelLayout";
 import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
 import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
@@ -43,6 +44,12 @@ export function TileShiftGameWorkspace({ instructions, workspace }: GameWorkspac
 
       <section className={["feature-card", sharedStyles["workspace-card"], sharedStyles["board-card"], styles["shift-workspace-card"]].join(" ")} aria-label="Tile Shift board">
         <div className={[styles["shift-shell"], sharedStyles["game-board-overlay-shell"]].join(" ")}>
+          <GameplayContextCue
+            detail="Top arrows move columns down. Side arrows move rows right."
+            phase={screen.isLiveRun ? "Shift" : "Ready"}
+            title="Shift rows and columns until the live board matches"
+            tone="swap"
+          />
           <GameplayTwinPanelLayout className={styles["shift-columns"]}>
             <div className={styles["shift-panel"]}>
               <p className="eyebrow">Target</p>

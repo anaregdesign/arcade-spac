@@ -1,5 +1,6 @@
 import { useStackSortWorkspace } from "../../../lib/client/usecase/game-workspace/use-stack-sort-workspace";
 import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
+import { GameplayDirectBoardLayout } from "../../gameplay/layouts/GameplayDirectBoardLayout";
 import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
 import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
@@ -29,6 +30,7 @@ export function StackSortGameWorkspace({ instructions, workspace }: GameWorkspac
 
       <section className={["feature-card", sharedStyles["workspace-card"], sharedStyles["board-card"], styles["stack-board-card"]].join(" ")} aria-label="Stack Sort board">
         <div className={[styles["stack-shell"], sharedStyles["game-board-overlay-shell"]].join(" ")}>
+          <GameplayDirectBoardLayout>
           <GameplayContextCue
             className={styles["stack-copy"]}
             detail="Select source, then destination."
@@ -65,6 +67,7 @@ export function StackSortGameWorkspace({ instructions, workspace }: GameWorkspac
               </button>
             ))}
           </div>
+          </GameplayDirectBoardLayout>
           <GameWorkspaceBoardOverlay
             actionLabel={screen.startActionLabel}
             detail="Sort every non-empty stack down to one color."

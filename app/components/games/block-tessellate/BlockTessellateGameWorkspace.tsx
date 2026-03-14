@@ -1,6 +1,6 @@
 import { useBlockTessellateWorkspace } from "../../../lib/client/usecase/game-workspace/use-block-tessellate-workspace";
 import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
-import { GameplaySidecarLayout } from "../../gameplay/GameplayLayoutVariants";
+import { GameplaySidecarLayout } from "../../gameplay/layouts/GameplaySidecarLayout";
 import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
 import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";

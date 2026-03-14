@@ -1,5 +1,6 @@
 import { useSyncPulseWorkspace } from "../../../lib/client/usecase/game-workspace/use-sync-pulse-workspace";
 import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
+import { GameplayDirectBoardLayout } from "../../gameplay/layouts/GameplayDirectBoardLayout";
 import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
 import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
@@ -72,38 +73,40 @@ export function SyncPulseGameWorkspace({ instructions, workspace }: GameWorkspac
 
       <section className={["feature-card", sharedStyles["workspace-card"], sharedStyles["board-card"], styles["sync-pulse-board-card"]].join(" ")} aria-label="Sync Pulse board">
         <div className={[styles["sync-pulse-shell"], sharedStyles["game-board-overlay-shell"]].join(" ")}>
-          <GameplayContextCue className={styles["sync-pulse-copy"]} phase="Timing" title="Tap when both rings overlap" tone="timing" />
+          <GameplayDirectBoardLayout>
+            <GameplayContextCue className={styles["sync-pulse-copy"]} phase="Timing" title="Tap when both rings overlap" tone="timing" />
 
-          <div className={styles["sync-pulse-legend"]}>
-            <span className={styles["sync-pulse-legend-a"]}>Pulse A</span>
-            <span className={styles["sync-pulse-legend-b"]}>Pulse B</span>
-            <span className={styles["sync-pulse-legend-window"]}>{getWindowCopy(screen.syncPulse.currentWindow)}</span>
-          </div>
+            <div className={styles["sync-pulse-legend"]}>
+              <span className={styles["sync-pulse-legend-a"]}>Pulse A</span>
+              <span className={styles["sync-pulse-legend-b"]}>Pulse B</span>
+              <span className={styles["sync-pulse-legend-window"]}>{getWindowCopy(screen.syncPulse.currentWindow)}</span>
+            </div>
 
-          <button
-            aria-label="Tap to sync the pulse rings"
-            className={[
-              styles["sync-pulse-button"],
-              screen.syncPulse.currentWindow === "perfect" ? styles["sync-pulse-button-perfect"] : "",
-              screen.syncPulse.currentWindow === "good" ? styles["sync-pulse-button-good"] : "",
-            ].filter(Boolean).join(" ")}
-            data-gap={Math.round(screen.syncPulse.gapPx)}
-            data-pulse-a-radius={Math.round(screen.syncPulse.pulseARadiusPx)}
-            data-pulse-b-radius={Math.round(screen.syncPulse.pulseBRadiusPx)}
-            data-sync-pulse-root="true"
-            data-window={screen.syncPulse.currentWindow}
-            disabled={!screen.isLiveRun}
-            onClick={screen.handleSyncPress}
-            type="button"
-          >
-            <span aria-hidden="true" className={styles["sync-pulse-stage-glow"]} />
-            <span aria-hidden="true" className={styles["sync-pulse-ring-a"]} style={toPulseStyle(screen.syncPulse.pulseARadiusPx)} />
-            <span aria-hidden="true" className={styles["sync-pulse-ring-b"]} style={toPulseStyle(screen.syncPulse.pulseBRadiusPx)} />
-            <span className={styles["sync-pulse-core"]}>
-              <span className={styles["sync-pulse-core-label"]}>Tap to sync</span>
-              <span className={styles["sync-pulse-core-detail"]}>{getWindowCopy(screen.syncPulse.currentWindow)}</span>
-            </span>
-          </button>
+            <button
+              aria-label="Tap to sync the pulse rings"
+              className={[
+                styles["sync-pulse-button"],
+                screen.syncPulse.currentWindow === "perfect" ? styles["sync-pulse-button-perfect"] : "",
+                screen.syncPulse.currentWindow === "good" ? styles["sync-pulse-button-good"] : "",
+              ].filter(Boolean).join(" ")}
+              data-gap={Math.round(screen.syncPulse.gapPx)}
+              data-pulse-a-radius={Math.round(screen.syncPulse.pulseARadiusPx)}
+              data-pulse-b-radius={Math.round(screen.syncPulse.pulseBRadiusPx)}
+              data-sync-pulse-root="true"
+              data-window={screen.syncPulse.currentWindow}
+              disabled={!screen.isLiveRun}
+              onClick={screen.handleSyncPress}
+              type="button"
+            >
+              <span aria-hidden="true" className={styles["sync-pulse-stage-glow"]} />
+              <span aria-hidden="true" className={styles["sync-pulse-ring-a"]} style={toPulseStyle(screen.syncPulse.pulseARadiusPx)} />
+              <span aria-hidden="true" className={styles["sync-pulse-ring-b"]} style={toPulseStyle(screen.syncPulse.pulseBRadiusPx)} />
+              <span className={styles["sync-pulse-core"]}>
+                <span className={styles["sync-pulse-core-label"]}>Tap to sync</span>
+                <span className={styles["sync-pulse-core-detail"]}>{getWindowCopy(screen.syncPulse.currentWindow)}</span>
+              </span>
+            </button>
+          </GameplayDirectBoardLayout>
 
           <GameWorkspaceBoardOverlay
             actionLabel={screen.startActionLabel}

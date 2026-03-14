@@ -1,5 +1,6 @@
 import { useMirrorMatchWorkspace } from "../../../lib/client/usecase/game-workspace/use-mirror-match-workspace";
-import { GameplayTwinPanelLayout } from "../../gameplay/GameplayLayoutVariants";
+import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
+import { GameplayTwinPanelLayout } from "../../gameplay/layouts/GameplayTwinPanelLayout";
 import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
 import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
@@ -66,6 +67,12 @@ export function MirrorMatchGameWorkspace({ instructions, workspace }: GameWorksp
 
       <section className={["feature-card", sharedStyles["workspace-card"], sharedStyles["board-card"], styles["mirror-workspace-card"]].join(" ")} aria-label="Mirror Match board">
         <div className={[styles["mirror-shell"], sharedStyles["game-board-overlay-shell"]].join(" ")}>
+          <GameplayContextCue
+            detail="Only the mirror board accepts taps."
+            phase={screen.isLiveRun ? "Mirror" : "Ready"}
+            title="Rebuild the target as a left-right mirror"
+            tone="compare"
+          />
           <GameplayTwinPanelLayout className={styles["mirror-columns"]}>
             <Board board={screen.mirrorMatch.targetGrid} columnCount={screen.mirrorMatch.columnCount} title="Target" />
             <Board

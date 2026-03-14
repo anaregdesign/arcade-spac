@@ -1,5 +1,6 @@
 import { useHiddenFindWorkspace } from "../../../lib/client/usecase/game-workspace/use-hidden-find-workspace";
 import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
+import { GameplayDirectBoardLayout } from "../../gameplay/layouts/GameplayDirectBoardLayout";
 import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
 import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
@@ -30,6 +31,7 @@ export function HiddenFindGameWorkspace({ instructions, workspace }: GameWorkspa
 
       <section className={["feature-card", sharedStyles["workspace-card"], sharedStyles["board-card"], styles["hidden-board-card"]].join(" ")} aria-label="Hidden Find board">
         <div className={[styles["hidden-shell"], sharedStyles["game-board-overlay-shell"]].join(" ")}>
+          <GameplayDirectBoardLayout>
           <GameplayContextCue
             className={styles["hidden-copy"]}
             detail={`Target ${screen.hiddenFind.currentScene.targetSymbol}.`}
@@ -46,14 +48,19 @@ export function HiddenFindGameWorkspace({ instructions, workspace }: GameWorkspa
                   disabled={!screen.isLiveRun}
                   key={cell.id}
                   onClick={() => screen.handleCellPress(rowIndex, columnIndex)}
-                  style={{ transform: `rotate(${cell.rotation}deg) scale(${cell.scale})` }}
                   type="button"
                 >
-                  {cell.symbol}
+                  <span
+                    className={styles["hidden-symbol"]}
+                    style={{ transform: `rotate(${cell.rotation}deg) scale(${cell.scale})` }}
+                  >
+                    {cell.symbol}
+                  </span>
                 </button>
               )),
             )}
           </div>
+          </GameplayDirectBoardLayout>
           <GameWorkspaceBoardOverlay
             actionLabel={screen.startActionLabel}
             detail="Find the exact motif without false taps."

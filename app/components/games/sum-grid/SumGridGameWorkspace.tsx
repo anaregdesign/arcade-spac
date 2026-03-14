@@ -1,5 +1,6 @@
 import { useSumGridWorkspace } from "../../../lib/client/usecase/game-workspace/use-sum-grid-workspace";
 import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
+import { GameplaySequenceStageLayout } from "../../gameplay/layouts/GameplaySequenceStageLayout";
 import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
 import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
@@ -30,56 +31,58 @@ export function SumGridGameWorkspace({ instructions, workspace }: GameWorkspaceC
 
       <section className={["feature-card", sharedStyles["workspace-card"], sharedStyles["board-card"], styles["sum-grid-board-card"]].join(" ")} aria-label="Sum Grid board">
         <div className={[styles["sum-grid-shell"], sharedStyles["game-board-overlay-shell"]].join(" ")}>
-          <GameplayContextCue
-            className={styles["sum-grid-copy"]}
-            detail={screen.sumGrid.selectedNumber === null ? "Pick a bank number first." : `Selected ${screen.sumGrid.selectedNumber}.`}
-            phase={screen.isLiveRun ? "Place" : "Ready"}
-            title="Match every row and column sum"
-            tone="logic"
-          />
-          <div className={styles["sum-grid-stage"]}>
-            <div className={styles["sum-grid-column-sums"]} style={{ gridTemplateColumns: `repeat(${screen.sumGrid.puzzle.columnCount}, minmax(0, 1fr))` }}>
-              {screen.sumGrid.puzzle.columnSums.map((value, index) => (
-                <span className={styles["sum-grid-sum-chip"]} key={`column-sum-${index}`}>{value}</span>
-              ))}
-            </div>
-            <div className={styles["sum-grid-main"]}>
-              <div className={styles["sum-grid-row-sums"]}>
-                {screen.sumGrid.puzzle.rowSums.map((value, index) => (
-                  <span className={styles["sum-grid-sum-chip"]} key={`row-sum-${index}`}>{value}</span>
+          <GameplaySequenceStageLayout>
+            <GameplayContextCue
+              className={styles["sum-grid-copy"]}
+              detail={screen.sumGrid.selectedNumber === null ? "Pick a bank number first." : `Selected ${screen.sumGrid.selectedNumber}.`}
+              phase={screen.isLiveRun ? "Place" : "Ready"}
+              title="Match every row and column sum"
+              tone="logic"
+            />
+            <div className={styles["sum-grid-stage"]}>
+              <div className={styles["sum-grid-column-sums"]} style={{ gridTemplateColumns: `repeat(${screen.sumGrid.puzzle.columnCount}, minmax(0, 1fr))` }}>
+                {screen.sumGrid.puzzle.columnSums.map((value, index) => (
+                  <span className={styles["sum-grid-sum-chip"]} key={`column-sum-${index}`}>{value}</span>
                 ))}
               </div>
-              <div className={styles["sum-grid-board"]} style={{ gridTemplateColumns: `repeat(${screen.sumGrid.puzzle.columnCount}, minmax(0, 1fr))` }}>
-                {screen.sumGrid.puzzle.currentGrid.flatMap((row, rowIndex) =>
-                  row.map((value, columnIndex) => (
-                    <button
-                      aria-label={`Sum Grid cell ${rowIndex + 1}-${columnIndex + 1}`}
-                      className={styles["sum-grid-cell"]}
-                      disabled={!screen.isLiveRun}
-                      key={`sum-grid-cell-${rowIndex}-${columnIndex}`}
-                      onClick={() => screen.handleCellPress(rowIndex, columnIndex)}
-                      type="button"
-                    >
-                      {value ?? "?"}
-                    </button>
-                  )),
-                )}
+              <div className={styles["sum-grid-main"]}>
+                <div className={styles["sum-grid-row-sums"]}>
+                  {screen.sumGrid.puzzle.rowSums.map((value, index) => (
+                    <span className={styles["sum-grid-sum-chip"]} key={`row-sum-${index}`}>{value}</span>
+                  ))}
+                </div>
+                <div className={styles["sum-grid-board"]} style={{ gridTemplateColumns: `repeat(${screen.sumGrid.puzzle.columnCount}, minmax(0, 1fr))` }}>
+                  {screen.sumGrid.puzzle.currentGrid.flatMap((row, rowIndex) =>
+                    row.map((value, columnIndex) => (
+                      <button
+                        aria-label={`Sum Grid cell ${rowIndex + 1}-${columnIndex + 1}`}
+                        className={styles["sum-grid-cell"]}
+                        disabled={!screen.isLiveRun}
+                        key={`sum-grid-cell-${rowIndex}-${columnIndex}`}
+                        onClick={() => screen.handleCellPress(rowIndex, columnIndex)}
+                        type="button"
+                      >
+                        {value ?? "?"}
+                      </button>
+                    )),
+                  )}
+                </div>
+              </div>
+              <div className={styles["sum-grid-bank"]}>
+                {screen.sumGrid.puzzle.availableNumbers.map((value, index) => (
+                  <button
+                    className={[styles["sum-grid-bank-button"], screen.sumGrid.selectedNumber === value ? styles["sum-grid-bank-button-selected"] : ""].filter(Boolean).join(" ")}
+                    disabled={!screen.isLiveRun}
+                    key={`sum-grid-bank-${value}-${index}`}
+                    onClick={() => screen.handleNumberPress(value)}
+                    type="button"
+                  >
+                    {value}
+                  </button>
+                ))}
               </div>
             </div>
-            <div className={styles["sum-grid-bank"]}>
-              {screen.sumGrid.puzzle.availableNumbers.map((value, index) => (
-                <button
-                  className={[styles["sum-grid-bank-button"], screen.sumGrid.selectedNumber === value ? styles["sum-grid-bank-button-selected"] : ""].filter(Boolean).join(" ")}
-                  disabled={!screen.isLiveRun}
-                  key={`sum-grid-bank-${value}-${index}`}
-                  onClick={() => screen.handleNumberPress(value)}
-                  type="button"
-                >
-                  {value}
-                </button>
-              ))}
-            </div>
-          </div>
+          </GameplaySequenceStageLayout>
           <GameWorkspaceBoardOverlay
             actionLabel={screen.startActionLabel}
             detail="Pick a bank number, then fill the grid to match every sum."

@@ -1,5 +1,6 @@
 import { usePrecisionDropWorkspace } from "../../../lib/client/usecase/game-workspace/use-precision-drop-workspace";
 import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
+import { GameplayDirectBoardLayout } from "../../gameplay/layouts/GameplayDirectBoardLayout";
 import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
 import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
@@ -32,33 +33,35 @@ export function PrecisionDropGameWorkspace({ instructions, workspace }: GameWork
 
       <section className={["feature-card", sharedStyles["workspace-card"], sharedStyles["board-card"], sharedStyles["board-card-minimal"], styles["precision-drop-board-card"]].join(" ")} aria-label="Precision Drop lane">
         <div className={[styles["precision-drop-shell"], sharedStyles["game-board-overlay-shell"]].join(" ")}>
-          <GameplayContextCue
-            className={styles["precision-drop-copy"]}
-            detail={`${screen.precisionDrop.speedPxPerSecond} px/s.`}
-            phase={screen.isLiveRun ? "Drop" : "Ready"}
-            title="Tap when the ball crosses the line"
-            tone="timing"
-          />
-          <button
-            aria-label={screen.isLiveRun ? "Tap when the ball overlaps the line" : "Precision Drop play area"}
-            className={styles["precision-drop-lane"]}
-            disabled={!screen.isLiveRun}
-            onClick={screen.handleLaneClick}
-            type="button"
-          >
-            <span aria-hidden="true" className={styles["precision-drop-grid"]} />
-            <span
-              aria-hidden="true"
-              className={styles["precision-drop-target-line"]}
-              style={{ top: `${(screen.precisionDrop.lineCenterY / screen.precisionDrop.laneHeight) * 100}%` }}
+          <GameplayDirectBoardLayout>
+            <GameplayContextCue
+              className={styles["precision-drop-copy"]}
+              detail={`${screen.precisionDrop.speedPxPerSecond} px/s.`}
+              phase={screen.isLiveRun ? "Drop" : "Ready"}
+              title="Tap when the ball crosses the line"
+              tone="timing"
             />
-            <span
-              aria-hidden="true"
-              className={styles["precision-drop-ball"]}
-              style={{ top: `${(screen.precisionDrop.ballCenterY / screen.precisionDrop.laneHeight) * 100}%` }}
-            />
-            <span className={styles["precision-drop-lane-copy"]}>{screen.lanePrompt}</span>
-          </button>
+            <button
+              aria-label={screen.isLiveRun ? "Tap when the ball overlaps the line" : "Precision Drop play area"}
+              className={styles["precision-drop-lane"]}
+              disabled={!screen.isLiveRun}
+              onClick={screen.handleLaneClick}
+              type="button"
+            >
+              <span aria-hidden="true" className={styles["precision-drop-grid"]} />
+              <span
+                aria-hidden="true"
+                className={styles["precision-drop-target-line"]}
+                style={{ top: `${(screen.precisionDrop.lineCenterY / screen.precisionDrop.laneHeight) * 100}%` }}
+              />
+              <span
+                aria-hidden="true"
+                className={styles["precision-drop-ball"]}
+                style={{ top: `${(screen.precisionDrop.ballCenterY / screen.precisionDrop.laneHeight) * 100}%` }}
+              />
+              <span className={styles["precision-drop-lane-copy"]}>{screen.lanePrompt}</span>
+            </button>
+          </GameplayDirectBoardLayout>
           <GameWorkspaceBoardOverlay
             actionLabel={screen.startActionLabel}
             detail="Tap once the ball reaches the line."

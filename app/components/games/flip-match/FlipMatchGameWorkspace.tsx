@@ -1,6 +1,6 @@
 import { useFlipMatchWorkspace } from "../../../lib/client/usecase/game-workspace/use-flip-match-workspace";
 import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
-import { GameplayTwinPanelLayout } from "../../gameplay/GameplayLayoutVariants";
+import { GameplayTwinPanelLayout } from "../../gameplay/layouts/GameplayTwinPanelLayout";
 import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
 import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
@@ -79,7 +79,7 @@ export function FlipMatchGameWorkspace({ instructions, workspace }: GameWorkspac
         )}
       />
 
-      <section className={["feature-card", sharedStyles["workspace-card"], sharedStyles["board-card"], styles["flip-workspace-card"]].join(" ")} aria-label="Flip Match board">
+      <section className={["feature-card", sharedStyles["workspace-card"], sharedStyles["board-card"]].join(" ")} aria-label="Flip Match board">
         <div className={[styles["flip-shell"], sharedStyles["game-board-overlay-shell"]].join(" ")}>
           <GameplayContextCue
             className={styles["flip-copy"]}

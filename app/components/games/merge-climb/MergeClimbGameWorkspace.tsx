@@ -1,5 +1,6 @@
 import { useMergeClimbWorkspace } from "../../../lib/client/usecase/game-workspace/use-merge-climb-workspace";
 import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
+import { GameplayTapControlLayout } from "../../gameplay/layouts/GameplayTapControlLayout";
 import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
 import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
@@ -58,6 +59,7 @@ export function MergeClimbGameWorkspace({ instructions, workspace }: GameWorkspa
           data-next-spawn={screen.mergeClimb.nextSpawnValue}
           data-state={screen.mergeClimb.state}
         >
+          <GameplayTapControlLayout>
           <GameplayContextCue
             className={styles["merge-copy"]}
             detail={`Next ${screen.mergeClimb.nextSpawnValue}.`}
@@ -138,6 +140,7 @@ export function MergeClimbGameWorkspace({ instructions, workspace }: GameWorkspa
             </div>
           </div>
 
+          </GameplayTapControlLayout>
           <GameWorkspaceBoardOverlay
             actionLabel={screen.startActionLabel}
             detail="Merge toward the goal before the board locks."

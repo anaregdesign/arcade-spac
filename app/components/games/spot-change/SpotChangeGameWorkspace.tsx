@@ -3,7 +3,7 @@ import type { CSSProperties } from "react";
 import { useSpotChangeWorkspace } from "../../../lib/client/usecase/game-workspace/use-spot-change-workspace";
 import type { SpotChangeCell } from "../../../lib/client/usecase/game-workspace/use-spot-change-session";
 import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
-import { GameplayTwinPanelLayout } from "../../gameplay/GameplayLayoutVariants";
+import { GameplayTwinPanelLayout } from "../../gameplay/layouts/GameplayTwinPanelLayout";
 import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
 import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
@@ -48,7 +48,7 @@ export function SpotChangeGameWorkspace({ instructions, workspace }: GameWorkspa
         )}
       />
 
-      <section className={["feature-card", sharedStyles["workspace-card"], sharedStyles["board-card"], styles["spot-board-card"]].join(" ")} aria-label="Spot Change board">
+      <section className={["feature-card", sharedStyles["workspace-card"], sharedStyles["board-card"]].join(" ")} aria-label="Spot Change board">
         <div className={[styles["spot-shell"], sharedStyles["game-board-overlay-shell"]].join(" ")}>
           <GameplayContextCue className={styles["spot-header"]} detail="Left board is reference." phase="Compare" title="Find changes on the right board" tone="compare" />
 

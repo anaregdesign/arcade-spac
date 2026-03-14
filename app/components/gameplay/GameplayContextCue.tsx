@@ -60,6 +60,7 @@ export function GameplayContextCue({
     <div
       className={[styles["context-cue"], className].filter(Boolean).join(" ")}
       data-align={align}
+      data-gameplay-context-cue="true"
       data-tone={tone}
     >
       <span aria-hidden="true" className={styles["context-cue-icon"]}>

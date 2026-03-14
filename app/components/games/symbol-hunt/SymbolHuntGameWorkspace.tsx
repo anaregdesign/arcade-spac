@@ -1,5 +1,6 @@
 import { useSymbolHuntWorkspace } from "../../../lib/client/usecase/game-workspace/use-symbol-hunt-workspace";
 import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
+import { GameplayDirectBoardLayout } from "../../gameplay/layouts/GameplayDirectBoardLayout";
 import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
 import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
@@ -33,11 +34,11 @@ export function SymbolHuntGameWorkspace({ instructions, workspace }: GameWorkspa
 
       <section className={["feature-card", sharedStyles["workspace-card"], sharedStyles["board-card"], styles["hunt-board-card"]].join(" ")} aria-label="Symbol Hunt board">
         <div className={[styles["hunt-shell"], sharedStyles["game-board-overlay-shell"]].join(" ")}>
+          <GameplayDirectBoardLayout>
           <GameplayContextCue
             className={styles["hunt-copy"]}
-            detail={`Target ${screen.symbolHunt.targetSymbol}.`}
             phase={screen.isLiveRun ? "Hunt" : "Ready"}
-            title="Tap every copy of the target symbol"
+            title={`Tap only ${screen.symbolHunt.targetSymbol}`}
             tone="target"
           />
           <div
@@ -61,6 +62,7 @@ export function SymbolHuntGameWorkspace({ instructions, workspace }: GameWorkspa
               )),
             )}
           </div>
+          </GameplayDirectBoardLayout>
           <GameWorkspaceBoardOverlay
             actionLabel={screen.startActionLabel}
             detail="Clear every copy of the target symbol."

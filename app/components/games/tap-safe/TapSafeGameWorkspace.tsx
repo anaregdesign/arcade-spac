@@ -1,5 +1,6 @@
 import { useTapSafeWorkspace } from "../../../lib/client/usecase/game-workspace/use-tap-safe-workspace";
 import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
+import { GameplayDirectBoardLayout } from "../../gameplay/layouts/GameplayDirectBoardLayout";
 import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
 import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
@@ -35,6 +36,7 @@ export function TapSafeGameWorkspace({ instructions, workspace }: GameWorkspaceC
 
       <section className={["feature-card", sharedStyles["workspace-card"], sharedStyles["board-card"], styles["tap-safe-board-card"]].join(" ")} aria-label="Tap Safe board">
         <div className={[styles["tap-safe-shell"], sharedStyles["game-board-overlay-shell"]].join(" ")}>
+          <GameplayDirectBoardLayout>
           <GameplayContextCue className={styles["tap-safe-copy"]} detail="Ignore hazard marks." phase="Filter" title="Tap only safe targets" tone="target" />
 
           <div className={styles["tap-safe-legend"]}>
@@ -85,6 +87,7 @@ export function TapSafeGameWorkspace({ instructions, workspace }: GameWorkspaceC
               )),
             )}
           </div>
+          </GameplayDirectBoardLayout>
 
           <GameWorkspaceBoardOverlay
             actionLabel={screen.startActionLabel}

@@ -1,0 +1,29 @@
+.layout-tap-control {
+  --gameplay-layout-gap: 1rem;
+  --gameplay-layout-mobile-gap: 0.75rem;
+  display: grid;
+  gap: var(--gameplay-layout-gap);
+  align-content: start;
+  justify-items: stretch;
+}
+
+.layout-tap-control > :first-child {
+  min-width: 0;
+  width: min(100%, 32rem);
+  justify-self: center;
+}
+
+.layout-tap-control > :not(:first-child) {
+  min-width: 0;
+  width: 100%;
+}
+
+@media (max-width: 640px) {
+  .layout-tap-control.layout-tap-control {
+    gap: var(--gameplay-layout-mobile-gap);
+  }
+
+  .layout-tap-control > :first-child {
+    width: 100%;
+  }
+}

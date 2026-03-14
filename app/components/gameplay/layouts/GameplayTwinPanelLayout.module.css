@@ -1,0 +1,25 @@
+.layout-twin-panel {
+  --gameplay-layout-gap: 1rem;
+  --gameplay-layout-mobile-gap: 0.75rem;
+  display: grid;
+  gap: var(--gameplay-layout-gap);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+}
+
+.layout-twin-panel > * {
+  min-width: 0;
+}
+
+@media (max-width: 900px) {
+  .layout-twin-panel.layout-twin-panel {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .layout-twin-panel.layout-twin-panel {
+    gap: var(--gameplay-layout-mobile-gap);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

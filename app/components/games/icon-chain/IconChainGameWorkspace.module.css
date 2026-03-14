@@ -46,6 +46,7 @@
 .icon-chain-panel {
   display: grid;
   gap: 0.75rem;
+  min-width: 0;
   padding: 1rem;
   border: 1px solid rgba(148, 163, 184, 0.16);
   border-radius: 1.2rem;
@@ -164,6 +165,7 @@
   display: grid;
   gap: 0.75rem;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+  min-width: 0;
 }
 
 .icon-chain-candidate {
@@ -171,6 +173,7 @@
   display: grid;
   gap: 0.2rem;
   justify-items: center;
+  min-width: 0;
   min-height: 4.7rem;
   padding: 0.65rem 0.55rem;
   border: none;
@@ -224,6 +227,9 @@
   font-size: 0.74rem;
   font-weight: 800;
   letter-spacing: 0.04em;
+  line-height: 1.05;
+  overflow-wrap: anywhere;
+  text-align: center;
   text-transform: uppercase;
 }
 
@@ -282,7 +288,7 @@
 
   .icon-chain-candidate-grid {
     gap: 0.4rem;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .icon-chain-sequence-slot {
@@ -320,8 +326,8 @@
 
   .icon-chain-pill {
     min-width: 0;
-    padding: 0.28rem 0.5rem;
-    font-size: 0.64rem;
+    padding: 0.28rem 0.34rem;
+    font-size: 0.58rem;
   }
 
   .icon-chain-clue-chip {

@@ -107,6 +107,7 @@
   font-weight: 700;
   justify-items: center;
   line-height: 1.1;
+  overflow: hidden;
   padding: 0.35rem;
   text-align: center;
   transition: transform 120ms ease-out;
@@ -160,13 +161,33 @@
 .bubble-stage-label {
   font-size: 0.8rem;
   letter-spacing: 0.03em;
+  max-width: 100%;
 }
 
 .bubble-target-copy {
   font-size: 0.55rem;
   letter-spacing: 0.08em;
   margin-top: 0.2rem;
+  max-width: 100%;
+  overflow-wrap: anywhere;
   text-transform: uppercase;
+}
+
+.bubble-stage-1 .bubble-stage-label {
+  font-size: 0.56rem;
+}
+
+.bubble-stage-1 .bubble-target-copy {
+  display: none;
+}
+
+.bubble-stage-2 .bubble-stage-label {
+  font-size: 0.66rem;
+}
+
+.bubble-stage-2 .bubble-target-copy {
+  font-size: 0.42rem;
+  letter-spacing: 0.04em;
 }
 
 .bubble-empty-dot {

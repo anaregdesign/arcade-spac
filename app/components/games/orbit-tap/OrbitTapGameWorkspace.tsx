@@ -1,5 +1,6 @@
 import { useOrbitTapWorkspace } from "../../../lib/client/usecase/game-workspace/use-orbit-tap-workspace";
 import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
+import { GameplayDirectBoardLayout } from "../../gameplay/layouts/GameplayDirectBoardLayout";
 import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
 import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
@@ -42,31 +43,33 @@ export function OrbitTapGameWorkspace({ instructions, workspace }: GameWorkspace
 
       <section className={["feature-card", sharedStyles["workspace-card"], sharedStyles["board-card"], styles["orbit-board-card"]].join(" ")} aria-label="Orbit Tap board">
         <div className={[styles["orbit-shell"], sharedStyles["game-board-overlay-shell"]].join(" ")}>
-          <GameplayContextCue
-            className={styles["orbit-header"]}
-            detail="Hit only while the marker crosses the gate."
-            phase={screen.isLiveRun ? "Timing" : "Ready"}
-            title="Tap when the marker reaches the gate"
-            tone="timing"
-          />
-          <button
-            aria-label="Tap the orbit when the marker reaches the gate"
-            className={styles["orbit-button"]}
-            onClick={screen.handleOrbitPress}
-            type="button"
-          >
-            <span className={styles["orbit-ring"]} />
-            <span
-              aria-hidden="true"
-              className={styles["orbit-gate"]}
-              style={{ transform: `rotate(${screen.orbitTap.gateAngle}deg)` }}
+          <GameplayDirectBoardLayout>
+            <GameplayContextCue
+              className={styles["orbit-header"]}
+              detail="Hit only while the marker crosses the gate."
+              phase={screen.isLiveRun ? "Timing" : "Ready"}
+              title="Tap when the marker reaches the gate"
+              tone="timing"
             />
-            <span
-              aria-hidden="true"
-              className={styles["orbit-marker"]}
-              style={toOrbitMarkerStyle(screen.orbitTap.markerAngle, screen.orbitTap.radiusPx)}
-            />
-          </button>
+            <button
+              aria-label="Tap the orbit when the marker reaches the gate"
+              className={styles["orbit-button"]}
+              onClick={screen.handleOrbitPress}
+              type="button"
+            >
+              <span className={styles["orbit-ring"]} />
+              <span
+                aria-hidden="true"
+                className={styles["orbit-gate"]}
+                style={{ transform: `rotate(${screen.orbitTap.gateAngle}deg)` }}
+              />
+              <span
+                aria-hidden="true"
+                className={styles["orbit-marker"]}
+                style={toOrbitMarkerStyle(screen.orbitTap.markerAngle, screen.orbitTap.radiusPx)}
+              />
+            </button>
+          </GameplayDirectBoardLayout>
           <GameWorkspaceBoardOverlay
             actionLabel={screen.startActionLabel}
             detail="Chain clean hits through the gate."

@@ -1,5 +1,6 @@
 import { usePositionLockWorkspace } from "../../../lib/client/usecase/game-workspace/use-position-lock-workspace";
 import { GameplayContextCue } from "../../gameplay/GameplayContextCue";
+import { GameplayDirectBoardLayout } from "../../gameplay/layouts/GameplayDirectBoardLayout";
 import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
 import { GameWorkspaceBoardOverlay } from "../../gameplay/workspace/GameWorkspaceBoardOverlay";
 import { GameWorkspaceControlsCard } from "../../gameplay/workspace/GameWorkspaceControlsCard";
@@ -53,6 +54,7 @@ export function PositionLockGameWorkspace({ instructions, workspace }: GameWorks
 
       <section className={["feature-card", sharedStyles["workspace-card"], sharedStyles["board-card"], styles["position-lock-board-card"]].join(" ")} aria-label="Position Lock board">
         <div className={[styles["position-lock-shell"], sharedStyles["game-board-overlay-shell"]].join(" ")}>
+          <GameplayDirectBoardLayout>
           <div className={styles["position-lock-panel"]} data-position-lock-phase={screen.positionLock.state}>
             <GameplayContextCue
               className={styles["position-lock-copy"]}
@@ -167,6 +169,7 @@ export function PositionLockGameWorkspace({ instructions, workspace }: GameWorks
             </div>
           </div>
 
+          </GameplayDirectBoardLayout>
           <GameWorkspaceBoardOverlay
             actionLabel={screen.startActionLabel}
             detail="Watch where each token stops, then place the same token back onto the remembered final cell."
