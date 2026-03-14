@@ -1,0 +1,316 @@
+name: Release Azure Delivery
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.event.release.tag_name }}
+  cancel-in-progress: false
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  publish:
+    name: Build And Publish To GHCR
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
+    outputs:
+      image_ref: ${{ steps.image.outputs.image_ref }}
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v5
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          flavor: |
+            latest=false
+          tags: |
+            type=raw,value=${{ github.event.release.tag_name }}
+            type=sha,format=short
+
+      - name: Build and push image
+        id: push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Record immutable image reference
+        id: image
+        run: echo "image_ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.event.release.tag_name }}" >> "$GITHUB_OUTPUT"
+
+      - name: Generate artifact attestation
+        uses: actions/attest-build-provenance@v3
+        with:
+          subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          subject-digest: ${{ steps.push.outputs.digest }}
+          push-to-registry: true
+
+  plan_infra:
+    name: Plan Azure Infrastructure
+    runs-on: ubuntu-latest
+    needs: publish
+    if: ${{ !github.event.release.prerelease }}
+    environment: production
+    permissions:
+      contents: read
+      id-token: write
+    outputs:
+      has_changes: ${{ steps.plan.outputs.has_changes }}
+      container_app_name: ${{ steps.discover.outputs.container_app_name }}
+      infra_image_ref: ${{ steps.discover.outputs.infra_image_ref }}
+    env:
+      AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+      AZURE_APP_NAME: ${{ vars.AZURE_APP_NAME }}
+      AZURE_RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
+      AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+      RELEASE_IMAGE_REF: ${{ needs.publish.outputs.image_ref }}
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v5
+
+      - name: Validate infra planning configuration
+        run: |
+          test -n "$AZURE_CLIENT_ID" || { echo "Missing environment variable AZURE_CLIENT_ID"; exit 1; }
+          test -n "$AZURE_TENANT_ID" || { echo "Missing environment variable AZURE_TENANT_ID"; exit 1; }
+          test -n "$AZURE_SUBSCRIPTION_ID" || { echo "Missing environment variable AZURE_SUBSCRIPTION_ID"; exit 1; }
+          test -n "$AZURE_RESOURCE_GROUP" || { echo "Missing environment variable AZURE_RESOURCE_GROUP"; exit 1; }
+          test -n "$AZURE_APP_NAME" || { echo "Missing environment variable AZURE_APP_NAME"; exit 1; }
+
+      - name: Log in to Azure with OIDC
+        uses: azure/login@v2
+        with:
+          client-id: ${{ env.AZURE_CLIENT_ID }}
+          tenant-id: ${{ env.AZURE_TENANT_ID }}
+          subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Validate Bicep entrypoint
+        run: az bicep build --file ./infra/main.bicep > /dev/null
+
+      - name: Discover current deploy state
+        id: discover
+        run: |
+          # Keep the infra plan neutral to app-only releases by reusing the currently deployed image.
+          CONTAINER_APP_NAME="ca-${AZURE_APP_NAME}"
+          CURRENT_IMAGE_REF="$(
+            az containerapp show \
+              --resource-group "$AZURE_RESOURCE_GROUP" \
+              --name "$CONTAINER_APP_NAME" \
+              --query 'properties.template.containers[0].image' \
+              --output tsv 2>/dev/null || true
+          )"
+          INFRA_IMAGE_REF="${CURRENT_IMAGE_REF:-$RELEASE_IMAGE_REF}"
+
+          echo "container_app_name=$CONTAINER_APP_NAME" >> "$GITHUB_OUTPUT"
+          echo "infra_image_ref=$INFRA_IMAGE_REF" >> "$GITHUB_OUTPUT"
+
+      - name: Plan infrastructure changes
+        id: plan
+        run: |
+          az deployment group what-if \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --template-file ./infra/main.bicep \
+            --parameters \
+              appName="$AZURE_APP_NAME" \
+              containerImage="${{ steps.discover.outputs.infra_image_ref }}" \
+            --result-format ResourceIdOnly \
+            --no-pretty-print \
+            --output json > whatif.json
+
+          python3 - <<'PY'
+          import json
+          import os
+
+          with open("whatif.json", "r", encoding="utf-8") as handle:
+              payload = json.load(handle)
+
+          changes = []
+          if isinstance(payload, dict):
+              changes = payload.get("changes")
+              if changes is None:
+                  changes = payload.get("properties", {}).get("changes", [])
+
+          filtered = [
+              change for change in changes
+              if change.get("changeType") not in {"NoChange", "Ignore"}
+          ]
+
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as handle:
+              handle.write(f"has_changes={'true' if filtered else 'false'}\n")
+          PY
+
+  deploy_infra:
+    name: Deploy Azure Infrastructure
+    runs-on: ubuntu-latest
+    needs:
+      - publish
+      - plan_infra
+    if: ${{ !github.event.release.prerelease && needs.plan_infra.outputs.has_changes == 'true' }}
+    environment: production
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+      AZURE_APP_NAME: ${{ vars.AZURE_APP_NAME }}
+      AZURE_RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
+      AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+      INFRA_IMAGE_REF: ${{ needs.plan_infra.outputs.infra_image_ref }}
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v5
+
+      - name: Validate release deployment configuration
+        run: |
+          test -n "$AZURE_CLIENT_ID" || { echo "Missing environment variable AZURE_CLIENT_ID"; exit 1; }
+          test -n "$AZURE_TENANT_ID" || { echo "Missing environment variable AZURE_TENANT_ID"; exit 1; }
+          test -n "$AZURE_SUBSCRIPTION_ID" || { echo "Missing environment variable AZURE_SUBSCRIPTION_ID"; exit 1; }
+          test -n "$AZURE_RESOURCE_GROUP" || { echo "Missing environment variable AZURE_RESOURCE_GROUP"; exit 1; }
+          test -n "$AZURE_APP_NAME" || { echo "Missing environment variable AZURE_APP_NAME"; exit 1; }
+
+      - name: Log in to Azure with OIDC
+        uses: azure/login@v2
+        with:
+          client-id: ${{ env.AZURE_CLIENT_ID }}
+          tenant-id: ${{ env.AZURE_TENANT_ID }}
+          subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Validate Bicep entrypoint
+        run: az bicep build --file ./infra/main.bicep > /dev/null
+
+      - name: Deploy infrastructure baseline
+        id: deployment
+        run: |
+          # Infra convergence keeps the current image pinned. A new revision is rolled out in deploy_app.
+          DEPLOYMENT_NAME="release-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+
+          az deployment group create \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --name "$DEPLOYMENT_NAME" \
+            --template-file ./infra/main.bicep \
+            --parameters \
+              appName="$AZURE_APP_NAME" \
+              containerImage="$INFRA_IMAGE_REF" \
+            --output none
+
+  deploy_app:
+    name: Deploy Release To Azure Container Apps
+    runs-on: ubuntu-latest
+    needs:
+      - publish
+      - plan_infra
+      - deploy_infra
+    if: >-
+      ${{
+        always() &&
+        !cancelled() &&
+        !github.event.release.prerelease &&
+        needs.publish.result == 'success' &&
+        needs.plan_infra.result == 'success' &&
+        (needs.deploy_infra.result == 'success' || needs.deploy_infra.result == 'skipped')
+      }}
+    environment: production
+    permissions:
+      contents: read
+      id-token: write
+    outputs:
+      container_app_fqdn: ${{ steps.discover.outputs.container_app_fqdn }}
+    env:
+      AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+      AZURE_RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
+      AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+      AZURE_CONTAINER_APP_NAME: ${{ needs.plan_infra.outputs.container_app_name }}
+      CONTAINER_REGISTRY_IDENTITY: ${{ vars.CONTAINER_REGISTRY_IDENTITY }}
+      CONTAINER_REGISTRY_PASSWORD: ${{ secrets.CONTAINER_REGISTRY_PASSWORD }}
+      CONTAINER_REGISTRY_SERVER: ${{ vars.CONTAINER_REGISTRY_SERVER }}
+      CONTAINER_REGISTRY_USERNAME: ${{ vars.CONTAINER_REGISTRY_USERNAME }}
+      IMAGE_REF: ${{ needs.publish.outputs.image_ref }}
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v5
+
+      - name: Validate app deployment configuration
+        run: |
+          test -n "$AZURE_CLIENT_ID" || { echo "Missing environment variable AZURE_CLIENT_ID"; exit 1; }
+          test -n "$AZURE_TENANT_ID" || { echo "Missing environment variable AZURE_TENANT_ID"; exit 1; }
+          test -n "$AZURE_SUBSCRIPTION_ID" || { echo "Missing environment variable AZURE_SUBSCRIPTION_ID"; exit 1; }
+          test -n "$AZURE_RESOURCE_GROUP" || { echo "Missing environment variable AZURE_RESOURCE_GROUP"; exit 1; }
+          test -n "$AZURE_CONTAINER_APP_NAME" || { echo "Missing environment variable AZURE_CONTAINER_APP_NAME"; exit 1; }
+
+      - name: Log in to Azure with OIDC
+        uses: azure/login@v2
+        with:
+          client-id: ${{ env.AZURE_CLIENT_ID }}
+          tenant-id: ${{ env.AZURE_TENANT_ID }}
+          subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Configure registry access when required
+        run: bash ./scripts/azure/postprovision.sh
+
+      - name: Deploy immutable release image
+        run: |
+          az containerapp update \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --name "$AZURE_CONTAINER_APP_NAME" \
+            --image "$IMAGE_REF" \
+            --output none
+
+      - name: Discover deployed app endpoint
+        id: discover
+        run: |
+          CONTAINER_APP_FQDN="$(
+            az containerapp show \
+              --resource-group "$AZURE_RESOURCE_GROUP" \
+              --name "$AZURE_CONTAINER_APP_NAME" \
+              --query properties.configuration.ingress.fqdn \
+              --output tsv
+          )"
+          test -n "$CONTAINER_APP_FQDN" || { echo "Missing container app FQDN"; exit 1; }
+          echo "container_app_fqdn=$CONTAINER_APP_FQDN" >> "$GITHUB_OUTPUT"
+
+  smoke_test:
+    name: Smoke Test Deployed Release
+    runs-on: ubuntu-latest
+    needs: deploy_app
+    if: ${{ always() && !cancelled() && !github.event.release.prerelease && needs.deploy_app.result == 'success' }}
+    steps:
+      - name: Validate smoke test target
+        env:
+          CONTAINER_APP_FQDN: ${{ needs.deploy_app.outputs.container_app_fqdn }}
+        run: test -n "$CONTAINER_APP_FQDN" || { echo "Missing deployment output container_app_fqdn"; exit 1; }
+
+      - name: Smoke test deployed release
+        env:
+          CONTAINER_APP_FQDN: ${{ needs.deploy_app.outputs.container_app_fqdn }}
+        run: curl --fail --silent --show-error --max-time 30 "https://${CONTAINER_APP_FQDN}/health"

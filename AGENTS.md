@@ -5,8 +5,8 @@
 - For this repository, always consult `spec-driven-workflow` first before starting any non-trivial product, UI, route, API, workflow, or behavior change.
 - Treat direct implementation requests as subject to the same rule. Review the skill before substantial work even when the user does not explicitly mention spec or plan artifacts.
 - After `spec-driven-workflow`, add the implementation skill that matches the change:
-  - `enforce-react-spa-architecture` for app-code and UI work
-  - `azure-spa-clean-architecture-bootstrap` for Azure platform and deployment work
+  - `react-router-prisma-app-architecture` for app-code and UI work
+  - `azure-app-platform-delivery` for Azure hosting, Azure SQL, secretless config, IaC, and GitHub release delivery — always install after `react-router-prisma-app-architecture`
 
 ## Spec Workflow
 
