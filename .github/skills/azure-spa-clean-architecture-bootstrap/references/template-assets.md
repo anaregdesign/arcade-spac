@@ -26,15 +26,16 @@ Use this reference when copying files from `assets/templates/` into a target rep
 - `assets/templates/infra/main.bicep`
 
 `assets/templates/infra/main.bicep` is the shared web-runtime baseline template. Extend it with Azure SQL resources only when the target app actually needs relational persistence.
-It keeps the Container App ingress public by default and includes Container Apps VNet integration so the hosted runtime can still reach private endpoints. Extend it with Azure SQL server, database, and `Private Endpoint` resources when the target app needs relational persistence. Add a Container Apps managed environment `Private Endpoint` only when the app ingress must also be private-only.
+It keeps the Container App ingress public by default and includes Container Apps VNet integration so the hosted runtime can still reach private endpoints. Extend it with Azure SQL server, database, `Microsoft Entra ID` admin setup, and `Private Endpoint` resources when the target app needs relational persistence. Use App Configuration and Key Vault private endpoints for hosted environments, and add a Container Apps managed environment `Private Endpoint` only when the app ingress must also be private-only.
 
 ## Adoption Flow
 
 1. Copy only the files needed for the target repository.
 2. Replace placeholder tokens in the copied files, not in the shared asset files.
 3. Extend the copied files with Azure App Configuration and Key Vault bootstrap when the target repo follows the secretless config path.
-4. Align the copied files with the target repo naming, package manager, and deploy topology.
-5. Validate each copied file in the target repo before pushing.
+4. Prefer managed identity wiring for ACR pulls if the copied repo uses ACR.
+5. Align the copied files with the target repo naming, package manager, and deploy topology.
+6. Validate each copied file in the target repo before pushing.
 
 ## Validation Expectations
 

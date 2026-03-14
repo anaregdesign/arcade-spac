@@ -6,6 +6,7 @@ Use this reference when the app needs Azure SQL Database, `Managed Identity` acc
 
 - Use SQLite only for local development. Use Azure SQL Database for any Azure-hosted environment that persists relational data.
 - Set a Microsoft Entra admin on the Azure SQL logical server.
+- Prefer `Microsoft Entra ID` only authentication for hosted environments. Treat any SQL login/password path as bootstrap-only or break-glass.
 - Create database users from external provider identities.
 - Grant runtime identities only the least privilege they need.
 - Reserve elevated roles for migration or break-glass identities.
@@ -35,6 +36,7 @@ Use this reference when the app needs Azure SQL Database, `Managed Identity` acc
 
 - Verify no Azure-hosted environment still points at SQLite.
 - Verify the deployed runtime Managed Identity can reach Azure SQL and only the intended database roles are granted.
+- Verify the hosted Azure SQL server has the intended `Microsoft Entra ID` admin and `Entra-only` authentication setting.
 - Verify the Azure SQL server FQDN resolves to the private endpoint IP from the hosted network path.
 - Verify Azure SQL public network access is disabled and the private DNS zone is linked to the intended VNet.
 - Verify migrations and critical query paths against Azure SQL Database, not only against local SQLite.
