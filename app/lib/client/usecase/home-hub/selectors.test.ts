@@ -73,6 +73,15 @@ describe("home-hub selectors", () => {
     },
     {
       currentRank: null,
+      key: "position-lock",
+      metricValue: "1:03",
+      name: "Position Lock",
+      playCount: 4,
+      recommendationText: "Spatial memory sprint",
+      shortDescription: "Place each token back onto its remembered final cell",
+    },
+    {
+      currentRank: null,
       key: "sequence-point",
       metricValue: "0:54",
       name: "Sequence Point",
@@ -163,6 +172,15 @@ describe("home-hub selectors", () => {
       },
       {
         ...games[7],
+        previewAlt: "Position Lock board with labeled tokens returning to remembered final cells",
+        previewObjectPosition: undefined,
+        previewSrc: "/images/games/position-lock-preview.svg",
+        recordLabel: "Best 1:03",
+        runLabel: "4 runs",
+        statusLabel: "Played",
+      },
+      {
+        ...games[8],
         previewAlt: "Sequence Point grid showing a fast memory sequence across lit points",
         previewObjectPosition: undefined,
         previewSrc: "/images/games/sequence-point-preview.svg",
@@ -171,7 +189,7 @@ describe("home-hub selectors", () => {
         statusLabel: "Played",
       },
       {
-        ...games[8],
+        ...games[9],
         previewAlt: "Hue Drift gradient row with a missing color step and answer swatches",
         previewObjectPosition: undefined,
         previewSrc: "/images/games/hue-drift-preview.svg",

@@ -11,6 +11,7 @@ import { OrbitTapGameWorkspace } from "./orbit-tap/OrbitTapGameWorkspace";
 import { PathRecallGameWorkspace } from "./path-recall/PathRecallGameWorkspace";
 import { PairFlipGameWorkspace } from "./pair-flip/PairFlipGameWorkspace";
 import { PatternEchoGameWorkspace } from "./pattern-echo/PatternEchoGameWorkspace";
+import { PositionLockGameWorkspace } from "./position-lock/PositionLockGameWorkspace";
 import { PrecisionDropGameWorkspace } from "./precision-drop/PrecisionDropGameWorkspace";
 import { PulseCountGameWorkspace } from "./pulse-count/PulseCountGameWorkspace";
 import { QuickSumGameWorkspace } from "./quick-sum/QuickSumGameWorkspace";
@@ -158,6 +159,35 @@ const gameDefinitionByKey: Record<string, GameDefinition> = {
       previewSrc: "/images/games/rotate-align-preview.svg",
     },
     workspace: RotateAlignGameWorkspace,
+  },
+  "position-lock": {
+    instructions: {
+      summary: "Watch the tokens settle onto the board, then place each label back onto its remembered final cell before the timer expires.",
+      sections: [
+        {
+          title: "Run flow",
+          items: [
+            { label: "Start run", detail: "Choose a difficulty and press Start run to open the first watch phase." },
+            { label: "Watch then place", detail: "Each round shows the moving tokens briefly, then blanks the board and unlocks the token tray for placement." },
+            { label: "Round review", detail: "After every token is placed, the board highlights exact, near, and missed placements before the next round begins." },
+          ],
+        },
+        {
+          title: "Board controls",
+          items: [
+            { label: "Select one token", detail: "Tap a token in the tray to arm it for placement." },
+            { label: "Place carefully", detail: "Tap the remembered board cell for that token. Occupied cells do not accept another token." },
+            { label: "Read the review", detail: "Exact placements glow green, near placements glow amber, and every non-exact placement increases the support metric." },
+          ],
+        },
+      ],
+      title: "Position Lock controls",
+    },
+    presentation: {
+      previewAlt: "Position Lock board with labeled tokens returning to remembered final cells",
+      previewSrc: "/images/games/position-lock-preview.svg",
+    },
+    workspace: PositionLockGameWorkspace,
   },
   "precision-drop": {
     instructions: {

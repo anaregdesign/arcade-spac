@@ -2,30 +2,31 @@
 
 ## Links
 - Program spec: /docs/spec/game-catalog-50-expansion-program.md
-- Current game spec: /docs/spec/games/position-lock.md
+- Current game spec: /docs/spec/games/tap-safe.md
 
 ## Section 1 - Catalog Recovery Audit
 - [x] Confirm the durable game-spec inventory covers 50 game specs plus 2 meta specs (`two-minute-expansion-wave`, expansion program support docs).
-- [x] Confirm the current app implementation exposes 27 playable games in `supportedGames` and `game-workspace-registry`.
+- [x] Confirm the current app implementation exposes 28 playable games in `supportedGames` and `game-workspace-registry`.
 - [x] Choose the next reviewable slice as one low-risk unimplemented game that fits the current shared result and UI architecture.
 
-## Section 2 - Current Slice: Position Lock
+## Section 2 - Current Slice: Tap Safe
 ### Subsection 2.1 - Spec and planning alignment
-- [ ] Rewrite `/docs/spec/games/position-lock.md` so the user-visible behavior, result metrics, and touch-safe placement UI are explicit.
+- [ ] Rewrite `/docs/spec/games/tap-safe.md` so the user-visible behavior, result metrics, and touch-safe hazard readability are explicit.
 - [x] Keep this active plan focused on the current slice and append new implementation tasks only when they become concrete.
 
 ### Subsection 2.2 - App integration
-- [ ] Add `Position Lock` to the game catalog metadata and Home preview mapping.
+- [ ] Add `Tap Safe` to the game catalog metadata and Home preview mapping.
 - [ ] Add the game registry entry, help content, and preview asset.
-- [ ] Implement the `Position Lock` session and workspace Hook under `app/lib/client/usecase/game-workspace/`.
-- [ ] Implement the `Position Lock` workspace Component and CSS under `app/components/games/position-lock/`.
+- [ ] Implement the `Tap Safe` session and workspace Hook under `app/lib/client/usecase/game-workspace/`.
+- [ ] Implement the `Tap Safe` workspace Component and CSS under `app/components/games/tap-safe/`.
+- [ ] Add stable wave selectors so Playwright verification can distinguish safe targets from hazards without changing the visible UI.
+- [ ] Align safe and hazard differentiation so the board does not rely on color alone.
 - [ ] Update the touched catalog and Home selector tests for the new game metadata.
-- [ ] Align the moving token readability and placement affordance before Playwright signoff.
 
 ### Subsection 2.3 - Verification and slice closeout
 - [ ] Run targeted automated verification for the touched catalog and gameplay modules.
-- [ ] Run Playwright UI verification for `/games/position-lock` and the Home card.
-- [ ] Commit the `Position Lock` slice in one reviewable unit.
+- [ ] Run Playwright UI verification for `/games/tap-safe` and the Home card.
+- [ ] Commit the `Tap Safe` slice in one reviewable unit.
 
 ## Section 3 - Named Backlog
 - [x] `Spot Change` - implementation, automated verification, Playwright UI verification, and commit are complete.
@@ -48,12 +49,12 @@
 - [ ] `Merge Climb` - keep the game unchecked until implementation, automated verification, and Playwright UI verification are complete.
 - [ ] `Obstacle Stream` - keep the game unchecked until implementation, automated verification, and Playwright UI verification are complete.
 - [ ] `Phase Lock` - keep the game unchecked until implementation, automated verification, and Playwright UI verification are complete.
-- [ ] `Position Lock` - keep the game unchecked until implementation, automated verification, Playwright UI verification, and commit are complete.
+- [x] `Position Lock` - implementation, automated verification, Playwright UI verification, and commit are complete.
 - [x] `Rotate Align` - implementation, automated verification, Playwright UI verification, and commit are complete.
 - [x] `Sequence Point` - implementation, automated verification, Playwright UI verification, and commit are complete.
 - [ ] `Spinner Aim` - keep the game unchecked until implementation, automated verification, and Playwright UI verification are complete.
 - [ ] `Sync Pulse` - keep the game unchecked until implementation, automated verification, and Playwright UI verification are complete.
-- [ ] `Tap Safe` - keep the game unchecked until implementation, automated verification, and Playwright UI verification are complete.
+- [ ] `Tap Safe` - keep the game unchecked until implementation, automated verification, Playwright UI verification, and commit are complete.
 - [ ] `Tempo Hold` - keep the game unchecked until implementation, automated verification, and Playwright UI verification are complete.
 - [ ] `Tempo Weave` - keep the game unchecked until implementation, automated verification, and Playwright UI verification are complete.
 - [ ] `Tile Instant` - keep the game unchecked until implementation, automated verification, and Playwright UI verification are complete.

@@ -30,6 +30,10 @@ const previewByGameKey: Record<string, Pick<HomeGameCard, "previewAlt" | "previe
     previewAlt: "Flip Match target and live card boards linked by a horizontal flip rule",
     previewSrc: "/images/games/flip-match-preview.svg",
   },
+  "position-lock": {
+    previewAlt: "Position Lock board with labeled tokens returning to remembered final cells",
+    previewSrc: "/images/games/position-lock-preview.svg",
+  },
   "rotate-align": {
     previewAlt: "Rotate Align path board with rotatable route tiles between start and end",
     previewSrc: "/images/games/rotate-align-preview.svg",
