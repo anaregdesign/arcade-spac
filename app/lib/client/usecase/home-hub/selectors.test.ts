@@ -82,6 +82,15 @@ describe("home-hub selectors", () => {
     },
     {
       currentRank: null,
+      key: "phase-lock",
+      metricValue: "0:57",
+      name: "Phase Lock",
+      playCount: 3,
+      recommendationText: "Sequential timing puzzle",
+      shortDescription: "Lock each rotating wheel while its marker sits inside the target band",
+    },
+    {
+      currentRank: null,
       key: "tap-safe",
       metricValue: "0:44",
       name: "Tap Safe",
@@ -199,6 +208,15 @@ describe("home-hub selectors", () => {
       },
       {
         ...games[8],
+        previewAlt: "Phase Lock wheel stack with rotating markers and glowing target bands",
+        previewObjectPosition: undefined,
+        previewSrc: "/images/games/phase-lock-preview.svg",
+        recordLabel: "Best 0:57",
+        runLabel: "3 runs",
+        statusLabel: "Played",
+      },
+      {
+        ...games[9],
         previewAlt: "Tap Safe wave board mixing safe targets and hazard objects with short-lived badges",
         previewObjectPosition: undefined,
         previewSrc: "/images/games/tap-safe-preview.svg",
@@ -207,7 +225,7 @@ describe("home-hub selectors", () => {
         statusLabel: "Played",
       },
       {
-        ...games[9],
+        ...games[10],
         previewAlt: "Spinner Aim ring with a rotating launcher, target arc, and hazard arc",
         previewObjectPosition: undefined,
         previewSrc: "/images/games/spinner-aim-preview.svg",
@@ -216,7 +234,7 @@ describe("home-hub selectors", () => {
         statusLabel: "Played",
       },
       {
-        ...games[10],
+        ...games[11],
         previewAlt: "Sequence Point grid showing a fast memory sequence across lit points",
         previewObjectPosition: undefined,
         previewSrc: "/images/games/sequence-point-preview.svg",
@@ -225,7 +243,7 @@ describe("home-hub selectors", () => {
         statusLabel: "Played",
       },
       {
-        ...games[11],
+        ...games[12],
         previewAlt: "Hue Drift gradient row with a missing color step and answer swatches",
         previewObjectPosition: undefined,
         previewSrc: "/images/games/hue-drift-preview.svg",

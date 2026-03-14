@@ -11,6 +11,7 @@ import { OrbitTapGameWorkspace } from "./orbit-tap/OrbitTapGameWorkspace";
 import { PathRecallGameWorkspace } from "./path-recall/PathRecallGameWorkspace";
 import { PairFlipGameWorkspace } from "./pair-flip/PairFlipGameWorkspace";
 import { PatternEchoGameWorkspace } from "./pattern-echo/PatternEchoGameWorkspace";
+import { PhaseLockGameWorkspace } from "./phase-lock/PhaseLockGameWorkspace";
 import { PositionLockGameWorkspace } from "./position-lock/PositionLockGameWorkspace";
 import { PrecisionDropGameWorkspace } from "./precision-drop/PrecisionDropGameWorkspace";
 import { PulseCountGameWorkspace } from "./pulse-count/PulseCountGameWorkspace";
@@ -248,6 +249,35 @@ const gameDefinitionByKey: Record<string, GameDefinition> = {
       previewSrc: "/images/games/spinner-aim-preview.svg",
     },
     workspace: SpinnerAimGameWorkspace,
+  },
+  "phase-lock": {
+    instructions: {
+      summary: "Watch the rotating wheel stack, lock the highlighted wheel only inside its target band, and finish the full sequence before the timer expires.",
+      sections: [
+        {
+          title: "Run flow",
+          items: [
+            { label: "Start run", detail: "Choose a difficulty and press Start run to arm the full wheel stack." },
+            { label: "Lock in order", detail: "Only the highlighted wheel is active. A clean lock advances to the next wheel immediately." },
+            { label: "Read misses", detail: "Mistimed locks add timing errors but do not stop the run, so you can keep trying until the timer expires." },
+          ],
+        },
+        {
+          title: "Board controls",
+          items: [
+            { label: "Read the target band", detail: "Each wheel shows a green target band near the rim. The active wheel must be locked while its marker crosses that band." },
+            { label: "Use one trigger", detail: "Press Lock current wheel once to freeze the highlighted wheel at its current phase." },
+            { label: "Stay mobile-safe", detail: "The trigger button stays large and clear on desktop and touch devices." },
+          ],
+        },
+      ],
+      title: "Phase Lock controls",
+    },
+    presentation: {
+      previewAlt: "Phase Lock wheel stack with rotating markers and glowing target bands",
+      previewSrc: "/images/games/phase-lock-preview.svg",
+    },
+    workspace: PhaseLockGameWorkspace,
   },
   "precision-drop": {
     instructions: {

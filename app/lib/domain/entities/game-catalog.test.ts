@@ -41,6 +41,7 @@ describe("game-catalog", () => {
     expect(resolveGameKey("HUE_DRIFT")).toBe("hue-drift");
     expect(resolveGameKey("COLOR_CENSUS")).toBe("color-census");
     expect(resolveGameKey("FLIP_MATCH")).toBe("flip-match");
+    expect(resolveGameKey("PHASE_LOCK")).toBe("phase-lock");
     expect(resolveGameKey("POSITION_LOCK")).toBe("position-lock");
     expect(resolveGameKey("ROTATE_ALIGN")).toBe("rotate-align");
     expect(resolveGameKey("SPINNER_AIM")).toBe("spinner-aim");
@@ -50,6 +51,7 @@ describe("game-catalog", () => {
     expect(toStoredGameKey("color-sweep")).toBe("COLOR_SWEEP");
     expect(toStoredGameKey("color-census")).toBe("COLOR_CENSUS");
     expect(toStoredGameKey("flip-match")).toBe("FLIP_MATCH");
+    expect(toStoredGameKey("phase-lock")).toBe("PHASE_LOCK");
     expect(toStoredGameKey("position-lock")).toBe("POSITION_LOCK");
     expect(toStoredGameKey("rotate-align")).toBe("ROTATE_ALIGN");
     expect(toStoredGameKey("spinner-aim")).toBe("SPINNER_AIM");
@@ -69,6 +71,7 @@ describe("game-catalog", () => {
     expect(toRouteGameKey("HUE_DRIFT")).toBe("hue-drift");
     expect(toRouteGameKey("COLOR_CENSUS")).toBe("color-census");
     expect(toRouteGameKey("FLIP_MATCH")).toBe("flip-match");
+    expect(toRouteGameKey("PHASE_LOCK")).toBe("phase-lock");
     expect(toRouteGameKey("POSITION_LOCK")).toBe("position-lock");
     expect(toRouteGameKey("ROTATE_ALIGN")).toBe("rotate-align");
     expect(toRouteGameKey("SPINNER_AIM")).toBe("spinner-aim");
@@ -81,6 +84,7 @@ describe("game-catalog", () => {
     expect(getGameDefinition("ORBIT_TAP")?.name).toBe("Orbit Tap");
     expect(getGameDefinition("COLOR_CENSUS")?.name).toBe("Color Census");
     expect(getGameDefinition("FLIP_MATCH")?.name).toBe("Flip Match");
+    expect(getGameDefinition("PHASE_LOCK")?.name).toBe("Phase Lock");
     expect(getGameDefinition("POSITION_LOCK")?.name).toBe("Position Lock");
     expect(getGameDefinition("ROTATE_ALIGN")?.name).toBe("Rotate Align");
     expect(getGameDefinition("SPINNER_AIM")?.name).toBe("Spinner Aim");
@@ -97,6 +101,7 @@ describe("game-catalog", () => {
     expect(getGameHomeTags("ORBIT_TAP")).toEqual(["timing", "fast-start"]);
     expect(getGameHomeTags("COLOR_CENSUS")).toEqual(["memory", "perception"]);
     expect(getGameHomeTags("FLIP_MATCH")).toEqual(["logic", "spatial"]);
+    expect(getGameHomeTags("PHASE_LOCK")).toEqual(["timing", "spatial"]);
     expect(getGameHomeTags("POSITION_LOCK")).toEqual(["memory", "spatial"]);
     expect(getGameHomeTags("ROTATE_ALIGN")).toEqual(["logic", "spatial"]);
     expect(getGameHomeTags("SPINNER_AIM")).toEqual(["timing", "reflex"]);
@@ -109,6 +114,7 @@ describe("game-catalog", () => {
     expect(getGameSuccessfulResultLabel("DROP_LINE")).toBe("hit");
     expect(getGameSuccessfulResultLabel("COLOR_CENSUS")).toBe("clear");
     expect(getGameSuccessfulResultLabel("FLIP_MATCH")).toBe("clear");
+    expect(getGameSuccessfulResultLabel("PHASE_LOCK")).toBe("clear");
     expect(getGameSuccessfulResultLabel("POSITION_LOCK")).toBe("clear");
     expect(getGameSuccessfulResultLabel("ROTATE_ALIGN")).toBe("clear");
     expect(getGameSuccessfulResultLabel("SPINNER_AIM")).toBe("clear");

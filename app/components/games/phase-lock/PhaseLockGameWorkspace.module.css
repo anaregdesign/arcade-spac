@@ -1,0 +1,222 @@
+.phase-lock-board-card {
+  min-height: 28rem;
+}
+
+.phase-lock-shell {
+  min-height: 28rem;
+  display: grid;
+  gap: 1rem;
+}
+
+.phase-lock-copy {
+  display: grid;
+  gap: 0.35rem;
+  justify-items: center;
+  text-align: center;
+  max-width: 38rem;
+  margin-inline: auto;
+}
+
+.phase-lock-copy strong {
+  color: #f8fafc;
+  font-size: 1.08rem;
+}
+
+.phase-lock-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.phase-lock-legend-target,
+.phase-lock-legend-active,
+.phase-lock-legend-locked {
+  padding: 0.48rem 0.8rem;
+  border-radius: 999px;
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+.phase-lock-legend-target {
+  background: rgba(34, 197, 94, 0.18);
+  color: #86efac;
+}
+
+.phase-lock-legend-active {
+  background: rgba(56, 189, 248, 0.16);
+  color: #7dd3fc;
+}
+
+.phase-lock-legend-locked {
+  background: rgba(168, 85, 247, 0.14);
+  color: #d8b4fe;
+}
+
+.phase-lock-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+}
+
+.phase-lock-wheel-card {
+  display: grid;
+  gap: 0.75rem;
+  padding: 1rem;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 1.25rem;
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.94), rgba(15, 23, 42, 0.84));
+}
+
+.phase-lock-wheel-card-active {
+  border-color: rgba(56, 189, 248, 0.42);
+  box-shadow: 0 0 0 0.16rem rgba(56, 189, 248, 0.12);
+}
+
+.phase-lock-wheel-card-locked {
+  border-color: rgba(168, 85, 247, 0.44);
+  background: linear-gradient(180deg, rgba(67, 56, 202, 0.18), rgba(15, 23, 42, 0.88));
+}
+
+.phase-lock-wheel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  color: #cbd5e1;
+  font-size: 0.84rem;
+}
+
+.phase-lock-wheel-header strong {
+  color: #f8fafc;
+  font-size: 0.96rem;
+}
+
+.phase-lock-wheel-stage {
+  position: relative;
+  min-height: 10rem;
+}
+
+.phase-lock-wheel-ring,
+.phase-lock-wheel-band {
+  position: absolute;
+  inset: 50%;
+  width: 8.4rem;
+  height: 8.4rem;
+}
+
+.phase-lock-wheel-ring {
+  transform: translate(-50%, -50%);
+  border: 0.36rem solid rgba(148, 163, 184, 0.34);
+  border-radius: 999px;
+}
+
+.phase-lock-wheel-band::before {
+  content: "";
+  position: absolute;
+  left: calc(50% - 1rem);
+  top: -0.55rem;
+  width: 2rem;
+  height: 1.2rem;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #86efac, #22c55e);
+  box-shadow: 0 0 0.8rem rgba(34, 197, 94, 0.42);
+}
+
+.phase-lock-wheel-marker {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 0.4rem;
+  height: 4rem;
+  transform-origin: center bottom;
+}
+
+.phase-lock-wheel-marker::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 0.32rem;
+  height: 100%;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: linear-gradient(180deg, #f8fafc, #38bdf8 70%, rgba(56, 189, 248, 0.08));
+}
+
+.phase-lock-wheel-marker-tip {
+  position: absolute;
+  left: 50%;
+  top: -0.05rem;
+  width: 0.9rem;
+  height: 0.9rem;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: radial-gradient(circle at 35% 35%, #f8fafc, #38bdf8 72%, #0f766e);
+  box-shadow: 0 0 0.6rem rgba(56, 189, 248, 0.52);
+}
+
+.phase-lock-wheel-hub {
+  position: absolute;
+  inset: 50%;
+  width: 2.4rem;
+  height: 2.4rem;
+  transform: translate(-50%, -50%);
+  border-radius: 999px;
+  background: radial-gradient(circle at 35% 35%, rgba(248, 250, 252, 0.88), rgba(15, 23, 42, 0.96));
+}
+
+.phase-lock-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  width: min(100%, 24rem);
+  margin-inline: auto;
+  padding: 0.95rem 1.15rem;
+  border: 1px solid rgba(56, 189, 248, 0.26);
+  border-radius: 1rem;
+  background: linear-gradient(180deg, rgba(8, 47, 73, 0.94), rgba(15, 23, 42, 0.94));
+  color: #e0f2fe;
+  cursor: pointer;
+  transition: transform 120ms ease, border-color 120ms ease;
+}
+
+.phase-lock-trigger:hover:enabled {
+  transform: translateY(-1px);
+  border-color: rgba(56, 189, 248, 0.44);
+}
+
+.phase-lock-trigger:disabled {
+  cursor: default;
+  opacity: 0.8;
+}
+
+.phase-lock-trigger-label {
+  font-size: 0.94rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.phase-lock-trigger-detail {
+  color: #7dd3fc;
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+@media (max-width: 640px) {
+  .phase-lock-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .phase-lock-wheel-ring,
+  .phase-lock-wheel-band {
+    width: 7rem;
+    height: 7rem;
+  }
+
+  .phase-lock-wheel-marker {
+    height: 3.35rem;
+  }
+}
