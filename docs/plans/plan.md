@@ -18,10 +18,10 @@
 - [ ] Compress side insight panels on graph, timing, and zone-planning games so auxiliary copy does not outrun the playable board on either mobile or desktop.
 - [ ] Normalize game title / description blocks into one compact shared gameplay heading and drop redundant explanatory copy on mobile where the help affordance already covers it.
 - [ ] Move redundant board-level rule copy into HowToPlay and keep only live gameplay cue text in the workspace itself.
-- [ ] Add a shared visual cue pattern that prefers stable icon / color / shape signals over prose-heavy instructions for instruction-dense games.
+- [x] Add a shared visual cue pattern that prefers stable icon / color / shape signals over prose-heavy instructions for instruction-dense games.
 - [ ] Evaluate any remaining instruction-heavy outliers after copy reduction and record whether rule simplification is actually necessary.
 - [ ] Classify the 50 game workspaces into shared gameplay layout archetypes and record which games map to each archetype.
-- [ ] Add shared gameplay layout variants under `app/components/gameplay/` so similar games can reuse the same structural mobile / desktop layout rules without being confused with game-specific Components.
+- [x] Add shared gameplay layout variants under `app/components/gameplay/` so similar games can reuse the same structural mobile / desktop layout rules without being confused with game-specific Components.
 - [x] Relocate legacy cross-game workspace primitives from `app/components/games/shared/` into `app/components/gameplay/workspace/` so shared scaffolding no longer reads like a game-specific feature folder.
 - [ ] Migrate touched game workspaces away from one-off structural CSS and onto the new shared layout variants where the archetype matches.
 
