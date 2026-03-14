@@ -1,0 +1,4 @@
+interface:
+  display_name: "Copilot Azure Cloud Access"
+  short_description: "Own GitHub Copilot coding agent OIDC, Azure MCP, and Azure read access"
+  default_prompt: "Use $copilot-azure-cloud-access when the work is primarily the `copilot` Environment, GitHub Copilot coding agent Azure access, Copilot OIDC, federated credentials, User Assigned Managed Identity, Azure MCP, `azd coding-agent config`, or Reader-style Azure access for Copilot. Keep the Copilot identity separate from the production deploy identity."

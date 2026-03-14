@@ -76,6 +76,7 @@ Use only the levels the work actually needs.
 - Replace a coarse checkbox with smaller tasks when more detail becomes available and the finer breakdown improves execution clarity.
 - Rewrite the plan when the execution path changes instead of appending stale history.
 - If technical investigation reveals a better execution path, revise the plan to match the current best approach instead of preserving the original guess.
+- If the request or accepted spec exposes technical infeasibility, unresolved high-risk technical assumptions, contradiction, ambiguity, or redundancy, propose a corrected version to the instruction giver before locking in the affected plan slice.
 - Update the spec only when accepted user-visible behavior changes; technical replanning by itself belongs in `/docs/plans/plan.md`.
 
 ## Completion Rule

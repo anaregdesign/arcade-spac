@@ -2,20 +2,20 @@
 
 This repository vendors local skills under `.github/skills/`:
 
-- `enforce-react-spa-architecture`
 - `react-router-prisma-app-architecture`
-- `azure-spa-clean-architecture-bootstrap`
 - `azure-app-platform-delivery`
+- `entra-user-auth-registration`
+- `copilot-azure-cloud-access`
 - `spec-driven-workflow`
 
 Use them deliberately and combine them by concern.
 
 ## Skill Roles
 
-- Treat `enforce-react-spa-architecture` as the base app-code architecture skill for React Router + Prisma application work.
-- Treat `react-router-prisma-app-architecture` as the preferred app-code architecture skill for React Router + Prisma application work; it supersedes `enforce-react-spa-architecture` for new work.
-- Treat `azure-spa-clean-architecture-bootstrap` as the Azure extension that depends on `enforce-react-spa-architecture` for Azure hosting, identity, secretless configuration, IaC, and release automation guidance.
+- Treat `react-router-prisma-app-architecture` as the app-code architecture skill for React Router + Prisma application work.
 - Treat `azure-app-platform-delivery` as the preferred Azure extension for Azure hosting, Azure SQL, secretless configuration via App Configuration and Key Vault, IaC, and GitHub release delivery; install it after `react-router-prisma-app-architecture`.
+- Treat `entra-user-auth-registration` as the auth-specific extension for end-user Microsoft Entra ID auth contract design, redirect URIs, callback paths, and app-registration changes; add it only when the task changes end-user auth contract or app registration.
+- Treat `copilot-azure-cloud-access` as the Copilot cloud-access extension for GitHub Copilot coding agent Azure access, Copilot Environment setup, Azure MCP wiring, and Copilot OIDC access; add it only when the task changes the Copilot Environment, Azure MCP, or Copilot OIDC access.
 - Treat `spec-driven-workflow` as an independent spec and planning skill.
 
 ## Default Invocation Order
@@ -23,7 +23,9 @@ Use them deliberately and combine them by concern.
 - For non-trivial application-development work, call `spec-driven-workflow` first even when the user asks directly for implementation.
 - After `spec-driven-workflow`, add `react-router-prisma-app-architecture` when the task changes React Router + Prisma app-code architecture, route/module placement, UI boundaries, client/server/domain boundaries, or verification.
 - Add `azure-app-platform-delivery` only when the task also changes Azure hosting, Azure SQL, secretless config, infrastructure as code, deployment topology, or release automation; always install it after `react-router-prisma-app-architecture`.
-- When more than one skill is needed, combine them in this order by default: `spec-driven-workflow`, `react-router-prisma-app-architecture`, then `azure-app-platform-delivery` for Azure-specific deltas only.
+- Add `entra-user-auth-registration` only when the task changes end-user auth contract or app registration.
+- Add `copilot-azure-cloud-access` only when the task changes the Copilot Environment, Azure MCP, or Copilot OIDC access.
+- When more than one skill is needed, combine them in this order by default: `spec-driven-workflow`, `react-router-prisma-app-architecture`, `azure-app-platform-delivery`, `entra-user-auth-registration`, then `copilot-azure-cloud-access` for the matching deltas only.
 
 ## Spec Workflow Expectations
 
@@ -34,10 +36,10 @@ Use them deliberately and combine them by concern.
 
 ## Local Skill Layout
 
-- Base app-code architecture skill: `.github/skills/enforce-react-spa-architecture/`
-- Preferred app-code architecture skill: `.github/skills/react-router-prisma-app-architecture/`
-- Legacy Azure extension skill: `.github/skills/azure-spa-clean-architecture-bootstrap/`
+- App-code architecture skill: `.github/skills/react-router-prisma-app-architecture/`
 - Preferred Azure extension skill: `.github/skills/azure-app-platform-delivery/`
+- Entra auth extension skill: `.github/skills/entra-user-auth-registration/`
+- Copilot cloud-access extension skill: `.github/skills/copilot-azure-cloud-access/`
 - Independent spec and planning skill: `.github/skills/spec-driven-workflow/`
 
 Keep sibling skill directories stable so relative links (e.g. `../react-router-prisma-app-architecture/`) remain valid.

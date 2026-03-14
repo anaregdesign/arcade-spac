@@ -9,7 +9,7 @@ description: "Own the spec-first planning workflow for application and feature d
 
 Use this skill to turn a development request into a spec-first, plan-driven workflow. For nearly any non-trivial application-development request, use this skill first by default, even when the user asks directly for implementation and does not mention `/docs/spec` or `/docs/plans/plan.md`.
 Capture the user-visible requirement in `/docs/spec/` first, then create a temporary execution tracker in `/docs/plans/plan.md` and keep the spec and plan synchronized until implementation is complete.
-Keep the requirements document focused on what the user sees, needs, and accepts. Keep `/docs/plans/plan.md` focused on execution state, sequencing, and checkbox progress. Archive `/docs/plans/plan.md` as `/docs/plans/plan.YYYYMMDD-HHMMSS.md` once every tracked checkbox is complete so the active execution tracker is cleared without losing the execution record.
+Keep the requirements document focused on what the user sees, needs, and accepts. Treat `/docs/spec/` as the canonical description of the desired end state, not as a revision ledger, so it contains only the current ideal requirement and never a spec change history. Keep `/docs/plans/plan.md` focused on execution state, sequencing, and checkbox progress. Archive `/docs/plans/plan.md` as `/docs/plans/plan.YYYYMMDD-HHMMSS.md` once every tracked checkbox is complete so the active execution tracker is cleared without losing the execution record.
 If the incoming request is overly detailed or repetitive, propose a higher-level goal framing, show the preserved constraints, and ask the instruction giver to review that reframing before you drive the spec and plan from it.
 This skill owns planning artifacts and shared commit-log workflow, not app architecture or cloud platform rules. Pair it with the relevant coding or hosting skill after the spec and execution path are clear.
 
@@ -23,6 +23,7 @@ This skill owns planning artifacts and shared commit-log workflow, not app archi
    - if the request is to build, bootstrap, change, refactor, or extend a non-trivial application, feature, route, UI, API, workflow, or service, start with this skill even if the user asked directly for code and did not mention spec or plan files
    - if `/docs/spec/` is empty or the relevant spec does not exist yet, start by creating the initial user-facing spec under `/docs/spec/`
    - if the incoming instruction is overly fine-grained, propose a higher-level goal framing and ask the instruction giver to review it before drafting the spec and plan
+   - if the request contains technical infeasibility, unresolved high-risk technical assumptions, contradiction, ambiguity, or redundancy, call it out explicitly and propose a corrected version to the instruction giver before relying on it
    - create or update the temporary execution tracker in `/docs/plans/plan.md`
    - choose only the hierarchy levels the work needs: a single `Section` for simple work, add `Subsection` for grouped reviewable slices, and add `Sub-subsection` only when a subsection still needs a deeper ordered breakdown
 6. During implementation:
@@ -31,7 +32,9 @@ This skill owns planning artifacts and shared commit-log workflow, not app archi
    - add new plan items when newly discovered required tasks appear during execution
    - split existing plan items into smaller reviewable tasks when the work becomes clearer
    - revise the plan when technical findings change the execution path, sequencing, or slice boundaries
-   - update the spec and plan if accepted behavior or execution sequence changes
+   - update the spec if accepted user-visible behavior changes
+   - update the plan if execution sequencing or technical approach changes
+   - rewrite the spec to reflect the latest accepted target state instead of appending spec revision history under `/docs/spec/`
 7. At completion:
    - confirm all plan checkboxes are done or intentionally removed
    - archive `/docs/plans/plan.md` as `/docs/plans/plan.YYYYMMDD-HHMMSS.md`
@@ -44,7 +47,9 @@ This skill owns planning artifacts and shared commit-log workflow, not app archi
 - If `/docs/spec/` has no relevant document for the request yet, create the initial spec before creating the main implementation.
 - Create or update `/docs/plans/plan.md` before substantial implementation so execution is tracked in one place.
 - Keep `/docs/plans/plan.md` temporary. Archive it as `/docs/plans/plan.YYYYMMDD-HHMMSS.md` when all tracked checkboxes are complete and no current execution tracking is still needed.
+- Keep `/docs/spec/` focused on the current ideal requirement only. Do not add dated change logs, revision history, or superseded requirement snapshots under `/docs/spec/`.
 - When incoming instructions are overly fine-grained or repetitive, propose a higher-level goal that preserves the user's intent and ask the instruction giver to review it before adopting it.
+- When a request or draft spec contains technical infeasibility, unresolved high-risk technical assumptions, contradiction, ambiguity, or redundancy, surface the issue explicitly and propose a corrected version to the instruction giver before relying on it.
 - Preserve hard constraints, acceptance criteria, and externally required sequencing, but do not mirror incidental micromanagement step by step.
 - Structure `/docs/plans/plan.md` as an ordered hierarchy only to the extent the work needs it:
   - use a single `Section` for simple, directly executable work
@@ -73,7 +78,9 @@ This skill owns planning artifacts and shared commit-log workflow, not app archi
 - If `/docs/spec/` exists but does not yet contain a relevant document for the request, start by creating the initial spec file.
 - Use a clear filename that ties back to the work item, typically with a stable slug.
 - Capture the request as a user-facing requirement document before writing the main implementation.
+- When updating an existing spec, rewrite it so it describes the latest accepted target behavior only, without preserving spec change history inside `/docs/spec/`.
 - If the request arrives as repeated micro-instructions, show a higher-level goal framing around the user goal, visible outcome, and real constraints, then ask the instruction giver to confirm it before you rely on it.
+- If the request or current spec has technical infeasibility, unresolved high-risk technical assumptions, contradiction, ambiguity, or redundancy, show the issue and a proposed correction to the instruction giver before finalizing the spec or plan.
 - Link the spec to `/docs/plans/plan.md` while the temporary plan exists.
 
 ### 2. Create or update `/docs/plans/plan.md`
@@ -99,13 +106,14 @@ This skill owns planning artifacts and shared commit-log workflow, not app archi
 - Revise `/docs/plans/plan.md` when technical review or implementation findings change dependencies, sequencing, or slice boundaries.
 - Record progress in coherent commits that match the current execution slice.
 - Update the spec when accepted behavior changes.
+- If implementation exposes technical infeasibility, unresolved high-risk technical assumptions, contradiction, ambiguity, or redundancy in the accepted request or spec, pause the affected slice long enough to propose a correction to the instruction giver before continuing.
 - Keep the active plan small enough to stay useful.
 
 ### 4. Finish cleanly
 
 - Confirm every plan checkbox is complete or intentionally removed.
 - Archive `/docs/plans/plan.md` as `/docs/plans/plan.YYYYMMDD-HHMMSS.md` once there is no remaining tracked work.
-- Keep the durable behavior description in `/docs/spec/`, and keep completed execution history in the archived plan file rather than in the active `/docs/plans/plan.md`.
+- Keep the durable behavior description in `/docs/spec/` limited to the latest ideal requirement, and keep completed execution history in archived plan files and git rather than in `/docs/spec/` or the active `/docs/plans/plan.md`.
 
 ## References
 

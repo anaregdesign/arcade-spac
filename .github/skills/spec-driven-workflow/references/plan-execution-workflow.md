@@ -8,6 +8,7 @@ Use this reference when executing the active plan for a development request.
 - Keep the spec link near the top of the plan.
 - Use only the hierarchy levels the work actually needs.
 - If the request was overly detailed, propose the higher-level goal you intend to use and get review on that reframing before filling in the plan tree.
+- If the request or accepted spec contains technical infeasibility, unresolved high-risk technical assumptions, contradiction, ambiguity, or redundancy, show the issue and proposed correction to the instruction giver before filling in the affected plan slice.
 - Treat `/docs/plans/plan.md` as temporary execution state, not as durable documentation.
 
 Example shape:
@@ -34,11 +35,12 @@ Example shape:
 - Revise `/docs/plans/plan.md` when technical findings change dependencies, sequencing, or slice boundaries.
 - Record progress in coherent commit units that match the current execution slice.
 - Update the spec when accepted user-visible behavior changes.
+- If implementation exposes technical infeasibility, unresolved high-risk technical assumptions, contradiction, ambiguity, or redundancy in the accepted request or spec, pause the affected slice long enough to propose a correction before continuing.
 - Keep the plan small enough to stay legible.
 
 ## 3. Finish and Clean Up
 
 - Confirm all meaningful plan checkboxes are complete.
 - Archive `/docs/plans/plan.md` as `/docs/plans/plan.YYYYMMDD-HHMMSS.md` once there is no remaining tracked work.
-- Keep the durable behavior description in `/docs/spec/`, and keep completed execution history in the archived plan file rather than in the active `/docs/plans/plan.md`.
+- Keep the durable behavior description in `/docs/spec/` limited to the latest ideal requirement, and keep completed execution history in archived plan files and git rather than in `/docs/spec/` or the active `/docs/plans/plan.md`.
 - If additional follow-up work remains after the current execution slice finishes, archive the completed plan first and then replace it with a new current `/docs/plans/plan.md` instead of keeping stale completed history in the active file.

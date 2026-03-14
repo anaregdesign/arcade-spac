@@ -1,0 +1,4 @@
+interface:
+  display_name: "Entra User Auth Registration"
+  short_description: "Own end-user Entra login contracts, redirect URIs, and app-registration updates"
+  default_prompt: "Use $entra-user-auth-registration together with $react-router-prisma-app-architecture when the work is primarily Microsoft Entra ID login, Azure AD login, Microsoft auth, redirect URIs, callback URLs, signInAudience, `web` vs `spa` registration choice, PKCE, cookie sessions, localhost login, test users, `az ad app`, `az rest`, or app-registration updates for this React Router + Prisma app. Combine it with $azure-app-platform-delivery when auth work also changes hosted runtime or release delivery."

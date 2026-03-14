@@ -1,7 +1,7 @@
 name: arcade
 
 metadata:
-  template: azure-spa-clean-architecture-bootstrap
+  template: azure-app-platform-delivery
 
 services:
   web:

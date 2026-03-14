@@ -5,13 +5,16 @@ Use this reference when writing or updating `/docs/spec/` for a development requ
 ## Goal
 
 Document the complete user-visible requirement from the user's point of view before substantial implementation starts.
+Keep `/docs/spec/` as the canonical description of the desired end state, not as a change-history log.
 If no relevant spec exists yet, start by creating the first spec document before moving on to the main implementation workflow.
 
 ## Required Characteristics
 
 - Write for people who care about the behavior, not the internal code structure.
 - Keep the primary focus on user goals, expected behavior, and acceptance criteria.
+- Keep only the current ideal requirement in the spec; rewrite superseded sections instead of preserving revision history inside `/docs/spec/`.
 - If the request arrives as overly detailed instructions, propose a higher-level goal framing and ask the instruction giver to review it before using it as the spec anchor.
+- If the request or draft spec has technical infeasibility, unresolved high-risk technical assumptions, contradiction, ambiguity, or redundancy, surface the issue and propose a corrected version to the instruction giver before treating it as final.
 - Keep implementation notes secondary and clearly separated if they are needed.
 - Update the spec if the accepted behavior changes during development.
 
@@ -64,6 +67,8 @@ If no relevant spec exists yet, start by creating the first spec document before
 - Do not start with folder layout, classes, Hook names, or schema details.
 - Do not let implementation notes replace acceptance criteria.
 - Do not let `/docs/plans/plan.md` replace the user-facing requirement document.
+- Do not add changelog sections, dated revision notes, or historical deltas under `/docs/spec/`; keep that history in git and archived plans instead.
+- Do not silently normalize technical infeasibility, unresolved high-risk technical assumptions, contradiction, ambiguity, or redundancy away inside the spec; show the issue and proposed correction to the instruction giver.
 - Do not leave the spec as a vague problem statement without concrete behavior.
 - Do not silently replace long step-by-step instructions with your own abstraction; show the proposed higher-level goal and ask for review first.
 - Do not keep stale behavior in the spec after the implementation direction changes.

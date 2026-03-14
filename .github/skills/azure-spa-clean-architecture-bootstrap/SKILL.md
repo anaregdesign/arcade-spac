@@ -1,277 +1,146 @@
 ---
 name: azure-spa-clean-architecture-bootstrap
-description: "Own Azure platform, identity, secretless config, IaC, and GitHub release and deployment automation for React Router + Prisma v7 web apps that already follow enforce-react-spa-architecture. Use when the work is primarily Azure runtime-mode selection, Microsoft Entra ID integration or Azure CLI app registration when end-user authentication is required, Azure Container Apps, local SQLite development with Azure SQL Database for hosted persistence, Azure App Configuration, Key Vault, Managed Identity, local DefaultAzureCredential setup, GitHub Actions OIDC, GHCR image release, or production deployment verification. Do not use this skill for spec, planning, or branch-and-PR workflow or for base app-code architecture rules."
+description: "Own Azure app platform and production release delivery for React Router + Prisma web apps. Use when the request mentions Azure Container Apps, Azure SQL Database, App Configuration, Key Vault, Managed Identity, workload identity, DefaultAzureCredential, Dockerfile, azure.yaml, Bicep, GitHub Actions OIDC, GitHub `production` Environment, GHCR, deploy_infra, deploy_app, smoke tests, platform bootstrap, or deployment verification. Do not use this skill for end-user Microsoft Entra ID login contract design, app registration changes, or GitHub Copilot coding agent cloud access."
 ---
 
 # Azure Spa Clean Architecture Bootstrap
 
 ## Overview
 
-Use this skill to layer Azure hosting, identity, and GitHub delivery decisions onto the base React Router clean architecture owned by `enforce-react-spa-architecture`. Preserve SPA-style navigation, but switch to a server runtime whenever OAuth callbacks, Prisma, server-only secrets, or Azure SQL access make a static-only SPA the wrong abstraction.
-This skill owns Azure platform, `Microsoft Entra ID`, secretless config, IaC, and release workflow guidance. Keep code structure, UI guardrails, and general verification rules in the companion skill, and repeat them here only when they are critical to protect Azure-specific boundaries.
-This skill does not own `/docs/spec`, `/docs/plans/plan.md`, commit-log workflow, branch naming workflow, or PR management; use a repository workflow skill for those concerns and keep this skill focused on platform deltas.
-Treat requests for "Microsoft auth" as `Microsoft Entra ID` only when the app actually needs user authentication. If the app does not need auth, skip the app registration and auth guidance.
-Prefer a secretless configuration model: do not introduce `.env` or `.env.example` for Azure-hosted apps. Put non-secret runtime configuration in Azure App Configuration, put secrets in Key Vault, use local `DefaultAzureCredential` during development, and use `ManagedIdentityCredential` for deployed app-to-Azure and Azure SQL authentication.
-Keeping the same database engine across environments is usually safer. When this skill adopts SQLite for developer speed, treat it as local-development-only storage and require Azure SQL Database for every Azure-hosted environment that persists relational data.
-For Azure-hosted relational traffic, keep the default assumption that the web app on Container Apps remains publicly reachable unless the product explicitly requires private-only ingress. Even with public app ingress, do not normalize Azure SQL firewall exceptions as the connectivity model. Use a VNet-integrated Container Apps environment and reach Azure SQL through `Private Endpoint` plus private DNS. If the app ingress itself must stay private-only, add a Container Apps managed environment `Private Endpoint` as a separate concern.
-Surface Azure prerequisites early. If the project will definitely require specific RBAC assignments, tenant or subscription access, SQL admin setup, App Configuration or Key Vault access, or an unavoidable Service Principal for deploy or migration paths, request those at the beginning of development instead of discovering them mid-implementation.
-When the app requires user authentication, prefer a real local sign-in path with a dev or test `Microsoft Entra ID` registration and test identities rather than a hidden development auth bypass.
+Use this skill as the Azure platform and delivery extension on top of `react-router-prisma-app-architecture`.
+This skill owns:
+
+- Azure Container Apps hosting and network topology
+- Azure SQL connectivity and hosted persistence boundaries
+- Azure App Configuration, Key Vault, `ManagedIdentityCredential`, and local `DefaultAzureCredential`
+- IaC, `azure.yaml`, container packaging, and shared Azure runtime templates
+- GitHub `production` Environment, GitHub Actions OIDC, release workflow design, and smoke-test verification
+
+This skill does not own:
+
+- end-user `Microsoft Entra ID` auth contract, redirect URI design, or app registration updates
+- GitHub Copilot coding agent cloud-side Azure access through the `copilot` Environment
+- spec or planning workflow
+- base React Router + Prisma code architecture rules
+
+When the task is primarily app authentication, load [`../entra-user-auth-registration/SKILL.md`](../entra-user-auth-registration/SKILL.md).
+When the task is primarily GitHub Copilot coding agent Azure access, load [`../copilot-azure-cloud-access/SKILL.md`](../copilot-azure-cloud-access/SKILL.md).
 
 ## Companion Skill Requirement
 
-- Install `enforce-react-spa-architecture` together with this skill. Do not use this skill as a standalone replacement for the base architecture skill.
-- If the companion skill is missing, install it before continuing from [https://github.com/anaregdesign/hiroki/tree/main/skills/engineer/development/create-single-page-application/enforce-react-spa-architecture](https://github.com/anaregdesign/hiroki/tree/main/skills/engineer/development/create-single-page-application/enforce-react-spa-architecture).
-- Prefer `$skill-installer` for the install step when another Codex instance needs to fetch the published skill from GitHub.
-- Continue only after the sibling references under `../enforce-react-spa-architecture/references/` are locally available.
+- Install `react-router-prisma-app-architecture` together with this skill.
+- Use this skill only after the companion skill has established code structure, UI guardrails, and verification boundaries.
+- Keep Azure-specific concerns here and keep app-code architecture in the companion skill.
 
 ## Quick Start
 
-1. Choose the runtime mode first:
-   - Keep pure SPA mode only when the app has no server-only secrets, no social login callback, no Prisma-backed mutations, and no protected server endpoints.
-   - Use React Router framework runtime when the app needs auth callbacks, cookies, Prisma, Azure SQL, or server-owned secrets.
-   - If the app persists relational data, use SQLite for local development and Azure SQL Database for every Azure-hosted environment.
-2. Surface prerequisites before deep implementation:
-   - list the Azure tenant, subscription, resource group scope, and RBAC assignments that are definitely required
-   - identify any required SQL admin or migration identity setup
-   - identify the required VNet, subnet, private DNS, and `Private Endpoint` design for Container Apps to Azure SQL connectivity, and whether ingress must also be private-only
-   - identify whether GitHub Actions OIDC setup or another unavoidable Service Principal is required
-   - request these prerequisites at project start instead of waiting for release hardening
-3. Confirm the companion skill is installed:
-   - required skill: `enforce-react-spa-architecture`
-   - published URL: `https://github.com/anaregdesign/hiroki/tree/main/skills/engineer/development/create-single-page-application/enforce-react-spa-architecture`
-   - if missing, install it with `$skill-installer` before reading the sibling references
-4. Read the base architecture references from the sibling skill:
-   - full architecture overview index for multi-boundary changes: [`../enforce-react-spa-architecture/references/layout-and-dependency-rules.md`](../enforce-react-spa-architecture/references/layout-and-dependency-rules.md)
-   - project bootstrap: [`../enforce-react-spa-architecture/references/project-bootstrap.md`](../enforce-react-spa-architecture/references/project-bootstrap.md)
-   - layout and module placement: [`../enforce-react-spa-architecture/references/layout-and-module-placement.md`](../enforce-react-spa-architecture/references/layout-and-module-placement.md)
-   - client layer responsibilities: [`../enforce-react-spa-architecture/references/client-layer-responsibilities.md`](../enforce-react-spa-architecture/references/client-layer-responsibilities.md)
-   - server and domain layer responsibilities: [`../enforce-react-spa-architecture/references/server-and-domain-layer-responsibilities.md`](../enforce-react-spa-architecture/references/server-and-domain-layer-responsibilities.md)
-   - boundary and contract rules: [`../enforce-react-spa-architecture/references/boundary-and-contract-rules.md`](../enforce-react-spa-architecture/references/boundary-and-contract-rules.md)
-   - domain modeling and type rules: [`../enforce-react-spa-architecture/references/domain-modeling-and-type-rules.md`](../enforce-react-spa-architecture/references/domain-modeling-and-type-rules.md)
-   - dependency injection and side-effect rules: [`../enforce-react-spa-architecture/references/dependency-injection-lifetime-and-side-effects.md`](../enforce-react-spa-architecture/references/dependency-injection-lifetime-and-side-effects.md)
-   - FlatRoute REST API rules: [`../enforce-react-spa-architecture/references/flat-route-rest-api-guidelines.md`](../enforce-react-spa-architecture/references/flat-route-rest-api-guidelines.md)
-   - Prisma boundary rules: [`../enforce-react-spa-architecture/references/prisma-boundary-rules.md`](../enforce-react-spa-architecture/references/prisma-boundary-rules.md)
-   - view-state and handler composition: [`../enforce-react-spa-architecture/references/view-state-and-handler-patterns.md`](../enforce-react-spa-architecture/references/view-state-and-handler-patterns.md)
-   - chart and data visualization guidance: [`../enforce-react-spa-architecture/references/chart-and-data-visualization-guidance.md`](../enforce-react-spa-architecture/references/chart-and-data-visualization-guidance.md)
-   - responsive and mobile UI guidance: [`../enforce-react-spa-architecture/references/responsive-and-mobile-ui-guidance.md`](../enforce-react-spa-architecture/references/responsive-and-mobile-ui-guidance.md)
-   - Playwright UI verification workflow: [`../enforce-react-spa-architecture/references/playwright-ui-verification.md`](../enforce-react-spa-architecture/references/playwright-ui-verification.md)
-   - stateful flow compromise rules: [`../enforce-react-spa-architecture/references/stateful-flow-compromises.md`](../enforce-react-spa-architecture/references/stateful-flow-compromises.md)
-   - hotspot refactor workflow: [`../enforce-react-spa-architecture/references/hotspot-refactor-workflow.md`](../enforce-react-spa-architecture/references/hotspot-refactor-workflow.md)
-   - verification gates: [`../enforce-react-spa-architecture/references/verification-gates.md`](../enforce-react-spa-architecture/references/verification-gates.md)
-5. Read the Azure and GitHub references in this skill:
-   - Azure platform bootstrap: [`references/azure-platform-bootstrap.md`](references/azure-platform-bootstrap.md)
-   - Azure identity overview index: [`references/azure-identity-and-sql.md`](references/azure-identity-and-sql.md)
-   - user auth, runtime contract, and local sign-in path: [`references/entra-user-auth-and-runtime-contracts.md`](references/entra-user-auth-and-runtime-contracts.md)
-   - Azure CLI and `az rest` app registration flow: [`references/entra-app-registration-cli.md`](references/entra-app-registration-cli.md)
+1. Confirm the runtime boundary:
+   - keep pure SPA mode only for truly static apps
+   - switch to React Router framework runtime before adding secrets, Prisma, hosted SQL access, or protected server behavior
+2. Front-load platform prerequisites:
+   - Azure tenant, subscription, resource group, and required RBAC
+   - VNet, delegated subnet, `Private Endpoint`, and private DNS requirements
+   - Azure SQL admin and migration identity requirements
+   - GitHub `production` Environment and OIDC deploy identity requirements
+3. Read the platform references:
+   - Azure hosting baseline: [`references/azure-platform-bootstrap.md`](references/azure-platform-bootstrap.md)
+   - Azure identity and SQL overview: [`references/azure-identity-and-sql.md`](references/azure-identity-and-sql.md)
+   - Azure SQL identity and permission guidance: [`references/azure-sql-identity-and-permissions.md`](references/azure-sql-identity-and-permissions.md)
    - workload identity and secretless config: [`references/azure-workload-identity-and-secretless-config.md`](references/azure-workload-identity-and-secretless-config.md)
-   - Azure SQL identity and permissions: [`references/azure-sql-identity-and-permissions.md`](references/azure-sql-identity-and-permissions.md)
-   - GitHub repository operations: [`references/github-repository-operations.md`](references/github-repository-operations.md)
-   - GitHub release delivery: [`references/github-release-delivery.md`](references/github-release-delivery.md)
-   - template adoption guide: [`references/template-assets.md`](references/template-assets.md)
-   - operational checklist: [`references/operational-checklist.md`](references/operational-checklist.md)
-6. Classify the change:
-   - route or UI composition
-   - Microsoft Entra ID auth or app registration when authentication is required
-   - auth or session boundary
-   - persistence or migration
-   - Azure infrastructure
-   - GitHub workflow or release automation
-   - production verification
+4. Read the delivery references:
+   - repository bootstrap and human permissions: [`references/github-repository-operations.md`](references/github-repository-operations.md)
+   - GitHub release workflow design: [`references/github-release-delivery.md`](references/github-release-delivery.md)
+   - release and handoff checks: [`references/operational-checklist.md`](references/operational-checklist.md)
+   - shared template inventory: [`references/template-assets.md`](references/template-assets.md)
+5. Start from the shared runtime and delivery assets:
+   - `assets/templates/azure.yaml`
+   - `assets/templates/Dockerfile`
+   - `assets/templates/app/routes/health.ts`
+   - `assets/templates/infra/main.bicep`
+   - `assets/templates/scripts/azure/postprovision.sh`
+   - `assets/templates/.github/workflows/release-azure-delivery.yml`
 
-## Repository Additions
+## Use This Skill For
 
-- Put Azure IaC in `infra/`.
-- Put deployment and bootstrap helpers in `scripts/azure/`.
-- Put CI and release automation in `.github/workflows/`.
-- Keep Azure project wiring in `azure.yaml`.
-- Keep container packaging in `Dockerfile`.
-- Keep secretless config bootstrap and parsing in `app/lib/server/infrastructure/config/` or the narrowest equivalent server config module.
-- Keep configuration contract documentation in `README.md`.
-- Add a cheap health probe in `app/routes/health.ts`.
+- Azure Container Apps topology, ingress, probes, and `Private Endpoint` decisions
+- Azure SQL Database hosting, connectivity, identity, and migration boundaries
+- Azure App Configuration, Key Vault, and secretless runtime bootstrap
+- `azure.yaml`, `Dockerfile`, `infra/main.bicep`, and shared runtime template adoption
+- GitHub `production` Environment setup, OIDC deploy identity, GHCR release workflow design, and smoke tests
+- human bootstrap responsibilities and least-privilege release permissions
 
-## Template Assets
+## Use Sibling Skills Instead For
 
-- Use the generic repo templates in `assets/templates/`.
-- Replace placeholder tokens such as `__APP_NAME__`, `__SERVICE_NAME__`, and `__PUBLIC_APP_URL__` only after the target app's naming rules are clear.
-- Keep the template vocabulary generic. Do not leak app-specific names, resource-group names, or domain nouns back into the shared asset files.
-- Start from these templates when bootstrapping:
-  - `assets/templates/azure.yaml`
-  - `assets/templates/Dockerfile`
-  - `assets/templates/app/routes/health.ts`
-  - `assets/templates/.github/workflows/release-container-image.yml`
-  - `assets/templates/scripts/azure/postprovision.sh`
-  - `assets/templates/infra/main.bicep`
+- end-user auth, redirect URIs, cookie or PKCE contract, and app registration updates:
+  [`../entra-user-auth-registration/SKILL.md`](../entra-user-auth-registration/SKILL.md)
+- GitHub Copilot coding agent `copilot` Environment, Azure MCP, and read-scoped cloud access:
+  [`../copilot-azure-cloud-access/SKILL.md`](../copilot-azure-cloud-access/SKILL.md)
+- spec-first planning:
+   [`../spec-driven-workflow/SKILL.md`](../spec-driven-workflow/SKILL.md)
 
 ## Non-Negotiable Rules
 
-- Install and keep `enforce-react-spa-architecture` available together with this skill.
-- Keep all dependency, placement, UI, and verification rules from `enforce-react-spa-architecture`.
-- Do not redefine the companion skill's general coding guardrails here. Use this skill for Azure, identity, infrastructure, and delivery deltas, and repeat code-level rules only when they protect those deltas.
-- Keep Prisma and Azure SDK imports inside server infrastructure or deployment code.
-- Treat "SPA" as a UX target, not as a requirement to remove the server runtime.
-- Prefer React Router framework runtime over bolting ad hoc APIs onto a static bundle when auth, persistence, or secret-backed integrations need a server.
-- Prefer Azure Container Apps for apps that need a server runtime. Use Static Web Apps only for truly static frontends.
-- Use SQLite only for local development.
-- When the app is hosted on Azure and persists relational data, use Azure SQL Database rather than SQLite.
-- Prefer Azure SQL Database serverless for Azure-hosted relational persistence unless workload characteristics force another SKU.
-- Prefer `Microsoft Entra ID` only auth for Azure SQL when the hosted environment can support it. Treat SQL login/password as bootstrap-only or break-glass, not as runtime auth.
-- Keep the default Container Apps endpoint public when the product is an internet-facing web app, and use VNet integration for outbound private connectivity.
-- Use a VNet-integrated Container Apps environment when the hosted runtime must reach Azure resources through `Private Endpoint`, including Azure SQL Database.
-- For Container Apps to Azure SQL connectivity, use Azure SQL `Private Endpoint` plus private DNS and keep Azure SQL public network access disabled. Do not treat SQL firewall rules or "Allow Azure services and resources to access this server" as the standard path.
-- For hosted environments, prefer `Private Endpoint` plus disabled public access for Azure App Configuration and Key Vault. If local development still needs those same resources, document the required private network path or use dedicated dev stores rather than reopening production stores to the public internet.
-- Prefer managed identity for ACR pulls over registry username/password.
-- Wire HTTP health probes to `/health`. Do not rely only on the platform's default TCP probes.
-- Use a Container Apps managed environment `Private Endpoint` only when ingress itself must be private-only. Do not confuse that requirement with the separate need for private database connectivity.
-- Front-load known Azure prerequisites. Ask for required tenant access, subscription access, RBAC assignments, SQL admin setup, and any unavoidable Service Principal before substantial implementation begins.
-- When authentication is required, prefer `Microsoft Entra ID` over portal-only or ad hoc "Microsoft auth" descriptions, and keep the chosen `signInAudience` explicit.
-- Do not use `.env` or `.env.example` for Azure runtime configuration. Use Azure App Configuration for non-secret settings and Key Vault for secrets.
-- Use local `DefaultAzureCredential` during development after `az login` or `azd auth login`.
-- Use `ManagedIdentityCredential` for deployed app-to-Azure and Azure SQL authentication. Do not rely on a broad `DefaultAzureCredential` chain in production.
-- Use `DefaultAzureCredential` or Managed Identity only where runtime SDK support is real. Do not assume Prisma CLI or schema migration flows inherit that auth automatically.
-- Treat SQLite-to-Azure-SQL provider differences as real delivery risk. Validate migrations, query behavior, and generated SQL against Azure SQL Database before release.
-- Separate runtime identity from migration or admin identity.
-- When the app requires user authentication, prefer a separate dev or test app registration from the production registration, and use a separate test tenant when production-tenant policies or risk make safe testing hard.
-- Keep localhost redirect URIs in the dev or test registration, or document clearly why they still exist in another registration. Remove unnecessary development redirect URIs from the production registration.
-- Use test users, test groups, or invited guest users to complete local sign-in flows. If testing inside the production tenant, restrict the test enterprise application to specific users or groups.
-- Do not treat a hidden local auth bypass as the standard development path for an app that requires authentication.
-- Prefer scripted `az` or `az rest` app registration changes over portal-only click paths so redirect URIs, audience, and secret mode stay reproducible.
+- Treat SQLite as local-development-only storage.
+- Use Azure SQL Database for every Azure-hosted relational environment.
+- Prefer `ManagedIdentityCredential` in hosted runtime and `DefaultAzureCredential` locally after `az login` or `azd auth login`.
+- Keep App Configuration and Key Vault as the runtime source of truth instead of `.env`.
 - Use GitHub Actions OIDC to Azure. Do not store Azure client secrets in GitHub.
-- Prefer Managed Identity and OIDC over Service Principals, but if a Service Principal is definitely required for deploy, migration, or external automation, identify and request it during bootstrap rather than during release stabilization.
-- Keep repository governance explicit: protected default branch, required checks, and production Environment scoping.
-- Deploy immutable release-tag images, not mutable `latest`.
-- Keep production values in GitHub Environments and Azure-managed secret stores rather than in repo files.
-- Add explicit health endpoints and post-deploy smoke tests.
-- Keep README, callback URLs, configuration contract docs, release notes, and IaC in sync with the deployed system.
+- Keep infra convergence and app rollout separate, even when one workflow orchestrates both.
+- Prefer `what-if`-driven infra skip over file-path heuristics.
+- Do not assume a container registry push alone updates Azure Container Apps.
+- Keep human bootstrap permissions narrower than the standing permissions of day-to-day releasers.
 
 ## Implementation Workflow
 
-### 0. Choose the correct runtime contract
+### 1. Establish Azure runtime boundaries
 
-- Keep pure SPA mode only for fully static frontends.
-- Enable server runtime before writing features that need OAuth callbacks, cookies, Prisma, secrets, or server-owned data access.
-- Keep route modules responsible for HTTP wiring, loader or action composition, and top-level dependency assembly only.
+- choose Container Apps topology, ingress, and backing-service connectivity
+- document required Azure scopes, RBAC, and network ownership early
+- separate runtime identity, migration identity, and deploy identity
 
-### 1. Bootstrap the app and architecture
+### 2. Bootstrap secretless config and persistence
 
-- Confirm `enforce-react-spa-architecture` is installed from the published GitHub path before relying on sibling references.
-- Follow the sibling architecture references before adding cloud features.
-- Keep this skill focused on platform deltas after the companion skill has established code structure, UI rules, and verification gates.
-- Surface the Azure prerequisites now: required RBAC, tenant or subscription access, SQL admin setup, App Configuration or Key Vault access, and any unavoidable Service Principal or federated deploy identity.
-- Surface the networking prerequisites now: the Container Apps VNet plan, dedicated subnets, private DNS ownership, Azure SQL `Private Endpoint`, and whether ingress must also be private-only.
-- Ask for these prerequisites before the team gets deep into implementation so platform access does not become a late blocker.
+- use App Configuration for non-secret settings and Key Vault for secrets
+- verify local `DefaultAzureCredential` and hosted `ManagedIdentityCredential` flows explicitly
+- validate Azure SQL connectivity and provider differences before release
 
-### 2. Add cloud-facing repository structure intentionally
+### 3. Adopt runtime assets deliberately
 
-- Put Azure IaC in `infra/`.
-- Put deployment and provisioning scripts in `scripts/azure/`.
-- Put GitHub release and deploy workflows in `.github/workflows/`.
-- Keep secretless bootstrap config and runtime parsing explicit and centralized in server infrastructure.
-- Keep one clear bootstrap path for Azure App Configuration and Key Vault instead of scattering fallback `.env` reads.
-- Keep app-specific scripts idempotent and safe to re-run.
+- copy and rename the shared templates into the target repository
+- keep app-specific naming and callback values only in the destination repository
+- keep `/health` stable and cheap for probes and smoke tests
 
-### 3. Add auth and session boundaries at the edge when authentication is required
+### 4. Prepare release delivery
 
-- Handle social login callbacks, cookies, and session state at the route or server edge.
-- Only enter this step when the app actually needs authentication.
-- When the app needs Microsoft auth, decide early whether the runtime contract is `web` or `spa`.
-- Prefer `web` platform redirect URIs and server-owned cookie sessions when React Router framework runtime already exists for Prisma, secrets, or protected server endpoints.
-- Use `spa` platform redirect URIs and browser PKCE only when the frontend is truly static and has no server-owned secret boundary.
-- Create or update the `Microsoft Entra ID` app registration from Azure CLI or `az rest`, and keep redirect URIs plus audience in versioned notes.
-- For local development, prefer a dev or test app registration with localhost callback URLs, test identities, and tenant policy settings that let the team complete sign-in safely without weakening production registration hygiene.
-- If developers need the same sign-in behavior as production, replicate the relevant Conditional Access, consent, and token-lifetime policies in the dev or test environment instead of bypassing auth in application code.
-- When a `web` registration needs a confidential client secret or certificate, keep it in Key Vault and resolve it through the same secretless config path used in production rather than copying it into `.env`.
-- Keep authorization decisions in use cases or domain policies.
-- Keep provider profile DTOs out of `domain` until a stable internal model is necessary.
-- Document environment-specific callback URLs in README and app registration notes.
+- use the shared `release-azure-delivery.yml` workflow shape
+- keep `publish`, `plan_infra`, `deploy_infra`, `deploy_app`, and `smoke_test` distinct
+- keep the GitHub `production` Environment and its OIDC subject stable
 
-### 4. Add persistence and identity intentionally
+### 5. Verify and hand off
 
-- Keep repository ports in the companion skill's domain layer, and place Azure SQL or SQL Server adapters in `app/lib/server/infrastructure/repositories/`.
-- Use SQLite for local development only, and keep Azure-hosted environments on Azure SQL Database. Do not plan to run a SQLite file inside Azure-hosted runtime environments.
-- Use local `DefaultAzureCredential` in development, and use `ManagedIdentityCredential` for deployed app-to-Azure and Azure SQL authentication when the driver path supports it.
-- For hosted database access, put Azure SQL behind a `Private Endpoint` in a dedicated subnet, link `privatelink.database.windows.net` to the VNet used by the Container Apps environment, and keep Azure SQL public network access disabled.
-- Set a `Microsoft Entra ID` admin on Azure SQL and prefer `Entra-only` authentication for hosted environments. Keep any SQL admin login/password path as bootstrap-only or break-glass.
-- Keep migrations explicit and separate from app startup.
-- Treat the SQLite local-development path and Azure SQL Database hosted path as different providers that need explicit validation.
-- Keep `db_datareader` and `db_datawriter` on runtime identities. Reserve elevated roles for migration or admin identities.
-- Do not rely on SQL firewall rules or the broad "Allow Azure services" switch as the main connectivity model for production app traffic.
-
-### 5. Prepare Azure deployment
-
-- Add a container-friendly `Dockerfile`.
-- Add `azure.yaml` and declarative infrastructure.
-- Keep the default Container Apps ingress public for internet-facing apps, and use VNet integration plus separate infrastructure and `Private Endpoint` subnets for private backing-service connectivity.
-- Prefer Container Apps, Managed Identity, Azure App Configuration, Key Vault, Application Insights, and, when relational persistence is required, Azure SQL Database serverless behind `Private Endpoint`, as the default platform set.
-- Prefer private endpoints for App Configuration and Key Vault in hosted environments, and prefer managed identity when Container Apps pulls from ACR.
-- If ingress must be private-only, disable public network access on the Container Apps managed environment and front it with a Private Link-capable edge instead of reopening public ingress.
-- Add `/health` and keep probes cheap.
-- Keep resource naming, region choice, and scope boundaries deliberate.
-
-### 6. Prepare GitHub delivery
-
-- Build and publish the container image on `release.published`.
-- Deploy only after image publish succeeds.
-- Use GitHub Environment protection for production.
-- Keep OIDC federation subject scoped to the repository and environment.
-- Use GHCR by default unless the platform requires ACR.
-
-### 7. Verify before push and before release
-
-- Run tests, typecheck, lint, and build.
-- Review boundary drift and forbidden imports.
-- Validate workflow syntax and IaC before release.
-- When the app requires user authentication, verify the documented local sign-in path with the intended dev or test users before release.
-- If local development uses SQLite, verify the deployed environment has switched to Azure SQL Database before release.
-- Verify Container Apps health probes are pointed at the intended HTTP endpoint and succeed under realistic startup time.
-- Smoke-test the deployed revision and confirm callback URLs, health checks, Azure SQL private DNS resolution, Azure SQL private connectivity, and migration state.
-
-### 8. Operate and hand off cleanly
-
-- Update README with architecture, Azure topology, required config keys and identities, callback URLs, and release flow.
-- Record what is verified versus what still needs cloud-side confirmation.
-- Avoid leaving partial infrastructure, stale releases, or unmanaged identities without noting the follow-up work.
+- validate workflow YAML and Bicep before release
+- verify `what-if` can distinguish app-only releases from real infra changes
+- capture the release URL, workflow URL, deployed app URL, and remaining manual follow-up
 
 ## Placement Guide
 
-- Need core React Router clean-architecture rules: use the sibling `../enforce-react-spa-architecture/` references.
-- Need Azure IaC: `infra/`
-- Need Azure deployment scripts: `scripts/azure/`
-- Need GitHub release and deploy workflows: `.github/workflows/`
-- Need health probes: `app/routes/health.ts`
-- Need `Microsoft Entra ID` auth contract, callback, or local sign-in guidance when authentication is required: `references/entra-user-auth-and-runtime-contracts.md`
-- Need reproducible Azure CLI or `az rest` app registration setup: `references/entra-app-registration-cli.md`
-- Need secretless server config bootstrap, App Configuration, Key Vault, or local `DefaultAzureCredential` guidance: `references/azure-workload-identity-and-secretless-config.md`
-- Need Azure SQL identity and permission guidance: `references/azure-sql-identity-and-permissions.md`
-- Need server config bootstrap and parsing implementation placement: `app/lib/server/infrastructure/config/` or the narrowest equivalent under `app/lib/server/infrastructure/`
-- Need Azure SQL or SDK adapters implementation placement: `app/lib/server/infrastructure/repositories/` and `app/lib/server/infrastructure/gateways/`
-- Need runtime config contract documentation: `README.md`
+- Azure runtime and IaC: `infra/`, `azure.yaml`, `Dockerfile`
+- runtime bootstrap config: `app/lib/server/infrastructure/config/`
+- Azure SQL and SDK adapters: `app/lib/server/infrastructure/repositories/`, `app/lib/server/infrastructure/gateways/`
+- deployment helpers: `scripts/azure/`
+- release workflows: `.github/workflows/`
+- health probes: `app/routes/health.ts`
 
 ## References
 
-- base architecture bootstrap: [`../enforce-react-spa-architecture/references/project-bootstrap.md`](../enforce-react-spa-architecture/references/project-bootstrap.md)
-- base architecture overview index: [`../enforce-react-spa-architecture/references/layout-and-dependency-rules.md`](../enforce-react-spa-architecture/references/layout-and-dependency-rules.md)
-- base layout and placement rules: [`../enforce-react-spa-architecture/references/layout-and-module-placement.md`](../enforce-react-spa-architecture/references/layout-and-module-placement.md)
-- base client layer responsibilities: [`../enforce-react-spa-architecture/references/client-layer-responsibilities.md`](../enforce-react-spa-architecture/references/client-layer-responsibilities.md)
-- base server and domain layer responsibilities: [`../enforce-react-spa-architecture/references/server-and-domain-layer-responsibilities.md`](../enforce-react-spa-architecture/references/server-and-domain-layer-responsibilities.md)
-- base boundary and contract rules: [`../enforce-react-spa-architecture/references/boundary-and-contract-rules.md`](../enforce-react-spa-architecture/references/boundary-and-contract-rules.md)
-- base domain modeling and type rules: [`../enforce-react-spa-architecture/references/domain-modeling-and-type-rules.md`](../enforce-react-spa-architecture/references/domain-modeling-and-type-rules.md)
-- base dependency injection and side-effect rules: [`../enforce-react-spa-architecture/references/dependency-injection-lifetime-and-side-effects.md`](../enforce-react-spa-architecture/references/dependency-injection-lifetime-and-side-effects.md)
-- base FlatRoute REST rules: [`../enforce-react-spa-architecture/references/flat-route-rest-api-guidelines.md`](../enforce-react-spa-architecture/references/flat-route-rest-api-guidelines.md)
-- base Prisma boundary rules: [`../enforce-react-spa-architecture/references/prisma-boundary-rules.md`](../enforce-react-spa-architecture/references/prisma-boundary-rules.md)
-- base view-state patterns: [`../enforce-react-spa-architecture/references/view-state-and-handler-patterns.md`](../enforce-react-spa-architecture/references/view-state-and-handler-patterns.md)
-- base chart and data visualization guidance: [`../enforce-react-spa-architecture/references/chart-and-data-visualization-guidance.md`](../enforce-react-spa-architecture/references/chart-and-data-visualization-guidance.md)
-- base responsive and mobile UI guidance: [`../enforce-react-spa-architecture/references/responsive-and-mobile-ui-guidance.md`](../enforce-react-spa-architecture/references/responsive-and-mobile-ui-guidance.md)
-- base Playwright UI verification workflow: [`../enforce-react-spa-architecture/references/playwright-ui-verification.md`](../enforce-react-spa-architecture/references/playwright-ui-verification.md)
-- base stateful-flow compromises: [`../enforce-react-spa-architecture/references/stateful-flow-compromises.md`](../enforce-react-spa-architecture/references/stateful-flow-compromises.md)
-- base hotspot refactor workflow: [`../enforce-react-spa-architecture/references/hotspot-refactor-workflow.md`](../enforce-react-spa-architecture/references/hotspot-refactor-workflow.md)
-- base verification gates: [`../enforce-react-spa-architecture/references/verification-gates.md`](../enforce-react-spa-architecture/references/verification-gates.md)
-- Azure platform bootstrap: [`references/azure-platform-bootstrap.md`](references/azure-platform-bootstrap.md)
-- Azure identity overview index: [`references/azure-identity-and-sql.md`](references/azure-identity-and-sql.md)
-- user auth, runtime contract, and local sign-in path: [`references/entra-user-auth-and-runtime-contracts.md`](references/entra-user-auth-and-runtime-contracts.md)
-- Azure CLI and `az rest` app registration flow: [`references/entra-app-registration-cli.md`](references/entra-app-registration-cli.md)
-- workload identity and secretless config: [`references/azure-workload-identity-and-secretless-config.md`](references/azure-workload-identity-and-secretless-config.md)
+- base architecture skill: [`../react-router-prisma-app-architecture/SKILL.md`](../react-router-prisma-app-architecture/SKILL.md)
+- Azure hosting baseline: [`references/azure-platform-bootstrap.md`](references/azure-platform-bootstrap.md)
+- Azure identity and SQL overview: [`references/azure-identity-and-sql.md`](references/azure-identity-and-sql.md)
 - Azure SQL identity and permissions: [`references/azure-sql-identity-and-permissions.md`](references/azure-sql-identity-and-permissions.md)
-- GitHub repository operations: [`references/github-repository-operations.md`](references/github-repository-operations.md)
-- GitHub release delivery: [`references/github-release-delivery.md`](references/github-release-delivery.md)
-- template adoption guide: [`references/template-assets.md`](references/template-assets.md)
+- workload identity and secretless config: [`references/azure-workload-identity-and-secretless-config.md`](references/azure-workload-identity-and-secretless-config.md)
+- repository operations: [`references/github-repository-operations.md`](references/github-repository-operations.md)
+- release delivery: [`references/github-release-delivery.md`](references/github-release-delivery.md)
 - operational checklist: [`references/operational-checklist.md`](references/operational-checklist.md)
+- template inventory: [`references/template-assets.md`](references/template-assets.md)
+- auth sibling skill: [`../entra-user-auth-registration/SKILL.md`](../entra-user-auth-registration/SKILL.md)
+- Copilot sibling skill: [`../copilot-azure-cloud-access/SKILL.md`](../copilot-azure-cloud-access/SKILL.md)
