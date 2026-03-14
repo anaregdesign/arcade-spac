@@ -206,11 +206,79 @@
     min-height: 24rem;
   }
 
+  .tempo-weave-shell {
+    gap: 0.8rem;
+  }
+
+  .tempo-weave-copy strong {
+    font-size: 0.95rem;
+  }
+
+  .tempo-weave-legend {
+    gap: 0.45rem;
+  }
+
+  .tempo-weave-legend-good,
+  .tempo-weave-legend-perfect,
+  .tempo-weave-legend-status {
+    font-size: 0.72rem;
+    padding: 0.38rem 0.62rem;
+  }
+
   .tempo-weave-lanes {
-    grid-template-columns: minmax(0, 1fr);
+    gap: 0.75rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .tempo-weave-lane-card {
+    gap: 0.7rem;
+    padding: 0.75rem;
+    border-radius: 1rem;
+  }
+
+  .tempo-weave-lane-header {
+    display: grid;
+    gap: 0.25rem;
+  }
+
+  .tempo-weave-lane-header strong {
+    font-size: 0.84rem;
+  }
+
+  .tempo-weave-lane-meta,
+  .tempo-weave-lane-stats {
+    font-size: 0.7rem;
+    justify-items: start;
+    text-align: left;
+  }
+
+  .tempo-weave-track {
+    min-height: 3.4rem;
+    padding-top: 0.7rem;
+  }
+
+  .tempo-weave-track-line,
+  .tempo-weave-good-zone,
+  .tempo-weave-perfect-zone {
+    top: 1.45rem;
+  }
+
+  .tempo-weave-marker {
+    top: 0.95rem;
+    height: 1.45rem;
+    width: 0.92rem;
   }
 
   .tempo-weave-lane-button {
-    min-height: 7rem;
+    border-radius: 0.95rem;
+    min-height: 5.4rem;
+  }
+
+  .tempo-weave-lane-button-label {
+    font-size: 0.82rem;
+  }
+
+  .tempo-weave-lane-button-copy {
+    font-size: 0.72rem;
   }
 }

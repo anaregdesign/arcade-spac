@@ -290,30 +290,81 @@
     min-height: 24rem;
   }
 
+  .glow-cycle-shell {
+    gap: 0.8rem;
+  }
+
+  .glow-cycle-copy strong {
+    font-size: 0.95rem;
+  }
+
+  .glow-cycle-legend {
+    gap: 0.45rem;
+  }
+
+  .glow-cycle-legend-target,
+  .glow-cycle-legend-window,
+  .glow-cycle-legend-status {
+    font-size: 0.72rem;
+    padding: 0.38rem 0.62rem;
+  }
+
+  .glow-cycle-meter {
+    height: 2.4rem;
+  }
+
   .glow-cycle-grid {
-    grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
+    gap: 0.7rem;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .glow-cycle-node-card {
+    gap: 0.55rem;
+    padding: 0.75rem 0.55rem;
+    border-radius: 1rem;
+  }
+
+  .glow-cycle-node-header {
+    display: grid;
+    gap: 0.18rem;
+    justify-items: center;
+    text-align: center;
+  }
+
+  .glow-cycle-node-header strong {
+    font-size: 0.8rem;
+  }
+
+  .glow-cycle-node-meta {
+    display: none;
   }
 
   .glow-cycle-node-button {
-    min-height: 9.25rem;
+    border-radius: 0.95rem;
+    min-height: 6.3rem;
   }
 
   .glow-cycle-node-stage {
-    width: 5.6rem;
-    height: 5.6rem;
+    width: 4.2rem;
+    height: 4.2rem;
   }
 
   .glow-cycle-node-orb {
-    width: 4rem;
-    height: 4rem;
+    width: 3rem;
+    height: 3rem;
   }
 
   .glow-cycle-node-ring {
-    width: 5.6rem;
-    height: 5.6rem;
+    width: 4.1rem;
+    height: 4.1rem;
   }
 
   .glow-cycle-node-button-label {
-    margin-top: 4.4rem;
+    margin-top: 3.1rem;
+    font-size: 0.72rem;
+  }
+
+  .glow-cycle-node-button-copy {
+    font-size: 0.66rem;
   }
 }

@@ -206,17 +206,81 @@
 }
 
 @media (max-width: 640px) {
+  .phase-lock-shell {
+    gap: 0.8rem;
+  }
+
+  .phase-lock-copy strong {
+    font-size: 0.94rem;
+  }
+
+  .phase-lock-legend {
+    gap: 0.45rem;
+  }
+
+  .phase-lock-legend-target,
+  .phase-lock-legend-active,
+  .phase-lock-legend-locked {
+    font-size: 0.72rem;
+    padding: 0.38rem 0.62rem;
+  }
+
   .phase-lock-grid {
+    gap: 0.7rem;
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .phase-lock-wheel-card {
+    gap: 0.55rem;
+    padding: 0.75rem;
+  }
+
+  .phase-lock-wheel-header {
+    font-size: 0.72rem;
+    gap: 0.5rem;
+  }
+
+  .phase-lock-wheel-header strong {
+    font-size: 0.84rem;
+  }
+
+  .phase-lock-wheel-stage {
+    min-height: 7.5rem;
   }
 
   .phase-lock-wheel-ring,
   .phase-lock-wheel-band {
-    width: 7rem;
-    height: 7rem;
+    width: 5.6rem;
+    height: 5.6rem;
   }
 
   .phase-lock-wheel-marker {
-    height: 3.35rem;
+    height: 2.7rem;
+  }
+
+  .phase-lock-wheel-band::before {
+    left: calc(50% - 0.8rem);
+    top: -0.45rem;
+    width: 1.6rem;
+    height: 0.95rem;
+  }
+
+  .phase-lock-wheel-hub {
+    width: 1.8rem;
+    height: 1.8rem;
+  }
+
+  .phase-lock-trigger {
+    gap: 0.75rem;
+    padding: 0.8rem 0.95rem;
+    width: 100%;
+  }
+
+  .phase-lock-trigger-label {
+    font-size: 0.82rem;
+  }
+
+  .phase-lock-trigger-detail {
+    font-size: 0.74rem;
   }
 }
