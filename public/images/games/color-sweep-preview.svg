@@ -1,31 +1,14 @@
-<svg width="400" height="400" viewBox="160 72 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <title>Color Sweep board showing a target swatch and a grid of colored tiles</title>
   <defs>
-    <linearGradient id="bg" x1="80" y1="48" x2="640" y2="472" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#F8FAFC"/>
-      <stop offset="1" stop-color="#DDE7F0"/>
-    </linearGradient>
-    <linearGradient id="panel" x1="140" y1="110" x2="580" y2="420" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#FFFFFF"/>
-      <stop offset="1" stop-color="#ECF3F8"/>
+    <linearGradient id="color-sweep-background" x1="48" y1="36" x2="454" y2="474" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#103a45" />
+      <stop offset="1" stop-color="#041825" />
     </linearGradient>
   </defs>
-  <rect width="720" height="520" rx="40" fill="url(#bg)"/>
-  <rect x="136" y="108" width="448" height="372" rx="30" fill="url(#panel)" stroke="#C3D0DB" stroke-width="4"/>
-  <rect x="452" y="146" width="84" height="38" rx="19" fill="#4FD1A6"/>
-  <text x="186" y="171" fill="#536270" font-family="ui-sans-serif, system-ui" font-size="26" font-weight="700">Target Color</text>
-  <g transform="translate(164 220)">
-    <rect x="0" y="0" width="76" height="76" rx="18" fill="#F6B44B"/>
-    <rect x="88" y="0" width="76" height="76" rx="18" fill="#5BC3F8"/>
-    <rect x="176" y="0" width="76" height="76" rx="18" fill="#4FD1A6"/>
-    <rect x="264" y="0" width="76" height="76" rx="18" fill="#E57D8D"/>
-    <rect x="0" y="88" width="76" height="76" rx="18" fill="#5BC3F8"/>
-    <rect x="88" y="88" width="76" height="76" rx="18" fill="#4FD1A6"/>
-    <rect x="176" y="88" width="76" height="76" rx="18" fill="#4FD1A6"/>
-    <rect x="264" y="88" width="76" height="76" rx="18" fill="#AC8CFF"/>
-    <rect x="0" y="176" width="76" height="76" rx="18" fill="#F6B44B"/>
-    <rect x="88" y="176" width="76" height="76" rx="18" fill="#4FD1A6"/>
-    <rect x="176" y="176" width="76" height="76" rx="18" fill="#E57D8D"/>
-    <rect x="264" y="176" width="76" height="76" rx="18" fill="#4FD1A6"/>
-    <rect x="376" y="0" width="16" height="252" rx="8" fill="#D5DFE7"/>
-  </g>
+  <rect width="512" height="512" rx="44" fill="url(#color-sweep-background)" />
+  <circle cx="410" cy="92" r="136" fill="rgba(20, 184, 166, 0.16)" />
+  <circle cx="104" cy="418" r="118" fill="rgba(56, 189, 248, 0.09)" />
+  <rect x="12" y="12" width="488" height="488" rx="42" fill="rgba(17, 46, 57, 0.94)" stroke="rgba(133, 202, 203, 0.16)" stroke-width="2" />
+  <g transform="translate(256 256) scale(1.12) translate(-256 -256)"><rect x="80" y="72" width="132" height="46" rx="16" fill="rgba(20, 184, 166, 0.28)" stroke="rgba(107, 204, 197, 0.85)" stroke-width="1.5" /><text x="146" y="96" font-family="'Avenir Next', 'Trebuchet MS', 'Segoe UI', sans-serif" font-weight="700" text-anchor="middle" dominant-baseline="middle" fill="#f8fafc" font-size="24">TARGET</text><rect x="228" y="72" width="64" height="46" rx="20" fill="#3ac3b4" /><rect x="124" y="136" width="242" height="242" rx="26" fill="rgba(29, 67, 75, 0.96)" stroke="rgba(133, 202, 203, 0.22)" stroke-width="1.5" /><rect x="142" y="154" width="62" height="62" rx="12" fill="#3ac3b4" stroke="rgba(133, 202, 203, 0.18)" stroke-width="1.2" /><rect x="214" y="154" width="62" height="62" rx="12" fill="#f97316" stroke="rgba(133, 202, 203, 0.18)" stroke-width="1.2" /><rect x="286" y="154" width="62" height="62" rx="12" fill="#22c55e" stroke="rgba(133, 202, 203, 0.18)" stroke-width="1.2" /><rect x="142" y="226" width="62" height="62" rx="12" fill="#38bdf8" stroke="rgba(133, 202, 203, 0.18)" stroke-width="1.2" /><rect x="214" y="226" width="62" height="62" rx="12" fill="#3ac3b4" stroke="rgba(133, 202, 203, 0.18)" stroke-width="1.2" /><rect x="286" y="226" width="62" height="62" rx="12" fill="#f43f5e" stroke="rgba(133, 202, 203, 0.18)" stroke-width="1.2" /><rect x="142" y="298" width="62" height="62" rx="12" fill="#f59e0b" stroke="rgba(133, 202, 203, 0.18)" stroke-width="1.2" /><rect x="214" y="298" width="62" height="62" rx="12" fill="#8b5cf6" stroke="rgba(133, 202, 203, 0.18)" stroke-width="1.2" /><rect x="286" y="298" width="62" height="62" rx="12" fill="#3ac3b4" stroke="rgba(133, 202, 203, 0.18)" stroke-width="1.2" /></g>
 </svg>

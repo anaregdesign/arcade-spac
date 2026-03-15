@@ -1,31 +1,14 @@
-<svg width="360" height="360" viewBox="140 0 360 360" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="640" height="360" rx="28" fill="#ECFEFF"/>
-  <rect x="44" y="48" width="80" height="48" rx="16" fill="white"/>
-  <text x="84" y="78" text-anchor="middle" fill="#0F766E" font-size="20" font-family="Arial, sans-serif" font-weight="700">C1</text>
-  <rect x="140" y="48" width="80" height="48" rx="16" fill="white"/>
-  <text x="180" y="78" text-anchor="middle" fill="#0F766E" font-size="20" font-family="Arial, sans-serif" font-weight="700">C2</text>
-  <rect x="236" y="48" width="80" height="48" rx="16" fill="white"/>
-  <text x="276" y="78" text-anchor="middle" fill="#0F766E" font-size="20" font-family="Arial, sans-serif" font-weight="700">C3</text>
-  <rect x="332" y="48" width="80" height="48" rx="16" fill="white"/>
-  <text x="372" y="78" text-anchor="middle" fill="#0F766E" font-size="20" font-family="Arial, sans-serif" font-weight="700">C4</text>
-  <rect x="428" y="48" width="80" height="48" rx="16" fill="white"/>
-  <text x="468" y="78" text-anchor="middle" fill="#0F766E" font-size="20" font-family="Arial, sans-serif" font-weight="700">C5</text>
-  <rect x="44" y="114" width="80" height="48" rx="16" fill="white"/>
-  <text x="84" y="144" text-anchor="middle" fill="#0F766E" font-size="20" font-family="Arial, sans-serif" font-weight="700">R1</text>
-  <rect x="140" y="114" width="56" height="56" rx="18" fill="#38BDF8"/>
-  <rect x="206" y="114" width="56" height="56" rx="18" fill="#34D399"/>
-  <rect x="272" y="114" width="56" height="56" rx="18" fill="#A855F7"/>
-  <rect x="338" y="114" width="56" height="56" rx="18" fill="#FB923C"/>
-  <rect x="404" y="114" width="56" height="56" rx="18" fill="#A855F7"/>
-  <rect x="44" y="180" width="80" height="48" rx="16" fill="white"/>
-  <text x="84" y="210" text-anchor="middle" fill="#0F766E" font-size="20" font-family="Arial, sans-serif" font-weight="700">R2</text>
-  <rect x="140" y="180" width="56" height="56" rx="18" fill="#38BDF8"/>
-  <rect x="206" y="180" width="56" height="56" rx="18" fill="#38BDF8"/>
-  <rect x="272" y="180" width="56" height="56" rx="18" fill="#38BDF8"/>
-  <rect x="338" y="180" width="56" height="56" rx="18" fill="#A855F7"/>
-  <rect x="404" y="180" width="56" height="56" rx="18" fill="#38BDF8"/>
-  <rect x="494" y="114" width="102" height="122" rx="22" fill="white"/>
-  <text x="516" y="146" fill="#0F766E" font-size="18" font-family="Arial, sans-serif" font-weight="700">TARGET</text>
-  <text x="516" y="182" fill="#164E63" font-size="28" font-family="Arial, sans-serif" font-weight="700">2200</text>
-  <text x="516" y="214" fill="#0F766E" font-size="18" font-family="Arial, sans-serif" font-weight="700">BEST 14</text>
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <title>Cascade Clear board with row and column trigger rails surrounding a color token grid</title>
+  <defs>
+    <linearGradient id="cascade-clear-background" x1="48" y1="36" x2="454" y2="474" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0d3a4f" />
+      <stop offset="1" stop-color="#02182a" />
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="44" fill="url(#cascade-clear-background)" />
+  <circle cx="410" cy="92" r="136" fill="rgba(6, 182, 212, 0.16)" />
+  <circle cx="104" cy="418" r="118" fill="rgba(56, 189, 248, 0.09)" />
+  <rect x="12" y="12" width="488" height="488" rx="42" fill="rgba(15, 46, 63, 0.94)" stroke="rgba(128, 201, 220, 0.16)" stroke-width="2" />
+  <g transform="translate(256 256) scale(1.12) translate(-256 -256)"><rect x="170" y="158" width="166" height="166" rx="26" fill="rgba(27, 66, 83, 0.96)" stroke="rgba(128, 201, 220, 0.22)" stroke-width="1.5" /><rect x="188" y="176" width="38" height="38" rx="7" fill="rgba(251, 113, 133, 0.68)" stroke="rgba(128, 201, 220, 0.18)" stroke-width="1.2" /><rect x="234" y="176" width="38" height="38" rx="7" fill="rgba(245, 158, 11, 0.82)" stroke="rgba(128, 201, 220, 0.18)" stroke-width="1.2" /><rect x="280" y="176" width="38" height="38" rx="7" fill="rgba(56, 189, 248, 0.78)" stroke="rgba(128, 201, 220, 0.18)" stroke-width="1.2" /><rect x="188" y="222" width="38" height="38" rx="7" fill="rgba(34, 197, 94, 0.72)" stroke="rgba(128, 201, 220, 0.18)" stroke-width="1.2" /><rect x="234" y="222" width="38" height="38" rx="7" fill="rgba(56, 189, 248, 0.78)" stroke="rgba(128, 201, 220, 0.18)" stroke-width="1.2" /><rect x="280" y="222" width="38" height="38" rx="7" fill="rgba(245, 158, 11, 0.82)" stroke="rgba(128, 201, 220, 0.18)" stroke-width="1.2" /><rect x="188" y="268" width="38" height="38" rx="7" fill="rgba(245, 158, 11, 0.82)" stroke="rgba(128, 201, 220, 0.18)" stroke-width="1.2" /><rect x="234" y="268" width="38" height="38" rx="7" fill="rgba(34, 197, 94, 0.72)" stroke="rgba(128, 201, 220, 0.18)" stroke-width="1.2" /><rect x="280" y="268" width="38" height="38" rx="7" fill="rgba(251, 113, 133, 0.68)" stroke="rgba(128, 201, 220, 0.18)" stroke-width="1.2" /><rect x="178" y="96" width="54" height="40" rx="16" fill="rgba(6, 182, 212, 0.28)" stroke="rgba(98, 203, 224, 0.85)" stroke-width="1.5" /><text x="205" y="117" font-family="'Avenir Next', 'Trebuchet MS', 'Segoe UI', sans-serif" font-weight="700" text-anchor="middle" dominant-baseline="middle" fill="#f8fafc" font-size="15.120000000000001">R</text><rect x="240" y="96" width="54" height="40" rx="16" fill="rgba(38, 98, 121, 0.92)" stroke="rgba(128, 201, 220, 0.24)" stroke-width="1.5" /><text x="267" y="117" font-family="'Avenir Next', 'Trebuchet MS', 'Segoe UI', sans-serif" font-weight="700" text-anchor="middle" dominant-baseline="middle" fill="#cbd5e1" font-size="15.120000000000001">R</text><rect x="302" y="96" width="54" height="40" rx="16" fill="rgba(38, 98, 121, 0.92)" stroke="rgba(128, 201, 220, 0.24)" stroke-width="1.5" /><text x="329" y="117" font-family="'Avenir Next', 'Trebuchet MS', 'Segoe UI', sans-serif" font-weight="700" text-anchor="middle" dominant-baseline="middle" fill="#cbd5e1" font-size="15.120000000000001">R</text><rect x="110" y="170" width="40" height="54" rx="16" fill="rgba(6, 182, 212, 0.28)" stroke="rgba(98, 203, 224, 0.85)" stroke-width="1.5" /><text x="130" y="198" font-family="'Avenir Next', 'Trebuchet MS', 'Segoe UI', sans-serif" font-weight="700" text-anchor="middle" dominant-baseline="middle" fill="#f8fafc" font-size="11.200000000000001">C</text><rect x="110" y="232" width="40" height="54" rx="16" fill="rgba(38, 98, 121, 0.92)" stroke="rgba(128, 201, 220, 0.24)" stroke-width="1.5" /><text x="130" y="260" font-family="'Avenir Next', 'Trebuchet MS', 'Segoe UI', sans-serif" font-weight="700" text-anchor="middle" dominant-baseline="middle" fill="#cbd5e1" font-size="11.200000000000001">C</text><rect x="110" y="294" width="40" height="54" rx="16" fill="rgba(38, 98, 121, 0.92)" stroke="rgba(128, 201, 220, 0.24)" stroke-width="1.5" /><text x="130" y="322" font-family="'Avenir Next', 'Trebuchet MS', 'Segoe UI', sans-serif" font-weight="700" text-anchor="middle" dominant-baseline="middle" fill="#cbd5e1" font-size="11.200000000000001">C</text></g>
 </svg>

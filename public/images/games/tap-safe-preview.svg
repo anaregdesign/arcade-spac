@@ -1,69 +1,14 @@
-<svg width="360" height="360" viewBox="140 0 360 360" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="640" height="360" rx="36" fill="#020617"/>
-  <rect x="28" y="28" width="584" height="304" rx="28" fill="url(#bg)"/>
-  <rect x="78" y="72" width="484" height="216" rx="24" fill="#0F172A" stroke="#1E293B" stroke-width="2"/>
-  <g opacity="0.42" stroke="#334155" stroke-width="2">
-    <path d="M158 72V288"/>
-    <path d="M238 72V288"/>
-    <path d="M318 72V288"/>
-    <path d="M398 72V288"/>
-    <path d="M478 72V288"/>
-    <path d="M78 126H562"/>
-    <path d="M78 180H562"/>
-    <path d="M78 234H562"/>
-  </g>
-  <g>
-    <rect x="108" y="94" width="54" height="54" rx="18" fill="url(#safeCard)"/>
-    <text x="135" y="124" fill="#F8FAFC" font-family="Arial, sans-serif" font-size="22" font-weight="700" text-anchor="middle">◎</text>
-    <rect x="112" y="128" width="46" height="14" rx="7" fill="#0F172A"/>
-    <text x="135" y="139" fill="#E2E8F0" font-family="Arial, sans-serif" font-size="9" font-weight="700" text-anchor="middle">SAFE</text>
-  </g>
-  <g>
-    <rect x="268" y="148" width="54" height="54" rx="18" fill="url(#safeCard)"/>
-    <text x="295" y="178" fill="#F8FAFC" font-family="Arial, sans-serif" font-size="22" font-weight="700" text-anchor="middle">✦</text>
-    <rect x="272" y="182" width="46" height="14" rx="7" fill="#0F172A"/>
-    <text x="295" y="193" fill="#E2E8F0" font-family="Arial, sans-serif" font-size="9" font-weight="700" text-anchor="middle">GO</text>
-  </g>
-  <g>
-    <rect x="430" y="202" width="54" height="54" rx="18" fill="url(#safeCard)"/>
-    <text x="457" y="232" fill="#F8FAFC" font-family="Arial, sans-serif" font-size="22" font-weight="700" text-anchor="middle">◉</text>
-    <rect x="434" y="236" width="46" height="14" rx="7" fill="#0F172A"/>
-    <text x="457" y="247" fill="#E2E8F0" font-family="Arial, sans-serif" font-size="9" font-weight="700" text-anchor="middle">OK</text>
-  </g>
-  <g>
-    <rect x="188" y="94" width="54" height="54" rx="18" fill="url(#hazardCard)"/>
-    <text x="215" y="124" fill="#F8FAFC" font-family="Arial, sans-serif" font-size="22" font-weight="700" text-anchor="middle">▲</text>
-    <rect x="192" y="128" width="46" height="14" rx="7" fill="#0F172A"/>
-    <text x="215" y="139" fill="#E2E8F0" font-family="Arial, sans-serif" font-size="9" font-weight="700" text-anchor="middle">HAZ</text>
-  </g>
-  <g>
-    <rect x="348" y="148" width="54" height="54" rx="18" fill="url(#hazardCard)"/>
-    <text x="375" y="178" fill="#F8FAFC" font-family="Arial, sans-serif" font-size="22" font-weight="700" text-anchor="middle">✕</text>
-    <rect x="352" y="182" width="46" height="14" rx="7" fill="#0F172A"/>
-    <text x="375" y="193" fill="#E2E8F0" font-family="Arial, sans-serif" font-size="9" font-weight="700" text-anchor="middle">NO</text>
-  </g>
-  <g>
-    <rect x="510" y="94" width="54" height="54" rx="18" fill="url(#hazardCard)"/>
-    <text x="537" y="124" fill="#F8FAFC" font-family="Arial, sans-serif" font-size="22" font-weight="700" text-anchor="middle">◆</text>
-    <rect x="514" y="128" width="46" height="14" rx="7" fill="#0F172A"/>
-    <text x="537" y="139" fill="#E2E8F0" font-family="Arial, sans-serif" font-size="9" font-weight="700" text-anchor="middle">RISK</text>
-  </g>
-  <rect x="86" y="302" width="150" height="10" rx="5" fill="#1E293B"/>
-  <rect x="86" y="302" width="88" height="10" rx="5" fill="#22C55E"/>
-  <text x="252" y="311" fill="#E2E8F0" font-family="Arial, sans-serif" font-size="12" font-weight="700">Hits 12 / 16</text>
-  <text x="430" y="311" fill="#F8FAFC" font-family="Arial, sans-serif" font-size="12" font-weight="700">Accuracy 86%</text>
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <title>Tap Safe wave board mixing safe targets and hazard objects with short-lived badges</title>
   <defs>
-    <linearGradient id="bg" x1="80" y1="28" x2="560" y2="332" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#111827"/>
-      <stop offset="1" stop-color="#0F172A"/>
-    </linearGradient>
-    <linearGradient id="safeCard" x1="135" y1="94" x2="135" y2="148" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#22C55E"/>
-      <stop offset="1" stop-color="#14532D"/>
-    </linearGradient>
-    <linearGradient id="hazardCard" x1="215" y1="94" x2="215" y2="148" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#EF4444"/>
-      <stop offset="1" stop-color="#7F1D1D"/>
+    <linearGradient id="tap-safe-background" x1="48" y1="36" x2="454" y2="474" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#422b26" />
+      <stop offset="1" stop-color="#1b1117" />
     </linearGradient>
   </defs>
+  <rect width="512" height="512" rx="44" fill="url(#tap-safe-background)" />
+  <circle cx="410" cy="92" r="136" fill="rgba(249, 115, 22, 0.16)" />
+  <circle cx="104" cy="418" r="118" fill="rgba(56, 189, 248, 0.09)" />
+  <rect x="12" y="12" width="488" height="488" rx="42" fill="rgba(49, 37, 37, 0.94)" stroke="rgba(220, 176, 148, 0.16)" stroke-width="2" />
+  <g transform="translate(256 256) scale(1.12) translate(-256 -256)"><rect x="60" y="110" width="392" height="256" rx="26" fill="rgba(70, 54, 49, 0.96)" stroke="rgba(220, 176, 148, 0.22)" stroke-width="1.5" /><circle cx="116" cy="206" r="28" fill="rgba(34, 197, 94, 0.88)" /><circle cx="192" cy="170" r="24" fill="rgba(34, 197, 94, 0.88)" /><circle cx="260" cy="224" r="30" fill="rgba(251, 113, 133, 0.9)" /><circle cx="340" cy="180" r="26" fill="rgba(34, 197, 94, 0.88)" /><polygon points="404,212 376,240 404,268 432,240" fill="rgba(251, 113, 133, 0.9)" /><line x1="244" y1="208" x2="276" y2="240" stroke="#f8fafc" stroke-width="5" stroke-linecap="round" /><line x1="276" y1="208" x2="244" y2="240" stroke="#f8fafc" stroke-width="5" stroke-linecap="round" /><rect x="86" y="384" width="150" height="44" rx="16" fill="rgba(249, 115, 22, 0.28)" stroke="rgba(239, 164, 114, 0.85)" stroke-width="1.5" /><text x="161" y="407" font-family="'Avenir Next', 'Trebuchet MS', 'Segoe UI', sans-serif" font-weight="700" text-anchor="middle" dominant-baseline="middle" fill="#f8fafc" font-size="24">SAFE</text><rect x="276" y="384" width="150" height="44" rx="16" fill="rgba(106, 79, 67, 0.92)" stroke="rgba(220, 176, 148, 0.24)" stroke-width="1.5" /><text x="351" y="407" font-family="'Avenir Next', 'Trebuchet MS', 'Segoe UI', sans-serif" font-weight="700" text-anchor="middle" dominant-baseline="middle" fill="#cbd5e1" font-size="24">AVOID</text></g>
 </svg>

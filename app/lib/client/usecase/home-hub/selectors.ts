@@ -17,7 +17,7 @@ export type HomeGameCard = HomeGame & {
   statusLabel: string;
 };
 
-const previewByGameKey: Record<string, Pick<HomeGameCard, "previewAlt" | "previewObjectPosition" | "previewSrc">> = {
+export const previewByGameKey: Record<string, Pick<HomeGameCard, "previewAlt" | "previewObjectPosition" | "previewSrc">> = {
   "beat-match": {
     previewAlt: "Beat Match lane board with a center hit zone and three rhythm lanes",
     previewSrc: "/images/games/beat-match-preview.svg",
@@ -120,7 +120,7 @@ const previewByGameKey: Record<string, Pick<HomeGameCard, "previewAlt" | "previe
   },
   minesweeper: {
     previewAlt: "Minesweeper board with opened cells and numbered hints",
-    previewSrc: "/images/games/minesweeper-preview.png",
+    previewSrc: "/images/games/minesweeper-preview.svg",
   },
   "number-chain": {
     previewAlt: "Number Chain board with numbered tiles that must be tapped in order",
@@ -162,9 +162,25 @@ const previewByGameKey: Record<string, Pick<HomeGameCard, "previewAlt" | "previe
     previewAlt: "Quick Sum prompt card with arithmetic and multiple answer choices",
     previewSrc: "/images/games/quick-sum-preview.svg",
   },
+  "shape-morph": {
+    previewAlt: "Shape Morph prompt showing a sequence of evolving glyphs and four answer choices",
+    previewSrc: "/images/games/shape-morph-preview.svg",
+  },
+  "sum-grid": {
+    previewAlt: "Sum Grid board showing row and column targets around a number grid",
+    previewSrc: "/images/games/sum-grid-preview.svg",
+  },
+  "swap-solve": {
+    previewAlt: "Swap Solve board showing target and live grids connected by a swap arrow",
+    previewSrc: "/images/games/swap-solve-preview.svg",
+  },
   "symbol-hunt": {
     previewAlt: "Symbol Hunt board with a target symbol and a noisy symbol grid",
     previewSrc: "/images/games/symbol-hunt-preview.svg",
+  },
+  "hidden-find": {
+    previewAlt: "Hidden Find scene filled with lookalike symbols and one highlighted target motif",
+    previewSrc: "/images/games/hidden-find-preview.svg",
   },
   "spot-change": {
     previewAlt: "Spot Change original and changed scene boards with one highlighted difference",
@@ -172,8 +188,7 @@ const previewByGameKey: Record<string, Pick<HomeGameCard, "previewAlt" | "previe
   },
   sudoku: {
     previewAlt: "Sudoku puzzle board with preset digits and empty cells",
-    previewObjectPosition: "top center",
-    previewSrc: "/images/games/sudoku-preview.png",
+    previewSrc: "/images/games/sudoku-preview.svg",
   },
   "target-trail": {
     previewAlt: "Target Trail grid with one highlighted tile and visited cells behind it",

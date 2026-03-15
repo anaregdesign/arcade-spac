@@ -1,16 +1,14 @@
-<svg width="720" height="720" viewBox="240 0 720 720" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="1200" height="720" rx="40" fill="#0F172A"/>
-  <rect x="120" y="104" width="960" height="512" rx="36" fill="#111827" stroke="#334155" stroke-width="2"/>
-  <text x="164" y="166" fill="#E2E8F0" font-family="sans-serif" font-size="30" font-weight="700">Hue Drift</text>
-  <text x="164" y="204" fill="#94A3B8" font-family="sans-serif" font-size="20">Infer the missing gradient step from the visible color drift.</text>
-  <rect x="184" y="278" width="132" height="132" rx="24" fill="hsl(198 74% 38%)"/>
-  <rect x="338" y="278" width="132" height="132" rx="24" fill="hsl(198 66% 46%)"/>
-  <rect x="492" y="278" width="132" height="132" rx="24" fill="#1E293B" stroke="#E2E8F0" stroke-width="3" stroke-dasharray="10 10"/>
-  <rect x="646" y="278" width="132" height="132" rx="24" fill="hsl(198 50% 62%)"/>
-  <rect x="800" y="278" width="132" height="132" rx="24" fill="hsl(198 42% 70%)"/>
-  <text x="558" y="356" fill="#E2E8F0" font-family="sans-serif" font-size="48" font-weight="700" text-anchor="middle">?</text>
-  <rect x="292" y="466" width="132" height="88" rx="22" fill="hsl(198 58% 54%)" stroke="#F8FAFC" stroke-width="4"/>
-  <rect x="446" y="466" width="132" height="88" rx="22" fill="hsl(212 58% 54%)"/>
-  <rect x="600" y="466" width="132" height="88" rx="22" fill="hsl(198 64% 58%)"/>
-  <rect x="754" y="466" width="132" height="88" rx="22" fill="hsl(198 48% 60%)"/>
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <title>Hue Drift gradient row with a missing color step and answer swatches</title>
+  <defs>
+    <linearGradient id="hue-drift-background" x1="48" y1="36" x2="454" y2="474" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#423523" />
+      <stop offset="1" stop-color="#1a1516" />
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="44" fill="url(#hue-drift-background)" />
+  <circle cx="410" cy="92" r="136" fill="rgba(245, 158, 11, 0.16)" />
+  <circle cx="104" cy="418" r="118" fill="rgba(56, 189, 248, 0.09)" />
+  <rect x="12" y="12" width="488" height="488" rx="42" fill="rgba(49, 43, 35, 0.94)" stroke="rgba(219, 192, 144, 0.16)" stroke-width="2" />
+  <g transform="translate(256 256) scale(1.12) translate(-256 -256)"><rect x="68" y="118" width="58" height="124" rx="20" fill="#ef4444" stroke="rgba(219, 192, 144, 0.2)" stroke-width="1.5" opacity="1" /><rect x="144" y="118" width="58" height="124" rx="20" fill="#f97316" stroke="rgba(219, 192, 144, 0.2)" stroke-width="1.5" opacity="1" /><rect x="220" y="118" width="58" height="124" rx="20" fill="#f59e0b" stroke="rgba(248, 250, 252, 0.8)" stroke-width="4" opacity="0.28" /><rect x="296" y="118" width="58" height="124" rx="20" fill="#84cc16" stroke="rgba(219, 192, 144, 0.2)" stroke-width="1.5" opacity="1" /><rect x="372" y="118" width="58" height="124" rx="20" fill="#22c55e" stroke="rgba(219, 192, 144, 0.2)" stroke-width="1.5" opacity="1" /><rect x="92" y="308" width="72" height="44" rx="16" fill="rgba(105, 91, 64, 0.92)" stroke="rgba(219, 192, 144, 0.24)" stroke-width="1.5" /><text x="128" y="331" font-family="'Avenir Next', 'Trebuchet MS', 'Segoe UI', sans-serif" font-weight="700" text-anchor="middle" dominant-baseline="middle" fill="#cbd5e1" font-size="20.160000000000004">A</text><rect x="176" y="308" width="72" height="44" rx="16" fill="rgba(245, 158, 11, 0.28)" stroke="rgba(237, 189, 107, 0.85)" stroke-width="1.5" /><text x="212" y="331" font-family="'Avenir Next', 'Trebuchet MS', 'Segoe UI', sans-serif" font-weight="700" text-anchor="middle" dominant-baseline="middle" fill="#f8fafc" font-size="20.160000000000004">B</text><rect x="260" y="308" width="72" height="44" rx="16" fill="rgba(105, 91, 64, 0.92)" stroke="rgba(219, 192, 144, 0.24)" stroke-width="1.5" /><text x="296" y="331" font-family="'Avenir Next', 'Trebuchet MS', 'Segoe UI', sans-serif" font-weight="700" text-anchor="middle" dominant-baseline="middle" fill="#cbd5e1" font-size="20.160000000000004">C</text><rect x="344" y="308" width="72" height="44" rx="16" fill="rgba(105, 91, 64, 0.92)" stroke="rgba(219, 192, 144, 0.24)" stroke-width="1.5" /><text x="380" y="331" font-family="'Avenir Next', 'Trebuchet MS', 'Segoe UI', sans-serif" font-weight="700" text-anchor="middle" dominant-baseline="middle" fill="#cbd5e1" font-size="20.160000000000004">D</text></g>
 </svg>

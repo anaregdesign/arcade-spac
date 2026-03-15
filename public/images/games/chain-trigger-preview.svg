@@ -1,22 +1,14 @@
-<svg width="360" height="360" viewBox="140 0 360 360" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="640" height="360" rx="32" fill="#020617"/>
-  <rect x="28" y="28" width="584" height="304" rx="28" fill="url(#bg)"/>
-  <path d="M132 194L246 194L358 144L474 144" stroke="#38BDF8" stroke-width="8" stroke-linecap="round"/>
-  <path d="M246 110L358 144" stroke="#C084FC" stroke-width="8" stroke-linecap="round"/>
-  <circle cx="132" cy="194" r="34" fill="#FBBF24"/>
-  <circle cx="246" cy="194" r="30" fill="#0F172A" stroke="#38BDF8" stroke-width="8"/>
-  <circle cx="246" cy="110" r="30" fill="#0F172A" stroke="#C084FC" stroke-width="8"/>
-  <circle cx="358" cy="144" r="32" fill="#0F172A" stroke="#38BDF8" stroke-width="8"/>
-  <circle cx="474" cy="144" r="34" fill="#22D3EE"/>
-  <text x="132" y="201" fill="#0F172A" font-family="Arial, sans-serif" font-size="18" font-weight="700" text-anchor="middle">S</text>
-  <text x="246" y="200" fill="#E2E8F0" font-family="Arial, sans-serif" font-size="16" font-weight="700" text-anchor="middle">1/1</text>
-  <text x="246" y="116" fill="#E2E8F0" font-family="Arial, sans-serif" font-size="16" font-weight="700" text-anchor="middle">ARM</text>
-  <text x="358" y="150" fill="#E2E8F0" font-family="Arial, sans-serif" font-size="16" font-weight="700" text-anchor="middle">2/2</text>
-  <text x="474" y="151" fill="#082F49" font-family="Arial, sans-serif" font-size="16" font-weight="700" text-anchor="middle">W4</text>
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <title>Chain Trigger graph board with a source node, armed helper node, and propagation links</title>
   <defs>
-    <linearGradient id="bg" x1="320" y1="28" x2="320" y2="332" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#0F172A"/>
-      <stop offset="1" stop-color="#020617"/>
+    <linearGradient id="chain-trigger-background" x1="48" y1="36" x2="454" y2="474" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#183c57" />
+      <stop offset="1" stop-color="#07182e" />
     </linearGradient>
   </defs>
+  <rect width="512" height="512" rx="44" fill="url(#chain-trigger-background)" />
+  <circle cx="410" cy="92" r="136" fill="rgba(56, 189, 248, 0.16)" />
+  <circle cx="104" cy="418" r="118" fill="rgba(56, 189, 248, 0.09)" />
+  <rect x="12" y="12" width="488" height="488" rx="42" fill="rgba(22, 47, 68, 0.94)" stroke="rgba(147, 204, 234, 0.16)" stroke-width="2" />
+  <g transform="translate(256 256) scale(1.12) translate(-256 -256)"><rect x="68" y="90" width="376" height="300" rx="26" fill="rgba(36, 68, 90, 0.96)" stroke="rgba(147, 204, 234, 0.22)" stroke-width="1.5" /><line x1="146" y1="198" x2="220" y2="198" stroke="rgba(147, 204, 234, 0.6)" stroke-linecap="round" stroke-width="5" /><polygon points="220,198 202,190 202,206" fill="rgba(147, 204, 234, 0.6)" /><line x1="256" y1="198" x2="332" y2="150" stroke="rgba(147, 204, 234, 0.6)" stroke-linecap="round" stroke-width="5" /><polygon points="332,150 312.50925581433864,152.8479626207359 321.05314367654637,166.37578506923145" fill="rgba(147, 204, 234, 0.6)" /><line x1="256" y1="198" x2="332" y2="248" stroke="rgba(147, 204, 234, 0.6)" stroke-linecap="round" stroke-width="5" /><polygon points="332,248 321.35942453141934,231.4235663154755 312.56556050779886,244.79023963137854" fill="rgba(147, 204, 234, 0.6)" /><circle cx="134" cy="198" r="34" fill="rgba(34, 197, 94, 0.24)" stroke="rgba(34, 197, 94, 0.9)" stroke-width="4" /><circle cx="256" cy="198" r="30" fill="rgba(56, 189, 248, 0.24)" stroke="rgba(127, 207, 245, 0.9)" stroke-width="4" /><circle cx="356" cy="146" r="28" fill="rgba(56, 189, 248, 0.24)" stroke="rgba(56, 189, 248, 0.9)" stroke-width="4" /><circle cx="356" cy="250" r="28" fill="rgba(245, 158, 11, 0.24)" stroke="rgba(245, 158, 11, 0.9)" stroke-width="4" /><text x="134" y="198" font-family="'Avenir Next', 'Trebuchet MS', 'Segoe UI', sans-serif" font-weight="700" text-anchor="middle" dominant-baseline="middle" fill="#f8fafc" font-size="28">S</text><text x="256" y="198" font-family="'Avenir Next', 'Trebuchet MS', 'Segoe UI', sans-serif" font-weight="700" text-anchor="middle" dominant-baseline="middle" fill="#f8fafc" font-size="30">+</text></g>
 </svg>

@@ -1,28 +1,14 @@
-<svg width="384" height="384" viewBox="168 72 384 384" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <title>Pair Flip board with memory cards being turned over to reveal matching symbols</title>
   <defs>
-    <linearGradient id="bg" x1="72" y1="52" x2="648" y2="472" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#F8FAFC"/>
-      <stop offset="1" stop-color="#DDE5ED"/>
-    </linearGradient>
-    <linearGradient id="panel" x1="140" y1="104" x2="580" y2="420" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#FFFFFF"/>
-      <stop offset="1" stop-color="#EBF1F6"/>
+    <linearGradient id="pair-flip-background" x1="48" y1="36" x2="454" y2="474" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#271f55" />
+      <stop offset="1" stop-color="#0e0b2c" />
     </linearGradient>
   </defs>
-  <rect width="720" height="520" rx="40" fill="url(#bg)"/>
-  <rect x="136" y="104" width="448" height="328" rx="30" fill="url(#panel)" stroke="#C4D2DC" stroke-width="4"/>
-  <text x="186" y="166" fill="#536270" font-family="ui-sans-serif, system-ui" font-size="26" font-weight="700">Memory Board</text>
-  <g transform="translate(164 214)">
-    <rect x="0" y="0" width="76" height="96" rx="20" fill="#DDE6F0"/>
-    <rect x="88" y="0" width="76" height="96" rx="20" fill="#DDE6F0"/>
-    <rect x="176" y="0" width="76" height="96" rx="20" fill="#C7E8FF"/>
-    <text x="202" y="60" fill="#12486E" font-family="ui-sans-serif, system-ui" font-size="34" font-weight="800">B</text>
-    <rect x="264" y="0" width="76" height="96" rx="20" fill="#DDE6F0"/>
-    <rect x="0" y="108" width="76" height="96" rx="20" fill="#F6D6C7"/>
-    <text x="26" y="168" fill="#8B4424" font-family="ui-sans-serif, system-ui" font-size="34" font-weight="800">K</text>
-    <rect x="88" y="108" width="76" height="96" rx="20" fill="#DDE6F0"/>
-    <rect x="176" y="108" width="76" height="96" rx="20" fill="#DDE6F0"/>
-    <rect x="264" y="108" width="76" height="96" rx="20" fill="#C7E8FF"/>
-    <text x="290" y="168" fill="#12486E" font-family="ui-sans-serif, system-ui" font-size="34" font-weight="800">B</text>
-  </g>
+  <rect width="512" height="512" rx="44" fill="url(#pair-flip-background)" />
+  <circle cx="410" cy="92" r="136" fill="rgba(124, 58, 237, 0.16)" />
+  <circle cx="104" cy="418" r="118" fill="rgba(56, 189, 248, 0.09)" />
+  <rect x="12" y="12" width="488" height="488" rx="42" fill="rgba(32, 29, 67, 0.94)" stroke="rgba(173, 154, 230, 0.16)" stroke-width="2" />
+  <g transform="translate(256 256) scale(1.12) translate(-256 -256)"><rect x="88" y="118" width="86" height="118" rx="26" fill="rgba(71, 63, 128, 0.92)" stroke="rgba(173, 154, 230, 0.22)" stroke-width="1.5" /><rect x="212" y="118" width="86" height="118" rx="26" fill="rgba(124, 58, 237, 0.22)" stroke="rgba(173, 154, 230, 0.22)" stroke-width="1.5" /><rect x="336" y="118" width="86" height="118" rx="26" fill="rgba(71, 63, 128, 0.92)" stroke="rgba(173, 154, 230, 0.22)" stroke-width="1.5" /><rect x="150" y="254" width="86" height="118" rx="26" fill="rgba(124, 58, 237, 0.22)" stroke="rgba(173, 154, 230, 0.22)" stroke-width="1.5" /><rect x="274" y="254" width="86" height="118" rx="26" fill="rgba(71, 63, 128, 0.92)" stroke="rgba(173, 154, 230, 0.22)" stroke-width="1.5" /><polygon points="255,156 235,176 255,196 275,176" fill="#915af0" /><polygon points="193,292 173,312 193,332 213,312" fill="#915af0" /><text x="131" y="178" font-family="'Avenir Next', 'Trebuchet MS', 'Segoe UI', sans-serif" font-weight="700" text-anchor="middle" dominant-baseline="middle" fill="#cbd5e1" font-size="36">?</text><text x="379" y="178" font-family="'Avenir Next', 'Trebuchet MS', 'Segoe UI', sans-serif" font-weight="700" text-anchor="middle" dominant-baseline="middle" fill="#cbd5e1" font-size="36">?</text><text x="317" y="312" font-family="'Avenir Next', 'Trebuchet MS', 'Segoe UI', sans-serif" font-weight="700" text-anchor="middle" dominant-baseline="middle" fill="#cbd5e1" font-size="36">?</text></g>
 </svg>

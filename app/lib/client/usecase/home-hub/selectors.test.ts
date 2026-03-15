@@ -371,8 +371,8 @@ describe("home-hub selectors", () => {
       {
         ...games[7],
         previewAlt: "Sudoku puzzle board with preset digits and empty cells",
-        previewObjectPosition: "top center",
-        previewSrc: "/images/games/sudoku-preview.png",
+        previewObjectPosition: undefined,
+        previewSrc: "/images/games/sudoku-preview.svg",
         recordLabel: "No record",
         runLabel: "1 runs",
         statusLabel: "Played",

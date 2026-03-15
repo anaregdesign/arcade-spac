@@ -1,36 +1,14 @@
-<svg width="480" height="480" viewBox="80 0 480 480" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="640" height="480" rx="36" fill="#F0FDF4"/>
-  <rect x="34" y="34" width="572" height="412" rx="28" fill="url(#bg)" stroke="#22C55E" stroke-opacity="0.18"/>
-  <rect x="92" y="78" width="276" height="324" rx="28" fill="#F7FEE7" stroke="#15803D" stroke-width="3"/>
-  <path d="M147.2 78V402" stroke="#15803D" stroke-opacity="0.12"/>
-  <path d="M202.4 78V402" stroke="#15803D" stroke-opacity="0.12"/>
-  <path d="M257.6 78V402" stroke="#15803D" stroke-opacity="0.12"/>
-  <path d="M312.8 78V402" stroke="#15803D" stroke-opacity="0.12"/>
-  <rect x="92" y="140" width="80" height="46" rx="16" fill="#166534"/>
-  <rect x="244" y="140" width="124" height="46" rx="16" fill="#166534"/>
-  <rect x="92" y="214" width="150" height="38" rx="16" fill="#166534" fill-opacity="0.42"/>
-  <rect x="304" y="214" width="64" height="38" rx="16" fill="#166534" fill-opacity="0.42"/>
-  <circle cx="257.6" cy="336" r="16" fill="url(#runner)" stroke="#F0FDF4" stroke-width="5"/>
-  <rect x="412" y="92" width="148" height="82" rx="22" fill="white" stroke="#22C55E" stroke-opacity="0.18"/>
-  <text x="440" y="126" fill="#15803D" font-family="sans-serif" font-size="18" font-weight="700">Walls cleared</text>
-  <text x="440" y="156" fill="#14532D" font-family="sans-serif" font-size="36" font-weight="800">5 / 8</text>
-  <rect x="412" y="194" width="148" height="82" rx="22" fill="white" stroke="#22C55E" stroke-opacity="0.18"/>
-  <text x="440" y="228" fill="#15803D" font-family="sans-serif" font-size="18" font-weight="700">Perfect passes</text>
-  <text x="440" y="258" fill="#14532D" font-family="sans-serif" font-size="36" font-weight="800">3</text>
-  <g>
-    <rect x="412" y="306" width="68" height="50" rx="16" fill="white" stroke="#22C55E" stroke-opacity="0.24"/>
-    <rect x="492" y="306" width="68" height="50" rx="16" fill="white" stroke="#22C55E" stroke-opacity="0.24"/>
-    <text x="430" y="338" fill="#15803D" font-family="sans-serif" font-size="16" font-weight="700">Lane 2</text>
-    <text x="510" y="338" fill="#15803D" font-family="sans-serif" font-size="16" font-weight="700">Lane 3</text>
-  </g>
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <title>Gap Rush corridor with a drifting runner, live wall opening, and lane target pads</title>
   <defs>
-    <linearGradient id="bg" x1="90" y1="58" x2="560" y2="428" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#F0FDF4"/>
-      <stop offset="1" stop-color="#ECFCCB"/>
+    <linearGradient id="gap-rush-background" x1="48" y1="36" x2="454" y2="474" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#113631" />
+      <stop offset="1" stop-color="#04161c" />
     </linearGradient>
-    <radialGradient id="runner" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(257.6 324) rotate(90) scale(28)">
-      <stop stop-color="#BEF264"/>
-      <stop offset="1" stop-color="#166534"/>
-    </radialGradient>
   </defs>
+  <rect width="512" height="512" rx="44" fill="url(#gap-rush-background)" />
+  <circle cx="410" cy="92" r="136" fill="rgba(22, 163, 74, 0.16)" />
+  <circle cx="104" cy="418" r="118" fill="rgba(56, 189, 248, 0.09)" />
+  <rect x="12" y="12" width="488" height="488" rx="42" fill="rgba(18, 43, 44, 0.94)" stroke="rgba(134, 194, 168, 0.16)" stroke-width="2" />
+  <g transform="translate(256 256) scale(1.12) translate(-256 -256)"><rect x="168" y="56" width="176" height="364" rx="26" fill="rgba(29, 63, 58, 0.96)" stroke="rgba(134, 194, 168, 0.22)" stroke-width="1.5" /><rect x="200" y="92" width="112" height="36" rx="18" fill="rgba(134, 194, 168, 0.12)" /><rect x="200" y="164" width="56" height="40" rx="18" fill="rgba(251, 113, 133, 0.84)" /><rect x="200" y="238" width="112" height="40" rx="18" fill="rgba(134, 194, 168, 0.12)" /><rect x="256" y="312" width="56" height="40" rx="18" fill="rgba(251, 113, 133, 0.84)" /><circle cx="256" cy="356" r="18" fill="#3bb267" /><rect x="88" y="388" width="90" height="42" rx="16" fill="rgba(43, 92, 82, 0.92)" stroke="rgba(134, 194, 168, 0.24)" stroke-width="1.5" /><text x="133" y="410" font-family="'Avenir Next', 'Trebuchet MS', 'Segoe UI', sans-serif" font-weight="700" text-anchor="middle" dominant-baseline="middle" fill="#cbd5e1" font-size="24">L1</text><rect x="211" y="388" width="90" height="42" rx="16" fill="rgba(22, 163, 74, 0.28)" stroke="rgba(108, 192, 144, 0.85)" stroke-width="1.5" /><text x="256" y="410" font-family="'Avenir Next', 'Trebuchet MS', 'Segoe UI', sans-serif" font-weight="700" text-anchor="middle" dominant-baseline="middle" fill="#f8fafc" font-size="24">L2</text><rect x="334" y="388" width="90" height="42" rx="16" fill="rgba(43, 92, 82, 0.92)" stroke="rgba(134, 194, 168, 0.24)" stroke-width="1.5" /><text x="379" y="410" font-family="'Avenir Next', 'Trebuchet MS', 'Segoe UI', sans-serif" font-weight="700" text-anchor="middle" dominant-baseline="middle" fill="#cbd5e1" font-size="24">L3</text></g>
 </svg>

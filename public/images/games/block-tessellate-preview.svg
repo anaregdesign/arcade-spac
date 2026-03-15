@@ -1,54 +1,14 @@
-<svg width="480" height="480" viewBox="80 0 480 480" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="640" height="480" rx="36" fill="#FFF7ED"/>
-  <rect x="34" y="34" width="572" height="412" rx="28" fill="url(#bg)" stroke="#F59E0B" stroke-opacity="0.22"/>
-  <rect x="86" y="96" width="282" height="288" rx="24" fill="#FFFBEB" stroke="#D97706" stroke-opacity="0.22"/>
-  <g opacity="0.52">
-    <rect x="112" y="122" width="42" height="42" rx="12" fill="#FDE68A" stroke="#D97706" stroke-dasharray="6 6"/>
-    <rect x="158" y="122" width="42" height="42" rx="12" fill="#FDE68A" stroke="#D97706" stroke-dasharray="6 6"/>
-    <rect x="204" y="122" width="42" height="42" rx="12" fill="#FDE68A" stroke="#D97706" stroke-dasharray="6 6"/>
-    <rect x="250" y="122" width="42" height="42" rx="12" fill="#FDE68A" stroke="#D97706" stroke-dasharray="6 6"/>
-    <rect x="112" y="168" width="42" height="42" rx="12" fill="#FDE68A" stroke="#D97706" stroke-dasharray="6 6"/>
-    <rect x="158" y="168" width="42" height="42" rx="12" fill="#FDE68A" stroke="#D97706" stroke-dasharray="6 6"/>
-    <rect x="204" y="168" width="42" height="42" rx="12" fill="#FDE68A" stroke="#D97706" stroke-dasharray="6 6"/>
-    <rect x="250" y="168" width="42" height="42" rx="12" fill="#FDE68A" stroke="#D97706" stroke-dasharray="6 6"/>
-    <rect x="204" y="214" width="42" height="42" rx="12" fill="#FDE68A" stroke="#D97706" stroke-dasharray="6 6"/>
-    <rect x="250" y="214" width="42" height="42" rx="12" fill="#FDE68A" stroke="#D97706" stroke-dasharray="6 6"/>
-    <rect x="204" y="260" width="42" height="42" rx="12" fill="#FDE68A" stroke="#D97706" stroke-dasharray="6 6"/>
-    <rect x="250" y="260" width="42" height="42" rx="12" fill="#FDE68A" stroke="#D97706" stroke-dasharray="6 6"/>
-    <rect x="296" y="260" width="42" height="42" rx="12" fill="#FDE68A" stroke="#D97706" stroke-dasharray="6 6"/>
-  </g>
-  <g>
-    <rect x="204" y="168" width="42" height="42" rx="12" fill="#A5F3FC"/>
-    <rect x="250" y="168" width="42" height="42" rx="12" fill="#A5F3FC"/>
-    <rect x="204" y="214" width="42" height="42" rx="12" fill="#A5F3FC"/>
-    <rect x="250" y="214" width="42" height="42" rx="12" fill="#A5F3FC"/>
-  </g>
-  <g opacity="0.8">
-    <rect x="158" y="76" width="42" height="42" rx="12" fill="#E9D5FF"/>
-    <rect x="204" y="76" width="42" height="42" rx="12" fill="#E9D5FF"/>
-    <rect x="158" y="30" width="42" height="42" rx="12" fill="#E9D5FF"/>
-    <rect x="158" y="-16" width="42" height="42" rx="12" fill="#E9D5FF"/>
-  </g>
-  <rect x="402" y="96" width="154" height="108" rx="22" fill="#FFFFFF" stroke="#F59E0B" stroke-opacity="0.18"/>
-  <text x="430" y="132" fill="#92400E" font-family="sans-serif" font-size="18" font-weight="700">Active piece</text>
-  <text x="430" y="170" fill="#431407" font-family="sans-serif" font-size="40" font-weight="800">A</text>
-  <text x="430" y="194" fill="#92400E" font-family="sans-serif" font-size="16">Rotation 2/4</text>
-  <rect x="402" y="220" width="154" height="108" rx="22" fill="#FFFFFF" stroke="#F59E0B" stroke-opacity="0.18"/>
-  <text x="430" y="256" fill="#92400E" font-family="sans-serif" font-size="18" font-weight="700">Next piece</text>
-  <text x="430" y="294" fill="#431407" font-family="sans-serif" font-size="40" font-weight="800">B</text>
-  <text x="430" y="318" fill="#92400E" font-family="sans-serif" font-size="16">Hard drop ghost live</text>
-  <g>
-    <rect x="402" y="348" width="72" height="56" rx="18" fill="#FFFFFF" stroke="#F59E0B" stroke-opacity="0.22"/>
-    <rect x="484" y="348" width="72" height="56" rx="18" fill="#FFFFFF" stroke="#F59E0B" stroke-opacity="0.22"/>
-    <text x="426" y="382" fill="#7C2D12" font-family="sans-serif" font-size="18" font-weight="700">Left</text>
-    <text x="500" y="382" fill="#7C2D12" font-family="sans-serif" font-size="18" font-weight="700">Rotate</text>
-    <rect x="402" y="412" width="154" height="56" rx="18" fill="#D97706"/>
-    <text x="451" y="447" fill="#FFF7ED" font-family="sans-serif" font-size="18" font-weight="700">Hard drop</text>
-  </g>
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <title>Block Tessellate silhouette board with a falling piece queue, ghost landing cells, and hard-drop controls</title>
   <defs>
-    <linearGradient id="bg" x1="88" y1="58" x2="566" y2="428" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#FFF7ED"/>
-      <stop offset="1" stop-color="#FFFBEB"/>
+    <linearGradient id="block-tessellate-background" x1="48" y1="36" x2="454" y2="474" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#423523" />
+      <stop offset="1" stop-color="#1a1516" />
     </linearGradient>
   </defs>
+  <rect width="512" height="512" rx="44" fill="url(#block-tessellate-background)" />
+  <circle cx="410" cy="92" r="136" fill="rgba(245, 158, 11, 0.16)" />
+  <circle cx="104" cy="418" r="118" fill="rgba(56, 189, 248, 0.09)" />
+  <rect x="12" y="12" width="488" height="488" rx="42" fill="rgba(49, 43, 35, 0.94)" stroke="rgba(219, 192, 144, 0.16)" stroke-width="2" />
+  <g transform="translate(256 256) scale(1.12) translate(-256 -256)"><rect x="220" y="98" width="230" height="230" rx="26" fill="rgba(70, 62, 47, 0.96)" stroke="rgba(219, 192, 144, 0.22)" stroke-width="1.5" /><rect x="238" y="116" width="34" height="34" rx="6" fill="rgba(219, 192, 144, 0.12)" stroke="rgba(219, 192, 144, 0.18)" stroke-width="1.2" /><rect x="278" y="116" width="34" height="34" rx="6" fill="rgba(219, 192, 144, 0.12)" stroke="rgba(219, 192, 144, 0.18)" stroke-width="1.2" /><rect x="318" y="116" width="34" height="34" rx="6" fill="rgba(219, 192, 144, 0.12)" stroke="rgba(219, 192, 144, 0.18)" stroke-width="1.2" /><rect x="358" y="116" width="34" height="34" rx="6" fill="#5e5545" stroke="rgba(219, 192, 144, 0.18)" stroke-width="1.2" /><rect x="398" y="116" width="34" height="34" rx="6" fill="#5e5545" stroke="rgba(219, 192, 144, 0.18)" stroke-width="1.2" /><rect x="238" y="156" width="34" height="34" rx="6" fill="#5e5545" stroke="rgba(219, 192, 144, 0.18)" stroke-width="1.2" /><rect x="278" y="156" width="34" height="34" rx="6" fill="#5e5545" stroke="rgba(219, 192, 144, 0.18)" stroke-width="1.2" /><rect x="318" y="156" width="34" height="34" rx="6" fill="rgba(219, 192, 144, 0.12)" stroke="rgba(219, 192, 144, 0.18)" stroke-width="1.2" /><rect x="358" y="156" width="34" height="34" rx="6" fill="#5e5545" stroke="rgba(219, 192, 144, 0.18)" stroke-width="1.2" /><rect x="398" y="156" width="34" height="34" rx="6" fill="#5e5545" stroke="rgba(219, 192, 144, 0.18)" stroke-width="1.2" /><rect x="238" y="196" width="34" height="34" rx="6" fill="#5e5545" stroke="rgba(219, 192, 144, 0.18)" stroke-width="1.2" /><rect x="278" y="196" width="34" height="34" rx="6" fill="#5e5545" stroke="rgba(219, 192, 144, 0.18)" stroke-width="1.2" /><rect x="318" y="196" width="34" height="34" rx="6" fill="rgba(219, 192, 144, 0.12)" stroke="rgba(219, 192, 144, 0.18)" stroke-width="1.2" /><rect x="358" y="196" width="34" height="34" rx="6" fill="rgba(219, 192, 144, 0.12)" stroke="rgba(219, 192, 144, 0.18)" stroke-width="1.2" /><rect x="398" y="196" width="34" height="34" rx="6" fill="#5e5545" stroke="rgba(219, 192, 144, 0.18)" stroke-width="1.2" /><rect x="238" y="236" width="34" height="34" rx="6" fill="#5e5545" stroke="rgba(219, 192, 144, 0.18)" stroke-width="1.2" /><rect x="278" y="236" width="34" height="34" rx="6" fill="#5e5545" stroke="rgba(219, 192, 144, 0.18)" stroke-width="1.2" /><rect x="318" y="236" width="34" height="34" rx="6" fill="#5e5545" stroke="rgba(219, 192, 144, 0.18)" stroke-width="1.2" /><rect x="358" y="236" width="34" height="34" rx="6" fill="rgba(219, 192, 144, 0.12)" stroke="rgba(219, 192, 144, 0.18)" stroke-width="1.2" /><rect x="398" y="236" width="34" height="34" rx="6" fill="#5e5545" stroke="rgba(219, 192, 144, 0.18)" stroke-width="1.2" /><rect x="238" y="276" width="34" height="34" rx="6" fill="#5e5545" stroke="rgba(219, 192, 144, 0.18)" stroke-width="1.2" /><rect x="278" y="276" width="34" height="34" rx="6" fill="#5e5545" stroke="rgba(219, 192, 144, 0.18)" stroke-width="1.2" /><rect x="318" y="276" width="34" height="34" rx="6" fill="#5e5545" stroke="rgba(219, 192, 144, 0.18)" stroke-width="1.2" /><rect x="358" y="276" width="34" height="34" rx="6" fill="rgba(219, 192, 144, 0.12)" stroke="rgba(219, 192, 144, 0.18)" stroke-width="1.2" /><rect x="398" y="276" width="34" height="34" rx="6" fill="#5e5545" stroke="rgba(219, 192, 144, 0.18)" stroke-width="1.2" /><rect x="168" y="96" width="24" height="24" rx="6" fill="#f7ae32" stroke="rgba(247, 174, 50, 0.6)" stroke-width="1.2" /><rect x="196" y="96" width="24" height="24" rx="6" fill="#f7ae32" stroke="rgba(247, 174, 50, 0.6)" stroke-width="1.2" /><rect x="196" y="124" width="24" height="24" rx="6" fill="#f7ae32" stroke="rgba(247, 174, 50, 0.6)" stroke-width="1.2" /><rect x="224" y="124" width="24" height="24" rx="6" fill="#f7ae32" stroke="rgba(247, 174, 50, 0.6)" stroke-width="1.2" /><rect x="108" y="296" width="22" height="22" rx="6" fill="rgba(245, 158, 11, 0.92)" stroke="rgba(NaN, 186, NaN, 0.6)" stroke-width="1.2" /><rect x="134" y="296" width="22" height="22" rx="6" fill="rgba(245, 158, 11, 0.92)" stroke="rgba(NaN, 186, NaN, 0.6)" stroke-width="1.2" /><rect x="108" y="322" width="22" height="22" rx="6" fill="rgba(245, 158, 11, 0.92)" stroke="rgba(NaN, 186, NaN, 0.6)" stroke-width="1.2" /><rect x="134" y="322" width="22" height="22" rx="6" fill="rgba(245, 158, 11, 0.92)" stroke="rgba(NaN, 186, NaN, 0.6)" stroke-width="1.2" /><rect x="114" y="362" width="22" height="22" rx="6" fill="rgba(56, 189, 248, 0.92)" stroke="rgba(NaN, 186, NaN, 0.6)" stroke-width="1.2" /><rect x="140" y="362" width="22" height="22" rx="6" fill="rgba(56, 189, 248, 0.92)" stroke="rgba(NaN, 186, NaN, 0.6)" stroke-width="1.2" /><rect x="166" y="362" width="22" height="22" rx="6" fill="rgba(56, 189, 248, 0.92)" stroke="rgba(NaN, 186, NaN, 0.6)" stroke-width="1.2" /><rect x="140" y="388" width="22" height="22" rx="6" fill="rgba(56, 189, 248, 0.92)" stroke="rgba(NaN, 186, NaN, 0.6)" stroke-width="1.2" /><line x1="182" y1="172" x2="226" y2="194" stroke="#cbd5e1" stroke-linecap="round" stroke-width="5" /><polygon points="226,194 213.47801932600117,178.7947377530014 206.32260179800187,193.10557280900008" fill="#cbd5e1" /><rect x="80" y="238" width="84" height="42" rx="16" fill="rgba(245, 158, 11, 0.28)" stroke="rgba(237, 189, 107, 0.85)" stroke-width="1.5" /><text x="122" y="260" font-family="'Avenir Next', 'Trebuchet MS', 'Segoe UI', sans-serif" font-weight="700" text-anchor="middle" dominant-baseline="middle" fill="#f8fafc" font-size="23.520000000000003">DROP</text></g>
 </svg>

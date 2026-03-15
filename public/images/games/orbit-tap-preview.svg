@@ -1,11 +1,14 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="60 0 200 200" role="img" aria-labelledby="title desc">
-  <title id="title">Orbit Tap preview</title>
-  <desc id="desc">A ring with a highlighted gate and a bright marker orbiting near it.</desc>
-  <rect width="320" height="200" rx="28" fill="#0f172a"/>
-  <circle cx="160" cy="100" r="62" fill="none" stroke="#475569" stroke-width="12"/>
-  <path d="M160 38 A62 62 0 0 1 206 58" fill="none" stroke="#fbbf24" stroke-linecap="round" stroke-width="14"/>
-  <circle cx="213" cy="126" r="12" fill="#60a5fa"/>
-  <circle cx="213" cy="126" r="5" fill="#eff6ff"/>
-  <circle cx="160" cy="100" r="18" fill="#1e293b" stroke="#334155" stroke-width="4"/>
-  <text x="160" y="171" fill="#e2e8f0" font-family="monospace" font-size="16" text-anchor="middle">ORBIT TAP</text>
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <title>Orbit Tap ring with a moving marker and a highlighted gate</title>
+  <defs>
+    <linearGradient id="orbit-tap-background" x1="48" y1="36" x2="454" y2="474" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#142854" />
+      <stop offset="1" stop-color="#060f2c" />
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="44" fill="url(#orbit-tap-background)" />
+  <circle cx="410" cy="92" r="136" fill="rgba(37, 99, 235, 0.16)" />
+  <circle cx="104" cy="418" r="118" fill="rgba(56, 189, 248, 0.09)" />
+  <rect x="12" y="12" width="488" height="488" rx="42" fill="rgba(20, 35, 66, 0.94)" stroke="rgba(140, 170, 229, 0.16)" stroke-width="2" />
+  <g transform="translate(256 256) scale(1.12) translate(-256 -256)"><circle cx="256" cy="236" r="126" fill="none" stroke="rgba(140, 170, 229, 0.18)" stroke-width="28" /><path d="M208 118 A126 126 0 0 1 304 118" fill="none" stroke="#22c55e" stroke-linecap="round" stroke-width="22" /><circle cx="326" cy="336" r="18" fill="#487cee" /><circle cx="256" cy="236" r="12" fill="#f8fafc" /><line x1="256" y1="236" x2="326" y2="336" stroke="rgba(37, 99, 235, 0.72)" stroke-width="5" stroke-linecap="round" /></g>
 </svg>

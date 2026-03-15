@@ -1,39 +1,14 @@
-<svg width="360" height="360" viewBox="140 0 360 360" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="640" height="360" rx="32" fill="#0F172A"/>
-  <rect x="32" y="32" width="576" height="296" rx="28" fill="#111827"/>
-  <rect x="56" y="56" width="248" height="40" rx="20" fill="#1E293B"/>
-  <text x="80" y="81" fill="#E2E8F0" font-family="Arial, sans-serif" font-size="18" font-weight="700">Color Census</text>
-  <text x="328" y="82" fill="#94A3B8" font-family="Arial, sans-serif" font-size="16">Which color appeared most?</text>
-  <g transform="translate(56 116)">
-    <rect x="0" y="0" width="52" height="52" rx="12" fill="#FB7185"/>
-    <rect x="62" y="0" width="52" height="52" rx="12" fill="#F97316"/>
-    <rect x="124" y="0" width="52" height="52" rx="12" fill="#22C55E"/>
-    <rect x="186" y="0" width="52" height="52" rx="12" fill="#FB7185"/>
-    <rect x="0" y="62" width="52" height="52" rx="12" fill="#2563EB"/>
-    <rect x="62" y="62" width="52" height="52" rx="12" fill="#FB7185"/>
-    <rect x="124" y="62" width="52" height="52" rx="12" fill="#F97316"/>
-    <rect x="186" y="62" width="52" height="52" rx="12" fill="#FB7185"/>
-    <rect x="0" y="124" width="52" height="52" rx="12" fill="#22C55E"/>
-    <rect x="62" y="124" width="52" height="52" rx="12" fill="#2563EB"/>
-    <rect x="124" y="124" width="52" height="52" rx="12" fill="#FB7185"/>
-    <rect x="186" y="124" width="52" height="52" rx="12" fill="#F97316"/>
-    <rect x="0" y="186" width="52" height="52" rx="12" fill="#FB7185"/>
-    <rect x="62" y="186" width="52" height="52" rx="12" fill="#22C55E"/>
-    <rect x="124" y="186" width="52" height="52" rx="12" fill="#F97316"/>
-    <rect x="186" y="186" width="52" height="52" rx="12" fill="#2563EB"/>
-  </g>
-  <g transform="translate(352 132)">
-    <rect x="0" y="0" width="104" height="72" rx="18" fill="#1E293B" stroke="#334155"/>
-    <rect x="124" y="0" width="104" height="72" rx="18" fill="#1E293B" stroke="#334155"/>
-    <rect x="0" y="92" width="104" height="72" rx="18" fill="#1E293B" stroke="#334155"/>
-    <rect x="124" y="92" width="104" height="72" rx="18" fill="#1E293B" stroke="#334155"/>
-    <rect x="18" y="16" width="68" height="24" rx="12" fill="#FB7185"/>
-    <text x="35" y="57" fill="#F8FAFC" font-family="Arial, sans-serif" font-size="18" font-weight="700">Rose</text>
-    <rect x="142" y="16" width="68" height="24" rx="12" fill="#F97316"/>
-    <text x="156" y="57" fill="#F8FAFC" font-family="Arial, sans-serif" font-size="18" font-weight="700">Coral</text>
-    <rect x="18" y="108" width="68" height="24" rx="12" fill="#22C55E"/>
-    <text x="39" y="149" fill="#F8FAFC" font-family="Arial, sans-serif" font-size="18" font-weight="700">Mint</text>
-    <rect x="142" y="108" width="68" height="24" rx="12" fill="#2563EB"/>
-    <text x="167" y="149" fill="#F8FAFC" font-family="Arial, sans-serif" font-size="18" font-weight="700">Sky</text>
-  </g>
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <title>Color Census mosaic with a hidden query asking which color appeared most</title>
+  <defs>
+    <linearGradient id="color-census-background" x1="48" y1="36" x2="454" y2="474" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#402242" />
+      <stop offset="1" stop-color="#190d24" />
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="44" fill="url(#color-census-background)" />
+  <circle cx="410" cy="92" r="136" fill="rgba(236, 72, 153, 0.16)" />
+  <circle cx="104" cy="418" r="118" fill="rgba(56, 189, 248, 0.09)" />
+  <rect x="12" y="12" width="488" height="488" rx="42" fill="rgba(48, 31, 55, 0.94)" stroke="rgba(216, 159, 198, 0.16)" stroke-width="2" />
+  <g transform="translate(256 256) scale(1.12) translate(-256 -256)"><rect x="60" y="158" width="236" height="184" rx="26" fill="rgba(68, 47, 73, 0.96)" stroke="rgba(216, 159, 198, 0.22)" stroke-width="1.5" /><rect x="78" y="176" width="44" height="44" rx="8" fill="#f97316" stroke="rgba(216, 159, 198, 0.18)" stroke-width="1.2" /><rect x="130" y="176" width="44" height="44" rx="8" fill="#22c55e" stroke="rgba(216, 159, 198, 0.18)" stroke-width="1.2" /><rect x="182" y="176" width="44" height="44" rx="8" fill="#f97316" stroke="rgba(216, 159, 198, 0.18)" stroke-width="1.2" /><rect x="234" y="176" width="44" height="44" rx="8" fill="#ec4899" stroke="rgba(216, 159, 198, 0.18)" stroke-width="1.2" /><rect x="78" y="228" width="44" height="44" rx="8" fill="#22c55e" stroke="rgba(216, 159, 198, 0.18)" stroke-width="1.2" /><rect x="130" y="228" width="44" height="44" rx="8" fill="#f97316" stroke="rgba(216, 159, 198, 0.18)" stroke-width="1.2" /><rect x="182" y="228" width="44" height="44" rx="8" fill="#38bdf8" stroke="rgba(216, 159, 198, 0.18)" stroke-width="1.2" /><rect x="234" y="228" width="44" height="44" rx="8" fill="#f97316" stroke="rgba(216, 159, 198, 0.18)" stroke-width="1.2" /><rect x="78" y="280" width="44" height="44" rx="8" fill="#f97316" stroke="rgba(216, 159, 198, 0.18)" stroke-width="1.2" /><rect x="130" y="280" width="44" height="44" rx="8" fill="#ec4899" stroke="rgba(216, 159, 198, 0.18)" stroke-width="1.2" /><rect x="182" y="280" width="44" height="44" rx="8" fill="#f97316" stroke="rgba(216, 159, 198, 0.18)" stroke-width="1.2" /><rect x="234" y="280" width="44" height="44" rx="8" fill="#22c55e" stroke="rgba(216, 159, 198, 0.18)" stroke-width="1.2" /><rect x="318" y="118" width="124" height="120" rx="26" fill="rgba(236, 72, 153, 0.18)" stroke="rgba(216, 159, 198, 0.22)" stroke-width="1.5" /><text x="380" y="154" font-family="'Avenir Next', 'Trebuchet MS', 'Segoe UI', sans-serif" font-weight="700" text-anchor="middle" dominant-baseline="middle" fill="#f8fafc" font-size="28">MOST</text><rect x="338" y="186" width="84" height="34" rx="16" fill="rgba(236, 72, 153, 0.28)" stroke="rgba(232, 139, 190, 0.85)" stroke-width="1.5" /><text x="380" y="204" font-family="'Avenir Next', 'Trebuchet MS', 'Segoe UI', sans-serif" font-weight="700" text-anchor="middle" dominant-baseline="middle" fill="#f8fafc" font-size="23.520000000000003">OR?</text></g>
 </svg>

@@ -1,38 +1,14 @@
-<svg width="360" height="360" viewBox="140 0 360 360" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="640" height="360" rx="32" fill="#020617"/>
-  <rect x="28" y="28" width="584" height="304" rx="28" fill="url(#bg)"/>
-  <rect x="126" y="84" width="388" height="24" rx="12" fill="#0F172A"/>
-  <rect x="252" y="78" width="124" height="36" rx="18" fill="#0F172A" stroke="#FBBF24" stroke-width="2"/>
-  <circle cx="306" cy="96" r="10" fill="#F8FAFC"/>
-  <circle cx="414" cy="96" r="12" fill="#22D3EE"/>
-  <g>
-    <rect x="92" y="136" width="200" height="148" rx="24" fill="#082F49"/>
-    <circle cx="192" cy="210" r="42" fill="url(#orbA)"/>
-    <circle cx="192" cy="210" r="58" stroke="#E2E8F0" stroke-opacity="0.28" stroke-width="8"/>
-    <text x="192" y="162" fill="#BAE6FD" font-family="Arial, sans-serif" font-size="16" font-weight="700" text-anchor="middle">Node A</text>
-    <text x="192" y="280" fill="#E2E8F0" font-family="Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle">Tap target now</text>
-  </g>
-  <g>
-    <rect x="348" y="136" width="200" height="148" rx="24" fill="#451A03"/>
-    <circle cx="448" cy="210" r="32" fill="url(#orbB)"/>
-    <circle cx="448" cy="210" r="54" stroke="#E2E8F0" stroke-opacity="0.18" stroke-width="8"/>
-    <text x="448" y="162" fill="#FDE68A" font-family="Arial, sans-serif" font-size="16" font-weight="700" text-anchor="middle">Node B</text>
-    <text x="448" y="280" fill="#CBD5E1" font-family="Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle">Decoy node</text>
-  </g>
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <title>Glow Cycle node grid with a highlighted target orb and a shared sync meter</title>
   <defs>
-    <linearGradient id="bg" x1="320" y1="28" x2="320" y2="332" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#0F172A"/>
-      <stop offset="1" stop-color="#020617"/>
+    <linearGradient id="glow-cycle-background" x1="48" y1="36" x2="454" y2="474" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#134055" />
+      <stop offset="1" stop-color="#051b2d" />
     </linearGradient>
-    <radialGradient id="orbA" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(192 210) rotate(90) scale(42)">
-      <stop stop-color="#F8FAFC"/>
-      <stop offset="0.45" stop-color="#22D3EE"/>
-      <stop offset="1" stop-color="#0E7490" stop-opacity="0.2"/>
-    </radialGradient>
-    <radialGradient id="orbB" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(448 210) rotate(90) scale(32)">
-      <stop stop-color="#FEF3C7"/>
-      <stop offset="0.45" stop-color="#F59E0B"/>
-      <stop offset="1" stop-color="#78350F" stop-opacity="0.18"/>
-    </radialGradient>
   </defs>
+  <rect width="512" height="512" rx="44" fill="url(#glow-cycle-background)" />
+  <circle cx="410" cy="92" r="136" fill="rgba(34, 211, 238, 0.16)" />
+  <circle cx="104" cy="418" r="118" fill="rgba(56, 189, 248, 0.09)" />
+  <rect x="12" y="12" width="488" height="488" rx="42" fill="rgba(19, 50, 67, 0.94)" stroke="rgba(139, 212, 230, 0.16)" stroke-width="2" />
+  <g transform="translate(256 256) scale(1.12) translate(-256 -256)"><rect x="84" y="114" width="226" height="226" rx="26" fill="rgba(32, 72, 88, 0.96)" stroke="rgba(139, 212, 230, 0.22)" stroke-width="1.5" /><rect x="102" y="132" width="58" height="58" rx="11" fill="#2f6177" stroke="rgba(139, 212, 230, 0.18)" stroke-width="1.2" /><circle cx="131" cy="161" r="10" fill="#cbd5e1" /><rect x="168" y="132" width="58" height="58" rx="11" fill="#2f6177" stroke="rgba(139, 212, 230, 0.18)" stroke-width="1.2" /><circle cx="197" cy="161" r="10" fill="#cbd5e1" /><rect x="234" y="132" width="58" height="58" rx="11" fill="#2f6177" stroke="rgba(139, 212, 230, 0.18)" stroke-width="1.2" /><circle cx="263" cy="161" r="10" fill="#cbd5e1" /><rect x="102" y="198" width="58" height="58" rx="11" fill="#2f6177" stroke="rgba(139, 212, 230, 0.18)" stroke-width="1.2" /><circle cx="131" cy="227" r="10" fill="#cbd5e1" /><rect x="168" y="198" width="58" height="58" rx="11" fill="#2f6177" stroke="rgba(139, 212, 230, 0.18)" stroke-width="1.2" /><circle cx="197" cy="227" r="15" fill="#45daf1" /><rect x="234" y="198" width="58" height="58" rx="11" fill="#2f6177" stroke="rgba(139, 212, 230, 0.18)" stroke-width="1.2" /><circle cx="263" cy="227" r="10" fill="#cbd5e1" /><rect x="102" y="264" width="58" height="58" rx="11" fill="#2f6177" stroke="rgba(139, 212, 230, 0.18)" stroke-width="1.2" /><circle cx="131" cy="293" r="10" fill="#cbd5e1" /><rect x="168" y="264" width="58" height="58" rx="11" fill="#2f6177" stroke="rgba(139, 212, 230, 0.18)" stroke-width="1.2" /><circle cx="197" cy="293" r="10" fill="#cbd5e1" /><rect x="234" y="264" width="58" height="58" rx="11" fill="#2f6177" stroke="rgba(139, 212, 230, 0.18)" stroke-width="1.2" /><circle cx="263" cy="293" r="10" fill="#cbd5e1" /><rect x="334" y="162" width="72" height="176" rx="26" fill="rgba(34, 197, 94, 0.14)" stroke="rgba(139, 212, 230, 0.22)" stroke-width="1.5" /><rect x="346" y="220" width="48" height="96" rx="18" fill="rgba(34, 197, 94, 0.86)" /></g>
 </svg>

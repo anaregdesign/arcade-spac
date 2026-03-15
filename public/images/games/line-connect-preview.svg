@@ -1,48 +1,14 @@
-<svg width="360" height="360" viewBox="140 0 360 360" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="640" height="360" rx="36" fill="#0F172A"/>
-  <rect x="28" y="28" width="584" height="304" rx="28" fill="#111827" stroke="#334155" stroke-width="2"/>
-  <rect x="52" y="52" width="200" height="72" rx="18" fill="#0F172A" stroke="#334155"/>
-  <text x="76" y="84" fill="#E2E8F0" font-family="sans-serif" font-size="20" font-weight="700">Active pair A</text>
-  <text x="76" y="108" fill="#94A3B8" font-family="sans-serif" font-size="16">Next segment S6</text>
-  <g transform="translate(298 52)">
-    <rect width="290" height="72" rx="18" fill="#0F172A" stroke="#334155"/>
-    <rect x="22" y="22" width="42" height="28" rx="14" fill="#FBBF24"/>
-    <rect x="80" y="22" width="42" height="28" rx="14" fill="#67E8F9"/>
-    <rect x="138" y="22" width="42" height="28" rx="14" fill="#A3E635"/>
-    <rect x="196" y="22" width="42" height="28" rx="14" fill="#F9A8D4"/>
-    <text x="43" y="42" fill="#0F172A" font-family="sans-serif" font-size="14" font-weight="700" text-anchor="middle">A</text>
-    <text x="101" y="42" fill="#0F172A" font-family="sans-serif" font-size="14" font-weight="700" text-anchor="middle">B</text>
-    <text x="159" y="42" fill="#0F172A" font-family="sans-serif" font-size="14" font-weight="700" text-anchor="middle">C</text>
-    <text x="217" y="42" fill="#0F172A" font-family="sans-serif" font-size="14" font-weight="700" text-anchor="middle">D</text>
-  </g>
-  <g transform="translate(84 150)">
-    <rect width="472" height="150" rx="26" fill="#0F172A" stroke="#334155"/>
-    <g fill="#1E293B">
-      <rect x="18" y="18" width="72" height="72" rx="18"/>
-      <rect x="106" y="18" width="72" height="72" rx="18"/>
-      <rect x="194" y="18" width="72" height="72" rx="18"/>
-      <rect x="282" y="18" width="72" height="72" rx="18"/>
-      <rect x="370" y="18" width="72" height="72" rx="18"/>
-      <rect x="18" y="100" width="72" height="72" rx="18"/>
-      <rect x="106" y="100" width="72" height="72" rx="18"/>
-      <rect x="194" y="100" width="72" height="72" rx="18"/>
-      <rect x="282" y="100" width="72" height="72" rx="18"/>
-      <rect x="370" y="100" width="72" height="72" rx="18"/>
-    </g>
-    <rect x="34" y="34" width="40" height="40" rx="20" fill="#FBBF24"/>
-    <rect x="34" y="116" width="40" height="40" rx="20" fill="#FBBF24"/>
-    <rect x="122" y="34" width="40" height="40" rx="20" fill="#0EA5E9"/>
-    <rect x="210" y="34" width="40" height="40" rx="20" fill="#0EA5E9"/>
-    <rect x="122" y="116" width="40" height="40" rx="20" fill="#A3E635"/>
-    <rect x="210" y="116" width="40" height="40" rx="20" fill="#A3E635"/>
-    <rect x="78" y="49" width="52" height="10" rx="5" fill="#FBBF24"/>
-    <rect x="78" y="131" width="52" height="10" rx="5" fill="#A3E635"/>
-    <rect x="122" y="72" width="10" height="58" rx="5" fill="#FBBF24"/>
-    <text x="54" y="58" fill="#0F172A" font-family="sans-serif" font-size="16" font-weight="700" text-anchor="middle">A</text>
-    <text x="54" y="140" fill="#0F172A" font-family="sans-serif" font-size="16" font-weight="700" text-anchor="middle">A</text>
-    <text x="142" y="58" fill="#0F172A" font-family="sans-serif" font-size="16" font-weight="700" text-anchor="middle">B</text>
-    <text x="230" y="58" fill="#0F172A" font-family="sans-serif" font-size="16" font-weight="700" text-anchor="middle">B</text>
-    <text x="142" y="140" fill="#0F172A" font-family="sans-serif" font-size="16" font-weight="700" text-anchor="middle">C</text>
-    <text x="230" y="140" fill="#0F172A" font-family="sans-serif" font-size="16" font-weight="700" text-anchor="middle">C</text>
-  </g>
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <title>Line Connect grid with labeled node pairs, an active route, and a step-by-step path build</title>
+  <defs>
+    <linearGradient id="line-connect-background" x1="48" y1="36" x2="454" y2="474" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#183c57" />
+      <stop offset="1" stop-color="#07182e" />
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="44" fill="url(#line-connect-background)" />
+  <circle cx="410" cy="92" r="136" fill="rgba(56, 189, 248, 0.16)" />
+  <circle cx="104" cy="418" r="118" fill="rgba(56, 189, 248, 0.09)" />
+  <rect x="12" y="12" width="488" height="488" rx="42" fill="rgba(22, 47, 68, 0.94)" stroke="rgba(147, 204, 234, 0.16)" stroke-width="2" />
+  <g transform="translate(256 256) scale(1.12) translate(-256 -256)"><rect x="82" y="100" width="254" height="254" rx="26" fill="rgba(36, 68, 90, 0.96)" stroke="rgba(147, 204, 234, 0.22)" stroke-width="1.5" /><rect x="100" y="118" width="50" height="50" rx="10" fill="#345c79" stroke="rgba(147, 204, 234, 0.18)" stroke-width="1.2" /><circle cx="126" cy="144" r="16" fill="none" stroke="rgba(56, 189, 248, 0.42)" stroke-width="8" /><circle cx="126" cy="144" r="6.72" fill="#38bdf8" /><rect x="156" y="118" width="50" height="50" rx="10" fill="#345c79" stroke="rgba(147, 204, 234, 0.18)" stroke-width="1.2" /><rect x="212" y="118" width="50" height="50" rx="10" fill="#345c79" stroke="rgba(147, 204, 234, 0.18)" stroke-width="1.2" /><rect x="268" y="118" width="50" height="50" rx="10" fill="#345c79" stroke="rgba(147, 204, 234, 0.18)" stroke-width="1.2" /><circle cx="294" cy="144" r="16" fill="none" stroke="rgba(245, 158, 11, 0.42)" stroke-width="8" /><circle cx="294" cy="144" r="6.72" fill="#f59e0b" /><rect x="100" y="174" width="50" height="50" rx="10" fill="#345c79" stroke="rgba(147, 204, 234, 0.18)" stroke-width="1.2" /><rect x="156" y="174" width="50" height="50" rx="10" fill="#345c79" stroke="rgba(147, 204, 234, 0.18)" stroke-width="1.2" /><rect x="212" y="174" width="50" height="50" rx="10" fill="#345c79" stroke="rgba(147, 204, 234, 0.18)" stroke-width="1.2" /><rect x="268" y="174" width="50" height="50" rx="10" fill="#345c79" stroke="rgba(147, 204, 234, 0.18)" stroke-width="1.2" /><rect x="100" y="230" width="50" height="50" rx="10" fill="#345c79" stroke="rgba(147, 204, 234, 0.18)" stroke-width="1.2" /><rect x="156" y="230" width="50" height="50" rx="10" fill="#345c79" stroke="rgba(147, 204, 234, 0.18)" stroke-width="1.2" /><rect x="212" y="230" width="50" height="50" rx="10" fill="#345c79" stroke="rgba(147, 204, 234, 0.18)" stroke-width="1.2" /><rect x="268" y="230" width="50" height="50" rx="10" fill="#345c79" stroke="rgba(147, 204, 234, 0.18)" stroke-width="1.2" /><rect x="100" y="286" width="50" height="50" rx="10" fill="#345c79" stroke="rgba(147, 204, 234, 0.18)" stroke-width="1.2" /><circle cx="126" cy="312" r="16" fill="none" stroke="rgba(56, 189, 248, 0.42)" stroke-width="8" /><circle cx="126" cy="312" r="6.72" fill="#38bdf8" /><rect x="156" y="286" width="50" height="50" rx="10" fill="#345c79" stroke="rgba(147, 204, 234, 0.18)" stroke-width="1.2" /><rect x="212" y="286" width="50" height="50" rx="10" fill="#345c79" stroke="rgba(147, 204, 234, 0.18)" stroke-width="1.2" /><rect x="268" y="286" width="50" height="50" rx="10" fill="#345c79" stroke="rgba(147, 204, 234, 0.18)" stroke-width="1.2" /><circle cx="294" cy="312" r="16" fill="none" stroke="rgba(245, 158, 11, 0.42)" stroke-width="8" /><circle cx="294" cy="312" r="6.72" fill="#f59e0b" /><path d="M126 144 L180 144 L180 222 L238 222 L238 312 L294 312" fill="none" stroke="#58c8f9" stroke-linecap="round" stroke-linejoin="round" stroke-width="10" /></g>
 </svg>

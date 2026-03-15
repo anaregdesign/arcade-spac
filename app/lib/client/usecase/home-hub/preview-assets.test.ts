@@ -1,7 +1,10 @@
-import { readFileSync, readdirSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
 
 import { describe, expect, it } from "vitest";
+
+import { supportedGames } from "../../../domain/entities/game-catalog";
+import { previewByGameKey } from "./selectors";
 
 const previewAssetDirectory = path.resolve(process.cwd(), "public/images/games");
 
@@ -36,15 +39,34 @@ function getSvgDimensions(filePath: string) {
 }
 
 describe("home preview assets", () => {
-  it("keeps every preview asset square", () => {
+  it("covers every supported game with a home preview mapping", () => {
+    const supportedGameKeys = supportedGames.map((game) => game.key).sort();
+    const previewGameKeys = Object.keys(previewByGameKey).sort();
+
+    expect(previewGameKeys).toEqual(supportedGameKeys);
+  });
+
+  it("keeps the generated preview files in sync and square", () => {
+    const referencedPreviewAssets = Object.entries(previewByGameKey)
+      .map(([gameKey, preview]) => {
+        expect(preview.previewAlt, `${gameKey} previewAlt`).toBeTruthy();
+        expect(preview.previewSrc, `${gameKey} previewSrc`).toMatch(/^\/images\/games\/.+-preview\.svg$/);
+
+        return path.basename(preview.previewSrc ?? "");
+      })
+      .sort();
+
     const previewAssets = readdirSync(previewAssetDirectory)
       .filter((fileName) => /preview\.(png|svg)$/.test(fileName))
       .sort();
 
-    expect(previewAssets.length).toBeGreaterThan(0);
+    expect(previewAssets).toEqual(referencedPreviewAssets);
+    expect(previewAssets.length).toBe(supportedGames.length);
 
     for (const fileName of previewAssets) {
       const filePath = path.join(previewAssetDirectory, fileName);
+
+      expect(existsSync(filePath), `${fileName} exists`).toBe(true);
 
       if (fileName.endsWith(".png")) {
         const dimensions = getPngDimensions(filePath);

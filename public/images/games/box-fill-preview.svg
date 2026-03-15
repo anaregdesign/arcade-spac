@@ -1,44 +1,14 @@
-<svg width="360" height="360" viewBox="140 0 360 360" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="640" height="360" rx="36" fill="#0F172A"/>
-  <rect x="28" y="28" width="584" height="304" rx="28" fill="#111827" stroke="#334155" stroke-width="2"/>
-  <rect x="52" y="56" width="172" height="248" rx="20" fill="#0F172A" stroke="#334155"/>
-  <text x="76" y="88" fill="#E2E8F0" font-family="sans-serif" font-size="20" font-weight="700">Piece tray</text>
-  <rect x="74" y="112" width="128" height="44" rx="14" fill="#FBBF24"/>
-  <rect x="74" y="170" width="128" height="44" rx="14" fill="#67E8F9"/>
-  <rect x="74" y="228" width="128" height="44" rx="14" fill="#A3E635"/>
-  <text x="94" y="141" fill="#0F172A" font-family="sans-serif" font-size="18" font-weight="800">A</text>
-  <text x="94" y="199" fill="#0F172A" font-family="sans-serif" font-size="18" font-weight="800">B</text>
-  <text x="94" y="257" fill="#0F172A" font-family="sans-serif" font-size="18" font-weight="800">C</text>
-  <g transform="translate(262 56)">
-    <rect width="326" height="248" rx="20" fill="#0F172A" stroke="#334155"/>
-    <text x="24" y="32" fill="#E2E8F0" font-family="sans-serif" font-size="20" font-weight="700">Target box</text>
-    <g transform="translate(24 54)">
-      <g fill="#1E293B">
-        <rect width="48" height="48" rx="12"/>
-        <rect x="58" width="48" height="48" rx="12"/>
-        <rect x="116" width="48" height="48" rx="12"/>
-        <rect x="174" width="48" height="48" rx="12"/>
-        <rect x="232" width="48" height="48" rx="12"/>
-        <rect y="58" width="48" height="48" rx="12"/>
-        <rect x="58" y="58" width="48" height="48" rx="12"/>
-        <rect x="116" y="58" width="48" height="48" rx="12"/>
-        <rect x="174" y="58" width="48" height="48" rx="12"/>
-        <rect x="232" y="58" width="48" height="48" rx="12"/>
-        <rect y="116" width="48" height="48" rx="12"/>
-        <rect x="58" y="116" width="48" height="48" rx="12"/>
-        <rect x="116" y="116" width="48" height="48" rx="12"/>
-        <rect x="174" y="116" width="48" height="48" rx="12"/>
-        <rect x="232" y="116" width="48" height="48" rx="12"/>
-      </g>
-      <rect width="48" height="48" rx="12" fill="#FBBF24"/>
-      <rect x="58" width="48" height="48" rx="12" fill="#FBBF24"/>
-      <rect x="116" width="48" height="48" rx="12" fill="#FBBF24"/>
-      <rect x="174" width="48" height="48" rx="12" stroke="#2DD4BF" stroke-width="4"/>
-      <rect x="232" width="48" height="48" rx="12" stroke="#2DD4BF" stroke-width="4"/>
-      <rect x="58" y="58" width="48" height="48" rx="12" fill="#67E8F9"/>
-      <rect x="58" y="116" width="48" height="48" rx="12" fill="#67E8F9"/>
-      <rect x="116" y="116" width="48" height="48" rx="12" fill="#67E8F9"/>
-      <text x="198" y="28" fill="#2DD4BF" font-family="sans-serif" font-size="13" font-weight="700">Preview</text>
-    </g>
-  </g>
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <title>Box Fill tray-and-board puzzle with selected polyomino pieces and a highlighted anchor preview</title>
+  <defs>
+    <linearGradient id="box-fill-background" x1="48" y1="36" x2="454" y2="474" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#423523" />
+      <stop offset="1" stop-color="#1a1516" />
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="44" fill="url(#box-fill-background)" />
+  <circle cx="410" cy="92" r="136" fill="rgba(245, 158, 11, 0.16)" />
+  <circle cx="104" cy="418" r="118" fill="rgba(56, 189, 248, 0.09)" />
+  <rect x="12" y="12" width="488" height="488" rx="42" fill="rgba(49, 43, 35, 0.94)" stroke="rgba(219, 192, 144, 0.16)" stroke-width="2" />
+  <g transform="translate(256 256) scale(1.12) translate(-256 -256)"><rect x="218" y="100" width="230" height="230" rx="26" fill="rgba(70, 62, 47, 0.96)" stroke="rgba(219, 192, 144, 0.22)" stroke-width="1.5" /><rect x="236" y="118" width="34" height="34" rx="6" fill="#5e5545" stroke="rgba(219, 192, 144, 0.18)" stroke-width="1.2" /><rect x="276" y="118" width="34" height="34" rx="6" fill="#5e5545" stroke="rgba(219, 192, 144, 0.18)" stroke-width="1.2" /><rect x="316" y="118" width="34" height="34" rx="6" fill="#5e5545" stroke="rgba(219, 192, 144, 0.18)" stroke-width="1.2" /><rect x="356" y="118" width="34" height="34" rx="6" fill="#5e5545" stroke="rgba(219, 192, 144, 0.18)" stroke-width="1.2" /><rect x="396" y="118" width="34" height="34" rx="6" fill="#5e5545" stroke="rgba(219, 192, 144, 0.18)" stroke-width="1.2" /><rect x="236" y="158" width="34" height="34" rx="6" fill="#5e5545" stroke="rgba(219, 192, 144, 0.18)" stroke-width="1.2" /><rect x="276" y="158" width="34" height="34" rx="6" fill="rgba(245, 158, 11, 0.18)" stroke="rgba(219, 192, 144, 0.18)" stroke-width="1.2" /><rect x="316" y="158" width="34" height="34" rx="6" fill="rgba(245, 158, 11, 0.18)" stroke="rgba(219, 192, 144, 0.18)" stroke-width="1.2" /><rect x="356" y="158" width="34" height="34" rx="6" fill="#5e5545" stroke="rgba(219, 192, 144, 0.18)" stroke-width="1.2" /><rect x="396" y="158" width="34" height="34" rx="6" fill="#5e5545" stroke="rgba(219, 192, 144, 0.18)" stroke-width="1.2" /><rect x="236" y="198" width="34" height="34" rx="6" fill="#5e5545" stroke="rgba(219, 192, 144, 0.18)" stroke-width="1.2" /><rect x="276" y="198" width="34" height="34" rx="6" fill="rgba(245, 158, 11, 0.18)" stroke="rgba(219, 192, 144, 0.18)" stroke-width="1.2" /><rect x="316" y="198" width="34" height="34" rx="6" fill="#5e5545" stroke="rgba(219, 192, 144, 0.18)" stroke-width="1.2" /><rect x="356" y="198" width="34" height="34" rx="6" fill="#5e5545" stroke="rgba(219, 192, 144, 0.18)" stroke-width="1.2" /><rect x="396" y="198" width="34" height="34" rx="6" fill="#5e5545" stroke="rgba(219, 192, 144, 0.18)" stroke-width="1.2" /><rect x="236" y="238" width="34" height="34" rx="6" fill="#5e5545" stroke="rgba(219, 192, 144, 0.18)" stroke-width="1.2" /><rect x="276" y="238" width="34" height="34" rx="6" fill="#5e5545" stroke="rgba(219, 192, 144, 0.18)" stroke-width="1.2" /><rect x="316" y="238" width="34" height="34" rx="6" fill="#5e5545" stroke="rgba(219, 192, 144, 0.18)" stroke-width="1.2" /><rect x="356" y="238" width="34" height="34" rx="6" fill="rgba(245, 158, 11, 0.28)" stroke="rgba(219, 192, 144, 0.18)" stroke-width="1.2" /><rect x="396" y="238" width="34" height="34" rx="6" fill="rgba(245, 158, 11, 0.28)" stroke="rgba(219, 192, 144, 0.18)" stroke-width="1.2" /><rect x="236" y="278" width="34" height="34" rx="6" fill="#5e5545" stroke="rgba(219, 192, 144, 0.18)" stroke-width="1.2" /><rect x="276" y="278" width="34" height="34" rx="6" fill="#5e5545" stroke="rgba(219, 192, 144, 0.18)" stroke-width="1.2" /><rect x="316" y="278" width="34" height="34" rx="6" fill="#5e5545" stroke="rgba(219, 192, 144, 0.18)" stroke-width="1.2" /><rect x="356" y="278" width="34" height="34" rx="6" fill="#5e5545" stroke="rgba(219, 192, 144, 0.18)" stroke-width="1.2" /><rect x="396" y="278" width="34" height="34" rx="6" fill="#5e5545" stroke="rgba(219, 192, 144, 0.18)" stroke-width="1.2" /><rect x="84" y="132" width="24" height="24" rx="6" fill="#f7ae32" stroke="rgba(247, 174, 50, 0.6)" stroke-width="1.2" /><rect x="84" y="160" width="24" height="24" rx="6" fill="#f7ae32" stroke="rgba(247, 174, 50, 0.6)" stroke-width="1.2" /><rect x="112" y="160" width="24" height="24" rx="6" fill="#f7ae32" stroke="rgba(247, 174, 50, 0.6)" stroke-width="1.2" /><rect x="140" y="160" width="24" height="24" rx="6" fill="#f7ae32" stroke="rgba(247, 174, 50, 0.6)" stroke-width="1.2" /><rect x="92" y="228" width="24" height="24" rx="6" fill="rgba(56, 189, 248, 0.92)" stroke="rgba(NaN, 186, NaN, 0.6)" stroke-width="1.2" /><rect x="120" y="228" width="24" height="24" rx="6" fill="rgba(56, 189, 248, 0.92)" stroke="rgba(NaN, 186, NaN, 0.6)" stroke-width="1.2" /><rect x="120" y="256" width="24" height="24" rx="6" fill="rgba(56, 189, 248, 0.92)" stroke="rgba(NaN, 186, NaN, 0.6)" stroke-width="1.2" /><rect x="120" y="284" width="24" height="24" rx="6" fill="rgba(56, 189, 248, 0.92)" stroke="rgba(NaN, 186, NaN, 0.6)" stroke-width="1.2" /><circle cx="340" cy="296" r="12" fill="none" stroke="#f59e0b" stroke-width="4" /><line x1="168" y1="218" x2="226" y2="218" stroke="#cbd5e1" stroke-linecap="round" stroke-width="5" /><polygon points="226,218 208,210 208,226" fill="#cbd5e1" /></g>
 </svg>

@@ -1,18 +1,14 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="60 0 200 200" role="img" aria-labelledby="title desc">
-  <title id="title">Target Trail preview</title>
-  <desc id="desc">A target tile highlighted on a grid with visited cells behind it.</desc>
-  <rect width="320" height="200" rx="28" fill="#111827"/>
-  <g transform="translate(70 34)">
-    <rect x="0" y="0" width="46" height="46" rx="10" fill="#134e4a"/>
-    <rect x="54" y="0" width="46" height="46" rx="10" fill="#1f2937"/>
-    <rect x="108" y="0" width="46" height="46" rx="10" fill="#1f2937"/>
-    <rect x="0" y="54" width="46" height="46" rx="10" fill="#1f2937"/>
-    <rect x="54" y="54" width="46" height="46" rx="10" fill="#ef4444"/>
-    <rect x="108" y="54" width="46" height="46" rx="10" fill="#1f2937"/>
-    <rect x="0" y="108" width="46" height="46" rx="10" fill="#0f766e"/>
-    <rect x="54" y="108" width="46" height="46" rx="10" fill="#134e4a"/>
-    <rect x="108" y="108" width="46" height="46" rx="10" fill="#1f2937"/>
-  </g>
-  <circle cx="147" cy="110" r="9" fill="#fee2e2"/>
-  <text x="160" y="182" fill="#f3f4f6" font-family="monospace" font-size="16" text-anchor="middle">TARGET TRAIL</text>
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <title>Target Trail grid with one highlighted tile and visited cells behind it</title>
+  <defs>
+    <linearGradient id="target-trail-background" x1="48" y1="36" x2="454" y2="474" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#402130" />
+      <stop offset="1" stop-color="#1a0c1c" />
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="44" fill="url(#target-trail-background)" />
+  <circle cx="410" cy="92" r="136" fill="rgba(239, 68, 68, 0.16)" />
+  <circle cx="104" cy="418" r="118" fill="rgba(56, 189, 248, 0.09)" />
+  <rect x="12" y="12" width="488" height="488" rx="42" fill="rgba(48, 30, 43, 0.94)" stroke="rgba(217, 158, 165, 0.16)" stroke-width="2" />
+  <g transform="translate(256 256) scale(1.12) translate(-256 -256)"><rect x="92" y="100" width="244" height="244" rx="26" fill="rgba(68, 46, 57, 0.96)" stroke="rgba(217, 158, 165, 0.22)" stroke-width="1.5" /><rect x="110" y="118" width="46" height="46" rx="9" fill="rgba(239, 68, 68, 0.18)" stroke="rgba(217, 158, 165, 0.18)" stroke-width="1.2" /><rect x="164" y="118" width="46" height="46" rx="9" fill="#5c4251" stroke="rgba(217, 158, 165, 0.18)" stroke-width="1.2" /><rect x="218" y="118" width="46" height="46" rx="9" fill="#5c4251" stroke="rgba(217, 158, 165, 0.18)" stroke-width="1.2" /><rect x="272" y="118" width="46" height="46" rx="9" fill="#5c4251" stroke="rgba(217, 158, 165, 0.18)" stroke-width="1.2" /><rect x="110" y="172" width="46" height="46" rx="9" fill="rgba(239, 68, 68, 0.18)" stroke="rgba(217, 158, 165, 0.18)" stroke-width="1.2" /><rect x="164" y="172" width="46" height="46" rx="9" fill="rgba(239, 68, 68, 0.18)" stroke="rgba(217, 158, 165, 0.18)" stroke-width="1.2" /><rect x="218" y="172" width="46" height="46" rx="9" fill="#5c4251" stroke="rgba(217, 158, 165, 0.18)" stroke-width="1.2" /><rect x="272" y="172" width="46" height="46" rx="9" fill="#5c4251" stroke="rgba(217, 158, 165, 0.18)" stroke-width="1.2" /><rect x="110" y="226" width="46" height="46" rx="9" fill="#5c4251" stroke="rgba(217, 158, 165, 0.18)" stroke-width="1.2" /><rect x="164" y="226" width="46" height="46" rx="9" fill="rgba(239, 68, 68, 0.18)" stroke="rgba(217, 158, 165, 0.18)" stroke-width="1.2" /><rect x="218" y="226" width="46" height="46" rx="9" fill="rgba(239, 68, 68, 0.18)" stroke="rgba(217, 158, 165, 0.18)" stroke-width="1.2" /><rect x="272" y="226" width="46" height="46" rx="9" fill="#5c4251" stroke="rgba(217, 158, 165, 0.18)" stroke-width="1.2" /><rect x="110" y="280" width="46" height="46" rx="9" fill="#5c4251" stroke="rgba(217, 158, 165, 0.18)" stroke-width="1.2" /><rect x="164" y="280" width="46" height="46" rx="9" fill="#5c4251" stroke="rgba(217, 158, 165, 0.18)" stroke-width="1.2" /><rect x="218" y="280" width="46" height="46" rx="9" fill="rgba(239, 68, 68, 0.18)" stroke="rgba(217, 158, 165, 0.18)" stroke-width="1.2" /><rect x="272" y="280" width="46" height="46" rx="9" fill="rgba(245, 158, 11, 0.28)" stroke="rgba(217, 158, 165, 0.18)" stroke-width="1.2" /><circle cx="281" cy="299" r="16" fill="none" stroke="rgba(245, 158, 11, 0.42)" stroke-width="8" /><circle cx="281" cy="299" r="6.72" fill="#f59e0b" /></g>
 </svg>

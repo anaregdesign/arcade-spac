@@ -1,26 +1,14 @@
-<svg width="200" height="200" viewBox="60 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="320" height="200" rx="24" fill="#020617"/>
-  <rect x="18" y="18" width="284" height="164" rx="20" fill="#0F172A"/>
-  <rect x="32" y="30" width="256" height="36" rx="14" fill="#111827"/>
-  <rect x="42" y="40" width="40" height="16" rx="8" fill="#F59E0B"/>
-  <rect x="90" y="40" width="40" height="16" rx="8" fill="#22C55E"/>
-  <rect x="138" y="40" width="40" height="16" rx="8" fill="#38BDF8"/>
-  <rect x="186" y="40" width="40" height="16" rx="8" fill="#A78BFA"/>
-  <rect x="234" y="40" width="40" height="16" rx="8" fill="#14B8A6"/>
-  <rect x="32" y="80" width="120" height="42" rx="14" fill="#111827" stroke="#334155"/>
-  <rect x="168" y="80" width="120" height="42" rx="14" fill="#111827" stroke="#334155"/>
-  <rect x="32" y="132" width="120" height="42" rx="14" fill="#111827" stroke="#334155"/>
-  <rect x="168" y="132" width="120" height="42" rx="14" fill="#111827" stroke="#334155"/>
-  <rect x="42" y="93" width="28" height="16" rx="8" fill="#F59E0B"/>
-  <rect x="178" y="93" width="28" height="16" rx="8" fill="#A78BFA"/>
-  <rect x="42" y="145" width="28" height="16" rx="8" fill="#38BDF8"/>
-  <rect x="178" y="145" width="28" height="16" rx="8" fill="#14B8A6"/>
-  <rect x="82" y="93" width="58" height="8" rx="4" fill="#CBD5E1" fill-opacity="0.9"/>
-  <rect x="82" y="106" width="42" height="6" rx="3" fill="#64748B"/>
-  <rect x="218" y="93" width="58" height="8" rx="4" fill="#CBD5E1" fill-opacity="0.9"/>
-  <rect x="218" y="106" width="42" height="6" rx="3" fill="#64748B"/>
-  <rect x="82" y="145" width="58" height="8" rx="4" fill="#CBD5E1" fill-opacity="0.9"/>
-  <rect x="82" y="158" width="42" height="6" rx="3" fill="#64748B"/>
-  <rect x="218" y="145" width="58" height="8" rx="4" fill="#CBD5E1" fill-opacity="0.9"/>
-  <rect x="218" y="158" width="42" height="6" rx="3" fill="#64748B"/>
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <title>Icon Chain clue board with a revealed icon strip and card-like order clues</title>
+  <defs>
+    <linearGradient id="icon-chain-background" x1="48" y1="36" x2="454" y2="474" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#2a2657" />
+      <stop offset="1" stop-color="#100f2d" />
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="44" fill="url(#icon-chain-background)" />
+  <circle cx="410" cy="92" r="136" fill="rgba(139, 92, 246, 0.16)" />
+  <circle cx="104" cy="418" r="118" fill="rgba(56, 189, 248, 0.09)" />
+  <rect x="12" y="12" width="488" height="488" rx="42" fill="rgba(34, 34, 68, 0.94)" stroke="rgba(179, 167, 233, 0.16)" stroke-width="2" />
+  <g transform="translate(256 256) scale(1.12) translate(-256 -256)"><rect x="60" y="70" width="392" height="96" rx="26" fill="rgba(50, 50, 89, 0.96)" stroke="rgba(179, 167, 233, 0.22)" stroke-width="1.5" /><circle cx="116" cy="118" r="20" fill="#9e76f7" /><line x1="144" y1="118" x2="208" y2="118" stroke="#cbd5e1" stroke-linecap="round" stroke-width="4" /><polygon points="208,118 190,110 190,126" fill="#cbd5e1" /><polygon points="236,98 216,118 236,138 256,118" fill="#f59e0b" /><line x1="264" y1="118" x2="328" y2="118" stroke="#cbd5e1" stroke-linecap="round" stroke-width="4" /><polygon points="328,118 310,110 310,126" fill="#cbd5e1" /><polygon points="356,98 338,138 374,138" fill="#38bdf8" /><rect x="78" y="210" width="104" height="154" rx="26" fill="rgba(50, 50, 89, 0.96)" stroke="rgba(179, 167, 233, 0.22)" stroke-width="1.5" /><rect x="204" y="210" width="104" height="154" rx="26" fill="rgba(139, 92, 246, 0.2)" stroke="rgba(179, 167, 233, 0.22)" stroke-width="1.5" /><rect x="330" y="210" width="104" height="154" rx="26" fill="rgba(50, 50, 89, 0.96)" stroke="rgba(179, 167, 233, 0.22)" stroke-width="1.5" /><circle cx="130" cy="264" r="18" fill="#9e76f7" /><polygon points="256,246 238,264 256,282 274,264" fill="#f59e0b" /><polygon points="382,246 365.8,282 398.2,282" fill="#38bdf8" /><text x="130" y="320" font-family="'Avenir Next', 'Trebuchet MS', 'Segoe UI', sans-serif" font-weight="700" text-anchor="middle" dominant-baseline="middle" fill="#cbd5e1" font-size="28">1</text><text x="256" y="320" font-family="'Avenir Next', 'Trebuchet MS', 'Segoe UI', sans-serif" font-weight="700" text-anchor="middle" dominant-baseline="middle" fill="#f8fafc" font-size="28">2</text><text x="382" y="320" font-family="'Avenir Next', 'Trebuchet MS', 'Segoe UI', sans-serif" font-weight="700" text-anchor="middle" dominant-baseline="middle" fill="#cbd5e1" font-size="28">3</text></g>
 </svg>

@@ -1,51 +1,14 @@
-<svg width="720" height="720" viewBox="240 0 720 720" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="1200" height="720" rx="40" fill="#0F172A"/>
-  <rect x="60" y="72" width="510" height="576" rx="32" fill="#111827" stroke="#334155" stroke-width="2"/>
-  <rect x="630" y="72" width="510" height="576" rx="32" fill="#111827" stroke="#FB7185" stroke-width="2"/>
-  <text x="94" y="126" fill="#E2E8F0" font-family="sans-serif" font-size="28" font-weight="700">Original</text>
-  <text x="664" y="126" fill="#FFE4E6" font-family="sans-serif" font-size="28" font-weight="700">Changed</text>
-  <g font-family="sans-serif" font-size="68" font-weight="700" text-anchor="middle" dominant-baseline="middle">
-    <rect x="106" y="166" width="126" height="126" rx="24" fill="#1E293B"/>
-    <rect x="252" y="166" width="126" height="126" rx="24" fill="#1E293B"/>
-    <rect x="398" y="166" width="126" height="126" rx="24" fill="#1E293B"/>
-    <rect x="106" y="312" width="126" height="126" rx="24" fill="#1E293B"/>
-    <rect x="252" y="312" width="126" height="126" rx="24" fill="#1E293B"/>
-    <rect x="398" y="312" width="126" height="126" rx="24" fill="#1E293B"/>
-    <rect x="106" y="458" width="126" height="126" rx="24" fill="#1E293B"/>
-    <rect x="252" y="458" width="126" height="126" rx="24" fill="#1E293B"/>
-    <rect x="398" y="458" width="126" height="126" rx="24" fill="#1E293B"/>
-    <text x="169" y="229" fill="#38BDF8">▲</text>
-    <text x="315" y="229" fill="#FACC15">◆</text>
-    <text x="461" y="229" fill="#22C55E">✦</text>
-    <text x="169" y="375" fill="#F97316">●</text>
-    <text x="315" y="375" fill="#FB7185">■</text>
-    <text x="461" y="375" fill="#C084FC">✿</text>
-    <text x="169" y="521" fill="#38BDF8">✚</text>
-    <text x="315" y="521" fill="#FACC15">⬢</text>
-    <text x="461" y="521" fill="#22C55E">☼</text>
-  </g>
-  <g font-family="sans-serif" font-size="68" font-weight="700" text-anchor="middle" dominant-baseline="middle">
-    <rect x="676" y="166" width="126" height="126" rx="24" fill="#1E293B"/>
-    <rect x="822" y="166" width="126" height="126" rx="24" fill="#1E293B"/>
-    <rect x="968" y="166" width="126" height="126" rx="24" fill="#1E293B"/>
-    <rect x="676" y="312" width="126" height="126" rx="24" fill="#1E293B"/>
-    <rect x="822" y="312" width="126" height="126" rx="24" fill="#1E293B"/>
-    <rect x="968" y="312" width="126" height="126" rx="24" fill="#1E293B"/>
-    <rect x="676" y="458" width="126" height="126" rx="24" fill="#1E293B"/>
-    <rect x="822" y="458" width="126" height="126" rx="24" fill="#1E293B"/>
-    <rect x="968" y="458" width="126" height="126" rx="24" fill="#1E293B"/>
-    <text x="739" y="229" fill="#38BDF8">▲</text>
-    <text x="885" y="229" fill="#FACC15">◆</text>
-    <text x="1031" y="229" fill="#22C55E">✦</text>
-    <text x="739" y="375" fill="#F97316">●</text>
-    <text x="885" y="375" fill="#38BDF8">■</text>
-    <text x="1031" y="375" fill="#C084FC" transform="rotate(38 1031 375)">✿</text>
-    <text x="739" y="521" fill="#38BDF8" transform="translate(10 -8)">✚</text>
-    <text x="885" y="521" fill="#FACC15">⬢</text>
-    <text x="1031" y="521" fill="#22C55E">·</text>
-  </g>
-  <rect x="822" y="312" width="126" height="126" rx="24" stroke="#FB7185" stroke-width="6"/>
-  <rect x="968" y="312" width="126" height="126" rx="24" stroke="#FB7185" stroke-width="6"/>
-  <rect x="676" y="458" width="126" height="126" rx="24" stroke="#FB7185" stroke-width="6"/>
-  <rect x="968" y="458" width="126" height="126" rx="24" stroke="#FB7185" stroke-width="6"/>
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <title>Spot Change original and changed scene boards with one highlighted difference</title>
+  <defs>
+    <linearGradient id="spot-change-background" x1="48" y1="36" x2="454" y2="474" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#432b3e" />
+      <stop offset="1" stop-color="#1b1122" />
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="44" fill="url(#spot-change-background)" />
+  <circle cx="410" cy="92" r="136" fill="rgba(251, 113, 133, 0.16)" />
+  <circle cx="104" cy="418" r="118" fill="rgba(56, 189, 248, 0.09)" />
+  <rect x="12" y="12" width="488" height="488" rx="42" fill="rgba(50, 36, 52, 0.94)" stroke="rgba(221, 175, 190, 0.16)" stroke-width="2" />
+  <g transform="translate(256 256) scale(1.12) translate(-256 -256)"><rect x="74" y="142" width="160" height="160" rx="26" fill="rgba(71, 54, 69, 0.96)" stroke="rgba(221, 175, 190, 0.22)" stroke-width="1.5" /><rect x="92" y="160" width="36" height="36" rx="7" fill="rgba(245, 158, 11, 0.24)" stroke="rgba(221, 175, 190, 0.18)" stroke-width="1.2" /><rect x="136" y="160" width="36" height="36" rx="7" fill="#5f4c60" stroke="rgba(221, 175, 190, 0.18)" stroke-width="1.2" /><rect x="180" y="160" width="36" height="36" rx="7" fill="#5f4c60" stroke="rgba(221, 175, 190, 0.18)" stroke-width="1.2" /><rect x="92" y="204" width="36" height="36" rx="7" fill="#5f4c60" stroke="rgba(221, 175, 190, 0.18)" stroke-width="1.2" /><rect x="136" y="204" width="36" height="36" rx="7" fill="rgba(56, 189, 248, 0.22)" stroke="rgba(221, 175, 190, 0.18)" stroke-width="1.2" /><rect x="180" y="204" width="36" height="36" rx="7" fill="#5f4c60" stroke="rgba(221, 175, 190, 0.18)" stroke-width="1.2" /><rect x="92" y="248" width="36" height="36" rx="7" fill="rgba(34, 197, 94, 0.22)" stroke="rgba(221, 175, 190, 0.18)" stroke-width="1.2" /><rect x="136" y="248" width="36" height="36" rx="7" fill="#5f4c60" stroke="rgba(221, 175, 190, 0.18)" stroke-width="1.2" /><rect x="180" y="248" width="36" height="36" rx="7" fill="#5f4c60" stroke="rgba(221, 175, 190, 0.18)" stroke-width="1.2" /><rect x="272" y="142" width="160" height="160" rx="26" fill="rgba(71, 54, 69, 0.96)" stroke="rgba(221, 175, 190, 0.22)" stroke-width="1.5" /><rect x="290" y="160" width="36" height="36" rx="7" fill="rgba(245, 158, 11, 0.24)" stroke="rgba(221, 175, 190, 0.18)" stroke-width="1.2" /><rect x="334" y="160" width="36" height="36" rx="7" fill="#5f4c60" stroke="rgba(221, 175, 190, 0.18)" stroke-width="1.2" /><rect x="378" y="160" width="36" height="36" rx="7" fill="#5f4c60" stroke="rgba(221, 175, 190, 0.18)" stroke-width="1.2" /><rect x="290" y="204" width="36" height="36" rx="7" fill="#5f4c60" stroke="rgba(221, 175, 190, 0.18)" stroke-width="1.2" /><rect x="334" y="204" width="36" height="36" rx="7" fill="rgba(251, 113, 133, 0.32)" stroke="rgba(221, 175, 190, 0.18)" stroke-width="1.2" /><rect x="378" y="204" width="36" height="36" rx="7" fill="#5f4c60" stroke="rgba(221, 175, 190, 0.18)" stroke-width="1.2" /><rect x="290" y="248" width="36" height="36" rx="7" fill="rgba(34, 197, 94, 0.22)" stroke="rgba(221, 175, 190, 0.18)" stroke-width="1.2" /><rect x="334" y="248" width="36" height="36" rx="7" fill="#5f4c60" stroke="rgba(221, 175, 190, 0.18)" stroke-width="1.2" /><rect x="378" y="248" width="36" height="36" rx="7" fill="#5f4c60" stroke="rgba(221, 175, 190, 0.18)" stroke-width="1.2" /><circle cx="352" cy="220" r="30" fill="none" stroke="rgba(251, 113, 133, 0.42)" stroke-width="8" /><circle cx="352" cy="220" r="12.6" fill="#fb7185" /></g>
 </svg>

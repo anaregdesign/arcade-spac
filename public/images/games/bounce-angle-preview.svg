@@ -1,36 +1,14 @@
-<svg width="480" height="480" viewBox="80 0 480 480" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="640" height="480" rx="36" fill="#EFF6FF"/>
-  <rect x="34" y="34" width="572" height="412" rx="28" fill="url(#bg)" stroke="#3B82F6" stroke-opacity="0.2"/>
-  <rect x="86" y="84" width="304" height="300" rx="28" fill="#F8FBFF" stroke="#1D4ED8" stroke-width="3"/>
-  <g>
-    <rect x="124" y="72" width="26" height="16" rx="6" fill="#CBD5E1" stroke="#475569" stroke-width="2"/>
-    <rect x="156" y="72" width="26" height="16" rx="6" fill="#86EFAC" stroke="#166534" stroke-width="2"/>
-    <rect x="188" y="72" width="26" height="16" rx="6" fill="#CBD5E1" stroke="#475569" stroke-width="2"/>
-    <rect x="292" y="72" width="26" height="16" rx="6" fill="#CBD5E1" stroke="#475569" stroke-width="2"/>
-    <rect x="324" y="72" width="26" height="16" rx="6" fill="#FCA5A5" stroke="#991B1B" stroke-width="2"/>
-    <rect x="356" y="72" width="26" height="16" rx="6" fill="#CBD5E1" stroke="#475569" stroke-width="2"/>
-  </g>
-  <path d="M238 348L118 162L86 114" stroke="#0EA5E9" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
-  <circle cx="118" cy="162" r="8" fill="#0EA5E9" stroke="white" stroke-width="4"/>
-  <circle cx="238" cy="348" r="12" fill="#2563EB" stroke="#EFF6FF" stroke-width="5"/>
-  <rect x="430" y="92" width="134" height="76" rx="22" fill="white" stroke="#3B82F6" stroke-opacity="0.18"/>
-  <text x="456" y="126" fill="#1D4ED8" font-family="sans-serif" font-size="18" font-weight="700">Target pocket</text>
-  <text x="456" y="152" fill="#0F172A" font-family="sans-serif" font-size="34" font-weight="800">B</text>
-  <rect x="430" y="186" width="134" height="76" rx="22" fill="white" stroke="#3B82F6" stroke-opacity="0.18"/>
-  <text x="456" y="220" fill="#1D4ED8" font-family="sans-serif" font-size="18" font-weight="700">Selected angle</text>
-  <text x="456" y="246" fill="#0F172A" font-family="sans-serif" font-size="26" font-weight="800">Bank left</text>
-  <g>
-    <rect x="430" y="286" width="62" height="52" rx="16" fill="white" stroke="#3B82F6" stroke-opacity="0.24"/>
-    <rect x="502" y="286" width="62" height="52" rx="16" fill="white" stroke="#3B82F6" stroke-opacity="0.24"/>
-    <rect x="430" y="348" width="134" height="52" rx="16" fill="#2563EB"/>
-    <text x="450" y="319" fill="#1D4ED8" font-family="sans-serif" font-size="16" font-weight="700">Soft left</text>
-    <text x="515" y="319" fill="#1D4ED8" font-family="sans-serif" font-size="16" font-weight="700">Bank left</text>
-    <text x="476" y="380" fill="#EFF6FF" font-family="sans-serif" font-size="18" font-weight="700">Launch</text>
-  </g>
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <title>Bounce Angle ricochet board with a traced bank shot, target pocket, and fixed angle chooser</title>
   <defs>
-    <linearGradient id="bg" x1="90" y1="58" x2="560" y2="430" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#EFF6FF"/>
-      <stop offset="1" stop-color="#DBEAFE"/>
+    <linearGradient id="bounce-angle-background" x1="48" y1="36" x2="454" y2="474" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#192f57" />
+      <stop offset="1" stop-color="#08122d" />
     </linearGradient>
   </defs>
+  <rect width="512" height="512" rx="44" fill="url(#bounce-angle-background)" />
+  <circle cx="410" cy="92" r="136" fill="rgba(59, 130, 246, 0.16)" />
+  <circle cx="104" cy="418" r="118" fill="rgba(56, 189, 248, 0.09)" />
+  <rect x="12" y="12" width="488" height="488" rx="42" fill="rgba(23, 39, 68, 0.94)" stroke="rgba(148, 181, 233, 0.16)" stroke-width="2" />
+  <g transform="translate(256 256) scale(1.12) translate(-256 -256)"><rect x="62" y="64" width="388" height="356" rx="26" fill="rgba(36, 57, 89, 0.96)" stroke="rgba(148, 181, 233, 0.22)" stroke-width="1.5" /><line x1="94" y1="88" x2="94" y2="388" stroke="rgba(148, 181, 233, 0.28)" stroke-width="4" /><line x1="418" y1="88" x2="418" y2="388" stroke="rgba(148, 181, 233, 0.28)" stroke-width="4" /><circle cx="164" cy="100" r="18" fill="rgba(251, 113, 133, 0.9)" /><circle cx="256" cy="100" r="18" fill="rgba(34, 197, 94, 0.94)" /><circle cx="348" cy="100" r="18" fill="rgba(251, 113, 133, 0.9)" /><path d="M156 342 L212 254 L136 182 L256 102" fill="none" stroke="#5a96f7" stroke-linecap="round" stroke-linejoin="round" stroke-width="10" /><circle cx="156" cy="342" r="18" fill="#f59e0b" /><rect x="110" y="388" width="84" height="40" rx="16" fill="rgba(53, 83, 130, 0.92)" stroke="rgba(148, 181, 233, 0.24)" stroke-width="1.5" /><text x="152" y="409" font-family="'Avenir Next', 'Trebuchet MS', 'Segoe UI', sans-serif" font-weight="700" text-anchor="middle" dominant-baseline="middle" fill="#cbd5e1" font-size="23.520000000000003">30</text><rect x="214" y="388" width="84" height="40" rx="16" fill="rgba(59, 130, 246, 0.28)" stroke="rgba(129, 173, 243, 0.85)" stroke-width="1.5" /><text x="256" y="409" font-family="'Avenir Next', 'Trebuchet MS', 'Segoe UI', sans-serif" font-weight="700" text-anchor="middle" dominant-baseline="middle" fill="#f8fafc" font-size="23.520000000000003">45</text><rect x="318" y="388" width="84" height="40" rx="16" fill="rgba(53, 83, 130, 0.92)" stroke="rgba(148, 181, 233, 0.24)" stroke-width="1.5" /><text x="360" y="409" font-family="'Avenir Next', 'Trebuchet MS', 'Segoe UI', sans-serif" font-weight="700" text-anchor="middle" dominant-baseline="middle" fill="#cbd5e1" font-size="23.520000000000003">60</text></g>
 </svg>

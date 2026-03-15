@@ -874,7 +874,7 @@ const gameDefinitionByKey: Record<string, GameDefinition> = {
     },
     presentation: {
       previewAlt: "Minesweeper board with opened cells and numbered hints",
-      previewSrc: "/images/games/minesweeper-preview.png",
+      previewSrc: "/images/games/minesweeper-preview.svg",
     },
     workspace: MinesweeperGameWorkspace,
   },
@@ -1513,8 +1513,7 @@ const gameDefinitionByKey: Record<string, GameDefinition> = {
     },
     presentation: {
       previewAlt: "Sudoku puzzle board with preset digits and empty cells",
-      previewObjectPosition: "top center",
-      previewSrc: "/images/games/sudoku-preview.png",
+      previewSrc: "/images/games/sudoku-preview.svg",
     },
     workspace: SudokuGameWorkspace,
   },

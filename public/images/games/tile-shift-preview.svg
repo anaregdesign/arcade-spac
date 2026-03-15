@@ -1,28 +1,14 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="60 0 200 200" role="img" aria-labelledby="title desc">
-  <title id="title">Tile Shift preview</title>
-  <desc id="desc">A target tile board and a live tile board with shift controls.</desc>
-  <rect width="320" height="200" rx="28" fill="#3b0764"/>
-  <g transform="translate(30 54)" fill="#faf5ff" font-family="monospace" font-size="18" text-anchor="middle">
-    <rect x="0" y="0" width="32" height="32" rx="8" fill="#7e22ce"/><text x="16" y="22">▲</text>
-    <rect x="38" y="0" width="32" height="32" rx="8" fill="#7e22ce"/><text x="54" y="22">■</text>
-    <rect x="76" y="0" width="32" height="32" rx="8" fill="#7e22ce"/><text x="92" y="22">●</text>
-    <rect x="0" y="38" width="32" height="32" rx="8" fill="#7e22ce"/><text x="16" y="60">◆</text>
-    <rect x="38" y="38" width="32" height="32" rx="8" fill="#7e22ce"/><text x="54" y="60">✦</text>
-    <rect x="76" y="38" width="32" height="32" rx="8" fill="#7e22ce"/><text x="92" y="60">★</text>
-  </g>
-  <g transform="translate(176 28)" fill="#faf5ff" font-family="monospace" font-size="16" text-anchor="middle">
-    <rect x="0" y="0" width="32" height="24" rx="8" fill="#a855f7"/><text x="16" y="17">↓</text>
-    <rect x="38" y="0" width="32" height="24" rx="8" fill="#a855f7"/><text x="54" y="17">↓</text>
-    <rect x="76" y="0" width="32" height="24" rx="8" fill="#a855f7"/><text x="92" y="17">↓</text>
-  </g>
-  <g transform="translate(176 54)" fill="#faf5ff" font-family="monospace" font-size="18" text-anchor="middle">
-    <rect x="-30" y="0" width="24" height="32" rx="8" fill="#a855f7"/><text x="-18" y="22">→</text>
-    <rect x="-30" y="38" width="24" height="32" rx="8" fill="#a855f7"/><text x="-18" y="60">→</text>
-    <rect x="0" y="0" width="32" height="32" rx="8" fill="#9333ea"/><text x="16" y="22">■</text>
-    <rect x="38" y="0" width="32" height="32" rx="8" fill="#9333ea"/><text x="54" y="22">●</text>
-    <rect x="76" y="0" width="32" height="32" rx="8" fill="#9333ea"/><text x="92" y="22">▲</text>
-    <rect x="0" y="38" width="32" height="32" rx="8" fill="#9333ea"/><text x="16" y="60">◆</text>
-    <rect x="38" y="38" width="32" height="32" rx="8" fill="#9333ea"/><text x="54" y="60">★</text>
-    <rect x="76" y="38" width="32" height="32" rx="8" fill="#9333ea"/><text x="92" y="60">✦</text>
-  </g>
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <title>Tile Shift target board and live board with row and column controls</title>
+  <defs>
+    <linearGradient id="tile-shift-background" x1="48" y1="36" x2="454" y2="474" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#312557" />
+      <stop offset="1" stop-color="#130e2d" />
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="44" fill="url(#tile-shift-background)" />
+  <circle cx="410" cy="92" r="136" fill="rgba(168, 85, 247, 0.16)" />
+  <circle cx="104" cy="418" r="118" fill="rgba(56, 189, 248, 0.09)" />
+  <rect x="12" y="12" width="488" height="488" rx="42" fill="rgba(38, 33, 68, 0.94)" stroke="rgba(190, 164, 233, 0.16)" stroke-width="2" />
+  <g transform="translate(256 256) scale(1.12) translate(-256 -256)"><rect x="62" y="146" width="160" height="160" rx="26" fill="rgba(56, 49, 90, 0.96)" stroke="rgba(190, 164, 233, 0.22)" stroke-width="1.5" /><rect x="80" y="164" width="36" height="36" rx="7" fill="rgba(168, 85, 247, 0.24)" stroke="rgba(190, 164, 233, 0.18)" stroke-width="1.2" /><rect x="124" y="164" width="36" height="36" rx="7" fill="#4d4579" stroke="rgba(190, 164, 233, 0.18)" stroke-width="1.2" /><rect x="168" y="164" width="36" height="36" rx="7" fill="#4d4579" stroke="rgba(190, 164, 233, 0.18)" stroke-width="1.2" /><rect x="80" y="208" width="36" height="36" rx="7" fill="#4d4579" stroke="rgba(190, 164, 233, 0.18)" stroke-width="1.2" /><rect x="124" y="208" width="36" height="36" rx="7" fill="rgba(56, 189, 248, 0.2)" stroke="rgba(190, 164, 233, 0.18)" stroke-width="1.2" /><rect x="168" y="208" width="36" height="36" rx="7" fill="#4d4579" stroke="rgba(190, 164, 233, 0.18)" stroke-width="1.2" /><rect x="80" y="252" width="36" height="36" rx="7" fill="#4d4579" stroke="rgba(190, 164, 233, 0.18)" stroke-width="1.2" /><rect x="124" y="252" width="36" height="36" rx="7" fill="#4d4579" stroke="rgba(190, 164, 233, 0.18)" stroke-width="1.2" /><rect x="168" y="252" width="36" height="36" rx="7" fill="rgba(245, 158, 11, 0.22)" stroke="rgba(190, 164, 233, 0.18)" stroke-width="1.2" /><rect x="236" y="146" width="160" height="160" rx="26" fill="rgba(56, 49, 90, 0.96)" stroke="rgba(190, 164, 233, 0.22)" stroke-width="1.5" /><rect x="254" y="164" width="36" height="36" rx="7" fill="#4d4579" stroke="rgba(190, 164, 233, 0.18)" stroke-width="1.2" /><rect x="298" y="164" width="36" height="36" rx="7" fill="rgba(168, 85, 247, 0.24)" stroke="rgba(190, 164, 233, 0.18)" stroke-width="1.2" /><rect x="342" y="164" width="36" height="36" rx="7" fill="#4d4579" stroke="rgba(190, 164, 233, 0.18)" stroke-width="1.2" /><rect x="254" y="208" width="36" height="36" rx="7" fill="#4d4579" stroke="rgba(190, 164, 233, 0.18)" stroke-width="1.2" /><rect x="298" y="208" width="36" height="36" rx="7" fill="#4d4579" stroke="rgba(190, 164, 233, 0.18)" stroke-width="1.2" /><rect x="342" y="208" width="36" height="36" rx="7" fill="rgba(56, 189, 248, 0.2)" stroke="rgba(190, 164, 233, 0.18)" stroke-width="1.2" /><rect x="254" y="252" width="36" height="36" rx="7" fill="rgba(245, 158, 11, 0.22)" stroke="rgba(190, 164, 233, 0.18)" stroke-width="1.2" /><rect x="298" y="252" width="36" height="36" rx="7" fill="#4d4579" stroke="rgba(190, 164, 233, 0.18)" stroke-width="1.2" /><rect x="342" y="252" width="36" height="36" rx="7" fill="#4d4579" stroke="rgba(190, 164, 233, 0.18)" stroke-width="1.2" /><rect x="390" y="176" width="42" height="38" rx="16" fill="rgba(168, 85, 247, 0.28)" stroke="rgba(192, 147, 244, 0.85)" stroke-width="1.5" /><text x="411" y="196" font-family="'Avenir Next', 'Trebuchet MS', 'Segoe UI', sans-serif" font-weight="700" text-anchor="middle" dominant-baseline="middle" fill="#f8fafc" font-size="11.760000000000002">R</text><rect x="390" y="224" width="42" height="38" rx="16" fill="rgba(84, 71, 130, 0.92)" stroke="rgba(190, 164, 233, 0.24)" stroke-width="1.5" /><text x="411" y="244" font-family="'Avenir Next', 'Trebuchet MS', 'Segoe UI', sans-serif" font-weight="700" text-anchor="middle" dominant-baseline="middle" fill="#cbd5e1" font-size="11.760000000000002">C</text></g>
 </svg>
