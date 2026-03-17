@@ -29,7 +29,7 @@ type DevUserProfile = {
 };
 
 type DevGame = {
-  id: string;
+  id: number;
   key: StoredGameKey;
   name: string;
   shortDescription: string;
@@ -40,7 +40,7 @@ type DevGame = {
 type DevPlayResult = {
   id: string;
   userId: string;
-  gameId: string;
+  gameId: number;
   difficulty: string;
   startedAt: Date;
   finishedAt: Date | null;
@@ -60,10 +60,20 @@ type DevPlayResult = {
   shareToken: string | null;
 };
 
+type DevUserFeedbackLog = {
+  id: string;
+  userId: string;
+  gameId: number;
+  eventType: string;
+  reward: number;
+  contextKey: string;
+  loggedAt: Date;
+};
+
 type DevUserGameSummary = {
   id: string;
   userId: string;
-  gameId: string;
+  gameId: number;
   currentRank: number | null;
   bestCompetitivePoints: number;
   personalBestMetric: number | null;
@@ -87,7 +97,7 @@ type DevUserOverallSummary = {
 type DevLeaderboardEntry = {
   id: string;
   periodType: RankingPeriod;
-  gameId: string | null;
+  gameId: number | null;
   userId: string;
   rank: number;
   points: number;
@@ -101,6 +111,7 @@ type DevState = {
   profiles: DevUserProfile[];
   games: DevGame[];
   playResults: DevPlayResult[];
+  feedbackLogs: DevUserFeedbackLog[];
   gameSummaries: DevUserGameSummary[];
   overallSummaries: DevUserOverallSummary[];
   leaderboardEntries: DevLeaderboardEntry[];
@@ -110,6 +121,17 @@ const runtimeConfig = getRuntimeConfig();
 
 function createInitialState(): DevState {
   const now = new Date("2026-03-13T08:30:00.000Z");
+  const fixtureGames = listPersistedGames().map((game, index) => ({
+    ...game,
+    id: index + 1,
+  }));
+  const gameIdByKey = new Map(fixtureGames.map((game) => [game.key, game.id] as const));
+  const minesweeperGameId = gameIdByKey.get("MINESWEEPER");
+  const sudokuGameId = gameIdByKey.get("SUDOKU");
+
+  if (typeof minesweeperGameId !== "number" || typeof sudokuGameId !== "number") {
+    throw new Error("Missing required fixture game IDs for MINESWEEPER/SUDOKU");
+  }
 
   return {
     users: [
@@ -192,12 +214,12 @@ function createInitialState(): DevState {
         lastPlayedAt: new Date("2026-03-11T19:42:10.000Z"),
       },
     ],
-    games: listPersistedGames(),
+    games: fixtureGames,
     playResults: [
       {
         id: "play-aiko-mine-1",
         userId: "user-aiko",
-        gameId: "game-minesweeper",
+        gameId: minesweeperGameId,
         difficulty: "HARD",
         startedAt: new Date("2026-03-11T19:55:00.000Z"),
         finishedAt: new Date("2026-03-11T20:00:32.000Z"),
@@ -219,7 +241,7 @@ function createInitialState(): DevState {
       {
         id: "play-aiko-sudoku-1",
         userId: "user-aiko",
-        gameId: "game-sudoku",
+        gameId: sudokuGameId,
         difficulty: "NORMAL",
         startedAt: new Date("2026-03-11T20:02:00.000Z"),
         finishedAt: new Date("2026-03-11T20:10:40.000Z"),
@@ -241,7 +263,7 @@ function createInitialState(): DevState {
       {
         id: "play-mio-sudoku-pending",
         userId: "user-mio",
-        gameId: "game-sudoku",
+        gameId: sudokuGameId,
         difficulty: "EASY",
         startedAt: new Date("2026-03-10T18:00:00.000Z"),
         finishedAt: new Date("2026-03-10T18:15:10.000Z"),
@@ -263,7 +285,7 @@ function createInitialState(): DevState {
       {
         id: "play-mio-mine-abandoned",
         userId: "user-mio",
-        gameId: "game-minesweeper",
+        gameId: minesweeperGameId,
         difficulty: "EASY",
         startedAt: new Date("2026-03-10T17:45:00.000Z"),
         finishedAt: new Date("2026-03-10T17:48:00.000Z"),
@@ -285,7 +307,7 @@ function createInitialState(): DevState {
       {
         id: "play-ren-sudoku-1",
         userId: "user-ren",
-        gameId: "game-sudoku",
+        gameId: sudokuGameId,
         difficulty: "HARD",
         startedAt: new Date("2026-03-11T19:28:00.000Z"),
         finishedAt: new Date("2026-03-11T19:35:15.000Z"),
@@ -307,7 +329,7 @@ function createInitialState(): DevState {
       {
         id: "play-ren-mine-1",
         userId: "user-ren",
-        gameId: "game-minesweeper",
+        gameId: minesweeperGameId,
         difficulty: "NORMAL",
         startedAt: new Date("2026-03-11T19:38:00.000Z"),
         finishedAt: new Date("2026-03-11T19:42:10.000Z"),
@@ -327,11 +349,49 @@ function createInitialState(): DevState {
         shareToken: "share-ren-mine-1",
       },
     ],
+    feedbackLogs: [
+      {
+        id: "feedback-aiko-mine-completed",
+        userId: "user-aiko",
+        gameId: minesweeperGameId,
+        eventType: "RESULT_COMPLETED",
+        reward: 3,
+        contextKey: "engagementSegment=engaged|surface=result",
+        loggedAt: new Date("2026-03-11T20:00:40.000Z"),
+      },
+      {
+        id: "feedback-aiko-sudoku-viewed",
+        userId: "user-aiko",
+        gameId: sudokuGameId,
+        eventType: "RESULT_VIEWED",
+        reward: 2,
+        contextKey: "engagementSegment=engaged|surface=result",
+        loggedAt: new Date("2026-03-11T20:11:00.000Z"),
+      },
+      {
+        id: "feedback-mio-mine-abandoned",
+        userId: "user-mio",
+        gameId: minesweeperGameId,
+        eventType: "RUN_ABANDONED",
+        reward: -3,
+        contextKey: "engagementSegment=churn-risk|surface=gameplay",
+        loggedAt: new Date("2026-03-10T17:48:05.000Z"),
+      },
+      {
+        id: "feedback-ren-sudoku-share",
+        userId: "user-ren",
+        gameId: sudokuGameId,
+        eventType: "SHARE_LINK_GENERATED",
+        reward: 4,
+        contextKey: "engagementSegment=advocacy|surface=result",
+        loggedAt: new Date("2026-03-11T19:35:18.000Z"),
+      },
+    ],
     gameSummaries: [
       {
         id: "summary-aiko-mine",
         userId: "user-aiko",
-        gameId: "game-minesweeper",
+        gameId: minesweeperGameId,
         currentRank: 1,
         bestCompetitivePoints: 1420,
         personalBestMetric: 332,
@@ -343,7 +403,7 @@ function createInitialState(): DevState {
       {
         id: "summary-aiko-sudoku",
         userId: "user-aiko",
-        gameId: "game-sudoku",
+        gameId: sudokuGameId,
         currentRank: 2,
         bestCompetitivePoints: 810,
         personalBestMetric: 520,
@@ -355,7 +415,7 @@ function createInitialState(): DevState {
       {
         id: "summary-hiroki-mine",
         userId: "user-hiroki",
-        gameId: "game-minesweeper",
+        gameId: minesweeperGameId,
         currentRank: null,
         bestCompetitivePoints: 0,
         personalBestMetric: null,
@@ -367,7 +427,7 @@ function createInitialState(): DevState {
       {
         id: "summary-hiroki-sudoku",
         userId: "user-hiroki",
-        gameId: "game-sudoku",
+        gameId: sudokuGameId,
         currentRank: null,
         bestCompetitivePoints: 0,
         personalBestMetric: null,
@@ -379,7 +439,7 @@ function createInitialState(): DevState {
       {
         id: "summary-mio-mine",
         userId: "user-mio",
-        gameId: "game-minesweeper",
+        gameId: minesweeperGameId,
         currentRank: null,
         bestCompetitivePoints: 0,
         personalBestMetric: null,
@@ -391,7 +451,7 @@ function createInitialState(): DevState {
       {
         id: "summary-mio-sudoku",
         userId: "user-mio",
-        gameId: "game-sudoku",
+        gameId: sudokuGameId,
         currentRank: null,
         bestCompetitivePoints: 320,
         personalBestMetric: 910,
@@ -403,7 +463,7 @@ function createInitialState(): DevState {
       {
         id: "summary-ren-mine",
         userId: "user-ren",
-        gameId: "game-minesweeper",
+        gameId: minesweeperGameId,
         currentRank: 2,
         bestCompetitivePoints: 920,
         personalBestMetric: 250,
@@ -415,7 +475,7 @@ function createInitialState(): DevState {
       {
         id: "summary-ren-sudoku",
         userId: "user-ren",
-        gameId: "game-sudoku",
+        gameId: sudokuGameId,
         currentRank: 1,
         bestCompetitivePoints: 1510,
         personalBestMetric: 435,
@@ -577,7 +637,7 @@ function createInitialState(): DevState {
       {
         id: "leader-mine-season-aiko",
         periodType: "SEASON",
-        gameId: "game-minesweeper",
+        gameId: minesweeperGameId,
         userId: "user-aiko",
         rank: 1,
         points: 1420,
@@ -588,7 +648,7 @@ function createInitialState(): DevState {
       {
         id: "leader-mine-season-ren",
         periodType: "SEASON",
-        gameId: "game-minesweeper",
+        gameId: minesweeperGameId,
         userId: "user-ren",
         rank: 2,
         points: 920,
@@ -599,7 +659,7 @@ function createInitialState(): DevState {
       {
         id: "leader-sudoku-season-ren",
         periodType: "SEASON",
-        gameId: "game-sudoku",
+        gameId: sudokuGameId,
         userId: "user-ren",
         rank: 1,
         points: 1510,
@@ -610,7 +670,7 @@ function createInitialState(): DevState {
       {
         id: "leader-sudoku-season-aiko",
         periodType: "SEASON",
-        gameId: "game-sudoku",
+        gameId: sudokuGameId,
         userId: "user-aiko",
         rank: 2,
         points: 810,
@@ -621,7 +681,7 @@ function createInitialState(): DevState {
       {
         id: "leader-sudoku-season-mio",
         periodType: "SEASON",
-        gameId: "game-sudoku",
+        gameId: sudokuGameId,
         userId: "user-mio",
         rank: 3,
         points: 320,
@@ -657,11 +717,11 @@ function getProfile(userId: string) {
   return devState.profiles.find((profile) => profile.userId === userId) ?? null;
 }
 
-function getGame(gameId: string) {
+function getGame(gameId: number) {
   return devState.games.find((game) => game.id === gameId) ?? null;
 }
 
-function requireGame(gameId: string) {
+function requireGame(gameId: number) {
   const game = getGame(gameId);
 
   if (!game) {
@@ -790,7 +850,7 @@ export function listUsersWithResultsFixture() {
 export function createPlayResultRecordFixture(input: {
   id: string;
   userId: string;
-  gameId: string;
+  gameId: number;
   difficulty: "EASY" | "NORMAL" | "HARD" | "EXPERT";
   status: "COMPLETED" | "FAILED" | "ABANDONED" | "PENDING_SAVE";
   cleared: boolean;
@@ -843,6 +903,41 @@ export function createPlayResultRecordFixture(input: {
   return clone(nextResult);
 }
 
+export function createUserFeedbackLogFixture(input: {
+  contextKey?: string;
+  eventType: string;
+  gameId: number;
+  loggedAt?: Date;
+  reward: number;
+  userId: string;
+}) {
+  const nextLog: DevUserFeedbackLog = {
+    id: `feedback-${devState.feedbackLogs.length + 1}-${Date.now()}`,
+    userId: input.userId,
+    gameId: input.gameId,
+    eventType: input.eventType,
+    reward: input.reward,
+    contextKey: input.contextKey ?? "global",
+    loggedAt: input.loggedAt ?? new Date(),
+  };
+
+  devState.feedbackLogs.unshift(nextLog);
+  return clone(nextLog);
+}
+
+export function listRecentUserFeedbackLogsFixture(limit: number) {
+  return devState.feedbackLogs
+    .slice()
+    .sort((left, right) => right.loggedAt.getTime() - left.loggedAt.getTime())
+    .slice(0, limit)
+    .map((entry) => ({
+      ...clone(entry),
+      game: {
+        key: requireGame(entry.gameId).key,
+      },
+    }));
+}
+
 export function updatePlayResultStatusFixture(resultId: string, input: {
   status: "COMPLETED" | "FAILED" | "ABANDONED" | "PENDING_SAVE";
   leaderboardEligible: boolean;
@@ -868,7 +963,7 @@ export function updatePlayResultStatusFixture(resultId: string, input: {
 
 export function replaceLeaderboardEntriesFixture(entries: Array<{
   periodType: RankingPeriod;
-  gameId?: string;
+  gameId?: number;
   userId: string;
   rank: number;
   points: number;
@@ -891,7 +986,7 @@ export function replaceLeaderboardEntriesFixture(entries: Array<{
 
 export function replaceUserGameSummariesFixture(summaries: Array<{
   userId: string;
-  gameId: string;
+  gameId: number;
   currentRank: number | null;
   bestCompetitivePoints: number;
   personalBestMetric: number | null;

@@ -18,6 +18,7 @@ model User {
   visibilityScope  String             @default("TENANT_ONLY")
   profile          UserProfile?
   playResults      PlayResult[]
+  feedbackLogs     UserFeedbackLog[]
   leaderboardEntries LeaderboardEntry[]
   gameSummaries    UserGameSummary[]
   overallSummaries UserOverallSummary[]
@@ -37,13 +38,14 @@ model UserProfile {
 }
 
 model Game {
-  id                String             @id @default(cuid())
+  id                Int                @id @default(autoincrement())
   key               String             @unique
   name              String
   shortDescription  String
   accentColor       String
   rulesSummary      String
   playResults       PlayResult[]
+  feedbackLogs      UserFeedbackLog[]
   leaderboardEntries LeaderboardEntry[]
   userGameSummaries UserGameSummary[]
 }
@@ -51,7 +53,7 @@ model Game {
 model PlayResult {
   id                 String      @id @default(cuid())
   userId             String
-  gameId             String
+  gameId             Int
   difficulty         String
   startedAt          DateTime
   finishedAt         DateTime?
@@ -80,7 +82,7 @@ model PlayResult {
 model LeaderboardEntry {
   id            String     @id @default(cuid())
   periodType    String
-  gameId        String?
+  gameId        Int?
   userId        String
   rank          Int
   points        Int
@@ -97,7 +99,7 @@ model LeaderboardEntry {
 model UserGameSummary {
   id                    String   @id @default(cuid())
   userId                String
-  gameId                String
+  gameId                Int
   currentRank           Int?
   bestCompetitivePoints Int      @default(0)
   personalBestMetric    Int?
@@ -123,4 +125,20 @@ model UserOverallSummary {
   user              User       @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, periodType])
+}
+
+model UserFeedbackLog {
+  id         String   @id @default(cuid())
+  userId     String
+  gameId     Int
+  eventType  String
+  reward     Int
+  contextKey String   @default("global")
+  loggedAt   DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  game       Game     @relation(fields: [gameId], references: [id], onDelete: Cascade)
+
+  @@index([loggedAt(sort: Desc)])
+  @@index([gameId, loggedAt(sort: Desc)])
+  @@index([userId, loggedAt(sort: Desc)])
 }

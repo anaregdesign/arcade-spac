@@ -4,12 +4,14 @@ import type { Route } from "./+types/results.$resultId";
 import { AppShell } from "../components/shared/AppShell";
 import { ResultScreen } from "../components/gameplay/ResultScreen";
 import { buildSharedHelpSections } from "../components/shared/help-content";
+import { recommendationFeedbackEventType } from "../lib/domain/services/contextual-ucb-recommendation";
 import { requireCurrentUserId } from "../lib/server/infrastructure/auth/session.server";
 import { getRuntimeConfig } from "../lib/server/infrastructure/config/runtime-config.server";
 import { retryPendingResult } from "../lib/server/usecase/gameplay/record-gameplay-result.server";
 import { getPlayResultById } from "../lib/server/infrastructure/repositories/gameplay.repository.server";
 import { getHomeDashboard } from "../lib/server/usecase/get-home-dashboard.server";
 import { buildPersistedResultView } from "../lib/server/usecase/gameplay/get-result-view.server";
+import { recordRecommendationFeedbackEvent } from "../lib/server/usecase/recommendation/record-recommendation-feedback.server";
 
 export async function loader({ request, params }: Route.LoaderArgs) {
   const userId = await requireCurrentUserId(request);
@@ -24,6 +26,12 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   if (!result || result.userId !== userId) {
     throw new Response("Result not found", { status: 404 });
   }
+
+  await recordRecommendationFeedbackEvent({
+    eventType: recommendationFeedbackEventType.RESULT_VIEWED,
+    gameId: result.gameId,
+    userId,
+  });
 
   return {
     dashboard,

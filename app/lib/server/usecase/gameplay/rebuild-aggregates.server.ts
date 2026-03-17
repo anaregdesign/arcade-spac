@@ -23,7 +23,7 @@ export async function rebuildAggregates() {
 
   const gameSummaryRows: Array<{
     userId: string;
-    gameId: string;
+    gameId: number;
     currentRank: number | null;
     bestCompetitivePoints: number;
     personalBestMetric: number | null;
@@ -42,7 +42,7 @@ export async function rebuildAggregates() {
   }> = [];
   const leaderboardRows: Array<{
     periodType: "SEASON" | "LIFETIME";
-    gameId?: string;
+    gameId?: number;
     userId: string;
     rank: number;
     points: number;

@@ -18,7 +18,7 @@ import { ensureCanonicalGameCatalog } from "./game-catalog.repository.server";
 
 type UpsertGameSummaryInput = {
   userId: string;
-  gameId: string;
+  gameId: number;
   currentRank: number | null;
   bestCompetitivePoints: number;
   personalBestMetric: number | null;
@@ -52,7 +52,7 @@ export async function getGameByKey(gameKey: string) {
 export async function createPlayResultRecord(input: {
   id: string;
   userId: string;
-  gameId: string;
+  gameId: number;
   difficulty: "EASY" | "NORMAL" | "HARD" | "EXPERT";
   status: "COMPLETED" | "FAILED" | "ABANDONED" | "PENDING_SAVE";
   cleared: boolean;
@@ -154,7 +154,7 @@ export async function listGames() {
 
 export async function replaceLeaderboardEntries(entries: Array<{
   periodType: "SEASON" | "LIFETIME";
-  gameId?: string;
+  gameId?: number;
   userId: string;
   rank: number;
   points: number;
