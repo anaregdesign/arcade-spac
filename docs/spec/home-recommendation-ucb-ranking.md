@@ -59,6 +59,7 @@
 - フィードバック受信後、推薦モデル更新がリアルタイムで反映される
 - フィードバック受信時に増分学習（online update）を実行し、ホーム表示時は学習済み状態で推論する
 - 推薦モデルはユーザ間で共有され、特定ユーザ専用モデルとして分離されない
+- release workflow は pending Prisma migrations を app 配信前に適用し、`UserFeedbackLog` を含む recommendation 依存スキーマを常に先行反映する
 
 ## Edge Cases
 
@@ -66,6 +67,7 @@
 - 新規リリース直後など十分なログがない期間は、既定順（安定した fallback 順）で表示できる
 - 同一イベントの重複送信が発生しても、ログ時刻順で再学習可能な形式を維持する
 - 一時的に学習更新が遅延しても、ホーム画面表示は継続できる
+- migration に失敗した release は app revision を正常起動させず、壊れた recommendation 依存コードを先に配信しない
 
 ## Constraints and Dependencies
 
@@ -75,6 +77,7 @@
 - デフォルト推論は Thompson Sampling を採用し、探索と活用のバランスを推論側で自然に扱う
 - recommendation ロジックは UCB 固有名に依存しない汎用サービスとして管理し、実装は class ベースで提供する
 - ホーム表示リクエストごとの `UserFeedbackLogs` 全再走査を避け、bootstrap 済みモデル + 増分学習で運用する
+- release 時の schema 反映は GitHub Workflow 経由で強制し、app revision は pending migration 適用後に起動させる
 - 本仕様は first version とし、context 種別や重み付けは今後の具体要件で更新可能とする
 
 ## Links

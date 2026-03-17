@@ -274,10 +274,46 @@ jobs:
           tenant-id: ${{ env.AZURE_TENANT_ID }}
           subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}
 
+      - name: Discover SQL migration identity
+        id: migrate_identity
+        run: |
+          SQL_MIGRATION_IDENTITY_NAME="$(printf 'id-sql-migrate-%s' "$AZURE_APP_NAME" | cut -c1-24)"
+          SQL_MIGRATION_IDENTITY_ID="$(
+            az identity show \
+              --resource-group "$AZURE_RESOURCE_GROUP" \
+              --name "$SQL_MIGRATION_IDENTITY_NAME" \
+              --query id \
+              --output tsv
+          )"
+          SQL_MIGRATION_IDENTITY_CLIENT_ID="$(
+            az identity show \
+              --resource-group "$AZURE_RESOURCE_GROUP" \
+              --name "$SQL_MIGRATION_IDENTITY_NAME" \
+              --query clientId \
+              --output tsv
+          )"
+
+          test -n "$SQL_MIGRATION_IDENTITY_ID" || { echo "Missing SQL migration identity id"; exit 1; }
+          test -n "$SQL_MIGRATION_IDENTITY_CLIENT_ID" || { echo "Missing SQL migration identity client id"; exit 1; }
+
+          echo "sql_migration_identity_id=$SQL_MIGRATION_IDENTITY_ID" >> "$GITHUB_OUTPUT"
+          echo "sql_migration_identity_client_id=$SQL_MIGRATION_IDENTITY_CLIENT_ID" >> "$GITHUB_OUTPUT"
+
       - name: Configure registry access when required
         env:
           AZURE_CONTAINER_APP_NAME: ${{ needs.plan_infra.outputs.container_app_name }}
         run: bash ./scripts/azure/postprovision.sh
+
+      - name: Attach SQL migration identity to container app
+        env:
+          AZURE_CONTAINER_APP_NAME: ${{ needs.plan_infra.outputs.container_app_name }}
+        run: |
+          az containerapp identity assign \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --name "$AZURE_CONTAINER_APP_NAME" \
+            --system-assigned \
+            --user-assigned "${{ steps.migrate_identity.outputs.sql_migration_identity_id }}" \
+            --output none
 
       - name: Deploy immutable release image
         env:
@@ -287,6 +323,7 @@ jobs:
             --resource-group "$AZURE_RESOURCE_GROUP" \
             --name "$AZURE_CONTAINER_APP_NAME" \
             --image "$IMAGE_REF" \
+            --set-env-vars "AZURE_SQL_MIGRATION_CLIENT_ID=${{ steps.migrate_identity.outputs.sql_migration_identity_client_id }}" \
             --output none
 
       - name: Discover deployed app endpoint

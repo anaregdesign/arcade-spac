@@ -4,10 +4,15 @@ import { withDevelopmentFixtures } from "./dev-fixtures.server";
 export async function verifyRuntimeDatabaseCompatibility() {
   return withDevelopmentFixtures(
     async () => {
-      await prisma.userProfile.findUnique({
-        where: { userId: "__healthcheck__" },
-        select: { themePreference: true },
-      });
+      await Promise.all([
+        prisma.userProfile.findUnique({
+          where: { userId: "__healthcheck__" },
+          select: { themePreference: true },
+        }),
+        prisma.userFeedbackLog.findFirst({
+          select: { id: true },
+        }),
+      ]);
       return true;
     },
     () => true,

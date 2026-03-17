@@ -144,6 +144,19 @@ legacy base score の式は以下。
 
 現在の実装では、共有モデルは「全ユーザ共有」だが「全プロセス共有」ではない。複数プロセス構成では、永続化された feedback log を介して整合を取る。
 
+## Release-Time Migration Sequence
+
+release image には Prisma CLI と `prisma/migrations` を含める。Container App revision は server 起動前に pending migration を適用する。
+
+1. app revision 起動時に App Configuration / Key Vault から `DATABASE_URL` を解決する
+2. `AZURE_SQL_MIGRATION_CLIENT_ID` を `AZURE_CLIENT_ID` として migration 実行プロセスへ渡す
+3. `npm run db:migrate:deploy` を実行する
+4. migration 成功後に `react-router-serve` を起動する
+
+migration 用の Azure SQL 権限は user-assigned migration identity に閉じ込め、通常の app runtime は system-assigned identity で動作する。
+
+`/health` は recommendation 依存スキーマも検証し、`UserProfile` と `UserFeedbackLog` の両方に問い合わせて migration 漏れを smoke test で検知する。
+
 ## Online Learning
 
 新しい feedback event を受け取ると、次の順で処理する。
@@ -263,6 +276,7 @@ score = meanReward + explorationBonus + coldStartBonus + baseScoreBonus
 - feedback path は best-effort で、推薦関連エラーで user-facing flow を止めない
 - shared model はプロセスローカルなので、別プロセスの増分更新は即時反映されない
 - 再起動後は永続化済みログから再学習するため、状態は eventually 回復する
+- release 時の migration が失敗した場合、その revision は server 起動前に失敗し、未反映 schema のまま recommendation 依存コードを配信しない
 
 ## Tunable Parameters
 
