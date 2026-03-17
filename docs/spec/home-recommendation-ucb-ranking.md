@@ -76,10 +76,10 @@
 - recommendation ロジックは UCB 固有名に依存しない汎用サービスとして管理し、実装は class ベースで提供する
 - ホーム表示リクエストごとの `UserFeedbackLogs` 全再走査を避け、bootstrap 済みモデル + 増分学習で運用する
 - 本仕様は first version とし、context 種別や重み付けは今後の具体要件で更新可能とする
-- execution tracker は `/docs/plans/plan.20260317-213000.md` としてアーカイブ済み
 
 ## Links
 
 - Related: [product-specs.md](./product-specs.md)
 - Related: [ui-specs.md](./ui-specs.md)
-- Plan: [../plans/plan.20260317-213000.md](../plans/plan.20260317-213000.md)
+- Related: [home-recommendation-algorithm-technical-spec.md](./home-recommendation-algorithm-technical-spec.md)
+- Plan: [../plans/plan.20260317-220308.md](../plans/plan.20260317-220308.md)

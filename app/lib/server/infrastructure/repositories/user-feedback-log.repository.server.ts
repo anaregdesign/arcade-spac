@@ -1,4 +1,8 @@
-import { toRouteGameKey } from "../../../domain/entities/game-catalog";
+import type {
+  CreateRecommendationFeedbackLogInput,
+  RecommendationFeedbackLogRecord,
+  RecommendationFeedbackLogRepository,
+} from "../../../domain/repositories/recommendation-feedback-log.repository";
 import { prisma } from "../prisma.server";
 import {
   createUserFeedbackLogFixture,
@@ -6,73 +10,68 @@ import {
   withDevelopmentFixtures,
 } from "./dev-fixtures.server";
 
-export type UserFeedbackLogRecord = {
+type UserFeedbackLogPersistenceRecord = {
   contextKey: string;
   eventType: string;
   gameId: number;
-  gameKey: string;
   id: string;
   loggedAt: Date;
   reward: number;
   userId: string;
 };
 
-export async function createUserFeedbackLog(input: {
-  contextKey?: string;
-  eventType: string;
-  gameId: number;
-  loggedAt?: Date;
-  reward: number;
-  userId: string;
-}) {
-  return withDevelopmentFixtures(
-    () => prisma.userFeedbackLog.create({
-      data: {
-        contextKey: input.contextKey ?? "global",
+function mapToRecommendationFeedbackLogRecord(record: UserFeedbackLogPersistenceRecord): RecommendationFeedbackLogRecord {
+  return {
+    contextKey: record.contextKey,
+    eventType: record.eventType,
+    gameId: record.gameId,
+    id: record.id,
+    loggedAt: record.loggedAt,
+    reward: record.reward,
+    userId: record.userId,
+  };
+}
+
+export class PrismaRecommendationFeedbackLogRepository implements RecommendationFeedbackLogRepository {
+  async create(input: CreateRecommendationFeedbackLogInput): Promise<RecommendationFeedbackLogRecord> {
+    const record = await withDevelopmentFixtures(
+      () => prisma.userFeedbackLog.create({
+        data: {
+          contextKey: input.contextKey ?? "global",
+          eventType: input.eventType,
+          gameId: input.gameId,
+          loggedAt: input.loggedAt,
+          reward: input.reward,
+          userId: input.userId,
+        },
+      }),
+      () => createUserFeedbackLogFixture({
+        contextKey: input.contextKey,
         eventType: input.eventType,
         gameId: input.gameId,
         loggedAt: input.loggedAt,
         reward: input.reward,
         userId: input.userId,
-      },
-    }),
-    () => createUserFeedbackLogFixture({
-      contextKey: input.contextKey,
-      eventType: input.eventType,
-      gameId: input.gameId,
-      loggedAt: input.loggedAt,
-      reward: input.reward,
-      userId: input.userId,
-    }),
-  );
-}
+      }),
+    );
 
-export async function listRecentUserFeedbackLogs(limit = 1000): Promise<UserFeedbackLogRecord[]> {
-  const records = await withDevelopmentFixtures(
-    () => prisma.userFeedbackLog.findMany({
-      include: {
-        game: {
-          select: {
-            key: true,
-          },
+    return mapToRecommendationFeedbackLogRecord(record);
+  }
+
+  async listRecent(limit = 1000): Promise<RecommendationFeedbackLogRecord[]> {
+    const take = Math.max(0, Math.floor(limit));
+    const records = await withDevelopmentFixtures(
+      () => prisma.userFeedbackLog.findMany({
+        orderBy: {
+          loggedAt: "desc",
         },
-      },
-      orderBy: {
-        loggedAt: "desc",
-      },
-      take: limit,
-    }),
-    () => listRecentUserFeedbackLogsFixture(limit),
-  );
+        take,
+      }),
+      () => listRecentUserFeedbackLogsFixture(take),
+    );
 
-  return records.map((record) => ({
-    contextKey: record.contextKey,
-    eventType: record.eventType,
-    gameId: record.gameId,
-    gameKey: toRouteGameKey(record.game.key),
-    id: record.id,
-    loggedAt: record.loggedAt,
-    reward: record.reward,
-    userId: record.userId,
-  }));
+    return records.map(mapToRecommendationFeedbackLogRecord);
+  }
 }
+
+export const recommendationFeedbackLogRepository = new PrismaRecommendationFeedbackLogRepository();
