@@ -19,7 +19,6 @@ describe("game-catalog", () => {
     expect(listPersistedGames()).toEqual(
       supportedGames.map((game) => ({
         accentColor: game.accentColor,
-        id: game.id,
         key: game.storedKey,
         name: game.name,
         rulesSummary: game.rulesSummary,

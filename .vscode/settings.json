@@ -1,3 +1,12 @@
 {
-  "workbench.browser.enableChatTools": true
+  "workbench.browser.enableChatTools": true,
+  "chat.agentSkillsLocations": {
+    ".github/skills": true,
+    ".agents/skills": true,
+    ".claude/skills": true,
+    "~/.copilot/skills": true,
+    "~/.agents/skills": true,
+    "~/.claude/skills": true,
+    "~/.vscode/extensions/synapsevscode.synapse-1.20.1/copilot/skills": true
+  }
 }

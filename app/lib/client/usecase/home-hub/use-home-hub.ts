@@ -16,6 +16,7 @@ type HomeGame = {
   name: string;
   playCount: number;
   recommendationText: string | null;
+  recommendationScore: number;
   shortDescription: string;
 };
 
@@ -114,6 +115,10 @@ function matchesSearch(game: HomeGame, search: string) {
   return haystack.includes(search.toLowerCase());
 }
 
+function computeLegacyHomeRecommendationScore(game: Pick<HomeGame, "bestCompetitivePoints" | "currentRank" | "playCount">) {
+  return (game.playCount === 0 ? 1_000_000 : 0) + (game.currentRank ? 10_000 - game.currentRank : 0) + game.bestCompetitivePoints;
+}
+
 function compareGames(sort: string, left: HomeGame, right: HomeGame) {
   if (sort === "name") {
     return left.name.localeCompare(right.name);
@@ -129,9 +134,17 @@ function compareGames(sort: string, left: HomeGame, right: HomeGame) {
     return leftRank - rightRank || left.name.localeCompare(right.name);
   }
 
-  const leftScore = (left.playCount === 0 ? 1_000_000 : 0) + (left.currentRank ? 10_000 - left.currentRank : 0) + left.bestCompetitivePoints;
-  const rightScore = (right.playCount === 0 ? 1_000_000 : 0) + (right.currentRank ? 10_000 - right.currentRank : 0) + right.bestCompetitivePoints;
-  return rightScore - leftScore || left.name.localeCompare(right.name);
+  const leftRecommendationScore = Number.isFinite(left.recommendationScore) ? left.recommendationScore : 0;
+  const rightRecommendationScore = Number.isFinite(right.recommendationScore) ? right.recommendationScore : 0;
+  const recommendationDelta = rightRecommendationScore - leftRecommendationScore;
+
+  if (recommendationDelta !== 0) {
+    return recommendationDelta;
+  }
+
+  const leftFallbackScore = computeLegacyHomeRecommendationScore(left);
+  const rightFallbackScore = computeLegacyHomeRecommendationScore(right);
+  return rightFallbackScore - leftFallbackScore || left.name.localeCompare(right.name);
 }
 
 function createSearchParams(input: { search: string; sort: string; tag: string }) {

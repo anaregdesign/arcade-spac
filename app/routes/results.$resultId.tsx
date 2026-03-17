@@ -4,12 +4,15 @@ import type { Route } from "./+types/results.$resultId";
 import { AppShell } from "../components/shared/AppShell";
 import { ResultScreen } from "../components/gameplay/ResultScreen";
 import { buildSharedHelpSections } from "../components/shared/help-content";
+import { toRouteGameKey } from "../lib/domain/entities/game-catalog";
+import { recommendationFeedbackEventType } from "../lib/domain/services/contextual-recommendation";
 import { requireCurrentUserId } from "../lib/server/infrastructure/auth/session.server";
 import { getRuntimeConfig } from "../lib/server/infrastructure/config/runtime-config.server";
 import { retryPendingResult } from "../lib/server/usecase/gameplay/record-gameplay-result.server";
 import { getPlayResultById } from "../lib/server/infrastructure/repositories/gameplay.repository.server";
 import { getHomeDashboard } from "../lib/server/usecase/get-home-dashboard.server";
 import { buildPersistedResultView } from "../lib/server/usecase/gameplay/get-result-view.server";
+import { recordRecommendationFeedbackEvent } from "../lib/server/usecase/recommendation/record-recommendation-feedback.server";
 
 export async function loader({ request, params }: Route.LoaderArgs) {
   const userId = await requireCurrentUserId(request);
@@ -25,6 +28,12 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     throw new Response("Result not found", { status: 404 });
   }
 
+  await recordRecommendationFeedbackEvent({
+    eventType: recommendationFeedbackEventType.RESULT_VIEWED,
+    gameId: result.gameId,
+    userId,
+  });
+
   return {
     dashboard,
     result: await buildPersistedResultView({
@@ -36,12 +45,50 @@ export async function loader({ request, params }: Route.LoaderArgs) {
 }
 
 export async function action({ request, params }: Route.ActionArgs) {
-  await requireCurrentUserId(request);
+  const userId = await requireCurrentUserId(request);
   const formData = await request.formData();
+  const intent = formData.get("intent");
 
-  if (formData.get("intent") === "retryPending") {
+  if (intent === "retryPending") {
     const resultId = await retryPendingResult(params.resultId);
     return redirect(`/results/${resultId}`);
+  }
+
+  const result = await getPlayResultById(params.resultId);
+
+  if (!result || result.userId !== userId) {
+    throw new Response("Result not found", { status: 404 });
+  }
+
+  if (intent === "replayFromResult") {
+    await recordRecommendationFeedbackEvent({
+      eventType: recommendationFeedbackEventType.RESULT_REPLAY_REQUESTED,
+      gameId: result.gameId,
+      userId,
+    });
+
+    return redirect(`/games/${toRouteGameKey(result.game.key)}`);
+  }
+
+  if (intent === "shareToTeams") {
+    const teamsShareHref = formData.get("teamsShareHref");
+    const canShare = result.status === "COMPLETED"
+      && Boolean(result.shareToken)
+      && result.user.visibilityScope === "TENANT_ONLY";
+
+    if (canShare) {
+      await recordRecommendationFeedbackEvent({
+        eventType: recommendationFeedbackEventType.SHARE_TO_TEAMS_CLICKED,
+        gameId: result.gameId,
+        userId,
+      });
+    }
+
+    if (typeof teamsShareHref === "string" && teamsShareHref.startsWith("https://teams.microsoft.com/share?")) {
+      return redirect(teamsShareHref);
+    }
+
+    return redirect(`/results/${result.id}`);
   }
 
   throw new Response("Unsupported action", { status: 400 });

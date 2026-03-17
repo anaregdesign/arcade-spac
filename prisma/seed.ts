@@ -8,14 +8,16 @@ const userIds = {
 } as const;
 
 const persistedGames = listPersistedGames();
-const gameIds = {
-  colorSweep: persistedGames.find((game) => game.key === "COLOR_SWEEP")!.id,
-  precisionDrop: persistedGames.find((game) => game.key === "DROP_LINE")!.id,
-  minesweeper: persistedGames.find((game) => game.key === "MINESWEEPER")!.id,
-  numberChain: persistedGames.find((game) => game.key === "NUMBER_CHAIN")!.id,
-  pairFlip: persistedGames.find((game) => game.key === "PAIR_FLIP")!.id,
-  sudoku: persistedGames.find((game) => game.key === "SUDOKU")!.id,
-} as const;
+
+function requireGameIdByKey(gameIdByKey: Map<string, number>, key: string) {
+  const id = gameIdByKey.get(key);
+
+  if (typeof id !== "number") {
+    throw new Error(`Missing seeded game id for key: ${key}`);
+  }
+
+  return id;
+}
 
 async function main() {
   await prisma.leaderboardEntry.deleteMany();
@@ -29,6 +31,22 @@ async function main() {
   await prisma.game.createMany({
     data: persistedGames,
   });
+  const gameIdByKey = new Map(
+    (await prisma.game.findMany({
+      select: {
+        id: true,
+        key: true,
+      },
+    })).map((game) => [game.key, game.id] as const),
+  );
+  const gameIds = {
+    colorSweep: requireGameIdByKey(gameIdByKey, "COLOR_SWEEP"),
+    precisionDrop: requireGameIdByKey(gameIdByKey, "DROP_LINE"),
+    minesweeper: requireGameIdByKey(gameIdByKey, "MINESWEEPER"),
+    numberChain: requireGameIdByKey(gameIdByKey, "NUMBER_CHAIN"),
+    pairFlip: requireGameIdByKey(gameIdByKey, "PAIR_FLIP"),
+    sudoku: requireGameIdByKey(gameIdByKey, "SUDOKU"),
+  } as const;
 
   await prisma.user.createMany({
     data: [

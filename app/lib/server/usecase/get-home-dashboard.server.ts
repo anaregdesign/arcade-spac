@@ -1,6 +1,11 @@
 import { toRouteGameKey } from "../../domain/entities/game-catalog";
+import {
+  buildHomeRecommendationContext,
+  toRecommendationScoreMap,
+} from "../../domain/services/contextual-recommendation";
 import { formatOptionalPrimaryMetric, getBestMetricLabel } from "../../domain/services/game-metrics";
 import { getHomeDashboardRecord, getGameRecord, listGameRecords } from "../infrastructure/repositories/arcade-dashboard.repository.server";
+import { rankRecommendationsWithSharedModel } from "./recommendation/shared-recommendation-model.server";
 
 function normalizeRecentResultSummary(gameName: string, summaryText: string) {
   if (!summaryText) {
@@ -12,6 +17,16 @@ function normalizeRecentResultSummary(gameName: string, summaryText: string) {
   }
 
   return `${gameName} ${summaryText.charAt(0).toLowerCase()}${summaryText.slice(1)}`;
+}
+
+function computeLegacyHomeRecommendationScore(input: {
+  bestCompetitivePoints: number;
+  currentRank: number | null;
+  playCount: number;
+}) {
+  return (input.playCount === 0 ? 1_000_000 : 0)
+    + (input.currentRank ? 10_000 - input.currentRank : 0)
+    + input.bestCompetitivePoints;
 }
 
 export async function getHomeDashboard(userId: string) {
@@ -27,6 +42,30 @@ export async function getHomeDashboard(userId: string) {
   const seasonSummary = record.overallSummaries.find((summary) => summary.periodType === "SEASON");
   const lifetimeSummary = record.overallSummaries.find((summary) => summary.periodType === "LIFETIME");
   const summaryByGameId = new Map(record.gameSummaries.map((summary) => [summary.gameId, summary]));
+  const recommendationRanking = await rankRecommendationsWithSharedModel({
+    candidates: games.map((game) => {
+      const summary = summaryByGameId.get(game.id);
+      const playCount = summary?.playCount ?? 0;
+      const completedCount = summary?.completedCount ?? 0;
+      const currentRank = summary?.currentRank ?? null;
+      const bestCompetitivePoints = summary?.bestCompetitivePoints ?? 0;
+
+      return {
+        armKey: toRouteGameKey(game.key),
+        armIndex: game.id,
+        context: buildHomeRecommendationContext({
+          completedCount,
+          playCount,
+        }),
+        baseScore: computeLegacyHomeRecommendationScore({
+          bestCompetitivePoints,
+          currentRank,
+          playCount,
+        }),
+      };
+    }),
+  });
+  const recommendationScoreByGameKey = toRecommendationScoreMap(recommendationRanking);
 
   return {
     user: {
@@ -61,6 +100,7 @@ export async function getHomeDashboard(userId: string) {
         playCount: summary?.playCount ?? 0,
         completedCount: summary?.completedCount ?? 0,
         recommendationText: summary?.recommendationText ?? null,
+        recommendationScore: recommendationScoreByGameKey.get(toRouteGameKey(game.key)) ?? 0,
         metricLabel: getBestMetricLabel(game.key),
         metricValue: formatOptionalPrimaryMetric(game.key, summary?.personalBestMetric ?? null),
       };

@@ -1487,7 +1487,6 @@ export const supportedGames = [
 
 export function listPersistedGames() {
   return supportedGames.map((game) => ({
-    id: game.id,
     key: game.storedKey,
     name: game.name,
     shortDescription: game.shortDescription,

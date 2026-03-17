@@ -1,5 +1,6 @@
 import { randomUUID } from "node:crypto";
 
+import { recommendationFeedbackEventType } from "../../../domain/services/contextual-recommendation";
 import {
   createPlayResultRecord,
   getGameByKey,
@@ -9,7 +10,10 @@ import {
 } from "../../infrastructure/repositories/gameplay.repository.server";
 import { getGameDefinition, getGameSuccessfulResultLabel } from "../../../domain/entities/game-catalog";
 import { formatPrimaryMetric, getPrecisionDropHitRating } from "../../../domain/services/game-metrics";
+import { recordRecommendationFeedbackEvent } from "../recommendation/record-recommendation-feedback.server";
 import { rebuildAggregates } from "./rebuild-aggregates.server";
+
+const quickAbandonThresholdSeconds = 30;
 
 const difficultyBasePoints = {
   EASY: 400,
@@ -330,6 +334,7 @@ export async function recordGameplayResult(input: {
     sharePath: shareToken ? `/results/shared/${shareToken}` : null,
     shareToken,
   });
+  let finalizedStatus: typeof status = status;
 
   try {
     await rebuildAggregates();
@@ -344,7 +349,32 @@ export async function recordGameplayResult(input: {
         rankDelta: null,
         summaryText: `${game.name} ${preservedResultLabel} was preserved, but publish failed. Retry save to add it to rankings and total points.`,
       });
+      finalizedStatus = "PENDING_SAVE";
     }
+  }
+
+  if (finalizedStatus === "COMPLETED") {
+    await recordRecommendationFeedbackEvent({
+      eventType: recommendationFeedbackEventType.RESULT_COMPLETED,
+      gameId: game.id,
+      userId: input.userId,
+    });
+
+    if (shareToken) {
+      await recordRecommendationFeedbackEvent({
+        eventType: recommendationFeedbackEventType.SHARE_LINK_GENERATED,
+        gameId: game.id,
+        userId: input.userId,
+      });
+    }
+  }
+
+  if (finalizedStatus === "FAILED") {
+    await recordRecommendationFeedbackEvent({
+      eventType: recommendationFeedbackEventType.RUN_FAILED,
+      gameId: game.id,
+      userId: input.userId,
+    });
   }
 
   return result.id;
@@ -354,6 +384,7 @@ export async function recordAbandonedRun(input: {
   userId: string;
   gameKey: string;
   difficulty: "EASY" | "NORMAL" | "HARD" | "EXPERT";
+  elapsedSeconds?: number;
 }) {
   const game = await getGameByKey(input.gameKey);
 
@@ -375,6 +406,18 @@ export async function recordAbandonedRun(input: {
     rankDelta: null,
     summaryText: `${game.name} run was abandoned before completion.`,
     sharePath: null,
+  });
+  const isQuickAbandon = typeof input.elapsedSeconds === "number"
+    && Number.isFinite(input.elapsedSeconds)
+    && input.elapsedSeconds >= 0
+    && input.elapsedSeconds <= quickAbandonThresholdSeconds;
+
+  await recordRecommendationFeedbackEvent({
+    eventType: isQuickAbandon
+      ? recommendationFeedbackEventType.RUN_QUICK_ABANDONED
+      : recommendationFeedbackEventType.RUN_ABANDONED,
+    gameId: game.id,
+    userId: input.userId,
   });
 
   await rebuildAggregates();
@@ -402,6 +445,18 @@ export async function retryPendingResult(resultId: string) {
   if (!result.shareToken) {
     await updatePlayResultShareToken(result.id, `share-${randomUUID()}`);
   }
+
+  await recordRecommendationFeedbackEvent({
+    eventType: recommendationFeedbackEventType.RESULT_COMPLETED,
+    gameId: result.gameId,
+    userId: result.userId,
+  });
+
+  await recordRecommendationFeedbackEvent({
+    eventType: recommendationFeedbackEventType.SHARE_LINK_GENERATED,
+    gameId: result.gameId,
+    userId: result.userId,
+  });
 
   await rebuildAggregates();
   return result.id;
