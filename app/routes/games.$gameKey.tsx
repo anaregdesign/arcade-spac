@@ -51,6 +51,7 @@ export async function action({ request, params }: Route.ActionArgs) {
   const formData = await request.formData();
   const intent = formData.get("intent");
   const difficulty = formData.get("difficulty");
+  const elapsedSecondsInput = formData.get("elapsedSeconds");
   const primaryMetricInput = formData.get("primaryMetric");
   const mistakeCountInput = formData.get("mistakeCount");
   const hintCountInput = formData.get("hintCount");
@@ -142,10 +143,17 @@ export async function action({ request, params }: Route.ActionArgs) {
 
     const redirectTo = formData.get("redirectTo");
 
+    const elapsedSeconds = typeof elapsedSecondsInput === "string" && elapsedSecondsInput
+      ? Number(elapsedSecondsInput)
+      : undefined;
+
     await recordAbandonedRun({
       userId,
       gameKey: canonicalGameKey,
       difficulty: difficulty as "EASY" | "NORMAL" | "HARD" | "EXPERT",
+      elapsedSeconds: elapsedSeconds !== undefined && Number.isFinite(elapsedSeconds)
+        ? elapsedSeconds
+        : undefined,
     });
 
     return redirect(typeof redirectTo === "string" ? redirectTo : "/home");

@@ -1,12 +1,11 @@
 import { toRouteGameKey } from "../../domain/entities/game-catalog";
 import {
   buildHomeRecommendationContext,
-  rankArmsWithContextualUcb,
   toRecommendationScoreMap,
-} from "../../domain/services/contextual-ucb-recommendation";
+} from "../../domain/services/contextual-recommendation";
 import { formatOptionalPrimaryMetric, getBestMetricLabel } from "../../domain/services/game-metrics";
 import { getHomeDashboardRecord, getGameRecord, listGameRecords } from "../infrastructure/repositories/arcade-dashboard.repository.server";
-import { listRecentUserFeedbackLogs } from "../infrastructure/repositories/user-feedback-log.repository.server";
+import { rankRecommendationsWithSharedModel } from "./recommendation/shared-recommendation-model.server";
 
 function normalizeRecentResultSummary(gameName: string, summaryText: string) {
   if (!summaryText) {
@@ -31,10 +30,9 @@ function computeLegacyHomeRecommendationScore(input: {
 }
 
 export async function getHomeDashboard(userId: string) {
-  const [record, games, feedbackLogs] = await Promise.all([
+  const [record, games] = await Promise.all([
     getHomeDashboardRecord(userId),
     listGameRecords(),
-    listRecentUserFeedbackLogs(1000),
   ]);
 
   if (!record) {
@@ -44,7 +42,7 @@ export async function getHomeDashboard(userId: string) {
   const seasonSummary = record.overallSummaries.find((summary) => summary.periodType === "SEASON");
   const lifetimeSummary = record.overallSummaries.find((summary) => summary.periodType === "LIFETIME");
   const summaryByGameId = new Map(record.gameSummaries.map((summary) => [summary.gameId, summary]));
-  const recommendationRanking = rankArmsWithContextualUcb({
+  const recommendationRanking = await rankRecommendationsWithSharedModel({
     candidates: games.map((game) => {
       const summary = summaryByGameId.get(game.id);
       const playCount = summary?.playCount ?? 0;
@@ -66,13 +64,6 @@ export async function getHomeDashboard(userId: string) {
         }),
       };
     }),
-    feedbackLogs: feedbackLogs.map((log) => ({
-      armKey: log.gameKey,
-      armIndex: log.gameId,
-      context: log.contextKey,
-      loggedAt: log.loggedAt,
-      reward: log.reward,
-    })),
   });
   const recommendationScoreByGameKey = toRecommendationScoreMap(recommendationRanking);
 

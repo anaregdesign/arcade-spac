@@ -4,11 +4,13 @@ import type { Route } from "./+types/results.shared.$shareToken";
 import { AppShell } from "../components/shared/AppShell";
 import { ResultScreen } from "../components/gameplay/ResultScreen";
 import { buildSharedHelpSections } from "../components/shared/help-content";
+import { recommendationFeedbackEventType } from "../lib/domain/services/contextual-recommendation";
 import { requireCurrentUserId } from "../lib/server/infrastructure/auth/session.server";
 import { getRuntimeConfig } from "../lib/server/infrastructure/config/runtime-config.server";
 import { getPlayResultByShareToken } from "../lib/server/infrastructure/repositories/gameplay.repository.server";
 import { getHomeDashboard } from "../lib/server/usecase/get-home-dashboard.server";
 import { buildPersistedResultView } from "../lib/server/usecase/gameplay/get-result-view.server";
+import { recordRecommendationFeedbackEvent } from "../lib/server/usecase/recommendation/record-recommendation-feedback.server";
 
 export async function loader({ request, params }: Route.LoaderArgs) {
   const viewerUserId = await requireCurrentUserId(request);
@@ -22,6 +24,14 @@ export async function loader({ request, params }: Route.LoaderArgs) {
 
   if (!result || result.status !== "COMPLETED" || !result.shareToken || result.user.visibilityScope !== "TENANT_ONLY") {
     throw new Response("Shared result not found", { status: 404 });
+  }
+
+  if (viewerUserId !== result.userId) {
+    await recordRecommendationFeedbackEvent({
+      eventType: recommendationFeedbackEventType.SHARED_RESULT_VIEWED,
+      gameId: result.gameId,
+      userId: viewerUserId,
+    });
   }
 
   return {

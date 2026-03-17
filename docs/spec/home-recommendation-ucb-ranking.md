@@ -2,7 +2,7 @@
 
 ## Summary
 
-ホーム画面のゲーム一覧を、ユーザ行動履歴に基づく recommendation で並び替える。推薦ロジックは contextual multi-armed bandit の UCB を使用し、プレイ継続や拡散行動を反映して表示順を更新する。
+ホーム画面のゲーム一覧を、ユーザ行動履歴に基づく recommendation で並び替える。推薦ロジックは contextual multi-armed bandit を採用し、デフォルト推論は Thompson Sampling を使用する。UCB 推論は比較・検証用として併存可能とし、プレイ継続や拡散行動を反映して表示順を更新する。
 
 ## User Problem
 
@@ -41,16 +41,23 @@
 
 ## Acceptance Criteria
 
-- ホーム画面のゲーム一覧が、contextual bandit UCB のスコア順で表示される
+- ホーム画面のゲーム一覧が、contextual bandit Thompson Sampling 推論のスコア順で表示される
+- UCB 推論ロジックは互換維持され、必要時に比較検証へ利用できる
 - `UserFeedbackLogs` にフィードバックイベントが保存され、`loggedAt` 降順で取得できる
 - `Game.id` は `Int` として保持され、UCB 内部の行列・ベクトルはこの値をインデックスとして利用する
 - positive context に以下の行動が含まれる
   - ゲームのリザルト画面への到達
-  - リザルト画面の共有ボタン経由でのリンク取得
+  - リザルト画面での共有ボタン押下（Teams 共有の実行）
+  - 共有リンク経由での共有リザルト閲覧
+  - リザルト画面からの再プレイ遷移
   - ゲームのプレイ継続・拡散に該当する追加行動（定義済みイベント）
-- negative context にプレイ中断が含まれる
+- negative context に以下の行動が含まれる
+  - プレイ中断 (`RUN_ABANDONED`)
+  - クリア失敗 (`RUN_FAILED`)
+  - 短時間でのプレイ中断 (`RUN_QUICK_ABANDONED`)
 - モデル初期化時に `UserFeedbackLogs` の最新 1000 件を学習入力として使用する
 - フィードバック受信後、推薦モデル更新がリアルタイムで反映される
+- フィードバック受信時に増分学習（online update）を実行し、ホーム表示時は学習済み状態で推論する
 - 推薦モデルはユーザ間で共有され、特定ユーザ専用モデルとして分離されない
 
 ## Edge Cases
@@ -65,11 +72,14 @@
 - フィードバックログは user-facing behavior の追跡に使うため、時系列参照が容易な `loggedAt` を必須とする
 - recommendation 学習は直近ログに依存するため、`loggedAt` 降順の取得性能を担保する（index 等の具体実装は別設計）
 - recommendation の内部インデックスは `Game.id` (`Int`) を使用し、キー変換時の不整合を防ぐ
+- デフォルト推論は Thompson Sampling を採用し、探索と活用のバランスを推論側で自然に扱う
+- recommendation ロジックは UCB 固有名に依存しない汎用サービスとして管理し、実装は class ベースで提供する
+- ホーム表示リクエストごとの `UserFeedbackLogs` 全再走査を避け、bootstrap 済みモデル + 増分学習で運用する
 - 本仕様は first version とし、context 種別や重み付けは今後の具体要件で更新可能とする
-- active execution tracker は `/docs/plans/plan.md` を使用する
+- execution tracker は `/docs/plans/plan.20260317-213000.md` としてアーカイブ済み
 
 ## Links
 
 - Related: [product-specs.md](./product-specs.md)
 - Related: [ui-specs.md](./ui-specs.md)
-- Plan: [../plans/plan.20260317-144716.md](../plans/plan.20260317-144716.md)
+- Plan: [../plans/plan.20260317-213000.md](../plans/plan.20260317-213000.md)

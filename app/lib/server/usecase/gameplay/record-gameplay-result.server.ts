@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 
-import { recommendationFeedbackEventType } from "../../../domain/services/contextual-ucb-recommendation";
+import { recommendationFeedbackEventType } from "../../../domain/services/contextual-recommendation";
 import {
   createPlayResultRecord,
   getGameByKey,
@@ -12,6 +12,8 @@ import { getGameDefinition, getGameSuccessfulResultLabel } from "../../../domain
 import { formatPrimaryMetric, getPrecisionDropHitRating } from "../../../domain/services/game-metrics";
 import { recordRecommendationFeedbackEvent } from "../recommendation/record-recommendation-feedback.server";
 import { rebuildAggregates } from "./rebuild-aggregates.server";
+
+const quickAbandonThresholdSeconds = 30;
 
 const difficultyBasePoints = {
   EASY: 400,
@@ -367,6 +369,14 @@ export async function recordGameplayResult(input: {
     }
   }
 
+  if (finalizedStatus === "FAILED") {
+    await recordRecommendationFeedbackEvent({
+      eventType: recommendationFeedbackEventType.RUN_FAILED,
+      gameId: game.id,
+      userId: input.userId,
+    });
+  }
+
   return result.id;
 }
 
@@ -374,6 +384,7 @@ export async function recordAbandonedRun(input: {
   userId: string;
   gameKey: string;
   difficulty: "EASY" | "NORMAL" | "HARD" | "EXPERT";
+  elapsedSeconds?: number;
 }) {
   const game = await getGameByKey(input.gameKey);
 
@@ -396,8 +407,15 @@ export async function recordAbandonedRun(input: {
     summaryText: `${game.name} run was abandoned before completion.`,
     sharePath: null,
   });
+  const isQuickAbandon = typeof input.elapsedSeconds === "number"
+    && Number.isFinite(input.elapsedSeconds)
+    && input.elapsedSeconds >= 0
+    && input.elapsedSeconds <= quickAbandonThresholdSeconds;
+
   await recordRecommendationFeedbackEvent({
-    eventType: recommendationFeedbackEventType.RUN_ABANDONED,
+    eventType: isQuickAbandon
+      ? recommendationFeedbackEventType.RUN_QUICK_ABANDONED
+      : recommendationFeedbackEventType.RUN_ABANDONED,
     gameId: game.id,
     userId: input.userId,
   });

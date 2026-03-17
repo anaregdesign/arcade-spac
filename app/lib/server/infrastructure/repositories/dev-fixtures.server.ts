@@ -783,6 +783,8 @@ export function canUseDevelopmentFixtures(error: unknown) {
     "Login failed for user",
     "Can't reach database server",
     "ECONNREFUSED",
+    "Could not connect (sequence)",
+    "ENOTFOUND",
     "server was not found",
   ].some((fragment) => message.toLowerCase().includes(fragment.toLowerCase()));
 }

@@ -77,10 +77,13 @@ export function ResultScreen({ result }: ResultScreenProps) {
           ))}
         </dl>
         <div className={["hero-actions", "compact-action-strip", styles["result-primary-actions"]].join(" ")}>
-          <Link className="action-link action-link-primary" to={`/games/${result.gameKey}`}>
-            <span aria-hidden="true" className="action-link-icon-mark">↺</span>
-            <span>Replay {result.gameName}</span>
-          </Link>
+          <Form method="post">
+            <input type="hidden" name="intent" value="replayFromResult" />
+            <button className="action-link action-link-primary" type="submit">
+              <span aria-hidden="true" className="action-link-icon-mark">↺</span>
+              <span>Replay {result.gameName}</span>
+            </button>
+          </Form>
           <Link
             aria-label="Open rankings"
             className="action-link action-link-secondary action-link-icon"
@@ -91,10 +94,14 @@ export function ResultScreen({ result }: ResultScreenProps) {
           </Link>
           {result.viewerMode === "owner"
             ? result.canShare ? (
-              <a className="action-link action-link-secondary" href={screen.teamsShareHref} target="_blank" rel="noreferrer">
-                <span aria-hidden="true" className="action-link-icon-mark">⇪</span>
-                <span>Share to Teams</span>
-              </a>
+              <Form method="post" target="_blank">
+                <input type="hidden" name="intent" value="shareToTeams" />
+                <input type="hidden" name="teamsShareHref" value={screen.teamsShareHref} />
+                <button className="action-link action-link-secondary" type="submit">
+                  <span aria-hidden="true" className="action-link-icon-mark">⇪</span>
+                  <span>Share to Teams</span>
+                </button>
+              </Form>
             ) : (
               <span className="action-link action-link-secondary action-link-disabled" aria-disabled="true">
                 <span aria-hidden="true" className="action-link-icon-mark">⇪</span>
