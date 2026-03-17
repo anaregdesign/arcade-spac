@@ -4,6 +4,7 @@ import { load } from "@azure/app-configuration-provider";
 import { ManagedIdentityCredential } from "@azure/identity";
 
 const APP_CONFIGURATION_KEY_PREFIX = "Arcade:";
+const STARTUP_MIGRATION_DATABASE_URL_ENV_NAME = "STARTUP_MIGRATION_DATABASE_URL";
 
 function isAzureHosting() {
   return Boolean(process.env.AZURE_CONTAINER_APP_NAME || process.env.AZURE_APP_NAME);
@@ -33,8 +34,21 @@ function runCommand(args, env) {
 }
 
 async function resolveDatabaseUrl() {
-  if (typeof process.env.DATABASE_URL === "string" && process.env.DATABASE_URL.length > 0) {
-    return process.env.DATABASE_URL;
+  if (
+    typeof process.env[STARTUP_MIGRATION_DATABASE_URL_ENV_NAME] === "string"
+    && process.env[STARTUP_MIGRATION_DATABASE_URL_ENV_NAME].trim().length > 0
+  ) {
+    return {
+      source: STARTUP_MIGRATION_DATABASE_URL_ENV_NAME,
+      value: process.env[STARTUP_MIGRATION_DATABASE_URL_ENV_NAME].trim(),
+    };
+  }
+
+  if (typeof process.env.DATABASE_URL === "string" && process.env.DATABASE_URL.trim().length > 0) {
+    return {
+      source: "DATABASE_URL",
+      value: process.env.DATABASE_URL.trim(),
+    };
   }
 
   if (!isAzureHosting()) {
@@ -73,16 +87,27 @@ async function resolveDatabaseUrl() {
     throw new Error("DATABASE_URL could not be resolved for startup migration.");
   }
 
-  return databaseUrl;
+  return {
+    source: "Azure App Configuration",
+    value: databaseUrl,
+  };
+}
+
+function describeDatabaseUrlSource(databaseUrl) {
+  const [prefix] = databaseUrl.split(";");
+  return prefix || "sqlserver://<redacted>";
 }
 
 async function main() {
   const databaseUrl = await resolveDatabaseUrl();
 
   if (databaseUrl) {
+    console.log(
+      `Resolved startup migration database URL from ${databaseUrl.source} (${describeDatabaseUrlSource(databaseUrl.value)}).`,
+    );
     const migrationEnv = {
       ...process.env,
-      DATABASE_URL: databaseUrl,
+      DATABASE_URL: databaseUrl.value,
     };
     const migrationClientId = process.env.AZURE_SQL_MIGRATION_CLIENT_ID;
 
@@ -95,6 +120,7 @@ async function main() {
 
   const serverEnv = { ...process.env };
   delete serverEnv.AZURE_CLIENT_ID;
+  delete serverEnv[STARTUP_MIGRATION_DATABASE_URL_ENV_NAME];
 
   await runCommand(["run", "start:server"], serverEnv);
 }

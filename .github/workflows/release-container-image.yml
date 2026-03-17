@@ -299,6 +299,18 @@ jobs:
           echo "sql_migration_identity_id=$SQL_MIGRATION_IDENTITY_ID" >> "$GITHUB_OUTPUT"
           echo "sql_migration_identity_client_id=$SQL_MIGRATION_IDENTITY_CLIENT_ID" >> "$GITHUB_OUTPUT"
 
+      - name: Resolve startup migration database URL
+        id: migration_database_url
+        run: |
+          STARTUP_MIGRATION_DATABASE_URL="$(bash ./scripts/azure/resolve-default-azure-credential-database-url.sh)"
+          test -n "$STARTUP_MIGRATION_DATABASE_URL" || { echo "Missing startup migration database URL"; exit 1; }
+
+          {
+            echo "startup_migration_database_url<<EOF"
+            echo "$STARTUP_MIGRATION_DATABASE_URL"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
       - name: Configure registry access when required
         env:
           AZURE_CONTAINER_APP_NAME: ${{ needs.plan_infra.outputs.container_app_name }}
@@ -323,7 +335,9 @@ jobs:
             --resource-group "$AZURE_RESOURCE_GROUP" \
             --name "$AZURE_CONTAINER_APP_NAME" \
             --image "$IMAGE_REF" \
-            --set-env-vars "AZURE_SQL_MIGRATION_CLIENT_ID=${{ steps.migrate_identity.outputs.sql_migration_identity_client_id }}" \
+            --set-env-vars \
+              "AZURE_SQL_MIGRATION_CLIENT_ID=${{ steps.migrate_identity.outputs.sql_migration_identity_client_id }}" \
+              "STARTUP_MIGRATION_DATABASE_URL=${{ steps.migration_database_url.outputs.startup_migration_database_url }}" \
             --output none
 
       - name: Discover deployed app endpoint

@@ -150,7 +150,8 @@ export async function exchangeCodeForEntraIdentity(input: {
   });
 
   if (!tokenResponse.ok) {
-    throw new Error(`Failed to exchange Entra authorization code: ${tokenResponse.status}`);
+    const errorPayload = await tokenResponse.text();
+    throw new Error(`Failed to exchange Entra authorization code: ${tokenResponse.status} ${errorPayload}`);
   }
 
   const tokenPayload = await tokenResponse.json() as { id_token?: string };
