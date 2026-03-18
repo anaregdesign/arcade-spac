@@ -21,6 +21,7 @@ operator は破壊的変更の切り替え先として `green` / `blue` / `dev` 
 - shared identity resource だけは suffix を増やして複製しない
 - bootstrap / release / verification / helper scripts が suffix-aware resource name を同じ規則で導出する
 - 同一 suffix 内の rerun では active hosted resource を再利用し、recoverable `App Configuration` / `Key Vault` は recover して再利用できる
+- workflow が管理する Azure state は、run-scoped artifact を除いて no-op rerun で余計な revision / version / recreate を増やさない
 
 ## Non-Goals
 
@@ -35,6 +36,9 @@ operator は破壊的変更の切り替え先として `green` / `blue` / `dev` 
 - shared `OIDC` / `Service Principal` / app registration などの app 共通 identity は既存の共通 account を使い回す
 - bootstrap / release は同一 suffix environment に既存 active resource がある場合、その suffix environment の resource を再利用する
 - bootstrap は同一 suffix environment の target `App Configuration` / `Key Vault` が recoverable 状態なら recover してから deployment を続行する
+- `sync-runtime-config` は `Key Vault secret version` や `App Configuration revision` を毎回増やさず、value や `Key Vault reference` が変わった時だけ update する
+- `deploy_app` は target image や registry contract が既に desired state なら `Container App` update を skip する
+- SQL bootstrap は同じ database に何度 rerun しても principal / role convergence だけを行い、schema migration は Prisma の migration state に委ねる
 
 ## Acceptance Criteria
 
@@ -43,6 +47,9 @@ operator は破壊的変更の切り替え先として `green` / `blue` / `dev` 
 - shared identity contract は suffix を変えても変わらず、bootstrap / release workflow は共通 `OIDC` / `Service Principal` を使い続ける
 - latest bootstrap failure と同じ `rg-arcade-dev` partial state を想定しても、workflow contract 上は `existing SQL server` と recoverable `App Configuration` / `Key Vault` を再利用できる
 - infra template と workflow parameter flow は existing `SQL server` reuse 時に `AadOnlyAuthenticationIsEnabled` を再発させない
+- workflow-managed Azure operations は、`deployment name` や `job execution name` のような run-scoped artifact を除いて rerun 時に追加 drift を生まない
+- same input で rerun した時、`Key Vault secret version`、`App Configuration key revision`、`Container App revision` は不要に増えない
+- SQL bootstrap rerun は既存 principal / role を再利用し、pending migration が無い限り schema side effect を増やさない
 - touched workflow YAML と `infra/main.bicep` は local validation を通る
 
 ## Edge Cases
@@ -52,6 +59,7 @@ operator は破壊的変更の切り替え先として `green` / `blue` / `dev` 
 - active resource がなく recoverable resource もない場合だけ create path を使う
 - `AZURE_GLOBAL_NAME_SUFFIX` と active resource 名が一致しなくても、同一 suffix environment の active resource 実名が優先される
 - recover command が permission 不足で失敗した場合は、その resource type と required operator action が分かる形で fail する
+- run-scoped deployment metadata や one-shot verification execution は完全固定名にせず、persistent Azure state のみ strict idempotency の対象にする
 
 ## Constraints And Dependencies
 

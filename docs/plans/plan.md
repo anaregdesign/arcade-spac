@@ -61,3 +61,24 @@
 - [ ] Rerun the bootstrap workflow with the patched delivery path and confirm it succeeds against empty-target assumptions
 - [ ] Run or confirm the hosted verification workflow for the released target
 - [ ] Update the active plan to reflect the final release outcome and remaining drift, if any
+
+## Section 4 - Workflow Idempotency Hardening
+### Subsection 4.1 - Canonical Contract
+- [x] Extend the canonical spec so workflow-managed Azure state is idempotent except for run-scoped artifact names
+- [x] Identify every remaining workflow-owned Azure write path that still produces avoidable drift on no-op rerun
+
+### Subsection 4.2 - Runtime Config And App Rollout
+- [x] Patch `scripts/azure/sync-runtime-config.sh` so unchanged `Key Vault` and `App Configuration` entries are skipped instead of rewritten
+- [x] Patch `scripts/azure/postprovision.sh` so unchanged registry configuration does not rewrite the `Container App`
+- [x] Patch bootstrap and routine release app rollout steps so unchanged image refs do not issue `az containerapp update`
+
+### Subsection 4.3 - SQL Bootstrap
+- [x] Refactor `scripts/azure/init-sql.mjs` so it converges principals and role membership without replaying schema DDL outside Prisma migration state
+- [x] Verify the bootstrap workflow still leaves first-run schema creation to the hosted Prisma migration path
+
+### Subsection 4.4 - Validation
+- [x] Run local validation for touched shell scripts, workflow YAML, and targeted app/runtime scripts
+- [x] Summarize any remaining non-idempotent behavior that is intentionally limited to run-scoped artifact creation
+
+Notes:
+- Remaining intentional non-idempotent behavior is limited to run-scoped artifact names such as Azure deployment names and transient Container Apps Job / execution names used by workflow runs.

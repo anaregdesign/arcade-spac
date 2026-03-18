@@ -145,8 +145,8 @@ Current repository note:
 - runtime secrets stay in Key Vault and App Configuration rather than deployment parameters or repo files
 - `PUBLIC_APP_URL` should be the Azure Front Door endpoint URL or the final custom domain URL
 - after changing the public host, update the Microsoft Entra app registration redirect URI to `https://<front-door-host-or-custom-domain>/auth/callback`
-- when switching to another resource group during dev, update `AZURE_RESOURCE_GROUP` and `AZURE_APP_NAME` before running bootstrap, release, or verification workflows
-- the repository derives the Container App resource name as `ca-${AZURE_APP_NAME}`; workflow-owned helper scripts use the same derivation instead of a separate environment variable
+- keep `AZURE_RESOURCE_GROUP` as the shared prefix and select `green` / `blue` / `dev` through the workflow-managed suffix contract instead of editing resource names per run
+- workflow-owned helper scripts derive suffix-aware environment-scoped resource names from `AZURE_APP_NAME` plus the selected suffix, then prefer active same-suffix resources when they already exist
 
 ## Azure SQL Provisioning Inputs And Identities
 

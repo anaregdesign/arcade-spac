@@ -1,4 +1,3 @@
-import fs from "node:fs/promises";
 import sql from "mssql";
 
 const {
@@ -23,11 +22,6 @@ if (!ARCADE_SQL_MIGRATION_PRINCIPAL) {
 if (!ARCADE_SQL_RUNTIME_PRINCIPAL) {
   throw new Error("ARCADE_SQL_RUNTIME_PRINCIPAL must be set.");
 }
-
-const migrationSql = await fs.readFile(
-  new URL("../../prisma/migrations/20260312111840_init_arcade_domain/migration.sql", import.meta.url),
-  "utf8",
-);
 
 const connection = {
   server: ARCADE_SQL_SERVER,
@@ -59,15 +53,6 @@ IF NOT EXISTS (
 const pool = await sql.connect(connection);
 
 try {
-  try {
-    await pool.request().batch(migrationSql);
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    if (!message.includes("already an object named")) {
-      throw error;
-    }
-  }
-
   await pool.request().batch(`
 IF NOT EXISTS (SELECT 1 FROM sys.database_principals WHERE name = N'${runtimePrincipal}')
   CREATE USER [${runtimePrincipal}] FROM EXTERNAL PROVIDER;
@@ -81,7 +66,7 @@ ${membershipGuard("db_datawriter", migrationPrincipal)}
 ${membershipGuard("db_ddladmin", migrationPrincipal)}
 `);
 
-  console.log("Azure SQL schema and roles are ready.");
+  console.log("Azure SQL principals and roles are ready.");
 } finally {
   await pool.close();
 }

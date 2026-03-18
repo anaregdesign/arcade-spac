@@ -3,6 +3,8 @@ set -euo pipefail
 
 APP_CONFIGURATION_KEY_PREFIX="${APP_CONFIGURATION_KEY_PREFIX:-Arcade:}"
 APPCONFIG_LABEL="${AZURE_APPCONFIG_LABEL:-${APPCONFIG_LABEL:-}}"
+APPCONFIG_KEYVAULT_REFERENCE_CONTENT_TYPE="application/vnd.microsoft.appconfig.keyvaultref+json;charset=utf-8"
+config_changed=false
 
 appconfig_label_args=()
 if [[ -n "${APPCONFIG_LABEL}" ]]; then
@@ -26,6 +28,19 @@ require_env() {
   if [[ -z "${!name:-}" ]]; then
     fail "${name} is required."
   fi
+}
+
+append_output() {
+  local key="$1"
+  local value="$2"
+
+  if [[ -n "${GITHUB_OUTPUT:-}" ]]; then
+    printf '%s=%s\n' "${key}" "${value}" >> "${GITHUB_OUTPUT}"
+  fi
+}
+
+mark_config_changed() {
+  config_changed=true
 }
 
 require_command az
@@ -242,17 +257,116 @@ validate_database_url() {
 set_keyvault_secret() {
   local secret_name="$1"
   local secret_value="$2"
+  local current_value=""
+
+  current_value="$(az keyvault secret show \
+    --vault-name "${vault_name}" \
+    --name "${secret_name}" \
+    --query value \
+    -o tsv 2>/dev/null || true)"
+
+  if [[ "${current_value}" == "${secret_value}" ]]; then
+    echo "Key Vault secret ${secret_name} is already current."
+    return
+  fi
 
   az keyvault secret set \
     --vault-name "${vault_name}" \
     --name "${secret_name}" \
     --value "${secret_value}" \
     --output none
+
+  mark_config_changed
+}
+
+show_appconfig_entry() {
+  local key="$1"
+
+  if [[ "${#appconfig_label_args[@]}" -gt 0 ]]; then
+    az appconfig kv show \
+      --auth-mode login \
+      --endpoint "${AZURE_APPCONFIG_ENDPOINT}" \
+      --key "${APP_CONFIGURATION_KEY_PREFIX}${key}" \
+      "${appconfig_label_args[@]}" \
+      --output json 2>/dev/null || true
+    return
+  fi
+
+  az appconfig kv show \
+    --auth-mode login \
+    --endpoint "${AZURE_APPCONFIG_ENDPOINT}" \
+    --key "${APP_CONFIGURATION_KEY_PREFIX}${key}" \
+    --output json 2>/dev/null || true
+}
+
+appconfig_plain_value_is_current() {
+  local payload="$1"
+  local expected_value="$2"
+
+  [[ -n "${payload}" ]] || return 1
+
+  APPCONFIG_PAYLOAD="${payload}" python3 - "${expected_value}" <<'PY'
+import json
+import os
+import sys
+
+expected_value = sys.argv[1]
+payload = json.loads(os.environ["APPCONFIG_PAYLOAD"])
+content_type = payload.get("content_type") or payload.get("contentType") or ""
+value = payload.get("value")
+
+if value == expected_value and content_type == "":
+    raise SystemExit(0)
+
+raise SystemExit(1)
+PY
+}
+
+appconfig_keyvault_reference_is_current() {
+  local payload="$1"
+  local expected_secret_identifier="$2"
+
+  [[ -n "${payload}" ]] || return 1
+
+  APPCONFIG_PAYLOAD="${payload}" python3 - "${expected_secret_identifier}" "${APPCONFIG_KEYVAULT_REFERENCE_CONTENT_TYPE}" <<'PY'
+import json
+import os
+import sys
+
+expected_secret_identifier = sys.argv[1]
+expected_content_type = sys.argv[2]
+payload = json.loads(os.environ["APPCONFIG_PAYLOAD"])
+content_type = payload.get("content_type") or payload.get("contentType") or ""
+
+if content_type != expected_content_type:
+    raise SystemExit(1)
+
+value = payload.get("value")
+if not isinstance(value, str):
+    raise SystemExit(1)
+
+try:
+    value_payload = json.loads(value)
+except json.JSONDecodeError:
+    raise SystemExit(1)
+
+if value_payload.get("uri") == expected_secret_identifier:
+    raise SystemExit(0)
+
+raise SystemExit(1)
+PY
 }
 
 set_appconfig_value() {
   local key="$1"
   local value="$2"
+  local current_entry=""
+
+  current_entry="$(show_appconfig_entry "${key}")"
+  if appconfig_plain_value_is_current "${current_entry}" "${value}"; then
+    echo "App Configuration key ${APP_CONFIGURATION_KEY_PREFIX}${key} is already current."
+    return
+  fi
 
   if [[ "${#appconfig_label_args[@]}" -gt 0 ]]; then
     az appconfig kv set \
@@ -263,6 +377,7 @@ set_appconfig_value() {
       --yes \
       "${appconfig_label_args[@]}" \
       --output none
+    mark_config_changed
     return
   fi
 
@@ -273,11 +388,20 @@ set_appconfig_value() {
     --value "${value}" \
     --yes \
     --output none
+
+  mark_config_changed
 }
 
 set_appconfig_keyvault_reference() {
   local key="$1"
   local secret_identifier="$2"
+  local current_entry=""
+
+  current_entry="$(show_appconfig_entry "${key}")"
+  if appconfig_keyvault_reference_is_current "${current_entry}" "${secret_identifier}"; then
+    echo "App Configuration Key Vault reference ${APP_CONFIGURATION_KEY_PREFIX}${key} is already current."
+    return
+  fi
 
   if [[ "${#appconfig_label_args[@]}" -gt 0 ]]; then
     az appconfig kv set-keyvault \
@@ -288,6 +412,7 @@ set_appconfig_keyvault_reference() {
       --yes \
       "${appconfig_label_args[@]}" \
       --output none
+    mark_config_changed
     return
   fi
 
@@ -298,6 +423,8 @@ set_appconfig_keyvault_reference() {
     --secret-identifier "${secret_identifier}" \
     --yes \
     --output none
+
+  mark_config_changed
 }
 
 database_url="$(resolve_database_url)"
@@ -336,4 +463,5 @@ if [[ "${ARCADE_AUTH_MODE}" == "entra" ]]; then
   set_appconfig_keyvault_reference ENTRA_CLIENT_SECRET "${entra_client_secret_identifier}"
 fi
 
-echo "Synced Arcade runtime config to Azure App Configuration and Key Vault."
+append_output "config_changed" "${config_changed}"
+echo "Synced Arcade runtime config to Azure App Configuration and Key Vault. config_changed=${config_changed}"
