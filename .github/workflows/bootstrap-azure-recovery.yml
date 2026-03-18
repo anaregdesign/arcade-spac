@@ -64,6 +64,7 @@ jobs:
     env:
       AZURE_APP_NAME: ${{ vars.AZURE_APP_NAME }}
       AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+      AZURE_GLOBAL_NAME_SUFFIX: ${{ vars.AZURE_GLOBAL_NAME_SUFFIX }}
       AZURE_LOCATION: ${{ vars.AZURE_LOCATION }}
       AZURE_RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
       AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
@@ -102,18 +103,24 @@ jobs:
         run: |
           DEPLOYMENT_NAME="bootstrap-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           echo "deployment_name=$DEPLOYMENT_NAME" >> "$GITHUB_OUTPUT"
+          parameters=(
+            appName="$AZURE_APP_NAME"
+            location="$AZURE_LOCATION"
+            containerImage="$IMAGE_REF"
+            manageRuntimeRoleAssignments=true
+            sqlAdministratorLogin="$SQL_ADMINISTRATOR_LOGIN"
+            sqlAdministratorPassword="$SQL_ADMINISTRATOR_PASSWORD"
+          )
+
+          if [[ -n "${AZURE_GLOBAL_NAME_SUFFIX:-}" ]]; then
+            parameters+=(globalNameSuffix="$AZURE_GLOBAL_NAME_SUFFIX")
+          fi
 
           az deployment group create \
             --resource-group "$AZURE_RESOURCE_GROUP" \
             --name "$DEPLOYMENT_NAME" \
             --template-file ./infra/main.bicep \
-            --parameters \
-              appName="$AZURE_APP_NAME" \
-              location="$AZURE_LOCATION" \
-              containerImage="$IMAGE_REF" \
-              manageRuntimeRoleAssignments=true \
-              sqlAdministratorLogin="$SQL_ADMINISTRATOR_LOGIN" \
-              sqlAdministratorPassword="$SQL_ADMINISTRATOR_PASSWORD" \
+            --parameters "${parameters[@]}" \
             --no-wait \
             --output none
 

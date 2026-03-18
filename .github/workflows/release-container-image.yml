@@ -89,6 +89,7 @@ jobs:
     env:
       AZURE_APP_NAME: ${{ vars.AZURE_APP_NAME }}
       AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+      AZURE_GLOBAL_NAME_SUFFIX: ${{ vars.AZURE_GLOBAL_NAME_SUFFIX }}
       AZURE_RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
       AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
       AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
@@ -138,6 +139,10 @@ jobs:
             containerImage="${{ steps.discover.outputs.infra_image_ref }}"
           )
 
+          if [[ -n "${AZURE_GLOBAL_NAME_SUFFIX:-}" ]]; then
+            parameters+=(globalNameSuffix="$AZURE_GLOBAL_NAME_SUFFIX")
+          fi
+
           az deployment group what-if \
             --resource-group "$AZURE_RESOURCE_GROUP" \
             --template-file ./infra/main.bicep \
@@ -182,6 +187,7 @@ jobs:
     env:
       AZURE_APP_NAME: ${{ vars.AZURE_APP_NAME }}
       AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+      AZURE_GLOBAL_NAME_SUFFIX: ${{ vars.AZURE_GLOBAL_NAME_SUFFIX }}
       AZURE_RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
       AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
       AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
@@ -218,6 +224,10 @@ jobs:
             manageRuntimeRoleAssignments=false
             containerImage="$INFRA_IMAGE_REF"
           )
+
+          if [[ -n "${AZURE_GLOBAL_NAME_SUFFIX:-}" ]]; then
+            parameters+=(globalNameSuffix="$AZURE_GLOBAL_NAME_SUFFIX")
+          fi
 
           az deployment group create \
             --resource-group "$AZURE_RESOURCE_GROUP" \

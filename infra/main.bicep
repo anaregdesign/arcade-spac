@@ -2,6 +2,7 @@ param appName string = 'arcade'
 param location string = resourceGroup().location
 param containerImage string
 param manageRuntimeRoleAssignments bool = true
+param globalNameSuffix string = ''
 param sqlAdministratorLogin string = ''
 @secure()
 param sqlAdministratorPassword string = ''
@@ -33,10 +34,16 @@ var privateEndpointSubnetName = 'snet-pe'
 var managedEnvironmentName = 'cae-${appName}'
 // Container App resource name derived from the canonical app name contract.
 var containerAppName = 'ca-${appName}'
+// Optional operator-managed suffix that can rotate global resource names for clean-slate recovery.
+var sanitizedGlobalNameSuffix = toLower(replace(globalNameSuffix, '-', ''))
+// App Configuration suffix keeps backward-compatible naming when no override is provided.
+var appConfigurationNameSuffix = empty(globalNameSuffix) ? uniqueString(resourceGroup().id) : toLower(globalNameSuffix)
+// Key Vault suffix keeps backward-compatible naming when no override is provided.
+var keyVaultNameSuffix = empty(globalNameSuffix) ? uniqueString(subscription().id, resourceGroup().id) : sanitizedGlobalNameSuffix
 // App Configuration store resource name.
-var appConfigurationName = take('appcs-${appName}-${uniqueString(resourceGroup().id)}', 50)
+var appConfigurationName = take('appcs-${appName}-${appConfigurationNameSuffix}', 50)
 // Key Vault resource name constrained by global naming rules.
-var keyVaultName = take('kv${normalizedAppName}${uniqueString(subscription().id, resourceGroup().id)}', 24)
+var keyVaultName = take('kv${normalizedAppName}${keyVaultNameSuffix}', 24)
 // Azure SQL logical server resource name.
 var sqlServerName = toLower(take('sql-${appName}-${uniqueString(resourceGroup().id)}', 63))
 // Azure SQL fully qualified host name exposed to clients.

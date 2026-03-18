@@ -29,7 +29,9 @@
 - [x] Identify the empty-target Front Door private link approval deadlock in bootstrap/release delivery
 - [x] Patch the bootstrap and routine release workflows so deployment starts asynchronously, approval runs, and completion is awaited before downstream jobs
 - [x] Identify that RG-scope GitHub OIDC role assignments are destroyed with the empty target resource group
-- [ ] Patch the bootstrap workflow so bootstrap identity uses stable-scope permissions and restores `production` release RBAC on the recreated RG before production-environment jobs run
+- [x] Patch the bootstrap workflow so bootstrap identity uses stable-scope permissions and restores `production` release RBAC on the recreated RG before production-environment jobs run
+- [x] Identify that soft-deleted App Configuration / Key Vault names collide with deterministic global naming after RG recreation
+- [ ] Add an operator-managed global-name suffix path so bootstrap/release can rotate App Configuration / Key Vault names when clean-slate recovery needs a fresh global name
 
 ## Section 3 - Release Delivery
 ### Subsection 3.1 - Push And Release
