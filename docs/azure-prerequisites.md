@@ -175,7 +175,7 @@ The repository target contract for the production data path is:
 
 - Full bootstrap or worst-case recovery:
   - trigger `.github/workflows/bootstrap-azure-recovery.yml`
-  - provide a known-good immutable `image_ref`
+  - provide a known-good release tag or immutable full `image_ref`
 - Routine deploy:
   - publish a GitHub Release and let `.github/workflows/release-container-image.yml` run
 - Runtime verification:
@@ -184,7 +184,7 @@ The repository target contract for the production data path is:
 ## Suggested Workflow-Only Sequence
 
 1. Confirm `Quality Gates` is green for the target commit.
-2. If the resource group or hosted baseline is missing, run `Bootstrap Azure Recovery` with a known-good immutable image reference.
+2. If the resource group or hosted baseline is missing, run `Bootstrap Azure Recovery` with a known-good release tag or immutable full image reference.
 3. Confirm `ensure_resource_group`, `deploy_bootstrap_infra`, `bootstrap_sql`, `sync_runtime_config`, `deploy_app`, `smoke_test`, and `verify_runtime` all succeed.
 4. For routine forward deploys after bootstrap, publish a GitHub Release and confirm `publish`, `plan_infra`, `deploy_infra`, `sync_runtime_config`, `deploy_app`, and `smoke_test` succeed.
 5. Keep `Verify Production Runtime` available as the recurring hosted contract check.

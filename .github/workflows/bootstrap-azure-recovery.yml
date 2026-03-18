@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       image_ref:
-        description: Immutable container image reference to recover, for example ghcr.io/anaregdesign/arcade-spec:v2026.03.18.1
+        description: Release tag or immutable container image reference to recover, for example v2026.03.18.1 or ghcr.io/anaregdesign/arcade-spec:v2026.03.18.1
         required: true
         type: string
       resource_group_suffix:
@@ -25,6 +25,24 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  resolve_recovery_image:
+    name: Resolve Recovery Image Reference
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      image_ref: ${{ steps.resolve_image_ref.outputs.image_ref }}
+    env:
+      DEFAULT_IMAGE_REPOSITORY: ghcr.io/${{ github.repository }}
+      IMAGE_REF_INPUT: ${{ inputs.image_ref }}
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v5
+
+      - name: Resolve recovery image reference
+        id: resolve_image_ref
+        run: ./scripts/azure/resolve-image-ref.sh
+
   ensure_resource_group:
     name: Ensure Azure Resource Group
     runs-on: ubuntu-latest
@@ -71,6 +89,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - ensure_resource_group
+      - resolve_recovery_image
     environment: production-bootstrap
     permissions:
       contents: read
@@ -87,7 +106,7 @@ jobs:
       AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
       SQL_ADMINISTRATOR_LOGIN: ${{ vars.SQL_ADMINISTRATOR_LOGIN }}
       SQL_ADMINISTRATOR_PASSWORD: ${{ secrets.SQL_ADMINISTRATOR_PASSWORD }}
-      IMAGE_REF: ${{ inputs.image_ref }}
+      IMAGE_REF: ${{ needs.resolve_recovery_image.outputs.image_ref }}
     steps:
       - name: Check out the repo
         uses: actions/checkout@v5
@@ -318,6 +337,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - deploy_bootstrap_infra
+      - resolve_recovery_image
     timeout-minutes: 30
     environment: production-bootstrap
     permissions:
@@ -335,7 +355,7 @@ jobs:
       CONTAINER_REGISTRY_PASSWORD: ${{ secrets.CONTAINER_REGISTRY_PASSWORD }}
       CONTAINER_REGISTRY_SERVER: ${{ vars.CONTAINER_REGISTRY_SERVER }}
       CONTAINER_REGISTRY_USERNAME: ${{ vars.CONTAINER_REGISTRY_USERNAME }}
-      IMAGE_REF: ${{ inputs.image_ref }}
+      IMAGE_REF: ${{ needs.resolve_recovery_image.outputs.image_ref }}
     steps:
       - name: Validate SQL bootstrap configuration
         run: |
@@ -621,6 +641,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - bootstrap_sql
+      - resolve_recovery_image
       - sync_runtime_config
     environment: production
     permissions:
@@ -641,7 +662,7 @@ jobs:
       CONTAINER_REGISTRY_SERVER: ${{ vars.CONTAINER_REGISTRY_SERVER }}
       CONTAINER_REGISTRY_USERNAME: ${{ vars.CONTAINER_REGISTRY_USERNAME }}
       FORCE_CONTAINER_APP_UPDATE: ${{ needs.sync_runtime_config.outputs.config_changed }}
-      IMAGE_REF: ${{ inputs.image_ref }}
+      IMAGE_REF: ${{ needs.resolve_recovery_image.outputs.image_ref }}
     steps:
       - name: Check out the repo
         uses: actions/checkout@v5

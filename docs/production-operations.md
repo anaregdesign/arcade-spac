@@ -60,7 +60,7 @@ This runbook records the repository-side production contract for Arcade on Azure
 
 ## Full Bootstrap Or Recovery Procedure
 
-1. Choose a known-good immutable `image_ref`.
+1. Choose a known-good release tag or immutable full `image_ref` such as `v2026.03.18.4` or `ghcr.io/anaregdesign/arcade-spec:v2026.03.18.4`.
 2. Confirm `AZURE_RESOURCE_GROUP`, `AZURE_LOCATION`, and `AZURE_APP_NAME` point at the target environment.
 3. Trigger `Bootstrap Azure Recovery`.
 4. Confirm `ensure_resource_group`, `deploy_bootstrap_infra`, `bootstrap_sql`, `sync_runtime_config`, `deploy_app`, `smoke_test`, and `verify_runtime` all succeed.
