@@ -118,6 +118,82 @@ resolve_app_url() {
   printf 'https://%s\n' "${front_door_host}"
 }
 
+print_container_app_diagnostics() {
+  if [[ -z "${container_app_name:-}" ]]; then
+    return 0
+  fi
+
+  echo "Container App diagnostics for ${container_app_name}:"
+
+  local latest_revision_name
+
+  az containerapp show \
+    --resource-group "${AZURE_RESOURCE_GROUP}" \
+    --name "${container_app_name}" \
+    --query '{runningStatus:properties.runningStatus,latestRevisionName:properties.latestRevisionName,latestReadyRevisionName:properties.latestReadyRevisionName}' \
+    -o json || true
+
+  az containerapp revision list \
+    --resource-group "${AZURE_RESOURCE_GROUP}" \
+    --name "${container_app_name}" \
+    --all \
+    -o json || true
+
+  latest_revision_name="$(az containerapp show \
+    --resource-group "${AZURE_RESOURCE_GROUP}" \
+    --name "${container_app_name}" \
+    --query 'properties.latestRevisionName' \
+    -o tsv 2>/dev/null || true)"
+
+  if [[ -n "${latest_revision_name}" ]]; then
+    az containerapp replica list \
+      --resource-group "${AZURE_RESOURCE_GROUP}" \
+      --name "${container_app_name}" \
+      --revision "${latest_revision_name}" \
+      -o json || true
+
+    az containerapp logs show \
+      --resource-group "${AZURE_RESOURCE_GROUP}" \
+      --name "${container_app_name}" \
+      --revision "${latest_revision_name}" \
+      --type system \
+      --tail 100 \
+      --format text || true
+
+    az containerapp logs show \
+      --resource-group "${AZURE_RESOURCE_GROUP}" \
+      --name "${container_app_name}" \
+      --revision "${latest_revision_name}" \
+      --tail 100 \
+      --format text || true
+
+    return 0
+  fi
+
+  az containerapp logs show \
+    --resource-group "${AZURE_RESOURCE_GROUP}" \
+    --name "${container_app_name}" \
+    --type system \
+    --tail 100 \
+    --format text || true
+
+  az containerapp logs show \
+    --resource-group "${AZURE_RESOURCE_GROUP}" \
+    --name "${container_app_name}" \
+    --tail 100 \
+    --format text || true
+}
+
+on_verify_exit() {
+  local exit_code="$?"
+
+  if [[ "${exit_code}" -ne 0 ]]; then
+    print_container_app_diagnostics
+  fi
+
+  exit "${exit_code}"
+}
+
 check_auth_redirect_uses_public_app_url() {
   local app_url="$1"
   local expected_redirect_uri="${app_url%/}/auth/callback"
@@ -430,6 +506,7 @@ if [[ -z "${container_app_name}" ]]; then
   echo "Missing Container App in ${AZURE_RESOURCE_GROUP}."
   exit 1
 fi
+trap on_verify_exit EXIT
 APP_URL="$(resolve_app_url "${container_app_name}")"
 sql_server_name="${AZURE_SQL_SERVER_NAME:-$(require_single_resource_name 'Microsoft.Sql/servers' 'Azure SQL server')}"
 front_door_profile_name="$(
