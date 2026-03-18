@@ -106,6 +106,8 @@
 - [x] Confirm the hosted `Container App` still resolves runtime auth settings lazily from App Configuration / Key Vault on the request path and times out before `/auth/start` responds
 - [x] Patch release delivery so `Container App` runtime env is synced from Key Vault-backed secret references plus current public host after each release
 - [x] Patch server runtime config resolution so Azure hosting skips remote App Configuration bootstrap when the required runtime settings are already present in `process.env`
+- [x] Fix the Azure env bootstrap regression where `ARCADE_SESSION_SECRET` and `DATABASE_URL` still required store-backed values even after the runtime switched to the complete `process.env` path
+- [x] Add regression coverage for the Azure complete-env bootstrap path so the server bundle can import without touching App Configuration
 
 Notes:
 - Remaining intentional non-idempotent behavior is limited to run-scoped artifact names such as Azure deployment names and transient Container Apps Job / execution names used by workflow runs.

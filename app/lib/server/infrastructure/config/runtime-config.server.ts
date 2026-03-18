@@ -177,10 +177,10 @@ async function resolveRuntimeConfig() {
       ? "entra"
       : "local";
   const sessionSecret = hostingTarget === "azure"
-    ? requireAzureSetting("ARCADE_SESSION_SECRET", getResolvedSetting("ARCADE_SESSION_SECRET", storeBackedSettings, false))
+    ? requireAzureSetting("ARCADE_SESSION_SECRET", getResolvedSetting("ARCADE_SESSION_SECRET", storeBackedSettings, allowEnvironmentFallback))
     : getResolvedSetting("ARCADE_SESSION_SECRET", storeBackedSettings, true) ?? DEFAULT_DEV_SESSION_SECRET;
   const databaseUrl = hostingTarget === "azure"
-    ? requireAzureSetting("DATABASE_URL", getResolvedSetting("DATABASE_URL", storeBackedSettings, false))
+    ? requireAzureSetting("DATABASE_URL", getResolvedSetting("DATABASE_URL", storeBackedSettings, allowEnvironmentFallback))
     : getResolvedSetting("DATABASE_URL", storeBackedSettings, true) ?? DEFAULT_DEV_DATABASE_URL;
   const publicAppUrl = getResolvedSetting("PUBLIC_APP_URL", storeBackedSettings, allowEnvironmentFallback) ?? null;
   const entraTenantId = getResolvedSetting("ENTRA_TENANT_ID", storeBackedSettings, allowEnvironmentFallback) ?? process.env.AZURE_TENANT_ID ?? null;
