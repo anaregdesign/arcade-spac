@@ -109,6 +109,8 @@
 - [x] Fix the Azure env bootstrap regression where `ARCADE_SESSION_SECRET` and `DATABASE_URL` still required store-backed values even after the runtime switched to the complete `process.env` path
 - [x] Add regression coverage for the Azure complete-env bootstrap path so the server bundle can import without touching App Configuration
 - [x] Extend `Verify Production Runtime` failure output so the workflow prints `Container App` revision, replica, and recent logs when auth/smoke checks still time out after the infrastructure contract passes
+- [x] Capture the hosted `Container App` CrashLoopBackOff log showing `prisma migrate deploy` cannot find `datasource.url` because the runtime image omits `prisma.config.ts`
+- [x] Patch the runtime Docker image so `prisma.config.ts` is copied into the final stage and startup migrations can resolve the Azure SQL URL before the server starts
 
 Notes:
 - Remaining intentional non-idempotent behavior is limited to run-scoped artifact names such as Azure deployment names and transient Container Apps Job / execution names used by workflow runs.

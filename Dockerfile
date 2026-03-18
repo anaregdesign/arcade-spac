@@ -14,6 +14,7 @@ COPY ./package.json package-lock.json /app/
 COPY --from=build-env /app/node_modules /app/node_modules
 COPY --from=build-env /app/build /app/build
 COPY ./prisma /app/prisma
+COPY ./prisma.config.ts /app/prisma.config.ts
 COPY ./scripts/azure/init-sql.mjs /app/scripts/azure/init-sql.mjs
 COPY ./scripts/start-with-migrations.mjs /app/scripts/start-with-migrations.mjs
 WORKDIR /app
