@@ -24,11 +24,9 @@ This runbook captures the remaining GitHub-side and Azure-side follow-up after s
    - `AZURE_RESOURCE_GROUP`
    - `AZURE_APP_NAME`
    - `ENTRA_CLIENT_ID`
-   - `SQL_ADMINISTRATOR_LOGIN`
 3. Keep the `production` Environment aligned with these required secrets:
    - `ARCADE_SESSION_SECRET`
    - `ENTRA_CLIENT_SECRET`
-   - `SQL_ADMINISTRATOR_PASSWORD`
 4. Keep the `production-bootstrap` Environment attached to the renamed repository with these required variables:
    - `AZURE_CLIENT_ID`
    - `AZURE_TENANT_ID`
@@ -37,7 +35,7 @@ This runbook captures the remaining GitHub-side and Azure-side follow-up after s
    - `AZURE_RESOURCE_GROUP`
    - `AZURE_APP_NAME`
    - `SQL_ADMINISTRATOR_LOGIN`
-5. Keep the `production-bootstrap` Environment aligned with the required `SQL_ADMINISTRATOR_PASSWORD` secret.
+5. Keep the `production-bootstrap` Environment aligned with the required `SQL_ADMINISTRATOR_PASSWORD` secret only for bootstrap-time Azure SQL server creation.
 6. Add optional `CONTAINER_REGISTRY_*` values only when the runtime cannot use public GHCR or a managed-identity registry path.
 
 ## Azure Follow-Up

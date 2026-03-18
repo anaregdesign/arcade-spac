@@ -34,6 +34,7 @@ This runbook records the repository-side production contract for Arcade on Azure
 - The repository contract was updated on March 18, 2026 to publish through Azure Front Door Premium with a private-link origin to Azure Container Apps.
 - The repository contract now expects resource-group bootstrap, initial Azure SQL principal creation, runtime config sync, release deploy, smoke test, and runtime verification to be workflow-driven through GitHub Actions OIDC.
 - The routine release workflow still passes `manageRuntimeRoleAssignments=false`, so least-privilege day-to-day delivery remains narrower than the bootstrap workflow.
+- The routine `production` Environment no longer carries SQL admin login/password; that bootstrap-only secret surface is isolated to `production-bootstrap`.
 - This workspace did not perform a production or shared-environment deployment.
 
 ## Rollback Guidance

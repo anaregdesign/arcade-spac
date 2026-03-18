@@ -27,7 +27,6 @@ Before Azure deployment is treated as production-ready, all of the following mus
 - `.github/workflows/verify-production-runtime.yml`
 - `scripts/start-with-migrations.mjs`
 - `scripts/azure/init-sql.mjs`
-- `scripts/azure/resolve-default-azure-credential-database-url.sh`
 - `scripts/azure/verify-production-runtime.sh`
 
 These assets establish the repository-side contract for the hosted data path. They intentionally prefer workflow execution over local Azure bootstrap.
@@ -44,7 +43,7 @@ These assets establish the repository-side contract for the hosted data path. Th
 1. `Bootstrap Azure Recovery` creates or updates the resource group and deploys the hosted baseline from `infra/main.bicep`.
 2. The same workflow runs an Azure-hosted Container Apps Job under the SQL bootstrap identity to create the initial database principals and least-privilege role memberships for the runtime and migration identities.
 3. The workflow syncs runtime config into App Configuration and Key Vault.
-4. The workflow deploys the chosen immutable image and injects the migration identity client id plus startup migration database URL into the Container App.
+4. The workflow deploys the chosen immutable image while keeping the migration identity attachment and startup migration database URL on the template-owned Container App contract.
 5. Application startup runs `db:migrate:deploy` through the migration identity path.
 6. `Verify Production Runtime` confirms the hosted data path contract after rollout.
 

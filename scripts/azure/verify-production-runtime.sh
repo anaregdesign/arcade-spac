@@ -22,12 +22,7 @@ resolve_container_app_name() {
     return
   fi
 
-  if [[ -n "${AZURE_APP_NAME:-}" ]]; then
-    printf 'ca-%s\n' "${AZURE_APP_NAME}"
-    return
-  fi
-
-  printf '%s\n' ''
+  require_single_resource_name 'Microsoft.App/containerApps' 'Container App'
 }
 
 require_single_resource_name() {
@@ -299,7 +294,7 @@ assert_front_door_private_link_connections() {
     --name "${managed_environment_name}" \
     --resource-group "${AZURE_RESOURCE_GROUP}" \
     --type Microsoft.App/managedEnvironments \
-    --query "[?properties.privateLinkServiceConnectionState.description=='AFD Private Link Request'].properties.privateLinkServiceConnectionState.status" \
+    --query "[].properties.privateLinkServiceConnectionState.status" \
     -o tsv)
 
   if [[ "${#statuses[@]}" -lt 1 ]]; then

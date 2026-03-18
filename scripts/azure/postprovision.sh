@@ -1,26 +1,46 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+fail() {
+  echo "$1" >&2
+  exit 1
+}
+
 resolve_container_app_name() {
   if [[ -n "${AZURE_CONTAINER_APP_NAME:-}" ]]; then
     printf '%s\n' "${AZURE_CONTAINER_APP_NAME}"
     return
   fi
 
-  if [[ -n "${AZURE_APP_NAME:-}" ]]; then
-    printf 'ca-%s\n' "${AZURE_APP_NAME}"
+  if [[ -z "${AZURE_RESOURCE_GROUP:-}" ]]; then
+    printf '%s\n' ''
     return
   fi
 
-  printf '%s\n' ''
+  local -a names=()
+
+  while IFS= read -r resource_name; do
+    [[ -n "${resource_name}" ]] && names+=("${resource_name}")
+  done < <(az resource list \
+    --resource-group "${AZURE_RESOURCE_GROUP}" \
+    --resource-type 'Microsoft.App/containerApps' \
+    --query '[].name' \
+    -o tsv)
+
+  if [[ "${#names[@]}" -ne 1 ]]; then
+    fail "Expected exactly one Container App in ${AZURE_RESOURCE_GROUP}, found ${#names[@]}."
+  fi
+
+  printf '%s\n' "${names[0]}"
 }
 
-container_app_name="$(resolve_container_app_name)"
-
-if [[ -z "${AZURE_RESOURCE_GROUP:-}" || -z "${container_app_name}" ]]; then
-  echo "Skipping registry configuration because AZURE_RESOURCE_GROUP or the Container App name contract is unset."
+if [[ -z "${CONTAINER_REGISTRY_SERVER:-}" ]]; then
   exit 0
 fi
+
+[[ -n "${AZURE_RESOURCE_GROUP:-}" ]] || fail "AZURE_RESOURCE_GROUP is required."
+
+container_app_name="$(resolve_container_app_name)"
 
 if [[ -n "${CONTAINER_REGISTRY_SERVER:-}" && -n "${CONTAINER_REGISTRY_IDENTITY:-}" ]]; then
   az containerapp registry set \

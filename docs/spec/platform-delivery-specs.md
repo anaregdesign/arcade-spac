@@ -63,7 +63,7 @@
 - `deploy_app` が release tag の immutable image を explicit に Container App へ反映する
 - `deploy_app` が registry auth を generic `CONTAINER_REGISTRY_*` contract で扱い、GHCR 固有の variable 名に依存しない
 - push / pull request の quality gate workflow が typecheck、unit test、build、Bicep validation、workflow lint を実行する
-- `scripts/azure/postprovision.sh` と `scripts/azure/verify-production-runtime.sh` が `AZURE_APP_NAME` based contract と両立する
+- `scripts/azure/postprovision.sh` と `scripts/azure/verify-production-runtime.sh` が resource discovery based contract と両立する
 - `docs/azure-prerequisites.md`、`docs/production-operations.md`、関連 docs が新しい `production` / `production-bootstrap` Environment contract と workflow-only bootstrap flow を説明する
 - release workflow が bootstrap-only role assignment resources を deploy 対象から外し、`roleAssignments/write` を日常 release の前提にしない
 - hardening 後の push run で `Quality Gates` が success になる
@@ -71,7 +71,7 @@
 
 ## Edge Cases
 
-- Container App resource 名は `ca-${AZURE_APP_NAME}` を default としつつ、明示 override が必要な path は script input で扱える
+- helper script と verification path は dedicated resource group 内の single resource discovery を優先し、explicit override が必要な path だけ input を使う
 - GHCR package が public なら registry credentials を要求しない
 - private registry path が必要でも、ACR の場合は `CONTAINER_REGISTRY_IDENTITY` を優先し、username / password は fallback としてのみ扱う
 - initial bootstrap や RBAC reconciliation では elevated Azure RBAC assignment 権限が必要でも、day-to-day release workflow はその権限を常時要求しない

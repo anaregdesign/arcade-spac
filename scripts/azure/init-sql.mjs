@@ -3,13 +3,25 @@ import sql from "mssql";
 
 const {
   ARCADE_SQL_SERVER,
-  ARCADE_SQL_DATABASE = "arcade",
-  ARCADE_SQL_MIGRATION_PRINCIPAL = "id-sql-migrate-arcade",
-  ARCADE_SQL_RUNTIME_PRINCIPAL = "ca-arcade",
+  ARCADE_SQL_DATABASE,
+  ARCADE_SQL_MIGRATION_PRINCIPAL,
+  ARCADE_SQL_RUNTIME_PRINCIPAL,
 } = process.env;
 
 if (!ARCADE_SQL_SERVER) {
   throw new Error("ARCADE_SQL_SERVER must be set.");
+}
+
+if (!ARCADE_SQL_DATABASE) {
+  throw new Error("ARCADE_SQL_DATABASE must be set.");
+}
+
+if (!ARCADE_SQL_MIGRATION_PRINCIPAL) {
+  throw new Error("ARCADE_SQL_MIGRATION_PRINCIPAL must be set.");
+}
+
+if (!ARCADE_SQL_RUNTIME_PRINCIPAL) {
+  throw new Error("ARCADE_SQL_RUNTIME_PRINCIPAL must be set.");
 }
 
 const migrationSql = await fs.readFile(

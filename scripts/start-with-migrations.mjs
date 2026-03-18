@@ -1,9 +1,5 @@
 import { spawn } from "node:child_process";
 
-import { load } from "@azure/app-configuration-provider";
-import { ManagedIdentityCredential } from "@azure/identity";
-
-const APP_CONFIGURATION_KEY_PREFIX = "Arcade:";
 const STARTUP_MIGRATION_DATABASE_URL_ENV_NAME = "STARTUP_MIGRATION_DATABASE_URL";
 
 function isAzureHosting() {
@@ -55,42 +51,7 @@ async function resolveDatabaseUrl() {
     return null;
   }
 
-  const endpoint = process.env.AZURE_APPCONFIG_ENDPOINT;
-
-  if (!endpoint) {
-    throw new Error("AZURE_APPCONFIG_ENDPOINT must be configured for Azure hosting.");
-  }
-
-  const credential = new ManagedIdentityCredential();
-  const selector = process.env.AZURE_APPCONFIG_LABEL
-    ? {
-        keyFilter: `${APP_CONFIGURATION_KEY_PREFIX}DATABASE_URL`,
-        labelFilter: process.env.AZURE_APPCONFIG_LABEL,
-      }
-    : {
-        keyFilter: `${APP_CONFIGURATION_KEY_PREFIX}DATABASE_URL`,
-      };
-  const settings = await load(endpoint, credential, {
-    keyVaultOptions: {
-      credential,
-      parallelSecretResolutionEnabled: true,
-    },
-    selectors: [selector],
-    startupOptions: {
-      timeoutInMs: 30_000,
-    },
-    trimKeyPrefixes: [APP_CONFIGURATION_KEY_PREFIX],
-  });
-  const databaseUrl = settings.get("DATABASE_URL");
-
-  if (typeof databaseUrl !== "string" || databaseUrl.length === 0) {
-    throw new Error("DATABASE_URL could not be resolved for startup migration.");
-  }
-
-  return {
-    source: "Azure App Configuration",
-    value: databaseUrl,
-  };
+  throw new Error("STARTUP_MIGRATION_DATABASE_URL or DATABASE_URL must be configured for Azure hosting startup migration.");
 }
 
 function describeDatabaseUrlSource(databaseUrl) {

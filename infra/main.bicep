@@ -27,30 +27,121 @@ param environmentVariables array = [
 ]
 param tags object = {}
 
-var logAnalyticsWorkspaceName = 'law-${appName}'
-var applicationInsightsName = 'appi-${appName}'
-var managedEnvironmentName = 'cae-${appName}'
-var containerAppName = 'ca-${appName}'
-var frontDoorProfileName = 'afd-${appName}'
-var frontDoorEndpointName = toLower(take('afd-${normalizedAppName}-${uniqueString(subscription().id, resourceGroup().id)}', 50))
-var frontDoorOriginGroupName = 'og-${appName}'
-var frontDoorAppRouteName = 'route-app'
-var frontDoorAssetRouteName = 'route-assets'
-var appConfigurationName = take('appcs-${appName}-${uniqueString(resourceGroup().id)}', 50)
+// Shared naming helpers and canonical Azure state strings.
+// Lower-cased app name fragment for resources with stricter naming rules.
 var normalizedAppName = toLower(replace(appName, '-', ''))
-var keyVaultName = take('kv${normalizedAppName}${uniqueString(subscription().id, resourceGroup().id)}', 24)
+// Azure global region used by globally scoped resources.
+var globalLocation = 'global'
+// Canonical enabled state string reused across Azure resource contracts.
+var enabledState = 'Enabled'
+// Canonical disabled state string reused across Azure resource contracts.
+var disabledState = 'Disabled'
+
+// Resource names derived from the app name and deployment scope.
+// Log Analytics workspace resource name.
+var logAnalyticsWorkspaceName = 'law-${appName}'
+// Application Insights component resource name.
+var applicationInsightsName = 'appi-${appName}'
+// Virtual network resource name.
 var virtualNetworkName = 'vnet-${appName}'
+// Delegated subnet name for the Container Apps environment.
 var containerAppsInfrastructureSubnetName = 'snet-cae'
+// Private endpoint subnet name for private-link resources.
 var privateEndpointSubnetName = 'snet-pe'
+// Container Apps managed environment resource name.
+var managedEnvironmentName = 'cae-${appName}'
+// Container App resource name.
+var containerAppName = 'ca-${appName}'
+// App Configuration store resource name.
+var appConfigurationName = take('appcs-${appName}-${uniqueString(resourceGroup().id)}', 50)
+// Key Vault resource name constrained by global naming rules.
+var keyVaultName = take('kv${normalizedAppName}${uniqueString(subscription().id, resourceGroup().id)}', 24)
+// Azure SQL logical server resource name.
 var sqlServerName = toLower(take('sql-${appName}-${uniqueString(resourceGroup().id)}', 63))
-var sqlPrivateEndpointName = 'pep-${sqlServerName}'
-var sqlPrivateDnsZoneName = 'privatelink${environment().suffixes.sqlServerHostname}'
-var sqlMigrationIdentityName = take('id-sql-migrate-${appName}', 24)
-var sqlBootstrapIdentityName = take('id-sql-bootstrap-${appName}', 24)
+// Azure SQL fully qualified host name exposed to clients.
 var sqlServerFqdn = '${sqlServerName}${environment().suffixes.sqlServerHostname}'
+// Private DNS zone name for Azure SQL private-link resolution.
+var sqlPrivateDnsZoneName = 'privatelink${environment().suffixes.sqlServerHostname}'
+// Azure SQL private endpoint resource name.
+var sqlPrivateEndpointName = 'pep-${sqlServerName}'
+// Private DNS virtual network link resource name for the SQL zone.
+var sqlPrivateDnsZoneVirtualNetworkLinkName = '${virtualNetworkName}-link'
+// User-assigned identity name used for startup migrations.
+var sqlMigrationIdentityName = take('id-sql-migrate-${appName}', 24)
+// User-assigned identity name used for initial SQL bootstrap.
+var sqlBootstrapIdentityName = take('id-sql-bootstrap-${appName}', 24)
+// Front Door profile resource name.
+var frontDoorProfileName = 'afd-${appName}'
+// Front Door endpoint resource name constrained by global uniqueness rules.
+var frontDoorEndpointName = toLower(take('afd-${normalizedAppName}-${uniqueString(subscription().id, resourceGroup().id)}', 50))
+// Front Door origin group resource name.
+var frontDoorOriginGroupName = 'og-${appName}'
+// Front Door route name for dynamic app traffic.
+var frontDoorAppRouteName = 'route-app'
+// Front Door route name for static asset traffic.
+var frontDoorAssetRouteName = 'route-assets'
+
+// Role definition and principal constants for Azure RBAC resources.
+// Built-in role definition id for App Configuration data reads.
 var appConfigDataReaderRoleDefinitionId = subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '516239f1-63e1-4d78-a4de-a74fb236a071')
+// Built-in role definition id for Key Vault secret reads.
 var keyVaultSecretsUserRoleDefinitionId = subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '4633458b-17de-408a-b874-0445c86b69e6')
+// Principal type recorded on RBAC assignments created by this template.
+var roleAssignmentPrincipalType = 'ServicePrincipal'
+
+// Shared platform contract constants for hosted Azure services.
+// Log Analytics SKU for the workspace backing the app environment.
+var logAnalyticsSkuName = 'PerGB2018'
+// Application Insights kind for the web application component.
+var applicationInsightsKind = 'web'
+// Application Insights application type for the web workload.
+var applicationInsightsType = 'web'
+// Delegation name recorded on the Container Apps infrastructure subnet.
+var containerAppsDelegationName = 'container-apps'
+// Delegated service name required by Container Apps environments.
+var containerAppsDelegationServiceName = 'Microsoft.App/environments'
+// App Configuration pricing tier for the hosted store.
+var appConfigurationSkuName = 'standard'
+// Key Vault SKU family for the hosted vault.
+var keyVaultSkuFamily = 'A'
+// Key Vault SKU name for the hosted vault.
+var keyVaultSkuName = 'standard'
+// Managed environment log destination type for Log Analytics.
+var logAnalyticsDestination = 'log-analytics'
+// Workload profile name used by the Container Apps environment.
+var managedEnvironmentWorkloadProfileName = 'Consumption'
+// Workload profile type used by the Container Apps environment.
+var managedEnvironmentWorkloadProfileType = 'Consumption'
+
+// Front Door routing and edge-delivery contract constants.
+// Private-link request description expected when Front Door connects to Container Apps.
 var frontDoorPrivateLinkRequestMessage = 'AFD Private Link Request'
+// Front Door SKU name for private-link origin support.
+var frontDoorSkuName = 'Premium_AzureFrontDoor'
+// Forwarding protocol enforced on Front Door routes.
+var frontDoorForwardingProtocol = 'HttpsOnly'
+// Health probe protocol used by the Front Door origin group.
+var frontDoorProbeProtocol = 'Https'
+// Health probe request method used by the Front Door origin group.
+var frontDoorProbeRequestType = 'GET'
+// Private-link group id used for Container Apps managed environments.
+var frontDoorOriginPrivateLinkGroupId = 'managedEnvironments'
+// Supported protocols exposed on Front Door routes.
+var frontDoorSupportedProtocols = [
+  'Http'
+  'Https'
+]
+// Path patterns routed to the dynamic application endpoint.
+var frontDoorAppPatternsToMatch = [
+  '/*'
+]
+// Path patterns routed to the static asset endpoint.
+var frontDoorAssetPatternsToMatch = [
+  '/assets/*'
+]
+// Query string caching mode for Front Door asset delivery.
+var frontDoorQueryStringCachingBehavior = 'IgnoreQueryString'
+// MIME types compressed and cached by the Front Door asset route.
 var frontDoorAssetCacheContentTypes = [
   'application/javascript'
   'application/json'
@@ -62,13 +153,75 @@ var frontDoorAssetCacheContentTypes = [
   'text/plain'
 ]
 
+// Container App runtime contract constants.
+// Identity type assigned to the Container App resource.
+var containerAppIdentityType = 'SystemAssigned,UserAssigned'
+// Ingress transport mode exposed by the Container App.
+var containerAppIngressTransport = 'auto'
+// Container name inside the Container App template.
+var containerAppContainerName = 'web'
+// Env var name for the Application Insights connection string.
+var appInsightsConnectionStringEnvironmentVariableName = 'APPLICATIONINSIGHTS_CONNECTION_STRING'
+// Env var name for the app name exposed to the container runtime.
+var azureAppNameEnvironmentVariableName = 'AZURE_APP_NAME'
+// Env var name for the deployed Container App resource name.
+var azureContainerAppNameEnvironmentVariableName = 'AZURE_CONTAINER_APP_NAME'
+// Env var name for the App Configuration endpoint.
+var azureAppConfigEndpointEnvironmentVariableName = 'AZURE_APPCONFIG_ENDPOINT'
+// Env var name for the Key Vault URI.
+var azureKeyVaultUriEnvironmentVariableName = 'AZURE_KEY_VAULT_URI'
+// Env var name for the Azure tenant id exposed to the runtime.
+var azureTenantIdEnvironmentVariableName = 'AZURE_TENANT_ID'
+// Env var name for the user-assigned migration identity client id.
+var azureSqlMigrationClientIdEnvironmentVariableName = 'AZURE_SQL_MIGRATION_CLIENT_ID'
+// Env var name for the startup migration database URL.
+var startupMigrationDatabaseUrlEnvironmentVariableName = 'STARTUP_MIGRATION_DATABASE_URL'
+// Probe type label for startup health checks.
+var startupProbeType = 'Startup'
+// Probe type label for readiness health checks.
+var readinessProbeType = 'Readiness'
+// Probe type label for liveness health checks.
+var livenessProbeType = 'Liveness'
+// Minimum replica count for the Container App.
+var containerAppScaleMinReplicas = 1
+// Maximum replica count for the Container App.
+var containerAppScaleMaxReplicas = 3
+
+// Azure SQL hosting and private-connectivity contract constants.
+// Minimum TLS version enforced by the SQL server.
+var sqlMinimalTlsVersion = '1.2'
+// Azure SQL engine version for the logical server.
+var sqlServerVersion = '12.0'
+// Administrator type used for the SQL Entra admin contract.
+var sqlAdministratorType = 'ActiveDirectory'
+// Principal type used by the SQL bootstrap identity.
+var applicationPrincipalType = 'Application'
+// SKU name for the serverless SQL database.
+var sqlDatabaseSkuName = 'GP_S_Gen5_1'
+// SKU tier for the serverless SQL database.
+var sqlDatabaseSkuTier = 'GeneralPurpose'
+// Read scale mode for the serverless SQL database.
+var sqlDatabaseReadScale = disabledState
+// DefaultAzureCredential-based database URL injected for startup migrations.
+var sqlStartupMigrationDatabaseUrl = 'sqlserver://${sqlServerFqdn};database=${sqlDatabaseName};authentication=DefaultAzureCredential;encrypt=true;trustServerCertificate=false'
+// Private endpoint connection resource name for the SQL server.
+var sqlPrivateEndpointConnectionName = '${sqlPrivateEndpointName}-connection'
+// Private-link group ids used by the SQL private endpoint.
+var sqlPrivateEndpointGroupIds = [
+  'sqlServer'
+]
+// Private DNS zone group resource name attached to the SQL private endpoint.
+var defaultPrivateDnsZoneGroupName = 'default'
+// Private DNS zone config name recorded in the SQL zone group.
+var sqlPrivateDnsZoneConfigName = 'sql'
+
 resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2023-09-01' = {
   name: logAnalyticsWorkspaceName
   location: location
   tags: tags
   properties: {
     sku: {
-      name: 'PerGB2018'
+      name: logAnalyticsSkuName
     }
     retentionInDays: 30
   }
@@ -77,10 +230,10 @@ resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2023-09
 resource applicationInsights 'Microsoft.Insights/components@2020-02-02' = {
   name: applicationInsightsName
   location: location
-  kind: 'web'
+  kind: applicationInsightsKind
   tags: tags
   properties: {
-    Application_Type: 'web'
+    Application_Type: applicationInsightsType
     WorkspaceResourceId: logAnalyticsWorkspace.id
   }
 }
@@ -105,9 +258,9 @@ resource containerAppsInfrastructureSubnet 'Microsoft.Network/virtualNetworks/su
     addressPrefix: containerAppsInfrastructureSubnetPrefix
     delegations: [
       {
-        name: 'container-apps'
+        name: containerAppsDelegationName
         properties: {
-          serviceName: 'Microsoft.App/environments'
+          serviceName: containerAppsDelegationServiceName
         }
       }
     ]
@@ -119,7 +272,7 @@ resource privateEndpointSubnet 'Microsoft.Network/virtualNetworks/subnets@2024-0
   name: privateEndpointSubnetName
   properties: {
     addressPrefix: privateEndpointSubnetPrefix
-    privateEndpointNetworkPolicies: 'Disabled'
+    privateEndpointNetworkPolicies: disabledState
   }
 }
 
@@ -128,11 +281,11 @@ resource appConfiguration 'Microsoft.AppConfiguration/configurationStores@2024-0
   location: location
   tags: tags
   sku: {
-    name: 'standard'
+    name: appConfigurationSkuName
   }
   properties: {
     disableLocalAuth: true
-    publicNetworkAccess: 'Enabled'
+    publicNetworkAccess: enabledState
     softDeleteRetentionInDays: 7
   }
 }
@@ -144,12 +297,12 @@ resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
   properties: {
     tenantId: tenant().tenantId
     sku: {
-      family: 'A'
-      name: 'standard'
+      family: keyVaultSkuFamily
+      name: keyVaultSkuName
     }
     enableRbacAuthorization: true
     enablePurgeProtection: true
-    publicNetworkAccess: 'Enabled'
+    publicNetworkAccess: enabledState
     softDeleteRetentionInDays: 90
   }
 }
@@ -172,21 +325,21 @@ resource managedEnvironment 'Microsoft.App/managedEnvironments@2025-10-02-previe
   tags: tags
   properties: {
     appLogsConfiguration: {
-      destination: 'log-analytics'
+      destination: logAnalyticsDestination
       logAnalyticsConfiguration: {
         customerId: logAnalyticsWorkspace.properties.customerId
         sharedKey: logAnalyticsWorkspace.listKeys().primarySharedKey
       }
     }
-    publicNetworkAccess: 'Disabled'
+    publicNetworkAccess: disabledState
     vnetConfiguration: {
       infrastructureSubnetId: containerAppsInfrastructureSubnet.id
       internal: false
     }
     workloadProfiles: [
       {
-        name: 'Consumption'
-        workloadProfileType: 'Consumption'
+        name: managedEnvironmentWorkloadProfileName
+        workloadProfileType: managedEnvironmentWorkloadProfileType
       }
     ]
   }
@@ -194,10 +347,10 @@ resource managedEnvironment 'Microsoft.App/managedEnvironments@2025-10-02-previe
 
 resource frontDoorProfile 'Microsoft.Cdn/profiles@2021-06-01' = {
   name: frontDoorProfileName
-  location: 'global'
+  location: globalLocation
   tags: tags
   sku: {
-    name: 'Premium_AzureFrontDoor'
+    name: frontDoorSkuName
   }
   properties: {
     originResponseTimeoutSeconds: 60
@@ -207,9 +360,9 @@ resource frontDoorProfile 'Microsoft.Cdn/profiles@2021-06-01' = {
 resource frontDoorEndpoint 'Microsoft.Cdn/profiles/afdEndpoints@2021-06-01' = {
   parent: frontDoorProfile
   name: frontDoorEndpointName
-  location: 'global'
+  location: globalLocation
   properties: {
-    enabledState: 'Enabled'
+    enabledState: enabledState
   }
 }
 
@@ -220,15 +373,15 @@ resource frontDoorOriginGroup 'Microsoft.Cdn/profiles/originGroups@2021-06-01' =
     healthProbeSettings: {
       probeIntervalInSeconds: 120
       probePath: healthProbePath
-      probeProtocol: 'Https'
-      probeRequestType: 'GET'
+      probeProtocol: frontDoorProbeProtocol
+      probeRequestType: frontDoorProbeRequestType
     }
     loadBalancingSettings: {
       additionalLatencyInMilliseconds: 0
       sampleSize: 4
       successfulSamplesRequired: 3
     }
-    sessionAffinityState: 'Disabled'
+    sessionAffinityState: disabledState
   }
 }
 
@@ -236,7 +389,7 @@ resource frontDoorOrigin 'Microsoft.Cdn/profiles/originGroups/origins@2021-06-01
   parent: frontDoorOriginGroup
   name: containerAppName
   properties: {
-    enabledState: 'Enabled'
+    enabledState: enabledState
     enforceCertificateNameCheck: true
     hostName: containerApp.properties.configuration.ingress.fqdn
     httpPort: 80
@@ -244,7 +397,7 @@ resource frontDoorOrigin 'Microsoft.Cdn/profiles/originGroups/origins@2021-06-01
     originHostHeader: containerApp.properties.configuration.ingress.fqdn
     priority: 1
     sharedPrivateLinkResource: {
-      groupId: 'managedEnvironments'
+      groupId: frontDoorOriginPrivateLinkGroupId
       privateLink: {
         id: managedEnvironment.id
       }
@@ -259,20 +412,15 @@ resource frontDoorAppRoute 'Microsoft.Cdn/profiles/afdEndpoints/routes@2021-06-0
   parent: frontDoorEndpoint
   name: frontDoorAppRouteName
   properties: {
-    enabledState: 'Enabled'
-    forwardingProtocol: 'HttpsOnly'
-    httpsRedirect: 'Enabled'
-    linkToDefaultDomain: 'Enabled'
+    enabledState: enabledState
+    forwardingProtocol: frontDoorForwardingProtocol
+    httpsRedirect: enabledState
+    linkToDefaultDomain: enabledState
     originGroup: {
       id: frontDoorOriginGroup.id
     }
-    patternsToMatch: [
-      '/*'
-    ]
-    supportedProtocols: [
-      'Http'
-      'Https'
-    ]
+    patternsToMatch: frontDoorAppPatternsToMatch
+    supportedProtocols: frontDoorSupportedProtocols
   }
   dependsOn: [
     frontDoorOrigin
@@ -288,22 +436,17 @@ resource frontDoorAssetRoute 'Microsoft.Cdn/profiles/afdEndpoints/routes@2021-06
         contentTypesToCompress: frontDoorAssetCacheContentTypes
         isCompressionEnabled: true
       }
-      queryStringCachingBehavior: 'IgnoreQueryString'
+      queryStringCachingBehavior: frontDoorQueryStringCachingBehavior
     }
-    enabledState: 'Enabled'
-    forwardingProtocol: 'HttpsOnly'
-    httpsRedirect: 'Enabled'
-    linkToDefaultDomain: 'Enabled'
+    enabledState: enabledState
+    forwardingProtocol: frontDoorForwardingProtocol
+    httpsRedirect: enabledState
+    linkToDefaultDomain: enabledState
     originGroup: {
       id: frontDoorOriginGroup.id
     }
-    patternsToMatch: [
-      '/assets/*'
-    ]
-    supportedProtocols: [
-      'Http'
-      'Https'
-    ]
+    patternsToMatch: frontDoorAssetPatternsToMatch
+    supportedProtocols: frontDoorSupportedProtocols
   }
   dependsOn: [
     frontDoorOrigin
@@ -315,7 +458,10 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
   location: location
   tags: tags
   identity: {
-    type: 'SystemAssigned'
+    type: containerAppIdentityType
+    userAssignedIdentities: {
+      '${sqlMigrationIdentity.id}': {}
+    }
   }
   properties: {
     managedEnvironmentId: managedEnvironment.id
@@ -323,46 +469,54 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
       ingress: {
         external: true
         targetPort: containerPort
-        transport: 'auto'
+        transport: containerAppIngressTransport
       }
     }
     template: {
       containers: [
         {
-          name: 'web'
+          name: containerAppContainerName
           image: containerImage
           env: concat(
             [
               {
-                name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
+                name: appInsightsConnectionStringEnvironmentVariableName
                 value: applicationInsights.properties.ConnectionString
               }
               {
-                name: 'AZURE_APP_NAME'
+                name: azureAppNameEnvironmentVariableName
                 value: appName
               }
               {
-                name: 'AZURE_CONTAINER_APP_NAME'
+                name: azureContainerAppNameEnvironmentVariableName
                 value: containerAppName
               }
               {
-                name: 'AZURE_APPCONFIG_ENDPOINT'
+                name: azureAppConfigEndpointEnvironmentVariableName
                 value: appConfiguration.properties.endpoint
               }
               {
-                name: 'AZURE_KEY_VAULT_URI'
+                name: azureKeyVaultUriEnvironmentVariableName
                 value: keyVault.properties.vaultUri
               }
               {
-                name: 'AZURE_TENANT_ID'
+                name: azureTenantIdEnvironmentVariableName
                 value: entraTenantId
+              }
+              {
+                name: azureSqlMigrationClientIdEnvironmentVariableName
+                value: sqlMigrationIdentity.properties.clientId
+              }
+              {
+                name: startupMigrationDatabaseUrlEnvironmentVariableName
+                value: sqlStartupMigrationDatabaseUrl
               }
             ],
             environmentVariables
           )
           probes: [
             {
-              type: 'Startup'
+              type: startupProbeType
               httpGet: {
                 path: healthProbePath
                 port: containerPort
@@ -373,7 +527,7 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
               failureThreshold: 48
             }
             {
-              type: 'Readiness'
+              type: readinessProbeType
               httpGet: {
                 path: healthProbePath
                 port: containerPort
@@ -384,7 +538,7 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
               failureThreshold: 6
             }
             {
-              type: 'Liveness'
+              type: livenessProbeType
               httpGet: {
                 path: healthProbePath
                 port: containerPort
@@ -402,8 +556,8 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
         }
       ]
       scale: {
-        minReplicas: 1
-        maxReplicas: 3
+        minReplicas: containerAppScaleMinReplicas
+        maxReplicas: containerAppScaleMaxReplicas
       }
     }
   }
@@ -414,20 +568,26 @@ resource sqlServer 'Microsoft.Sql/servers@2021-11-01-preview' = {
   location: location
   tags: tags
   properties: union(
-    {
-      administratorLogin: sqlAdministratorLogin
-      minimalTlsVersion: '1.2'
-      publicNetworkAccess: 'Disabled'
-      version: '12.0'
-      administrators: {
-        administratorType: 'ActiveDirectory'
-        azureADOnlyAuthentication: sqlEnableEntraOnlyAuthentication
-        login: sqlBootstrapIdentity.name
-        principalType: 'Application'
-        sid: sqlBootstrapIdentity.properties.principalId
-        tenantId: tenant().tenantId
-      }
-    },
+    union(
+      {
+        minimalTlsVersion: sqlMinimalTlsVersion
+        publicNetworkAccess: disabledState
+        version: sqlServerVersion
+        administrators: {
+          administratorType: sqlAdministratorType
+          azureADOnlyAuthentication: sqlEnableEntraOnlyAuthentication
+          login: sqlBootstrapIdentity.name
+          principalType: applicationPrincipalType
+          sid: sqlBootstrapIdentity.properties.principalId
+          tenantId: tenant().tenantId
+        }
+      },
+      empty(sqlAdministratorLogin)
+        ? {}
+        : {
+            administratorLogin: sqlAdministratorLogin
+          }
+    ),
     empty(sqlAdministratorPassword)
       ? {}
       : {
@@ -442,27 +602,27 @@ resource sqlDatabase 'Microsoft.Sql/servers/databases@2021-11-01-preview' = {
   location: location
   tags: tags
   sku: {
-    name: 'GP_S_Gen5_1'
-    tier: 'GeneralPurpose'
+    name: sqlDatabaseSkuName
+    tier: sqlDatabaseSkuTier
     capacity: 1
   }
   properties: {
     autoPauseDelay: 60
     minCapacity: 1
-    readScale: 'Disabled'
+    readScale: sqlDatabaseReadScale
   }
 }
 
 resource sqlPrivateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' = {
   name: sqlPrivateDnsZoneName
-  location: 'global'
+  location: globalLocation
   properties: {}
 }
 
 resource sqlPrivateDnsZoneVirtualNetworkLink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2020-06-01' = {
   parent: sqlPrivateDnsZone
-  name: '${virtualNetworkName}-link'
-  location: 'global'
+  name: sqlPrivateDnsZoneVirtualNetworkLinkName
+  location: globalLocation
   properties: {
     registrationEnabled: false
     virtualNetwork: {
@@ -481,12 +641,10 @@ resource sqlPrivateEndpoint 'Microsoft.Network/privateEndpoints@2024-05-01' = {
     }
     privateLinkServiceConnections: [
       {
-        name: '${sqlPrivateEndpointName}-connection'
+        name: sqlPrivateEndpointConnectionName
         properties: {
           privateLinkServiceId: sqlServer.id
-          groupIds: [
-            'sqlServer'
-          ]
+          groupIds: sqlPrivateEndpointGroupIds
         }
       }
     ]
@@ -495,11 +653,11 @@ resource sqlPrivateEndpoint 'Microsoft.Network/privateEndpoints@2024-05-01' = {
 
 resource sqlPrivateEndpointDnsZoneGroup 'Microsoft.Network/privateEndpoints/privateDnsZoneGroups@2024-05-01' = {
   parent: sqlPrivateEndpoint
-  name: 'default'
+  name: defaultPrivateDnsZoneGroupName
   properties: {
     privateDnsZoneConfigs: [
       {
-        name: 'sql'
+        name: sqlPrivateDnsZoneConfigName
         properties: {
           privateDnsZoneId: sqlPrivateDnsZone.id
         }
@@ -513,7 +671,7 @@ resource appConfigurationDataReaderAssignment 'Microsoft.Authorization/roleAssig
   scope: appConfiguration
   properties: {
     principalId: containerApp.identity.principalId
-    principalType: 'ServicePrincipal'
+    principalType: roleAssignmentPrincipalType
     roleDefinitionId: appConfigDataReaderRoleDefinitionId
   }
 }
@@ -523,7 +681,7 @@ resource keyVaultSecretsUserAssignment 'Microsoft.Authorization/roleAssignments@
   scope: keyVault
   properties: {
     principalId: containerApp.identity.principalId
-    principalType: 'ServicePrincipal'
+    principalType: roleAssignmentPrincipalType
     roleDefinitionId: keyVaultSecretsUserRoleDefinitionId
   }
 }

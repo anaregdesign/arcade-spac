@@ -50,7 +50,6 @@ Required variables:
 - `AZURE_RESOURCE_GROUP`
 - `AZURE_APP_NAME`
 - `ENTRA_CLIENT_ID`
-- `SQL_ADMINISTRATOR_LOGIN`
 
 Optional variables:
 
@@ -65,7 +64,6 @@ Required secrets:
 
 - `ARCADE_SESSION_SECRET`
 - `ENTRA_CLIENT_SECRET`
-- `SQL_ADMINISTRATOR_PASSWORD`
 
 Optional secrets:
 
@@ -150,7 +148,7 @@ Current repository note:
 
 ## Azure SQL Provisioning Inputs And Identities
 
-Bootstrap inputs still required from GitHub Environment:
+Bootstrap inputs still required from the `production-bootstrap` GitHub Environment:
 
 - `sqlAdministratorLogin`
 - `sqlAdministratorPassword`

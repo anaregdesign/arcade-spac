@@ -85,7 +85,6 @@ jobs:
       id-token: write
     outputs:
       has_changes: ${{ steps.plan.outputs.has_changes }}
-      container_app_name: ${{ steps.discover.outputs.container_app_name }}
       infra_image_ref: ${{ steps.discover.outputs.infra_image_ref }}
     env:
       AZURE_APP_NAME: ${{ vars.AZURE_APP_NAME }}
@@ -93,8 +92,6 @@ jobs:
       AZURE_RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
       AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
       AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
-      SQL_ADMINISTRATOR_LOGIN: ${{ vars.SQL_ADMINISTRATOR_LOGIN }}
-      SQL_ADMINISTRATOR_PASSWORD: ${{ secrets.SQL_ADMINISTRATOR_PASSWORD }}
       RELEASE_IMAGE_REF: ${{ needs.publish.outputs.image_ref }}
     steps:
       - name: Check out the repo
@@ -107,8 +104,6 @@ jobs:
           test -n "$AZURE_SUBSCRIPTION_ID" || { echo "Missing environment variable AZURE_SUBSCRIPTION_ID"; exit 1; }
           test -n "$AZURE_RESOURCE_GROUP" || { echo "Missing environment variable AZURE_RESOURCE_GROUP"; exit 1; }
           test -n "$AZURE_APP_NAME" || { echo "Missing environment variable AZURE_APP_NAME"; exit 1; }
-          test -n "$SQL_ADMINISTRATOR_LOGIN" || { echo "Missing environment variable SQL_ADMINISTRATOR_LOGIN"; exit 1; }
-          test -n "$SQL_ADMINISTRATOR_PASSWORD" || { echo "Missing secret SQL_ADMINISTRATOR_PASSWORD"; exit 1; }
 
       - name: Log in to Azure with OIDC
         uses: azure/login@v2
@@ -123,17 +118,29 @@ jobs:
       - name: Discover current deploy state
         id: discover
         run: |
-          CONTAINER_APP_NAME="ca-${AZURE_APP_NAME}"
+          mapfile -t CONTAINER_APPS < <(az resource list \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --resource-type Microsoft.App/containerApps \
+            --query '[].name' \
+            --output tsv 2>/dev/null || true)
+
+          if [[ "${#CONTAINER_APPS[@]}" -gt 1 ]]; then
+            echo "Expected at most one Container App in ${AZURE_RESOURCE_GROUP}, found ${#CONTAINER_APPS[@]}."
+            exit 1
+          fi
+
+          CONTAINER_APP_NAME="${CONTAINER_APPS[0]:-}"
           CURRENT_IMAGE_REF="$(
-            az containerapp show \
-              --resource-group "$AZURE_RESOURCE_GROUP" \
-              --name "$CONTAINER_APP_NAME" \
-              --query 'properties.template.containers[0].image' \
-              --output tsv 2>/dev/null || true
+            if [[ -n "$CONTAINER_APP_NAME" ]]; then
+              az containerapp show \
+                --resource-group "$AZURE_RESOURCE_GROUP" \
+                --name "$CONTAINER_APP_NAME" \
+                --query 'properties.template.containers[0].image' \
+                --output tsv 2>/dev/null || true
+            fi
           )"
           INFRA_IMAGE_REF="${CURRENT_IMAGE_REF:-$RELEASE_IMAGE_REF}"
 
-          echo "container_app_name=$CONTAINER_APP_NAME" >> "$GITHUB_OUTPUT"
           echo "infra_image_ref=$INFRA_IMAGE_REF" >> "$GITHUB_OUTPUT"
 
       - name: Plan infrastructure changes
@@ -143,8 +150,6 @@ jobs:
             appName="$AZURE_APP_NAME"
             manageRuntimeRoleAssignments=false
             containerImage="${{ steps.discover.outputs.infra_image_ref }}"
-            sqlAdministratorLogin="$SQL_ADMINISTRATOR_LOGIN"
-            sqlAdministratorPassword="$SQL_ADMINISTRATOR_PASSWORD"
           )
 
           az deployment group what-if \
@@ -194,8 +199,6 @@ jobs:
       AZURE_RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
       AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
       AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
-      SQL_ADMINISTRATOR_LOGIN: ${{ vars.SQL_ADMINISTRATOR_LOGIN }}
-      SQL_ADMINISTRATOR_PASSWORD: ${{ secrets.SQL_ADMINISTRATOR_PASSWORD }}
       INFRA_IMAGE_REF: ${{ needs.plan_infra.outputs.infra_image_ref }}
     steps:
       - name: Check out the repo
@@ -208,8 +211,6 @@ jobs:
           test -n "$AZURE_SUBSCRIPTION_ID" || { echo "Missing environment variable AZURE_SUBSCRIPTION_ID"; exit 1; }
           test -n "$AZURE_RESOURCE_GROUP" || { echo "Missing environment variable AZURE_RESOURCE_GROUP"; exit 1; }
           test -n "$AZURE_APP_NAME" || { echo "Missing environment variable AZURE_APP_NAME"; exit 1; }
-          test -n "$SQL_ADMINISTRATOR_LOGIN" || { echo "Missing environment variable SQL_ADMINISTRATOR_LOGIN"; exit 1; }
-          test -n "$SQL_ADMINISTRATOR_PASSWORD" || { echo "Missing secret SQL_ADMINISTRATOR_PASSWORD"; exit 1; }
 
       - name: Log in to Azure with OIDC
         uses: azure/login@v2
@@ -228,8 +229,6 @@ jobs:
             appName="$AZURE_APP_NAME"
             manageRuntimeRoleAssignments=false
             containerImage="$INFRA_IMAGE_REF"
-            sqlAdministratorLogin="$SQL_ADMINISTRATOR_LOGIN"
-            sqlAdministratorPassword="$SQL_ADMINISTRATOR_PASSWORD"
           )
 
           az deployment group create \
@@ -241,7 +240,18 @@ jobs:
 
       - name: Approve Azure Front Door private link connections
         run: |
-          MANAGED_ENVIRONMENT_NAME="cae-${AZURE_APP_NAME}"
+          mapfile -t MANAGED_ENVIRONMENTS < <(az resource list \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --resource-type Microsoft.App/managedEnvironments \
+            --query '[].name' \
+            --output tsv)
+
+          if [[ "${#MANAGED_ENVIRONMENTS[@]}" -ne 1 ]]; then
+            echo "Expected exactly one Container Apps environment in ${AZURE_RESOURCE_GROUP}, found ${#MANAGED_ENVIRONMENTS[@]}."
+            exit 1
+          fi
+
+          MANAGED_ENVIRONMENT_NAME="${MANAGED_ENVIRONMENTS[0]}"
           CONNECTION_IDS=()
 
           for attempt in $(seq 1 18); do
@@ -249,7 +259,7 @@ jobs:
               --name "$MANAGED_ENVIRONMENT_NAME" \
               --resource-group "$AZURE_RESOURCE_GROUP" \
               --type Microsoft.App/managedEnvironments \
-              --query "[?properties.privateLinkServiceConnectionState.description=='AFD Private Link Request'].id" \
+              --query "[].id" \
               --output tsv 2>/dev/null || true)
 
             if [[ "${#CONNECTION_IDS[@]}" -gt 0 ]]; then
@@ -283,7 +293,7 @@ jobs:
                 --name "$MANAGED_ENVIRONMENT_NAME" \
                 --resource-group "$AZURE_RESOURCE_GROUP" \
                 --type Microsoft.App/managedEnvironments \
-                --query "[?properties.privateLinkServiceConnectionState.description=='AFD Private Link Request' && properties.privateLinkServiceConnectionState.status!='Approved'] | length(@)" \
+                --query "[?properties.privateLinkServiceConnectionState.status!='Approved'] | length(@)" \
                 --output tsv
             )"
 
@@ -317,7 +327,6 @@ jobs:
       contents: read
       id-token: write
     env:
-      AZURE_APP_NAME: ${{ vars.AZURE_APP_NAME }}
       AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
       AZURE_RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
       AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
@@ -338,7 +347,6 @@ jobs:
           test -n "$AZURE_TENANT_ID" || { echo "Missing environment variable AZURE_TENANT_ID"; exit 1; }
           test -n "$AZURE_SUBSCRIPTION_ID" || { echo "Missing environment variable AZURE_SUBSCRIPTION_ID"; exit 1; }
           test -n "$AZURE_RESOURCE_GROUP" || { echo "Missing environment variable AZURE_RESOURCE_GROUP"; exit 1; }
-          test -n "$AZURE_APP_NAME" || { echo "Missing environment variable AZURE_APP_NAME"; exit 1; }
           test -n "$ENTRA_CLIENT_ID" || { echo "Missing environment variable ENTRA_CLIENT_ID"; exit 1; }
           test -n "$ENTRA_CLIENT_SECRET" || { echo "Missing secret ENTRA_CLIENT_SECRET"; exit 1; }
           test -n "$ARCADE_SESSION_SECRET" || { echo "Missing secret ARCADE_SESSION_SECRET"; exit 1; }
@@ -380,7 +388,6 @@ jobs:
     outputs:
       app_url: ${{ steps.public_endpoint.outputs.app_url }}
     env:
-      AZURE_APP_NAME: ${{ vars.AZURE_APP_NAME }}
       AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
       AZURE_RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
       AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
@@ -400,7 +407,6 @@ jobs:
           test -n "$AZURE_TENANT_ID" || { echo "Missing environment variable AZURE_TENANT_ID"; exit 1; }
           test -n "$AZURE_SUBSCRIPTION_ID" || { echo "Missing environment variable AZURE_SUBSCRIPTION_ID"; exit 1; }
           test -n "$AZURE_RESOURCE_GROUP" || { echo "Missing environment variable AZURE_RESOURCE_GROUP"; exit 1; }
-          test -n "$AZURE_APP_NAME" || { echo "Missing environment variable AZURE_APP_NAME"; exit 1; }
 
       - name: Log in to Azure with OIDC
         uses: azure/login@v2
@@ -409,70 +415,35 @@ jobs:
           tenant-id: ${{ env.AZURE_TENANT_ID }}
           subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Discover SQL migration identity
-        id: migrate_identity
+      - name: Discover Container App
+        id: discover_container_app
         run: |
-          SQL_MIGRATION_IDENTITY_NAME="$(printf 'id-sql-migrate-%s' "$AZURE_APP_NAME" | cut -c1-24)"
-          SQL_MIGRATION_IDENTITY_ID="$(
-            az identity show \
-              --resource-group "$AZURE_RESOURCE_GROUP" \
-              --name "$SQL_MIGRATION_IDENTITY_NAME" \
-              --query id \
-              --output tsv
-          )"
-          SQL_MIGRATION_IDENTITY_CLIENT_ID="$(
-            az identity show \
-              --resource-group "$AZURE_RESOURCE_GROUP" \
-              --name "$SQL_MIGRATION_IDENTITY_NAME" \
-              --query clientId \
-              --output tsv
-          )"
+          mapfile -t CONTAINER_APPS < <(az resource list \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --resource-type Microsoft.App/containerApps \
+            --query '[].name' \
+            --output tsv)
 
-          test -n "$SQL_MIGRATION_IDENTITY_ID" || { echo "Missing SQL migration identity id"; exit 1; }
-          test -n "$SQL_MIGRATION_IDENTITY_CLIENT_ID" || { echo "Missing SQL migration identity client id"; exit 1; }
+          if [[ "${#CONTAINER_APPS[@]}" -ne 1 ]]; then
+            echo "Expected exactly one Container App in ${AZURE_RESOURCE_GROUP}, found ${#CONTAINER_APPS[@]}."
+            exit 1
+          fi
 
-          echo "sql_migration_identity_id=$SQL_MIGRATION_IDENTITY_ID" >> "$GITHUB_OUTPUT"
-          echo "sql_migration_identity_client_id=$SQL_MIGRATION_IDENTITY_CLIENT_ID" >> "$GITHUB_OUTPUT"
-
-      - name: Resolve startup migration database URL
-        id: migration_database_url
-        run: |
-          STARTUP_MIGRATION_DATABASE_URL="$(bash ./scripts/azure/resolve-default-azure-credential-database-url.sh)"
-          test -n "$STARTUP_MIGRATION_DATABASE_URL" || { echo "Missing startup migration database URL"; exit 1; }
-
-          {
-            echo "startup_migration_database_url<<EOF"
-            echo "$STARTUP_MIGRATION_DATABASE_URL"
-            echo "EOF"
-          } >> "$GITHUB_OUTPUT"
+          echo "container_app_name=${CONTAINER_APPS[0]}" >> "$GITHUB_OUTPUT"
 
       - name: Configure registry access when required
         env:
-          AZURE_CONTAINER_APP_NAME: ${{ needs.plan_infra.outputs.container_app_name }}
+          AZURE_CONTAINER_APP_NAME: ${{ steps.discover_container_app.outputs.container_app_name }}
         run: bash ./scripts/azure/postprovision.sh
-
-      - name: Attach SQL migration identity to container app
-        env:
-          AZURE_CONTAINER_APP_NAME: ${{ needs.plan_infra.outputs.container_app_name }}
-        run: |
-          az containerapp identity assign \
-            --resource-group "$AZURE_RESOURCE_GROUP" \
-            --name "$AZURE_CONTAINER_APP_NAME" \
-            --system-assigned \
-            --user-assigned "${{ steps.migrate_identity.outputs.sql_migration_identity_id }}" \
-            --output none
 
       - name: Deploy immutable release image
         env:
-          AZURE_CONTAINER_APP_NAME: ${{ needs.plan_infra.outputs.container_app_name }}
+          AZURE_CONTAINER_APP_NAME: ${{ steps.discover_container_app.outputs.container_app_name }}
         run: |
           az containerapp update \
             --resource-group "$AZURE_RESOURCE_GROUP" \
             --name "$AZURE_CONTAINER_APP_NAME" \
             --image "$IMAGE_REF" \
-            --set-env-vars \
-              "AZURE_SQL_MIGRATION_CLIENT_ID=${{ steps.migrate_identity.outputs.sql_migration_identity_client_id }}" \
-              "STARTUP_MIGRATION_DATABASE_URL=${{ steps.migration_database_url.outputs.startup_migration_database_url }}" \
             --output none
 
       - name: Discover deployed public endpoint
