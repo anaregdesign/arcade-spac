@@ -209,8 +209,10 @@ jobs:
         run: az bicep build --file ./infra/main.bicep > /dev/null
 
       - name: Deploy infrastructure baseline
+        id: deploy_infra_async
         run: |
           DEPLOYMENT_NAME="release-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          echo "deployment_name=$DEPLOYMENT_NAME" >> "$GITHUB_OUTPUT"
           parameters=(
             appName="$AZURE_APP_NAME"
             manageRuntimeRoleAssignments=false
@@ -222,6 +224,7 @@ jobs:
             --name "$DEPLOYMENT_NAME" \
             --template-file ./infra/main.bicep \
             --parameters "${parameters[@]}" \
+            --no-wait \
             --output none
 
       - name: Approve Azure Front Door private link connections
@@ -299,6 +302,36 @@ jobs:
           done
 
           test "$pending_count" == "0" || { echo "Azure Front Door private endpoint connections are still pending approval."; exit 1; }
+
+      - name: Wait for infrastructure deployment completion
+        run: |
+          DEPLOYMENT_NAME="${{ steps.deploy_infra_async.outputs.deployment_name }}"
+          test -n "$DEPLOYMENT_NAME" || { echo "Missing release deployment name."; exit 1; }
+
+          az deployment group wait \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --name "$DEPLOYMENT_NAME" \
+            --custom "properties.provisioningState=='Succeeded' || properties.provisioningState=='Failed' || properties.provisioningState=='Canceled'" \
+            --interval 15 \
+            --timeout 3600
+
+          DEPLOYMENT_STATE="$(
+            az deployment group show \
+              --resource-group "$AZURE_RESOURCE_GROUP" \
+              --name "$DEPLOYMENT_NAME" \
+              --query properties.provisioningState \
+              --output tsv
+          )"
+
+          if [[ "$DEPLOYMENT_STATE" != "Succeeded" ]]; then
+            az deployment operation group list \
+              --resource-group "$AZURE_RESOURCE_GROUP" \
+              --name "$DEPLOYMENT_NAME" \
+              --query "[?properties.provisioningState!='Succeeded'].{resource:properties.targetResource.resourceName,type:properties.targetResource.resourceType,state:properties.provisioningState,status:properties.statusMessage}" \
+              --output json
+            echo "Release infrastructure deployment finished with state: $DEPLOYMENT_STATE"
+            exit 1
+          fi
 
   sync_runtime_config:
     name: Sync Runtime Config To Azure Stores
