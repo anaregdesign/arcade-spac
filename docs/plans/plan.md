@@ -62,6 +62,11 @@
 - [ ] Run or confirm the hosted verification workflow for the released target
 - [ ] Update the active plan to reflect the final release outcome and remaining drift, if any
 
+### Subsection 3.3 - Recovery Image Input Hardening
+- [x] Capture the latest bootstrap retry failure where shorthand `image_ref` input fell through to invalid Docker Hub resolution
+- [x] Patch the bootstrap workflow so release-tag shorthand resolves once to the canonical current-repository `GHCR` image reference and every image-consuming job reuses that value
+- [x] Validate the updated workflow and helper script locally before the next bootstrap rerun
+
 ## Section 4 - Workflow Idempotency Hardening
 ### Subsection 4.1 - Canonical Contract
 - [x] Extend the canonical spec so workflow-managed Azure state is idempotent except for run-scoped artifact names

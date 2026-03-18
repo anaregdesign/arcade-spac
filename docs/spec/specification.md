@@ -34,8 +34,10 @@ operator は破壊的変更の切り替え先として `green` / `blue` / `dev` 
 - `green` / `blue` / `dev` で deployment される Azure hosted resources は、resource 名に suffix を含むか、suffix ごとに一意になる naming rule を持つ
 - workflow-owned helper script は `Container App`、`Container Apps environment`、`Front Door`、`SQL server`、`App Configuration`、`Key Vault` などの target resource 名を suffix-aware に解決する
 - shared `OIDC` / `Service Principal` / app registration などの app 共通 identity は既存の共通 account を使い回す
+- `Bootstrap Azure Recovery` の `image_ref` input は workflow 冒頭で canonical な full image reference に正規化され、operator が release tag だけを渡した場合は current repository の `GHCR` namespace を使って解決される
 - bootstrap / release は同一 suffix environment に既存 active resource がある場合、その suffix environment の resource を再利用する
 - bootstrap は同一 suffix environment の target `App Configuration` / `Key Vault` が recoverable 状態なら recover してから deployment を続行する
+- malformed な `image_ref` input は Azure deployment や `Container Apps Job` 作成まで進まず、workflow input validation の段階で fail fast する
 - `sync-runtime-config` は `Key Vault secret version` や `App Configuration revision` を毎回増やさず、value や `Key Vault reference` が変わった時だけ update する
 - `deploy_app` は target image や registry contract が既に desired state なら `Container App` update を skip する
 - SQL bootstrap は同じ database に何度 rerun しても principal / role convergence だけを行い、schema migration は Prisma の migration state に委ねる
@@ -45,6 +47,7 @@ operator は破壊的変更の切り替え先として `green` / `blue` / `dev` 
 - `green` / `blue` / `dev` のいずれを選んでも、environment-scoped Azure resource 名が別 suffix と重複しない
 - `Bootstrap Azure Recovery`、`Release Azure Delivery`、`Verify Recovered Runtime` と helper script 群が同じ suffix-aware naming rule を使う
 - shared identity contract は suffix を変えても変わらず、bootstrap / release workflow は共通 `OIDC` / `Service Principal` を使い続ける
+- `Bootstrap Azure Recovery` は operator input の `image_ref` を一度だけ canonical な full image reference に解決し、infra bootstrap / SQL bootstrap / app rollout が同じ resolved value を使う
 - latest bootstrap failure と同じ `rg-arcade-dev` partial state を想定しても、workflow contract 上は `existing SQL server` と recoverable `App Configuration` / `Key Vault` を再利用できる
 - infra template と workflow parameter flow は existing `SQL server` reuse 時に `AadOnlyAuthenticationIsEnabled` を再発させない
 - workflow-managed Azure operations は、`deployment name` や `job execution name` のような run-scoped artifact を除いて rerun 時に追加 drift を生まない
@@ -56,9 +59,11 @@ operator は破壊的変更の切り替え先として `green` / `blue` / `dev` 
 
 - target resource group に同一 type resource が複数ある場合は曖昧なまま進まず fail fast する
 - shared identity resource は suffix を付けずにそのまま使うが、environment-scoped resource は suffix-aware naming にする
+- operator が `image_ref` に release tag だけを渡した場合は current repository の `GHCR` image path を補完してから後続 job に渡す
 - active resource がなく recoverable resource もない場合だけ create path を使う
 - `AZURE_GLOBAL_NAME_SUFFIX` と active resource 名が一致しなくても、同一 suffix environment の active resource 実名が優先される
 - recover command が permission 不足で失敗した場合は、その resource type と required operator action が分かる形で fail する
+- registry host や repository を解決できない `image_ref` は Docker Hub default resolution にフォールバックさせず、workflow 側で reject する
 - run-scoped deployment metadata や one-shot verification execution は完全固定名にせず、persistent Azure state のみ strict idempotency の対象にする
 
 ## Constraints And Dependencies
