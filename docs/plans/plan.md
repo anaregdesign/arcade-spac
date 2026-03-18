@@ -79,6 +79,7 @@
 ### Subsection 4.4 - Validation
 - [x] Run local validation for touched shell scripts, workflow YAML, and targeted app/runtime scripts
 - [x] Summarize any remaining non-idempotent behavior that is intentionally limited to run-scoped artifact creation
+- [x] Fix the `actionlint` `shellcheck` failure in bootstrap workflow retry loops introduced by the idempotency hardening slice
 
 Notes:
 - Remaining intentional non-idempotent behavior is limited to run-scoped artifact names such as Azure deployment names and transient Container Apps Job / execution names used by workflow runs.

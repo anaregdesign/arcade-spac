@@ -393,7 +393,7 @@ jobs:
               "$AZURE_LEGACY_CONTAINER_APP_NAME"
           )"
           MANAGED_ENVIRONMENT_ID=""
-          for attempt in $(seq 1 18); do
+          for ((attempt = 1; attempt <= 18; attempt++)); do
             MANAGED_ENVIRONMENT_ID="$(
               az containerapp show \
                 --resource-group "$AZURE_RESOURCE_GROUP" \
@@ -501,7 +501,7 @@ jobs:
             --output none
 
           JOB_EXECUTION_NAME=""
-          for attempt in $(seq 1 18); do
+          for ((attempt = 1; attempt <= 18; attempt++)); do
             JOB_EXECUTION_NAME="$(az containerapp job execution list \
               --resource-group "$AZURE_RESOURCE_GROUP" \
               --name "$JOB_NAME" \
@@ -517,7 +517,7 @@ jobs:
 
           test -n "$JOB_EXECUTION_NAME" || { echo "Missing SQL bootstrap job execution."; exit 1; }
 
-          for attempt in $(seq 1 90); do
+          for ((attempt = 1; attempt <= 90; attempt++)); do
             JOB_STATUS="$(az containerapp job execution show \
               --resource-group "$AZURE_RESOURCE_GROUP" \
               --name "$JOB_NAME" \
