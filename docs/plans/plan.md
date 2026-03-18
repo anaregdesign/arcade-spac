@@ -86,6 +86,7 @@
 - [x] Capture failed `Container Apps Job` execution diagnostics from `Bootstrap Azure SQL Principals` so reruns expose container-side startup errors directly in workflow logs
 - [x] Patch `Bootstrap Azure SQL Principals` to retry failed SQL bootstrap executions with backoff after converging the reused `SQL server` data-plane contract
 - [x] Decouple `Bootstrap Azure SQL Principals` from release-image bundled helper files by injecting `scripts/azure/init-sql.mjs` from the checked-out repo into the transient job execution
+- [x] Align `bootstrap_sql` timeout/progress reporting with the SQL bootstrap retry budget so long-running recovery attempts surface whether create, start, execution discovery, or execution polling is stalled
 
 ### Subsection 4.4 - Validation
 - [x] Run local validation for touched shell scripts, workflow YAML, and targeted app/runtime scripts

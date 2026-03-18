@@ -338,7 +338,7 @@ jobs:
     needs:
       - deploy_bootstrap_infra
       - resolve_recovery_image
-    timeout-minutes: 30
+    timeout-minutes: 60
     environment: production-bootstrap
     permissions:
       contents: read
@@ -464,6 +464,7 @@ jobs:
             local job_name="$1"
 
             if az containerapp job show --resource-group "$AZURE_RESOURCE_GROUP" --name "$job_name" --output none >/dev/null 2>&1; then
+              echo "Deleting transient SQL bootstrap job ${job_name}."
               az containerapp job delete --resource-group "$AZURE_RESOURCE_GROUP" --name "$job_name" --yes --output none
             fi
           }
@@ -625,6 +626,7 @@ jobs:
               "$SQL_BOOTSTRAP_IDENTITY_PRINCIPAL_ID"
             ensure_sql_server_entra_only_auth "$SQL_SERVER_NAME"
 
+            echo "Creating SQL bootstrap job ${JOB_NAME} (attempt ${bootstrap_attempt}/${MAX_SQL_BOOTSTRAP_ATTEMPTS})."
             az containerapp job create \
               --resource-group "$AZURE_RESOURCE_GROUP" \
               --name "$JOB_NAME" \
@@ -650,6 +652,7 @@ jobs:
               "${registry_args[@]}" \
               --output none
 
+            echo "Starting SQL bootstrap job ${JOB_NAME}."
             az containerapp job start \
               --resource-group "$AZURE_RESOURCE_GROUP" \
               --name "$JOB_NAME" \
@@ -657,6 +660,7 @@ jobs:
 
             JOB_EXECUTION_NAME=""
             for ((attempt = 1; attempt <= 18; attempt++)); do
+              echo "Waiting for SQL bootstrap execution discovery (${attempt}/18)."
               JOB_EXECUTION_NAME="$(az containerapp job execution list \
                 --resource-group "$AZURE_RESOURCE_GROUP" \
                 --name "$JOB_NAME" \
@@ -671,6 +675,7 @@ jobs:
             done
 
             test -n "$JOB_EXECUTION_NAME" || { echo "Missing SQL bootstrap job execution."; exit 1; }
+            echo "Following SQL bootstrap execution ${JOB_EXECUTION_NAME}."
 
             if wait_for_sql_bootstrap_job_execution "$JOB_NAME" "$JOB_EXECUTION_NAME"; then
               exit 0
