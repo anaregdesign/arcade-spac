@@ -405,12 +405,71 @@ jobs:
             printf '%s\n' "${names[0]}"
           }
 
+          ensure_sql_server_entra_admin() {
+            local server_name="$1"
+            local bootstrap_identity_name="$2"
+            local bootstrap_identity_principal_id="$3"
+            local current_admin_object_id=""
+
+            current_admin_object_id="$(az sql server ad-admin list \
+              --resource-group "$AZURE_RESOURCE_GROUP" \
+              --server "$server_name" \
+              --query '[0].sid' \
+              --output tsv)"
+
+            if [[ "$current_admin_object_id" == "$bootstrap_identity_principal_id" ]]; then
+              return 0
+            fi
+
+            az sql server ad-admin create \
+              --resource-group "$AZURE_RESOURCE_GROUP" \
+              --server "$server_name" \
+              --display-name "$bootstrap_identity_name" \
+              --object-id "$bootstrap_identity_principal_id" \
+              --output none
+          }
+
+          ensure_sql_server_entra_only_auth() {
+            local server_name="$1"
+            local ad_only_auth=""
+
+            ad_only_auth="$(az sql server ad-only-auth get \
+              --resource-group "$AZURE_RESOURCE_GROUP" \
+              --name "$server_name" \
+              --query azureADOnlyAuthentication \
+              --output tsv 2>/dev/null || true)"
+
+            if [[ -z "$ad_only_auth" ]]; then
+              ad_only_auth="$(az sql server ad-only-auth get \
+                --resource-group "$AZURE_RESOURCE_GROUP" \
+                --name "$server_name" \
+                --query azureAdOnlyAuthentication \
+                --output tsv)"
+            fi
+
+            if [[ "$ad_only_auth" == "true" ]]; then
+              return 0
+            fi
+
+            az sql server ad-only-auth enable \
+              --resource-group "$AZURE_RESOURCE_GROUP" \
+              --name "$server_name" \
+              --output none
+          }
+
           CONTAINER_APP_NAME="$(
             resolve_existing_resource_name_by_type \
               'Microsoft.App/containerApps' \
               'Container App' \
               "$AZURE_EXPECTED_CONTAINER_APP_NAME" \
               "$AZURE_LEGACY_CONTAINER_APP_NAME"
+          )"
+          SQL_BOOTSTRAP_IDENTITY_NAME="$(
+            resolve_existing_resource_name_by_type \
+              'Microsoft.ManagedIdentity/userAssignedIdentities' \
+              'SQL bootstrap identity' \
+              "$AZURE_EXPECTED_SQL_BOOTSTRAP_IDENTITY_NAME" \
+              "$AZURE_LEGACY_SQL_BOOTSTRAP_IDENTITY_NAME"
           )"
           MANAGED_ENVIRONMENT_ID=""
           for ((attempt = 1; attempt <= 18; attempt++)); do
@@ -436,11 +495,16 @@ jobs:
             --server "$SQL_SERVER_NAME" \
             --query "[?name!='master'].name | [0]" \
             --output tsv)"
-          SQL_BOOTSTRAP_IDENTITY_NAME="$(az sql server ad-admin list \
+          SQL_BOOTSTRAP_IDENTITY_PRINCIPAL_ID="$(az identity show \
             --resource-group "$AZURE_RESOURCE_GROUP" \
-            --server "$SQL_SERVER_NAME" \
-            --query '[0].login' \
+            --name "$SQL_BOOTSTRAP_IDENTITY_NAME" \
+            --query principalId \
             --output tsv)"
+          ensure_sql_server_entra_admin \
+            "$SQL_SERVER_NAME" \
+            "$SQL_BOOTSTRAP_IDENTITY_NAME" \
+            "$SQL_BOOTSTRAP_IDENTITY_PRINCIPAL_ID"
+          ensure_sql_server_entra_only_auth "$SQL_SERVER_NAME"
           SQL_MIGRATION_IDENTITY_ID="$(az containerapp show \
             --resource-group "$AZURE_RESOURCE_GROUP" \
             --name "$CONTAINER_APP_NAME" \
@@ -465,6 +529,7 @@ jobs:
           test -n "$CONTAINER_APP_NAME" || { echo "Missing Container App."; exit 1; }
           test -n "$MANAGED_ENVIRONMENT_NAME" || { echo "Missing Container Apps environment."; exit 1; }
           test -n "$SQL_BOOTSTRAP_IDENTITY_NAME" || { echo "Missing SQL bootstrap identity name."; exit 1; }
+          test -n "$SQL_BOOTSTRAP_IDENTITY_PRINCIPAL_ID" || { echo "Missing SQL bootstrap identity principal id."; exit 1; }
           test -n "$SQL_BOOTSTRAP_IDENTITY_ID" || { echo "Missing SQL bootstrap identity id."; exit 1; }
           test -n "$SQL_BOOTSTRAP_IDENTITY_CLIENT_ID" || { echo "Missing SQL bootstrap identity client id."; exit 1; }
           test -n "$SQL_MIGRATION_IDENTITY_ID" || { echo "Missing SQL migration identity id."; exit 1; }
