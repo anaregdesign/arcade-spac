@@ -53,6 +53,35 @@ function getHostingTarget(): RuntimeConfig["hostingTarget"] {
   return process.env.AZURE_APP_NAME ? "azure" : "local";
 }
 
+function hasProcessEnvSetting(settingName: RuntimeSettingName) {
+  const value = process.env[settingName];
+  return typeof value === "string" && value.length > 0;
+}
+
+function canBootstrapAzureRuntimeConfigFromProcessEnv() {
+  const requestedAuthModeSetting = process.env.ARCADE_AUTH_MODE;
+  const requestedAuthMode: RuntimeConfig["authMode"] =
+    requestedAuthModeSetting === "local" || requestedAuthModeSetting === "entra"
+      ? requestedAuthModeSetting
+      : "entra";
+  const requiredSettings: RuntimeSettingName[] = requestedAuthMode === "entra"
+    ? [
+        "ARCADE_SESSION_SECRET",
+        "DATABASE_URL",
+        "PUBLIC_APP_URL",
+        "ENTRA_TENANT_ID",
+        "ENTRA_AUTHORITY_TENANT",
+        "ENTRA_CLIENT_ID",
+        "ENTRA_CLIENT_SECRET",
+      ]
+    : [
+        "ARCADE_SESSION_SECRET",
+        "DATABASE_URL",
+      ];
+
+  return requiredSettings.every(hasProcessEnvSetting);
+}
+
 function selectAzureCredential(hostingTarget: RuntimeConfig["hostingTarget"]): TokenCredential {
   return hostingTarget === "azure"
     ? new ManagedIdentityCredential()
@@ -138,8 +167,9 @@ function getResolvedSetting(
 async function resolveRuntimeConfig() {
   const environment = (process.env.NODE_ENV as RuntimeConfig["environment"] | undefined) ?? "development";
   const hostingTarget = getHostingTarget();
-  const allowEnvironmentFallback = hostingTarget === "local";
-  const storeBackedSettings = await loadStoreBackedSettings();
+  const preferProcessEnvRuntimeConfig = hostingTarget === "azure" && canBootstrapAzureRuntimeConfigFromProcessEnv();
+  const allowEnvironmentFallback = hostingTarget === "local" || preferProcessEnvRuntimeConfig;
+  const storeBackedSettings = preferProcessEnvRuntimeConfig ? new Map<RuntimeSettingName, string>() : await loadStoreBackedSettings();
   const requestedAuthModeSetting = getResolvedSetting("ARCADE_AUTH_MODE", storeBackedSettings, allowEnvironmentFallback);
   const requestedAuthMode: RuntimeConfig["authMode"] = requestedAuthModeSetting === "local" || requestedAuthModeSetting === "entra"
     ? requestedAuthModeSetting

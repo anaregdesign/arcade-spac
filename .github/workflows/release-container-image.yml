@@ -472,6 +472,9 @@ jobs:
       AZURE_RESOURCE_GROUP_PREFIX: ${{ vars.AZURE_RESOURCE_GROUP }}
       AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
       AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+      ENTRA_AUTHORITY_TENANT: ${{ vars.ENTRA_AUTHORITY_TENANT }}
+      ENTRA_CLIENT_ID: ${{ vars.ENTRA_CLIENT_ID }}
+      ENTRA_TENANT_ID: ${{ vars.ENTRA_TENANT_ID }}
       CONTAINER_REGISTRY_IDENTITY: ${{ vars.CONTAINER_REGISTRY_IDENTITY }}
       CONTAINER_REGISTRY_PASSWORD: ${{ secrets.CONTAINER_REGISTRY_PASSWORD }}
       CONTAINER_REGISTRY_SERVER: ${{ vars.CONTAINER_REGISTRY_SERVER }}
@@ -531,6 +534,12 @@ jobs:
 
           test -n "$FRONT_DOOR_HOST" || { echo "Missing Front Door endpoint host."; exit 1; }
           echo "app_url=https://${FRONT_DOOR_HOST}" >> "$GITHUB_OUTPUT"
+
+      - name: Sync Container App runtime env
+        env:
+          ARCADE_AUTH_MODE: entra
+          PUBLIC_APP_URL: ${{ steps.public_endpoint.outputs.app_url }}
+        run: ./scripts/azure/sync-container-app-runtime-env.sh
 
   smoke_test:
     name: Smoke Test Deployed Release
