@@ -99,5 +99,10 @@
 - [x] Capture the follow-on `Verify Production Runtime` failure where `/auth/start` returns `504` after the workflow reaches runtime checks
 - [x] Remove live Entra OpenID discovery from the request path so `/auth/start` can build the authorization redirect without waiting on external metadata fetches
 
+### Subsection 5.2 - Runtime URL And Verification Hardening
+- [x] Confirm the `production` GitHub Environment still pins a stale `PUBLIC_APP_URL` default-domain host and remove the override so runtime config can derive the current Front Door endpoint
+- [x] Patch `scripts/azure/sync-runtime-config.sh` so stale `.azurefd.net` overrides are ignored in favor of the currently provisioned Front Door host while custom-domain overrides remain supported
+- [x] Patch `scripts/azure/verify-production-runtime.sh` so the auth redirect assertion retries transient first-hit failures before declaring production runtime unhealthy
+
 Notes:
 - Remaining intentional non-idempotent behavior is limited to run-scoped artifact names such as Azure deployment names and transient Container Apps Job / execution names used by workflow runs.

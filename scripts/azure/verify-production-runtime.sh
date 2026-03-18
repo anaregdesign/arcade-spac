@@ -24,6 +24,34 @@ EXPECTED_APPCONFIG_PUBLIC_NETWORK_ACCESS="${EXPECTED_APPCONFIG_PUBLIC_NETWORK_AC
 EXPECTED_KEY_VAULT_PUBLIC_NETWORK_ACCESS="${EXPECTED_KEY_VAULT_PUBLIC_NETWORK_ACCESS:-Enabled}"
 EXPECTED_FRONT_DOOR_SKU="${EXPECTED_FRONT_DOOR_SKU:-Premium_AzureFrontDoor}"
 EXPECTED_MANAGED_ENVIRONMENT_PUBLIC_NETWORK_ACCESS="${EXPECTED_MANAGED_ENVIRONMENT_PUBLIC_NETWORK_ACCESS:-Disabled}"
+VERIFY_AUTH_RETRIES="${VERIFY_AUTH_RETRIES:-6}"
+VERIFY_AUTH_DELAY_SECONDS="${VERIFY_AUTH_DELAY_SECONDS:-10}"
+LAST_AUTH_FAILURE_DETAILS=""
+
+preview_file() {
+  local file_path="$1"
+  local file_size
+  local preview_limit=600
+
+  if [[ -s "${file_path}" ]]; then
+    file_size="$(wc -c < "${file_path}" | tr -d ' ')"
+    head -c "${preview_limit}" "${file_path}"
+
+    if [[ "${file_size}" -gt "${preview_limit}" ]]; then
+      printf '\n<truncated>'
+    else
+      printf '\n'
+    fi
+
+    return
+  fi
+
+  echo "<empty>"
+}
+
+record_auth_failure_details() {
+  LAST_AUTH_FAILURE_DETAILS="$1"
+}
 
 require_single_resource_name() {
   local resource_type="$1"
@@ -90,26 +118,41 @@ resolve_app_url() {
   printf 'https://%s\n' "${front_door_host}"
 }
 
-assert_auth_redirect_uses_public_app_url() {
+check_auth_redirect_uses_public_app_url() {
   local app_url="$1"
   local expected_redirect_uri="${app_url%/}/auth/callback"
   local headers_file
   local location_header
   local redirect_uri
+  local status
 
   headers_file="$(mktemp)"
-  trap 'rm -f "${headers_file}"' RETURN
 
-  curl -fsS \
-    -D "${headers_file}" \
-    -o /dev/null \
-    "${app_url%/}/auth/start"
+  status="$(curl \
+    --silent \
+    --show-error \
+    --dump-header "${headers_file}" \
+    --output /dev/null \
+    --write-out '%{http_code}' \
+    --max-time 30 \
+    "${app_url%/}/auth/start")" || {
+      record_auth_failure_details "Auth start request failed before a response was received."
+      rm -f "${headers_file}"
+      return 1
+    }
+
+  if [[ "${status}" != "302" ]]; then
+    record_auth_failure_details "$(printf 'Auth start endpoint returned HTTP %s.\nHeaders preview:\n%s' "${status}" "$(preview_file "${headers_file}")")"
+    rm -f "${headers_file}"
+    return 1
+  fi
 
   location_header="$(awk 'BEGIN { IGNORECASE = 1 } /^location:/ { sub(/\r$/, "", $0); print substr($0, 11) }' "${headers_file}" | tail -n 1)"
 
   if [[ -z "${location_header}" ]]; then
-    echo "Auth start endpoint did not return a redirect Location header."
-    exit 1
+    record_auth_failure_details "Auth start endpoint did not return a redirect Location header."
+    rm -f "${headers_file}"
+    return 1
   fi
 
   redirect_uri="$(python3 - "${location_header}" <<'PY'
@@ -122,11 +165,36 @@ PY
 )"
 
   if [[ "${redirect_uri}" != "${expected_redirect_uri}" ]]; then
-    echo "Auth redirect_uri is ${redirect_uri}, expected ${expected_redirect_uri}."
-    exit 1
+    record_auth_failure_details "Auth redirect_uri is ${redirect_uri}, expected ${expected_redirect_uri}."
+    rm -f "${headers_file}"
+    return 1
   fi
 
   echo "Verified auth redirect_uri=${redirect_uri}."
+  rm -f "${headers_file}"
+}
+
+assert_auth_redirect_uses_public_app_url() {
+  local app_url="$1"
+  local attempt
+
+  LAST_AUTH_FAILURE_DETAILS=""
+
+  for attempt in $(seq 1 "${VERIFY_AUTH_RETRIES}"); do
+    if check_auth_redirect_uses_public_app_url "${app_url}"; then
+      return 0
+    fi
+
+    if [[ "${attempt}" -lt "${VERIFY_AUTH_RETRIES}" ]]; then
+      sleep "${VERIFY_AUTH_DELAY_SECONDS}"
+    fi
+  done
+
+  echo "Auth start endpoint did not redirect with the expected public app URL after ${VERIFY_AUTH_RETRIES} attempts."
+  if [[ -n "${LAST_AUTH_FAILURE_DETAILS}" ]]; then
+    printf '%s\n' "${LAST_AUTH_FAILURE_DETAILS}"
+  fi
+  exit 1
 }
 
 get_app_configuration_value() {

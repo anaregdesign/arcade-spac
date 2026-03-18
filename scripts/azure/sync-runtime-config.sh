@@ -102,12 +102,21 @@ resolve_key_vault_uri() {
     -o tsv
 }
 
-resolve_public_app_url() {
-  if [[ -n "${PUBLIC_APP_URL:-}" ]]; then
-    printf '%s\n' "${PUBLIC_APP_URL}"
-    return
-  fi
+normalize_url_host() {
+  local candidate="$1"
 
+  candidate="${candidate#http://}"
+  candidate="${candidate#https://}"
+  printf '%s\n' "${candidate%%/*}"
+}
+
+uses_azure_front_door_default_host() {
+  local host
+  host="$(normalize_url_host "$1")"
+  [[ -n "${host}" && "${host}" == *.azurefd.net ]]
+}
+
+resolve_front_door_host() {
   local front_door_endpoint_id
   local front_door_host
 
@@ -120,7 +129,7 @@ resolve_public_app_url() {
     -o tsv)"
 
   if [[ -z "${front_door_endpoint_id}" ]]; then
-    fail "PUBLIC_APP_URL is required when no Azure Front Door endpoint exists in ${AZURE_RESOURCE_GROUP}."
+    return 1
   fi
 
   front_door_host="$(az resource show \
@@ -132,7 +141,41 @@ resolve_public_app_url() {
     fail "Unable to resolve Azure Front Door host name for ${AZURE_RESOURCE_GROUP}."
   fi
 
-  printf 'https://%s\n' "${front_door_host}"
+  printf '%s\n' "${front_door_host}"
+}
+
+resolve_public_app_url() {
+  local configured_public_app_url="${PUBLIC_APP_URL:-}"
+  local front_door_host
+  local derived_public_app_url=""
+
+  if front_door_host="$(resolve_front_door_host)"; then
+    derived_public_app_url="https://${front_door_host}"
+  fi
+
+  if [[ -n "${configured_public_app_url}" ]]; then
+    if [[ -n "${derived_public_app_url}" ]] && uses_azure_front_door_default_host "${configured_public_app_url}"; then
+      local configured_public_app_url_host
+      configured_public_app_url_host="$(normalize_url_host "${configured_public_app_url}")"
+
+      if [[ "${configured_public_app_url_host}" != "${front_door_host}" ]]; then
+        echo "Ignoring stale PUBLIC_APP_URL ${configured_public_app_url}; using current Azure Front Door host ${derived_public_app_url}." >&2
+      fi
+
+      printf '%s\n' "${derived_public_app_url}"
+      return
+    fi
+
+    printf '%s\n' "${configured_public_app_url}"
+    return
+  fi
+
+  if [[ -n "${derived_public_app_url}" ]]; then
+    printf '%s\n' "${derived_public_app_url}"
+    return
+  fi
+
+  fail "PUBLIC_APP_URL is required when no Azure Front Door endpoint exists in ${AZURE_RESOURCE_GROUP}."
 }
 
 AZURE_APPCONFIG_ENDPOINT="$(resolve_appconfig_endpoint)"
