@@ -47,13 +47,10 @@
 
 - watch phase 中の placement input は無効にする
 - occupied cell への上書きで token duplication が起きない
-- idle preview は hydration drift を起こさない
 
 ## Constraints and Dependencies
 
-- shared workspace card、board overlay、finish card、result flow を再利用する
 - token differentiation は color だけに依存せず label でも区別できるようにする
-- Playwright UI verification のため、board cell と token tray は stable selector を持つ
 
 ## Distinction
 

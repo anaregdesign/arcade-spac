@@ -53,8 +53,6 @@
 
 ## Constraints and Dependencies
 
-- shared workspace card、board overlay、finish card、result flow を再利用する
-- deterministic Playwright selector を piece tray、selected piece、placement target、invalid placement state に付ける
 - placement preview は pointer と touch の両方で読み取れるようにする
 
 ## Distinction

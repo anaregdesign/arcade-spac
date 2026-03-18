@@ -47,12 +47,9 @@
 
 - watch phase 中の tile tap は state を変えない
 - selected tile を再タップすると selection が解除される
-- idle preview は hydration drift を起こさない
 
 ## Constraints and Dependencies
 
-- shared workspace card、board overlay、finish card、result flow を再利用する
-- deterministic Playwright selector を target board と live board に付け、phase state、cell value、selected cell、solve completion を読めるようにする
 - narrow viewport でも hidden target panel と live board の両方が readable で touch-safe である
 
 ## Distinction

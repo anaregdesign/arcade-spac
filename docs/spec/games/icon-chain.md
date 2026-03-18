@@ -53,8 +53,6 @@
 
 ## Constraints and Dependencies
 
-- shared workspace card、board overlay、finish card、result flow を再利用する
-- deterministic Playwright selector を reveal state、clue type、candidate icon、selection index に付ける
 - clue wordingは短く、touch path を妨げない
 
 ## Distinction

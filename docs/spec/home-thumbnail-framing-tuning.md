@@ -2,70 +2,44 @@
 
 ## Summary
 
-Home のゲーム一覧で使う 50 件すべての preview thumbnail を、ゲーム内容がひと目で伝わる simple な square artwork として再生成しつつ、framing をより密に詰め、内容を見切らせずに一覧比較しやすくする。
+Home の preview thumbnail は、ゲーム内容をひと目で伝えつつ、一覧比較しやすい framing と密度に揃える。
 
 ## User Problem
 
-- Home の preview thumbnail は game ごとに visual complexity と framing のばらつきがあり、一覧で見たときに内容の読み取りやすさが揃っていない
-- 現在の thumbnail は square contract 自体は揃ったが、scene の余白が広めで board や mechanic の主役が少し遠く見える
-- 一部の Home card は preview mapping の欠落で fallback 表示になり、50 game を thumbnail で比較する体験が欠けている
-- asset を再生成する手順が再利用しにくいと、今後の調整時に style や contract が崩れやすい
+- Thumbnail ごとに余白や framing の差が大きいと、一覧比較がしづらい
+- 主役の board や icon が遠く見えると、ゲーム内容を瞬時に読み取りにくい
+- 一部 thumbnail が fallback 的に見えると、catalog 全体の質感が揃わない
 
 ## Users and Scenarios
 
-- ユーザは Home で 50 game を一覧しながら、thumbnail を主な手がかりとして遊ぶ game を選びたい
-- ユーザは thumbnail を見ただけで、その game が timing, memory, grid logic, path, target など何をするものかを大まかに把握したい
-- 開発者は preview asset を一括で再生成し直せる再現可能な workflow を持ち、後続の修正でも同じ square contract を維持したい
+- プレイヤーは Home の一覧を見ながら、thumbnail を主な手掛かりに次のゲームを選びたい
+- プレイヤーは thumbnail を見ただけで、そのゲームの主題を大まかに理解したい
 
 ## Scope
 
-- Home で使う 50 件すべての preview asset を square thumbnail として再生成する
-- 各 thumbnail を、ゲームごとの中心 mechanic や board motif が分かる simple な artwork に揃える
-- 各 thumbnail の framing を詰め、内容を見切らせずに主役モチーフを前に出す
-- Home preview mapping の欠落を解消し、50 game すべてが preview asset を表示できる状態にする
-- 今後 missing preview や non-square asset が混ざっても検知できる verification を追加または更新する
+- Thumbnail の framing と余白を揃える
+- 主役要素を見切らせず、比較しやすい密度へ整える
+- Fallback 的な見え方をなくし、catalog 全体の見え方を揃える
 
 ## Non-Goals
 
-- Home の game card 全体レイアウト変更
-- 実ゲーム画面の UI や board layout の変更
-- thumbnail 用の説明 copy や card metadata の増量
+- Home card 全体の redesign
+- 実ゲーム画面の UI 変更
+- Card 本文の情報量増加
 
 ## User-Visible Behavior
 
-- Home の 50 game card は、すべて square thumbnail で表示される
-- どの thumbnail も、ゲームの中心 mechanic や board motif が simple な shape, color, layout で読み取れる
-- どの thumbnail も、主役となる board や icon が現在より大きく見え、余白が広すぎない
-- 同じ grid に並べたとき、thumbnail の密度や framing が極端にぶれず比較しやすい
-- `sum-grid`, `hidden-find`, `swap-solve`, `shape-morph` を含む全 game card が fallback ではなく preview asset を表示する
-- `Minesweeper` や `Sudoku` を含む grid-heavy な preview でも主要な盤面情報を読める
+- どの thumbnail も主役の board や icon が十分大きく見える
+- 一覧で並べたとき、framing と密度のばらつきが減る
+- 主要ゲームの thumbnail が fallback ではなく内容を伝える preview として機能する
 
 ## Acceptance Criteria
 
-- Home で参照する 50 件すべての game が preview asset を持ち、fallback initials に落ちない
-- 50 件すべての preview asset が square ratio になっている
-- 各 thumbnail は simple な artwork でありつつ、対象 game の内容を他の game と見分けられる
-- 各 thumbnail は主役モチーフが十分大きく、余白の多さで弱く見えない
-- framing を詰めても、重要な内容が見切れず一覧での読みやすさが改善している
-- Home の game grid で thumbnail の見え方が game ごとに不自然にばらつかない
-- missing preview、参照切れ、non-square asset を regression test で検知できる
+- Thumbnail の主役要素が不自然に小さく見えない
+- 重要な内容が edge で切れず、余白が広すぎない
+- 一覧比較時の違和感が目立たなくなる
 
 ## Edge Cases
 
-- 既存の square asset を置き換えても、主要モチーフの読みやすさを悪化させない
-- もともと横長構図だった preview でも、主要情報が center から極端に外れない
-- board-heavy な puzzle は、情報量を詰め込みすぎずに盤面ルールが分かる最低限の cue を残す
-- framing を詰めても、重要情報が edge で切れたり欠けたりして game 内容が逆に分かりにくくならない
-- asset format を SVG に揃えても、Home の見え方や loading に不自然な差が出ない
-
-## Constraints and Dependencies
-
-- preview asset 側で square contract と visual simplicity を担保し、Home card 側の per-game CSS 例外は増やさない
-- 再生成結果は再利用可能な script で吐き出せる状態を優先する
-- 実行履歴は `docs/plans/plan.20260315-082817.md` に archive される
-
-## Links
-
-- Latest Plan Archive: [../plans/plan.20260315-082817.md](../plans/plan.20260315-082817.md)
-- Earlier Plan Archive: [../plans/plan.20260315-081056.md](../plans/plan.20260315-081056.md)
-- Previous Plan Archive: [../plans/plan.20260315-073133.md](../plans/plan.20260315-073133.md)
+- Grid-heavy な thumbnail でも必要な情報が潰れない
+- Framing を詰めても窮屈に見えない

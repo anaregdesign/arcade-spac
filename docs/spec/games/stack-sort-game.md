@@ -44,7 +44,6 @@
 
 ## Constraints and Dependencies
 
-- support metric は internal `mistakeCount` を `Moves` として使う
 - touch だけで source / destination selection が完結する
 
 ## Links

@@ -53,8 +53,6 @@
 
 ## Constraints and Dependencies
 
-- shared workspace card、board overlay、finish card、result flow を再利用する
-- deterministic Playwright selector を reveal state、current target、moving card id、resolved count に付ける
 - board motion は速すぎず、memory pressure と touch safety を両立する
 
 ## Distinction

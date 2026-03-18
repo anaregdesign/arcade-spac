@@ -53,8 +53,6 @@
 
 ## Constraints and Dependencies
 
-- shared workspace card、board overlay、finish card、result flow を再利用する
-- deterministic Playwright selector を board tile value、direction action、remaining space、goal threshold state に付ける
 - move resolution は user が追える速度で反映される
 
 ## Distinction

@@ -46,14 +46,11 @@
 
 ## Edge Cases
 
-- idle state の preview puzzle は hydration drift を起こさない
 - idle 中または timeout 後の cell tap は state を変えない
 - empty board のまま `Reset board` を押しても reset count は増えない
 
 ## Constraints and Dependencies
 
-- shared workspace card、board overlay、finish card、result flow を再利用する
-- deterministic Playwright selector を zone card と board cell に付け、zone target count、current count、locked state、cell active state、round completion を読めるようにする
 - narrow viewport でも zone card と board cell が readable で touch-safe である
 
 ## Distinction

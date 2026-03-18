@@ -46,7 +46,6 @@
 ## Constraints and Dependencies
 
 - `Color Sweep` と同じ board-clear pattern を応用する
-- support metric は `mistakeCount` に保存する
 
 ## Links
 

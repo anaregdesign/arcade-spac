@@ -52,7 +52,6 @@
 
 ## Constraints and Dependencies
 
-- shared workspace card、board overlay、finish card、result flow を再利用する
 - primary metric は existing duration formatter を使う
 - save failure 時も `misses` を recovery draft に保持する
 

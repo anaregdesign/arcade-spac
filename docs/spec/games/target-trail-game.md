@@ -43,11 +43,6 @@
 - active target がない idle 中の tap は無視される
 - same cell の連打で trail progress が二重に進まない
 
-## Constraints and Dependencies
-
-- support metric は `mistakeCount` に保存する
-- shared controls / finish card pattern を再利用する
-
 ## Links
 
 - Related: [two-minute-expansion-wave.md](./two-minute-expansion-wave.md)

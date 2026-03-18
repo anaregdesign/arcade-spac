@@ -53,8 +53,6 @@
 
 ## Constraints and Dependencies
 
-- shared workspace card、board overlay、finish card、result flow を再利用する
-- deterministic Playwright selector を node pair、drawn segment、crossing state、undo action に付ける
 - path readability を優先し、color だけに依存せず pair marker を区別する
 
 ## Distinction

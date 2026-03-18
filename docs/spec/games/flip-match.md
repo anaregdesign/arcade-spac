@@ -48,11 +48,9 @@
 
 - run 中以外の tile tap は board state を変えない
 - solved round 後は次 round が即座に開き、途中の interaction は残らない
-- idle preview は SSR/client で同じ board を出し hydration drift を起こさない
 
 ## Constraints and Dependencies
 
-- shared workspace card、board overlay、finish card、result flow を再利用する
 - primary metric は existing duration formatter を使う
 - `flips` は existing count support metric contract に載せる
 

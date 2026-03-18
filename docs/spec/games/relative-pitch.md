@@ -54,8 +54,6 @@
 
 ## Constraints and Dependencies
 
-- shared workspace card、board overlay、finish card、result flow を再利用する
-- deterministic Playwright selector を current round、reference interval id、candidate id、replay count、run outcome に付ける
 - browser autoplay 制約に従い、audio は explicit start gesture 後のみ再生する
 - pitch 表現は synth tone、chime、または short instrument sample のいずれでもよいが、interval 差が明確に聴き取れることを優先する
 

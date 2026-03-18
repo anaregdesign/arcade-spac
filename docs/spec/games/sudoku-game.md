@@ -6,7 +6,6 @@
 
 ## User Problem
 
-- 長めでも集中しやすい logic puzzle を、他ゲームと同じ app shell と result flow で遊びたい
 - keypad と keyboard shortcut の両方で board を進めたい
 - solve time だけでなく、hint の使用量を result と profile で確認したい
 
@@ -56,7 +55,6 @@
 
 ## Constraints and Dependencies
 
-- shared workspace、result screen、pending-save recovery flow を再利用する
 - primary metric は duration formatter を使う
 - support metric は `hintCount` を `Hints used` として表示する
 - mistake count は quality と summary に反映してよいが、support metric の主表示は `Hints used` とする

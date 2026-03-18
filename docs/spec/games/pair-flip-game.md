@@ -51,7 +51,6 @@
 
 ## Constraints and Dependencies
 
-- shared workspace card と board overlay pattern を再利用する
 - mismatch count は support metric として existing result layout に載せる
 - save failure 時も mismatch count を recovery draft に保持する
 

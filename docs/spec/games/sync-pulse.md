@@ -47,12 +47,9 @@
 
 - run 中以外の tap は state を変えない
 - rapid tap で duplicate wave clear が起きない
-- idle preview は hydration drift を起こさない
 
 ## Constraints and Dependencies
 
-- shared workspace card、board overlay、finish card、result flow を再利用する
-- deterministic Playwright selector を sync pad に付け、current pulse window と ring gap を読めるようにする
 - narrow viewport でも dual pulse ring と tap target が重なりすぎず readable である
 
 ## Distinction

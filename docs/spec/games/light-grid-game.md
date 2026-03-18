@@ -44,7 +44,6 @@
 
 ## Constraints and Dependencies
 
-- support metric は internal `mistakeCount` を `Moves` として使う
 - mobile でも grid tap だけで完結する
 
 ## Links

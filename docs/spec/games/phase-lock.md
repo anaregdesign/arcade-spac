@@ -47,12 +47,9 @@
 
 - run 中以外の lock input は state を変えない
 - rapid tap で duplicate lock が起きない
-- idle preview は hydration drift を起こさない
 
 ## Constraints and Dependencies
 
-- shared workspace card、board overlay、finish card、result flow を再利用する
-- deterministic Playwright selector を active wheel と trigger に付け、phase state を読めるようにする
 - narrow viewport でも active wheel、target band、locked state の違いが判別できる
 
 ## Distinction

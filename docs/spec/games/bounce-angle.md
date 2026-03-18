@@ -54,8 +54,6 @@
 
 ## Constraints and Dependencies
 
-- shared workspace card、board overlay、finish card、result flow を再利用する
-- deterministic Playwright selector を angle chooser、launch action、goal state、last path trace に付ける
 - reflection は visible に追える速度と path trace を持つ
 
 ## Distinction

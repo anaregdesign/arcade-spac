@@ -54,8 +54,6 @@
 
 ## Constraints and Dependencies
 
-- shared workspace card、board overlay、finish card、result flow を再利用する
-- deterministic Playwright selector を avatar position、incoming wall gap、perfect pass state、run outcome に付ける
 - current app result architecture に合わせ、saved ranking metric は `clear time` のまま拡張しない
 - motion blur なしでも gap readability を保つ
 

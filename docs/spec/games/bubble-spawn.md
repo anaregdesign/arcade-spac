@@ -54,8 +54,6 @@
 
 ## Constraints and Dependencies
 
-- shared workspace card、board overlay、finish card、result flow を再利用する
-- deterministic Playwright selector を bubble state、saturation meter、chain bonus、run outcome に付ける
 - spawn variation はあっても fairness を崩さない bounded pattern set にする
 
 ## Distinction

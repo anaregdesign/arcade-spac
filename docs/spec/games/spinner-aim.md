@@ -47,12 +47,9 @@
 
 - run 中以外の fire input は state を変えない
 - tap spam で shot count が異常に増えない
-- idle preview は hydration drift を起こさない
 
 ## Constraints and Dependencies
 
-- shared workspace card、board overlay、finish card、result flow を再利用する
-- deterministic Playwright selector を board root に付け、angle / target / hazard state を読めるようにする
 - narrow viewport でも launcher、target arc、hazard arc の位置関係が判別できる
 
 ## Distinction

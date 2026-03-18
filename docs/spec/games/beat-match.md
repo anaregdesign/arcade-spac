@@ -44,12 +44,9 @@
 
 - run 中以外の lane tap は state を変えない
 - late note は miss として処理されるが run 全体は継続する
-- idle preview は hydration drift を起こさない
 
 ## Constraints and Dependencies
 
-- shared workspace card、board overlay、finish card、result flow を再利用する
-- deterministic Playwright selector を board root と lane button に付け、active lane、current timing window、combo state を読めるようにする
 - narrow viewport でも 3 lane button と timing track が readable で tap-safe である
 
 ## Distinction

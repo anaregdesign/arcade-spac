@@ -51,13 +51,10 @@
 - run 中以外の node tap と fire input は state を変えない
 - armed trigger slot 上限を超える tap は無視される
 - 同一 node は 1 回の chain で重複発火しない
-- idle preview は hydration drift を起こさない
 - narrow viewport でも node button、threshold、source marker、chain result が判別できる
 
 ## Constraints and Dependencies
 
-- shared workspace card、board overlay、finish card、result flow を再利用する
-- deterministic Playwright selector を root、node button、fire action に付け、armed state、activation wave、last resolution outcome を読めるようにする
 - pointer と touch の両方で主要操作を完結できるようにする
 
 ## Distinction

@@ -44,7 +44,6 @@
 
 ## Constraints and Dependencies
 
-- support metric は `mistakeCount` に保存する
 - result summary は existing duration formatter を使う
 
 ## Links

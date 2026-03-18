@@ -6,7 +6,6 @@
 
 ## User Problem
 
-- classic な logic board game を、他ゲームと同じ app shell と result flow で繰り返し遊びたい
 - desktop と touch の両方で、open と flag を迷わず使い分けたい
 - clear time だけでなく、mistake の有無も result と profile で確認したい
 
@@ -56,9 +55,7 @@
 
 ## Constraints and Dependencies
 
-- shared workspace、result screen、pending-save recovery flow を再利用する
 - primary metric は duration formatter を使う
-- support metric は `mistakeCount` を `Mistakes` として表示する
 - failed run は history only とし、`leaderboardEligible` を付けない
 
 ## Links

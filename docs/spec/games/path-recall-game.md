@@ -46,7 +46,6 @@
 ## Constraints and Dependencies
 
 - `Pattern Echo` と同じフェーズ分離 pattern を踏襲する
-- support metric は `mistakeCount` に保存する
 
 ## Links
 

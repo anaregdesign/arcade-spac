@@ -43,11 +43,6 @@
 - clear 後に control を押しても board は変わらない
 - invalid line index が UI から発生しない
 
-## Constraints and Dependencies
-
-- support metric は internal `mistakeCount` を `Moves` として使う
-- shared status chip と finish card pattern を再利用する
-
 ## Links
 
 - Related: [two-minute-expansion-wave.md](./two-minute-expansion-wave.md)

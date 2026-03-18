@@ -51,7 +51,6 @@
 
 ## Constraints and Dependencies
 
-- shared workspace card と board overlay pattern を再利用する
 - primary metric は existing duration formatter を使う
 - save failure 時も `wrong taps` を recovery draft に保持する
 

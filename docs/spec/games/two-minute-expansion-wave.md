@@ -2,65 +2,52 @@
 
 ## Summary
 
-`Arcade` の既存 lineup を残したまま、`1 run が 2 分以内で完結する game` を 10 本 pure-add する。追加対象は `Orbit Tap`、`Target Trail`、`Path Recall`、`Pulse Count`、`Quick Sum`、`Symbol Hunt`、`Light Grid`、`Tile Shift`、`Stack Sort`、`Mirror Match` とし、home、workspace、result、rankings、profile まで既存導線で一貫して扱える状態を定義する。
+`Arcade` の既存 lineup を残したまま、`1 run が 2 分以内で完結する game` を 10 本追加し、短時間で切り替えて遊べる幅を大きくする。
 
 ## User Problem
 
-- 既存 catalog だけでは短時間 replay に偏りや style の幅がまだ足りない
-- home から選べる game 数が少ないと、短時間利用時に「今日は何を遊ぶか」の選択肢が狭い
-- memory、timing、logic、perception、spatial の練習先を 1 つの app 内で横断したい
+- 既存 lineup だけでは、短時間 replay の選択肢がまだ少ない
+- Memory、timing、logic、perception、spatial の練習先を 1 つの app 内で横断したい
+- 新規ゲームが既存導線に乗らないと、catalog が増えても使いやすさが上がらない
 
 ## Users and Scenarios
 
-- ユーザは home から 2 分以内で終わる game を選び、短い集中 run を繰り返したい
-- ユーザは game ごとの best metric と support metric を result、rankings、profile で比較したい
-- ユーザは未プレイの新規 game も既存 game と同じ navigation、help、result pattern で迷わず始めたい
+- プレイヤーは Home から 2 分以内で終わるゲームを選び、短い集中 run を繰り返したい
+- プレイヤーは各ゲームの best metric と support metric を Result、Rankings、Profile で比較したい
+- 新規ゲームでも既存ゲームと同じ navigation、help、result pattern で始めたい
 
 ## Scope
 
-- 10 本の新規 game spec を `/docs/spec/games/` に追加する
-- 10 本の新規 game を existing shared route、result flow、ranking flow、profile flow に統合する
-- すべての game を `1 run <= 2 minutes` の難易度設計にする
-- home preview、help dialog、result summary、share text、game catalog metadata を追加対象まで広げる
+- `Orbit Tap`、`Target Trail`、`Path Recall`、`Pulse Count`、`Quick Sum`、`Symbol Hunt`、`Light Grid`、`Tile Shift`、`Stack Sort`、`Mirror Match` を追加する
+- 10 本すべてを Home、Game、Result、Rankings、Profile の共通導線へ載せる
+- すべてのゲームを `1 run <= 2 minutes` の体験として設計する
 
 ## Non-Goals
 
-- 既存 game の削除や置き換え
-- real-time multiplayer や co-op mode
-- 長時間 campaign、daily event、unlock tree
-- production deploy policy 自体の変更
+- 既存ゲームの削除や置き換え
+- Real-time multiplayer や co-op mode
+- 長時間 campaign や unlock tree
 
 ## User-Visible Behavior
 
-- home では 10 本の新しい game card が既存 lineup に pure-add で表示される
-- 各 game は既存の `games.$gameKey` route から開始でき、shared controls card、board overlay、finish card、help pattern を使う
-- run 完了時は追加の save confirm を要求せず、existing result flow に自動遷移する
-- result、rankings、profile では新しい game の best metric と support metric が既存 game と同じ密度で表示される
+- Home では 10 本の新しいゲーム card が既存 lineup に追加される
+- 各ゲームは既存の game route から始められる
+- Run 完了時は既存の Result 導線へ進み、新しいゲームも同じ密度で比較できる
 - 新規 10 本はすべて、`Easy` から `Expert` までを含めて `1 run <= 2 minutes` に収まる
 
 ## Acceptance Criteria
 
-- home、result、rankings、profile で 10 本すべての game が catalog として認識される
-- 10 本すべてに individual spec document がある
-- 10 本すべてに preview asset、workspace registry entry、game-specific instructions がある
-- 10 本すべてが local verification を通り、production release workflow へ載せられる
-- repository policy に従い、production deploy は GitHub Workflow 経由で行われる
+- Home、Result、Rankings、Profile で 10 本すべてのゲームを認識できる
+- 10 本すべてに individual spec がある
+- 新規ゲームでも既存ゲームと同じ導線で開始、完了、結果確認ができる
 
 ## Edge Cases
 
-- play summary や ranking summary がまだ存在しない新規 game でも home card は `New` として表示される
-- save failure 時は existing recovery draft flow で support metric を保持する
-- narrow viewport でも game board と primary action が同一 screen 内で完結する
-
-## Constraints and Dependencies
-
-- durable spec は `/docs/spec/` に置き、active tracker は `/docs/plans/plan.md` を使う
-- app code は existing `game-workspace` architecture と shared result flow を維持する
-- production release は local Azure CLI deploy ではなく GitHub release workflow を使う
+- まだ play summary がない新規ゲームでも Home から見つけて起動できる
+- Narrow viewport でも game board と主要 action が分断されない
 
 ## Links
 
-- Plan: [../../plans/plan.md](../../plans/plan.md)
 - Related: [../product-specs.md](../product-specs.md)
 - Game: [orbit-tap-game.md](./orbit-tap-game.md)
 - Game: [target-trail-game.md](./target-trail-game.md)

@@ -44,11 +44,6 @@
 - round transition 中の多重 tap は 1 回だけ扱う
 - wrong answer 後に同 round へ戻らず flow が止まらない
 
-## Constraints and Dependencies
-
-- support metric は `mistakeCount` に保存する
-- round summary は shared result flow に統合する
-
 ## Links
 
 - Related: [two-minute-expansion-wave.md](./two-minute-expansion-wave.md)

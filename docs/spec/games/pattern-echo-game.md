@@ -59,9 +59,7 @@
 
 ## Constraints and Dependencies
 
-- shared workspace card と board overlay pattern を再利用する
 - primary metric は existing duration formatter を使う
-- support metric は `wrong inputs` として `mistakeCount` に保存する
 - save failure 時も `wrong inputs` を recovery draft に保持する
 
 ## Links

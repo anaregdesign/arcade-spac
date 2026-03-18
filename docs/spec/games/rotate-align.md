@@ -48,11 +48,9 @@
 
 - run 中以外の rotate input は board state を変えない
 - empty tile は route の判定対象にしない
-- idle preview は SSR/client で同じ board を出し hydration drift を起こさない
 
 ## Constraints and Dependencies
 
-- shared workspace card、board overlay、finish card、result flow を再利用する
 - primary metric は existing duration formatter を使う
 - `rotations` は existing count support metric contract に載せる
 

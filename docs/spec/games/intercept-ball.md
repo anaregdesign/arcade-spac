@@ -53,8 +53,6 @@
 
 ## Constraints and Dependencies
 
-- shared workspace card、board overlay、finish card、result flow を再利用する
-- deterministic Playwright selector を catch zone、pad position、ball state、intercept outcome に付ける
 - movement path は prediction game として読める速度に保つ
 
 ## Distinction

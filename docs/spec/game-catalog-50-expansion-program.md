@@ -2,70 +2,57 @@
 
 ## Summary
 
-Arcade の catalog を現行 17 本から 50 本へ拡張し、各ゲームが 2 分以内の 1 run で完結する短時間 browser game として遊べる状態にする。追加する 33 本は既存ゲーム群とも相互にも似すぎないよう mechanic family を分散させ、timing、memory、logic、visual hunt、spatial transform、action precision、audio discrimination をまたぐ幅を持たせる。各ゲームごとに user-visible な individual spec、実装、UI verification、段階的 commit を残す。
+`Arcade` の catalog を 50 本規模まで広げ、どのゲームも短時間で始めて終えられる browser game として遊べる状態にする。
 
 ## User Problem
 
-- 現在の catalog は短時間 arcade として十分遊べるが、継続的に回遊できる本数にはまだ達していない
-- 追加ゲームを場当たりで増やすと、既存ゲームの焼き直しや似た入力体験が増えて catalog の価値が落ちる
-- 仕様書、実装、verification、commit log の粒度が揃っていないと、50 本規模の expansion を安全に進めにくい
+- Catalog 本数が少ないと、継続利用時の回遊性が弱い
+- 新しいゲームが似た遊び方に偏ると、catalog 全体の魅力が落ちる
+- 追加ゲームが既存導線に乗らないと、増えるほど使いにくくなる
 
 ## Users and Scenarios
 
-- 利用者は 2 分以内で完結する多様なゲームを次々に遊びたい
-- 利用者は同じ catalog 内で、timing、memory、logic、visual hunt、transformation、audio discrimination など違う skill type を切り替えて遊びたい
-- 開発者は各ゲームの spec を先にレビューし、1 本ずつ UI verification 付きで導入したい
+- プレイヤーは短い run で多様なゲームを切り替えて遊びたい
+- プレイヤーは timing、memory、logic、visual hunt、spatial transform、audio 系など違う skill type を行き来したい
+- 継続利用者は、新しいゲームでも既存の Home、Result、Rankings、Profile で同じように扱いたい
 
 ## Scope
 
-- 33 本の新規ゲーム concept を定義し、現行 17 本と合わせて 50 本 catalog にする
-- 各ゲームごとに 1 本の individual spec document を用意する
-- 各ゲームを route、workspace component、preview、result integration を含めて実装する
-- 各ゲームごと、または小さな reviewed slice ごとに UI verification と commit を残す
+- Catalog を 50 本規模まで拡張する
+- 各ゲームを Home、Game、Result、Rankings、Profile の共通導線へ載せる
+- Game ごとの差別化を保ち、catalog 全体の mechanic family を分散させる
 
 ## Non-Goals
 
-- 既存 17 本の根本 redesign
-- 2 分を超える長時間 run を前提にしたゲーム設計
-- multiplayer、networked play、meta progression の導入
+- 既存ゲームの全面 redesign
+- 長時間 run や meta progression の導入
+- multiplayer や networked play の追加
 
 ## User-Visible Behavior
 
-- Home から 50 本の distinct game catalog を閲覧できる
-- 各ゲームは 2 分以内で clear または fail が確定する
-- 各ゲームには help/instructions、result summary、preview thumbnail がある
-- 似た入力や盤面が続きすぎず、catalog 内で skill family が分散している
-- rhythm とは異なる relative pitch / interval recognition 系の audio game も含まれている
+- Home では 50 本規模のゲームを同じ密度で探索できる
+- どのゲームも短時間で clear または fail が確定する
+- 新旧どのゲームも How to play、Result、Rankings、Profile の共通パターンに乗る
+- Catalog 全体として、似た入力や同じ見た目の焼き直しばかりに見えない
 
 ## Acceptance Criteria
 
-- `supportedGames` に 50 本の game definition が存在する
-- 追加 33 本それぞれに対応する individual spec が `docs/spec/games/` に存在する
-- 各ゲームは Home から開けて playable であり、Result まで到達できる
-- 各ゲームに対して UI verification が行われ、問題があればその場で修正される
-- commit history に reviewed slice 単位の記録が残る
+- Catalog 拡張後も、Home から新旧すべてのゲームへ同じように辿れる
+- 追加ゲームでも Result、Rankings、Profile で同じ情報の取り回しができる
+- Catalog を一覧したとき、mechanic family の偏りが目立たない
 
 ## Edge Cases
 
-- 新規ゲーム同士で core loop が近すぎる場合は implementation 前に spec で差別化する
-- 入力 device が pointer でも touch でも主要操作を完結できるようにする
-- difficulty variation があっても 1 run は 2 分以内に収まる
-
-## Constraints and Dependencies
-
-- spec-driven workflow に従い、program spec と individual specs を先に揃える
-- 各ゲームは React Router + current gameplay architecture に沿って実装する
-- progress は `docs/plans/plan.md` で追跡し、完了後 archive する
-- commit は coherent な reviewed slice 単位で切る
+- 新規ゲームでも、まだ実績がないだけで Home 上から消えない
+- Catalog が増えても、探索性の悪化で既存ゲームが見つけにくくならない
 
 ## Similarity Guardrails
 
-- 同じ primary interaction を使う場合でも board representation、decision model、failure pressure のうち少なくとも 2 つを変える
-- 既存 family と追加 family の偏りを避け、timing、memory、logic、visual search、spatial transform、action precision、growth strategy、audio discrimination を分散させる
+- 同じ primary interaction を使う場合でも、board representation、decision model、failure pressure のうち複数を変える
+- Timing、memory、logic、visual search、spatial transform、action precision、growth strategy、audio discrimination の偏りを避ける
 - `same input with different skin` のゲームは採用しない
 
 ## Links
 
-- Plan: [../plans/plan.md](../plans/plan.md)
 - Related: [product-specs.md](./product-specs.md)
-- Related: [ui-specs.md](./ui-specs.md)
+- Expansion Wave: [games/two-minute-expansion-wave.md](./games/two-minute-expansion-wave.md)

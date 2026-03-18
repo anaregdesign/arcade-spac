@@ -54,8 +54,6 @@
 
 ## Constraints and Dependencies
 
-- shared workspace card、board overlay、finish card、result flow を再利用する
-- deterministic Playwright selector を board state、trigger controls、cascade count、score summary に付ける
 - chain resolution は user が追える速度と visual summary を持つ
 
 ## Distinction

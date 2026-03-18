@@ -47,12 +47,9 @@
 
 - run 中以外の press/release は state を変えない
 - holding 中の duplicate start が起きない
-- idle preview は hydration drift を起こさない
 
 ## Constraints and Dependencies
 
-- shared workspace card、board overlay、finish card、result flow を再利用する
-- deterministic Playwright selector を hold pad に付け、current hold window、target duration、release state を読めるようにする
 - narrow viewport でも target zone と hold meter が readable で、primary button が押しやすい
 
 ## Distinction

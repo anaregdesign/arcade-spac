@@ -42,7 +42,6 @@
 - 1 run は 2 分以内に clear または timeout が確定する
 - piece rotation、lateral move、gravity lock の 3 要素が visible に機能する
 - silhouette shape と piece set に variation があり、単純な同型反復にならない
-- ghost landing preview と hidden verification selectors が current piece state を deterministic に expose する
 - Result、profile、rankings では `clear time` と `misdrops` が保存される
 
 ## Edge Cases
@@ -54,8 +53,6 @@
 
 ## Constraints and Dependencies
 
-- shared workspace card、board overlay、finish card、result flow を再利用する
-- deterministic piece queue と Playwright selector を board、piece、movement action に付ける
 - pointer と touch の両方で操作を完結できるようにする
 
 ## Distinction

@@ -51,7 +51,6 @@
 
 ## Constraints and Dependencies
 
-- shared workspace card と board overlay pattern を再利用する
 - primary metric は duration formatter を使う
 - support metric は `Mistakes` と同じ result pattern に載せられる構成にする
 

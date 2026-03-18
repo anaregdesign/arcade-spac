@@ -47,12 +47,9 @@
 
 - wave 切替後に stale cell を tap しても next wave state を壊さない
 - cleared safe target の再 tap は score や penalty を二重加算しない
-- idle preview は hydration drift を起こさない
 
 ## Constraints and Dependencies
 
-- shared workspace card、board overlay、finish card、result flow を再利用する
-- stable selector を board cell に付け、Playwright UI verification を deterministic にする
 - touch target は desktop と mobile の両方で十分な大きさを保つ
 
 ## Distinction

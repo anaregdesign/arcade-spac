@@ -42,11 +42,6 @@
 - clear 後の追加 tap は無視される
 - target board は live run 中に変化しない
 
-## Constraints and Dependencies
-
-- support metric は internal `mistakeCount` を `Moves` として使う
-- existing result flow と home card preview model に統合する
-
 ## Links
 
 - Related: [two-minute-expansion-wave.md](./two-minute-expansion-wave.md)

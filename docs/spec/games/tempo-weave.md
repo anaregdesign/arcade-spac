@@ -46,14 +46,11 @@
 
 ## Edge Cases
 
-- idle preview は hydration drift を起こさない
 - live でない状態の lane tap は state を変えない
 - one lane を clear 済みにしても、もう一方の lane は通常どおり miss と density reset の対象になる
 
 ## Constraints and Dependencies
 
-- shared workspace card、board overlay、finish card、result flow を再利用する
-- deterministic Playwright selector を root と lane button に付け、lane phase、window state、hit progress、streak、density、run completion を読めるようにする
 - narrow viewport でも dual-lane controls が readable で touch-safe である
 
 ## Distinction

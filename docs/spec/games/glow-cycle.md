@@ -48,13 +48,10 @@
 
 - run 中以外の tap は state を変えない
 - rapid tap で duplicate cycle clear が起きない
-- idle preview は hydration drift を起こさない
 - narrow viewport でも target node の強調と tap target size が維持される
 
 ## Constraints and Dependencies
 
-- shared workspace card、board overlay、finish card、result flow を再利用する
-- deterministic Playwright selector を root と各 node button に付け、target state、window state、cycle progress を読めるようにする
 - pointer と touch の両方で主要操作を完結できるようにする
 
 ## Distinction
