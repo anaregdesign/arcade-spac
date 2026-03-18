@@ -71,7 +71,7 @@ Post-release checks:
 4. Confirm the Container App image and latest ready revision match the intended release.
 5. Run the health endpoint check through Azure Front Door.
 6. Run `scripts/azure/verify-production-runtime.sh`.
-7. Run the scripted smoke test through Azure Front Door.
+7. Run the scripted smoke test through Azure Front Door. When the release changed Front Door or private-link infrastructure, use the script's extended retry budget instead of treating the first few minutes as a hard failure.
 8. Verify hosted sign-in, gameplay, result, rankings, and profile screens in a browser.
 
 Commands:
@@ -104,6 +104,10 @@ AZURE_RESOURCE_GROUP="rg-arcade-spec-dev" \
 curl -sS "${PUBLIC_APP_URL}/health"
 
 APP_URL="${PUBLIC_APP_URL}" \
+  ./scripts/azure/smoke-test.sh
+
+APP_URL="${PUBLIC_APP_URL}" \
+SMOKE_TEST_RETRIES=90 \
   ./scripts/azure/smoke-test.sh
 
 AZURE_RESOURCE_GROUP="rg-arcade-spec-dev" \

@@ -36,6 +36,7 @@
 
 - 公開 URL は `Container App` の既定 FQDN ではなく `Azure Front Door` endpoint host を基準に扱う
 - release 後の smoke test は Front Door 経由で `/health`、`/login`、`/auth/start` を確認する
+- Front Door private link や route の変更を含む release でも、smoke test は edge propagation が収束するまで false negative で即 fail しない
 - Front Door は `Container App` を origin とし、dynamic route は pass-through、静的 asset path のみ edge cache 対象にできる構成を持つ
 - `Container Apps` managed environment は public Internet 直結ではなく Front Door private connectivity を前提に運用される
 - runbook と prerequisite docs は `PUBLIC_APP_URL`、Front Door private link approval、Entra redirect URI follow-up を現行 contract として説明する
@@ -46,6 +47,7 @@
 - `infra/main.bicep` が `Container App` origin に対する Front Door route を作成し、origin private connectivity 用の設定を含む
 - `infra/main.bicep` が Front Door endpoint host を output する
 - release workflow が deploy 後の smoke test target として Front Door endpoint host を使う
+- release workflow の smoke test は Front Door infra change 後でも propagation delay を吸収できる retry budget を持つ
 - `scripts/azure/verify-production-runtime.sh` が Front Door endpoint を解決し、Front Door private connectivity 前提の runtime contract を検証できる
 - `docs/azure-prerequisites.md` と `docs/production-operations.md` が Front Door host を `PUBLIC_APP_URL` と smoke target の基準として説明する
 - docs が Front Door への host 切替に合わせて Entra redirect URI と runtime config sync の follow-up を明示する
@@ -55,6 +57,7 @@
 - Front Door default domain は custom domain 未設定でも smoke target として使える
 - dynamic authenticated route は cache bypass し、静的 asset path のみ cache を有効化できる必要がある
 - Front Door private connectivity は one-time approval が必要になる場合があるため、repository contract はその確認手順を runbook に残す
+- Front Door private link approval や route update の直後は edge health が数分遅れて安定する場合がある
 - `PUBLIC_APP_URL` と Entra callback host が旧 Container App FQDN のままだと login flow が失敗する
 
 ## Constraints and Dependencies

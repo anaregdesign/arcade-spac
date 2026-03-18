@@ -423,8 +423,17 @@ jobs:
   smoke_test:
     name: Smoke Test Deployed Release
     runs-on: ubuntu-latest
-    needs: deploy_app
-    if: ${{ always() && !cancelled() && !github.event.release.prerelease && needs.deploy_app.result == 'success' }}
+    needs:
+      - deploy_app
+      - deploy_infra
+    if: >-
+      ${{
+        always() &&
+        !cancelled() &&
+        !github.event.release.prerelease &&
+        needs.deploy_app.result == 'success' &&
+        (needs.deploy_infra.result == 'success' || needs.deploy_infra.result == 'skipped')
+      }}
     steps:
       - name: Check out the repo
         uses: actions/checkout@v5
@@ -437,4 +446,5 @@ jobs:
       - name: Smoke test deployed release
         env:
           APP_URL: ${{ needs.deploy_app.outputs.app_url }}
+          SMOKE_TEST_RETRIES: ${{ needs.deploy_infra.result == 'success' && '90' || '18' }}
         run: ./scripts/azure/smoke-test.sh
