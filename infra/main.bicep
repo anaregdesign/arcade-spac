@@ -3,13 +3,28 @@ param location string = resourceGroup().location
 param containerImage string
 param manageRuntimeRoleAssignments bool = true
 param globalNameSuffix string = ''
+param resourceNameSuffix string = ''
+param logAnalyticsWorkspaceResourceName string = ''
+param applicationInsightsResourceName string = ''
+param virtualNetworkResourceName string = ''
+param managedEnvironmentResourceName string = ''
+param containerAppResourceName string = ''
+param sqlMigrationIdentityResourceName string = ''
+param sqlBootstrapIdentityResourceName string = ''
+param frontDoorProfileResourceName string = ''
+param frontDoorEndpointResourceName string = ''
+param frontDoorOriginGroupResourceName string = ''
+param appConfigurationName string = ''
+param keyVaultName string = ''
+param existingSqlServerName string = ''
 param sqlAdministratorLogin string = ''
 @secure()
 param sqlAdministratorPassword string = ''
 
 // Shared naming helpers and canonical Azure state strings.
 // Lower-cased app name fragment for resources with stricter naming rules.
-var normalizedAppName = toLower(replace(appName, '-', ''))
+var scopedAppName = empty(resourceNameSuffix) ? appName : '${appName}-${resourceNameSuffix}'
+var normalizedScopedAppName = toLower(replace(scopedAppName, '-', ''))
 // Azure global region used by globally scoped resources.
 var globalLocation = 'global'
 // Canonical enabled state string reused across Azure resource contracts.
@@ -19,11 +34,14 @@ var disabledState = 'Disabled'
 
 // Resource names derived from the app name and deployment scope.
 // Log Analytics workspace resource name.
-var logAnalyticsWorkspaceName = 'law-${appName}'
+var defaultLogAnalyticsWorkspaceName = 'law-${scopedAppName}'
+var resolvedLogAnalyticsWorkspaceName = empty(logAnalyticsWorkspaceResourceName) ? defaultLogAnalyticsWorkspaceName : logAnalyticsWorkspaceResourceName
 // Application Insights component resource name.
-var applicationInsightsName = 'appi-${appName}'
+var defaultApplicationInsightsName = 'appi-${scopedAppName}'
+var resolvedApplicationInsightsName = empty(applicationInsightsResourceName) ? defaultApplicationInsightsName : applicationInsightsResourceName
 // Virtual network resource name.
-var virtualNetworkName = 'vnet-${appName}'
+var defaultVirtualNetworkName = 'vnet-${scopedAppName}'
+var resolvedVirtualNetworkName = empty(virtualNetworkResourceName) ? defaultVirtualNetworkName : virtualNetworkResourceName
 // Azure tenant id used across runtime env vars and SQL admin configuration.
 var entraTenantId = tenant().tenantId
 // Delegated subnet name for the Container Apps environment.
@@ -31,9 +49,11 @@ var containerAppsInfrastructureSubnetName = 'snet-cae'
 // Private endpoint subnet name for private-link resources.
 var privateEndpointSubnetName = 'snet-pe'
 // Container Apps managed environment resource name.
-var managedEnvironmentName = 'cae-${appName}'
+var defaultManagedEnvironmentName = 'cae-${scopedAppName}'
+var resolvedManagedEnvironmentName = empty(managedEnvironmentResourceName) ? defaultManagedEnvironmentName : managedEnvironmentResourceName
 // Container App resource name derived from the canonical app name contract.
-var containerAppName = 'ca-${appName}'
+var defaultContainerAppName = 'ca-${scopedAppName}'
+var resolvedContainerAppName = empty(containerAppResourceName) ? defaultContainerAppName : containerAppResourceName
 // Optional operator-managed suffix that can rotate global resource names for clean-slate recovery.
 var sanitizedGlobalNameSuffix = toLower(replace(globalNameSuffix, '-', ''))
 // App Configuration suffix keeps backward-compatible naming when no override is provided.
@@ -41,29 +61,37 @@ var appConfigurationNameSuffix = empty(globalNameSuffix) ? uniqueString(resource
 // Key Vault suffix keeps backward-compatible naming when no override is provided.
 var keyVaultNameSuffix = empty(globalNameSuffix) ? uniqueString(subscription().id, resourceGroup().id) : sanitizedGlobalNameSuffix
 // App Configuration store resource name.
-var appConfigurationName = take('appcs-${appName}-${appConfigurationNameSuffix}', 50)
+var defaultAppConfigurationName = take('appcs-${scopedAppName}-${appConfigurationNameSuffix}', 50)
+var resolvedAppConfigurationName = empty(appConfigurationName) ? defaultAppConfigurationName : appConfigurationName
 // Key Vault resource name constrained by global naming rules.
-var keyVaultName = take('kv${normalizedAppName}${keyVaultNameSuffix}', 24)
+var defaultKeyVaultName = take('kv${normalizedScopedAppName}${keyVaultNameSuffix}', 24)
+var resolvedKeyVaultName = empty(keyVaultName) ? defaultKeyVaultName : keyVaultName
 // Azure SQL logical server resource name.
-var sqlServerName = toLower(take('sql-${appName}-${uniqueString(resourceGroup().id)}', 63))
+var defaultSqlServerName = toLower(take('sql-${scopedAppName}-${uniqueString(resourceGroup().id)}', 63))
+var resolvedSqlServerName = empty(existingSqlServerName) ? defaultSqlServerName : existingSqlServerName
 // Azure SQL fully qualified host name exposed to clients.
-var sqlServerFqdn = '${sqlServerName}${environment().suffixes.sqlServerHostname}'
+var sqlServerFqdn = '${resolvedSqlServerName}${environment().suffixes.sqlServerHostname}'
 // Private DNS zone name for Azure SQL private-link resolution.
 var sqlPrivateDnsZoneName = 'privatelink${environment().suffixes.sqlServerHostname}'
 // Azure SQL private endpoint resource name.
-var sqlPrivateEndpointName = 'pep-${sqlServerName}'
+var sqlPrivateEndpointName = 'pep-${resolvedSqlServerName}'
 // Private DNS virtual network link resource name for the SQL zone.
-var sqlPrivateDnsZoneVirtualNetworkLinkName = '${virtualNetworkName}-link'
+var sqlPrivateDnsZoneVirtualNetworkLinkName = '${resolvedVirtualNetworkName}-link'
 // User-assigned identity name used for startup migrations.
-var sqlMigrationIdentityName = take('id-sql-migrate-${appName}', 24)
+var defaultSqlMigrationIdentityName = 'id-sql-migrate-${scopedAppName}'
+var resolvedSqlMigrationIdentityName = empty(sqlMigrationIdentityResourceName) ? defaultSqlMigrationIdentityName : sqlMigrationIdentityResourceName
 // User-assigned identity name used for initial SQL bootstrap.
-var sqlBootstrapIdentityName = take('id-sql-bootstrap-${appName}', 24)
+var defaultSqlBootstrapIdentityName = 'id-sql-bootstrap-${scopedAppName}'
+var resolvedSqlBootstrapIdentityName = empty(sqlBootstrapIdentityResourceName) ? defaultSqlBootstrapIdentityName : sqlBootstrapIdentityResourceName
 // Front Door profile resource name.
-var frontDoorProfileName = 'afd-${appName}'
+var defaultFrontDoorProfileName = 'afd-${scopedAppName}'
+var resolvedFrontDoorProfileName = empty(frontDoorProfileResourceName) ? defaultFrontDoorProfileName : frontDoorProfileResourceName
 // Front Door endpoint resource name constrained by global uniqueness rules.
-var frontDoorEndpointName = toLower(take('afd-${normalizedAppName}-${uniqueString(subscription().id, resourceGroup().id)}', 50))
+var defaultFrontDoorEndpointName = toLower(take('afd-${normalizedScopedAppName}-${uniqueString(subscription().id, resourceGroup().id)}', 50))
+var resolvedFrontDoorEndpointName = empty(frontDoorEndpointResourceName) ? defaultFrontDoorEndpointName : frontDoorEndpointResourceName
 // Front Door origin group resource name.
-var frontDoorOriginGroupName = 'og-${appName}'
+var defaultFrontDoorOriginGroupName = 'og-${scopedAppName}'
+var resolvedFrontDoorOriginGroupName = empty(frontDoorOriginGroupResourceName) ? defaultFrontDoorOriginGroupName : frontDoorOriginGroupResourceName
 // Front Door route name for dynamic app traffic.
 var frontDoorAppRouteName = 'route-app'
 // Front Door route name for static asset traffic.
@@ -231,7 +259,7 @@ var defaultPrivateDnsZoneGroupName = 'default'
 var sqlPrivateDnsZoneConfigName = 'sql'
 
 resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2023-09-01' = {
-  name: logAnalyticsWorkspaceName
+  name: resolvedLogAnalyticsWorkspaceName
   location: location
   properties: {
     sku: {
@@ -242,7 +270,7 @@ resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2023-09
 }
 
 resource applicationInsights 'Microsoft.Insights/components@2020-02-02' = {
-  name: applicationInsightsName
+  name: resolvedApplicationInsightsName
   location: location
   kind: applicationInsightsKind
   properties: {
@@ -252,7 +280,7 @@ resource applicationInsights 'Microsoft.Insights/components@2020-02-02' = {
 }
 
 resource virtualNetwork 'Microsoft.Network/virtualNetworks@2024-05-01' = {
-  name: virtualNetworkName
+  name: resolvedVirtualNetworkName
   location: location
   properties: {
     addressSpace: {
@@ -289,7 +317,7 @@ resource privateEndpointSubnet 'Microsoft.Network/virtualNetworks/subnets@2024-0
 }
 
 resource appConfiguration 'Microsoft.AppConfiguration/configurationStores@2024-05-01' = {
-  name: appConfigurationName
+  name: resolvedAppConfigurationName
   location: location
   sku: {
     name: appConfigurationSkuName
@@ -302,7 +330,7 @@ resource appConfiguration 'Microsoft.AppConfiguration/configurationStores@2024-0
 }
 
 resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
-  name: keyVaultName
+  name: resolvedKeyVaultName
   location: location
   properties: {
     tenantId: tenant().tenantId
@@ -318,17 +346,17 @@ resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
 }
 
 resource sqlMigrationIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
-  name: sqlMigrationIdentityName
+  name: resolvedSqlMigrationIdentityName
   location: location
 }
 
 resource sqlBootstrapIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
-  name: sqlBootstrapIdentityName
+  name: resolvedSqlBootstrapIdentityName
   location: location
 }
 
 resource managedEnvironment 'Microsoft.App/managedEnvironments@2025-10-02-preview' = {
-  name: managedEnvironmentName
+  name: resolvedManagedEnvironmentName
   location: location
   properties: {
     appLogsConfiguration: {
@@ -353,7 +381,7 @@ resource managedEnvironment 'Microsoft.App/managedEnvironments@2025-10-02-previe
 }
 
 resource frontDoorProfile 'Microsoft.Cdn/profiles@2021-06-01' = {
-  name: frontDoorProfileName
+  name: resolvedFrontDoorProfileName
   location: globalLocation
   sku: {
     name: frontDoorSkuName
@@ -365,7 +393,7 @@ resource frontDoorProfile 'Microsoft.Cdn/profiles@2021-06-01' = {
 
 resource frontDoorEndpoint 'Microsoft.Cdn/profiles/afdEndpoints@2021-06-01' = {
   parent: frontDoorProfile
-  name: frontDoorEndpointName
+  name: resolvedFrontDoorEndpointName
   location: globalLocation
   properties: {
     enabledState: enabledState
@@ -374,7 +402,7 @@ resource frontDoorEndpoint 'Microsoft.Cdn/profiles/afdEndpoints@2021-06-01' = {
 
 resource frontDoorOriginGroup 'Microsoft.Cdn/profiles/originGroups@2021-06-01' = {
   parent: frontDoorProfile
-  name: frontDoorOriginGroupName
+  name: resolvedFrontDoorOriginGroupName
   properties: {
     healthProbeSettings: {
       probeIntervalInSeconds: 120
@@ -393,7 +421,7 @@ resource frontDoorOriginGroup 'Microsoft.Cdn/profiles/originGroups@2021-06-01' =
 
 resource frontDoorOrigin 'Microsoft.Cdn/profiles/originGroups/origins@2021-06-01' = {
   parent: frontDoorOriginGroup
-  name: containerAppName
+  name: resolvedContainerAppName
   properties: {
     enabledState: enabledState
     enforceCertificateNameCheck: true
@@ -460,7 +488,7 @@ resource frontDoorAssetRoute 'Microsoft.Cdn/profiles/afdEndpoints/routes@2021-06
 }
 
 resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
-  name: containerAppName
+  name: resolvedContainerAppName
   location: location
   identity: {
     type: containerAppIdentityType
@@ -564,8 +592,12 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
   }
 }
 
-resource sqlServer 'Microsoft.Sql/servers@2021-11-01-preview' = {
-  name: sqlServerName
+resource existingSqlServer 'Microsoft.Sql/servers@2021-11-01-preview' existing = if (!empty(existingSqlServerName)) {
+  name: existingSqlServerName
+}
+
+resource sqlServer 'Microsoft.Sql/servers@2021-11-01-preview' = if (empty(existingSqlServerName)) {
+  name: resolvedSqlServerName
   location: location
   properties: union(
     union(
@@ -597,8 +629,7 @@ resource sqlServer 'Microsoft.Sql/servers@2021-11-01-preview' = {
 }
 
 resource sqlDatabase 'Microsoft.Sql/servers/databases@2021-11-01-preview' = {
-  parent: sqlServer
-  name: sqlDatabaseName
+  name: '${resolvedSqlServerName}/${sqlDatabaseName}'
   location: location
   sku: {
     name: sqlDatabaseSkuName
@@ -641,7 +672,7 @@ resource sqlPrivateEndpoint 'Microsoft.Network/privateEndpoints@2024-05-01' = {
       {
         name: sqlPrivateEndpointConnectionName
         properties: {
-          privateLinkServiceId: sqlServer.id
+          privateLinkServiceId: empty(existingSqlServerName) ? sqlServer.id : existingSqlServer.id
           groupIds: sqlPrivateEndpointGroupIds
         }
       }
@@ -694,9 +725,9 @@ output containerAppsInfrastructureSubnetId string = containerAppsInfrastructureS
 output frontDoorProfileName string = frontDoorProfile.name
 output frontDoorEndpointHostName string = frontDoorEndpoint.properties.hostName
 output privateEndpointSubnetId string = privateEndpointSubnet.id
-output sqlServerName string = sqlServer.name
+output sqlServerName string = resolvedSqlServerName
 output sqlServerFullyQualifiedDomainName string = sqlServerFqdn
-output sqlDatabaseName string = sqlDatabase.name
+output sqlDatabaseName string = sqlDatabaseName
 output sqlRuntimeIdentityPrincipalId string = containerApp.identity.principalId
 output sqlMigrationIdentityPrincipalId string = sqlMigrationIdentity.properties.principalId
 output sqlMigrationIdentityClientId string = sqlMigrationIdentity.properties.clientId

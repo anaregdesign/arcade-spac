@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/environment-resource-names.sh"
+
 fail() {
   echo "$1" >&2
   exit 1
@@ -13,7 +15,17 @@ fi
 [[ -n "${AZURE_RESOURCE_GROUP:-}" ]] || fail "AZURE_RESOURCE_GROUP is required."
 [[ -n "${AZURE_APP_NAME:-}" ]] || fail "AZURE_APP_NAME is required."
 
-container_app_name="ca-${AZURE_APP_NAME}"
+derive_environment_names
+
+container_app_name="$(
+  resolve_existing_resource_name_by_type \
+    'Microsoft.App/containerApps' \
+    'Container App' \
+    "$AZURE_EXPECTED_CONTAINER_APP_NAME" \
+    "$AZURE_LEGACY_CONTAINER_APP_NAME"
+)"
+
+[[ -n "${container_app_name}" ]] || fail "Missing Container App in ${AZURE_RESOURCE_GROUP}."
 
 if [[ -n "${CONTAINER_REGISTRY_SERVER:-}" && -n "${CONTAINER_REGISTRY_IDENTITY:-}" ]]; then
   az containerapp registry set \

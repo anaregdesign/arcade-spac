@@ -103,8 +103,6 @@ jobs:
           test -n "$AZURE_RESOURCE_GROUP" || { echo "Missing derived target resource group"; exit 1; }
           test -n "$AZURE_LOCATION" || { echo "Missing environment variable AZURE_LOCATION"; exit 1; }
           test -n "$AZURE_APP_NAME" || { echo "Missing environment variable AZURE_APP_NAME"; exit 1; }
-          test -n "$SQL_ADMINISTRATOR_LOGIN" || { echo "Missing environment variable SQL_ADMINISTRATOR_LOGIN"; exit 1; }
-          test -n "$SQL_ADMINISTRATOR_PASSWORD" || { echo "Missing secret SQL_ADMINISTRATOR_PASSWORD"; exit 1; }
           test -n "$IMAGE_REF" || { echo "Missing workflow input image_ref"; exit 1; }
 
       - name: Log in to Azure with OIDC
@@ -114,6 +112,12 @@ jobs:
           tenant-id: ${{ env.AZURE_TENANT_ID }}
           subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}
 
+      - name: Resolve existing hosted resources
+        id: resolve_resources
+        env:
+          AZURE_RECOVER_GLOBAL_RESOURCES: true
+        run: ./scripts/azure/resolve-hosted-resource-inputs.sh
+
       - name: Validate Bicep entrypoint
         run: az bicep build --file ./infra/main.bicep > /dev/null
 
@@ -121,18 +125,61 @@ jobs:
         id: deploy_bootstrap_infra_async
         run: |
           DEPLOYMENT_NAME="bootstrap-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          RESOURCE_NAME_SUFFIX="$AZURE_RESOURCE_GROUP_SUFFIX"
+          LOG_ANALYTICS_WORKSPACE_NAME='${{ steps.resolve_resources.outputs.log_analytics_workspace_name }}'
+          APPLICATION_INSIGHTS_NAME='${{ steps.resolve_resources.outputs.application_insights_name }}'
+          VIRTUAL_NETWORK_NAME='${{ steps.resolve_resources.outputs.virtual_network_name }}'
+          MANAGED_ENVIRONMENT_NAME='${{ steps.resolve_resources.outputs.managed_environment_name }}'
+          CONTAINER_APP_NAME='${{ steps.resolve_resources.outputs.container_app_name }}'
+          SQL_MIGRATION_IDENTITY_NAME='${{ steps.resolve_resources.outputs.sql_migration_identity_name }}'
+          SQL_BOOTSTRAP_IDENTITY_NAME='${{ steps.resolve_resources.outputs.sql_bootstrap_identity_name }}'
+          FRONT_DOOR_PROFILE_NAME='${{ steps.resolve_resources.outputs.front_door_profile_name }}'
+          FRONT_DOOR_ENDPOINT_NAME='${{ steps.resolve_resources.outputs.front_door_endpoint_name }}'
+          FRONT_DOOR_ORIGIN_GROUP_NAME='${{ steps.resolve_resources.outputs.front_door_origin_group_name }}'
+          APP_CONFIGURATION_NAME='${{ steps.resolve_resources.outputs.app_configuration_name }}'
+          KEY_VAULT_NAME='${{ steps.resolve_resources.outputs.key_vault_name }}'
+          EXISTING_SQL_SERVER_NAME='${{ steps.resolve_resources.outputs.existing_sql_server_name }}'
           echo "deployment_name=$DEPLOYMENT_NAME" >> "$GITHUB_OUTPUT"
           parameters=(
             appName="$AZURE_APP_NAME"
             location="$AZURE_LOCATION"
             containerImage="$IMAGE_REF"
             manageRuntimeRoleAssignments=true
-            sqlAdministratorLogin="$SQL_ADMINISTRATOR_LOGIN"
-            sqlAdministratorPassword="$SQL_ADMINISTRATOR_PASSWORD"
+          )
+
+          while IFS= read -r parameter; do
+            [[ -n "$parameter" ]] && parameters+=("$parameter")
+          done < <(
+            RESOURCE_NAME_SUFFIX="$RESOURCE_NAME_SUFFIX" \
+            LOG_ANALYTICS_WORKSPACE_NAME="$LOG_ANALYTICS_WORKSPACE_NAME" \
+            APPLICATION_INSIGHTS_NAME="$APPLICATION_INSIGHTS_NAME" \
+            VIRTUAL_NETWORK_NAME="$VIRTUAL_NETWORK_NAME" \
+            MANAGED_ENVIRONMENT_NAME="$MANAGED_ENVIRONMENT_NAME" \
+            CONTAINER_APP_NAME="$CONTAINER_APP_NAME" \
+            SQL_MIGRATION_IDENTITY_NAME="$SQL_MIGRATION_IDENTITY_NAME" \
+            SQL_BOOTSTRAP_IDENTITY_NAME="$SQL_BOOTSTRAP_IDENTITY_NAME" \
+            FRONT_DOOR_PROFILE_NAME="$FRONT_DOOR_PROFILE_NAME" \
+            FRONT_DOOR_ENDPOINT_NAME="$FRONT_DOOR_ENDPOINT_NAME" \
+            FRONT_DOOR_ORIGIN_GROUP_NAME="$FRONT_DOOR_ORIGIN_GROUP_NAME" \
+            APP_CONFIGURATION_NAME="$APP_CONFIGURATION_NAME" \
+            KEY_VAULT_NAME="$KEY_VAULT_NAME" \
+            EXISTING_SQL_SERVER_NAME="$EXISTING_SQL_SERVER_NAME" \
+            ./scripts/azure/append-bicep-resource-parameters.sh
           )
 
           if [[ -n "${AZURE_GLOBAL_NAME_SUFFIX:-}" ]]; then
             parameters+=(globalNameSuffix="$AZURE_GLOBAL_NAME_SUFFIX")
+          fi
+
+          if [[ -n "$EXISTING_SQL_SERVER_NAME" ]]; then
+            echo "Reusing existing Azure SQL server ${EXISTING_SQL_SERVER_NAME}."
+          else
+            test -n "$SQL_ADMINISTRATOR_LOGIN" || { echo "Missing environment variable SQL_ADMINISTRATOR_LOGIN for new Azure SQL server creation."; exit 1; }
+            test -n "$SQL_ADMINISTRATOR_PASSWORD" || { echo "Missing secret SQL_ADMINISTRATOR_PASSWORD for new Azure SQL server creation."; exit 1; }
+            parameters+=(
+              sqlAdministratorLogin="$SQL_ADMINISTRATOR_LOGIN"
+              sqlAdministratorPassword="$SQL_ADMINISTRATOR_PASSWORD"
+            )
           fi
 
           az deployment group create \
@@ -312,6 +359,8 @@ jobs:
       - name: Create and run the SQL bootstrap job
         id: run_bootstrap_job
         run: |
+          source ./scripts/azure/environment-resource-names.sh
+          derive_environment_names
           az config set extension.use_dynamic_install=yes_without_prompt >/dev/null
           az config set extension.dynamic_install_allow_preview=true >/dev/null
 
@@ -336,7 +385,13 @@ jobs:
             printf '%s\n' "${names[0]}"
           }
 
-          CONTAINER_APP_NAME="ca-${AZURE_APP_NAME}"
+          CONTAINER_APP_NAME="$(
+            resolve_existing_resource_name_by_type \
+              'Microsoft.App/containerApps' \
+              'Container App' \
+              "$AZURE_EXPECTED_CONTAINER_APP_NAME" \
+              "$AZURE_LEGACY_CONTAINER_APP_NAME"
+          )"
           MANAGED_ENVIRONMENT_ID=""
           for attempt in $(seq 1 18); do
             MANAGED_ENVIRONMENT_ID="$(
@@ -611,9 +666,19 @@ jobs:
 
       - name: Deploy immutable recovery image
         run: |
+          source ./scripts/azure/environment-resource-names.sh
+          derive_environment_names
+          CONTAINER_APP_NAME="$(
+            resolve_existing_resource_name_by_type \
+              'Microsoft.App/containerApps' \
+              'Container App' \
+              "$AZURE_EXPECTED_CONTAINER_APP_NAME" \
+              "$AZURE_LEGACY_CONTAINER_APP_NAME"
+          )"
+          test -n "$CONTAINER_APP_NAME" || { echo "Missing Container App in ${AZURE_RESOURCE_GROUP}."; exit 1; }
           az containerapp update \
             --resource-group "$AZURE_RESOURCE_GROUP" \
-            --name "ca-${AZURE_APP_NAME}" \
+            --name "$CONTAINER_APP_NAME" \
             --image "$IMAGE_REF" \
             --output none
 

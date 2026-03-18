@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/environment-resource-names.sh"
+
 fail() {
   echo "$1" >&2
   exit 1
@@ -10,7 +12,15 @@ fail() {
 [[ -n "${AZURE_APP_NAME:-}" ]] || fail "AZURE_APP_NAME is required."
 [[ -n "${DEPLOYMENT_NAME:-}" ]] || fail "DEPLOYMENT_NAME is required."
 
-managed_environment_name="${MANAGED_ENVIRONMENT_NAME:-cae-${AZURE_APP_NAME}}"
+derive_environment_names
+
+managed_environment_name="${MANAGED_ENVIRONMENT_NAME:-$(
+  resolve_target_resource_name_by_type \
+    'Microsoft.App/managedEnvironments' \
+    'Container Apps environment' \
+    "$AZURE_EXPECTED_MANAGED_ENVIRONMENT_NAME" \
+    "$AZURE_LEGACY_MANAGED_ENVIRONMENT_NAME"
+)}"
 approval_retries="${FRONT_DOOR_PRIVATE_LINK_RETRIES:-30}"
 approval_delay_seconds="${FRONT_DOOR_PRIVATE_LINK_DELAY_SECONDS:-10}"
 

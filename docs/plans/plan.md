@@ -1,7 +1,8 @@
 # Execution Plan
 
 ## Links
-- Spec: /docs/spec/production-rg-arcade-green-release-retarget.md
+- Spec: /docs/spec/specification.md
+- Legacy reference: /docs/spec/production-rg-arcade-green-release-retarget.md
 
 ## Section 1 - Target Contract And Repository State
 ### Subsection 1.1 - Spec And Inventory
@@ -39,6 +40,15 @@
 - [x] Patch bootstrap/release private-link approval so a terminal infra deployment failure surfaces its Azure operation errors immediately instead of timing out on missing private-link connections
 - [x] Upgrade bootstrap/release/verification workflows from `azure/login@v2` to `azure/login@v3`
 - [x] Verify the touched workflows remain valid after the `azure/login@v3` upgrade
+
+### Subsection 2.5 - Existing Resource Reuse
+- [x] Capture the canonical operator-facing requirement for suffix-scoped Azure environment isolation plus same-suffix reuse of existing or recoverable Azure resources
+- [x] Confirm the latest bootstrap failure on 2026-03-18 is caused by existing `SQL server` state plus recoverable `App Configuration` / `Key Vault` name collisions
+- [x] Patch the Azure naming contract so suffix-scoped environments do not reuse environment-scoped resource names across `green` / `blue` / `dev`
+- [x] Patch bootstrap/release/verification helper paths so they derive suffix-aware target resource names consistently
+- [x] Keep only shared identity resources unsuffixed while active hosted resources are reused only within the same suffix environment
+- [x] Preserve same-suffix bootstrap recovery by reusing existing `SQL server` resources and recovering recoverable `App Configuration` / `Key Vault`
+- [x] Validate the updated workflow, helper script, and infra contracts locally against the current repository state
 
 ## Section 3 - Release Delivery
 ### Subsection 3.1 - Push And Release

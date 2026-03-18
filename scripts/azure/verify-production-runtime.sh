@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/environment-resource-names.sh"
+
 if [[ -z "${AZURE_RESOURCE_GROUP:-}" ]]; then
   echo "AZURE_RESOURCE_GROUP is required."
   exit 1
@@ -10,6 +12,8 @@ if [[ -z "${AZURE_APP_NAME:-}" ]]; then
   echo "AZURE_APP_NAME is required."
   exit 1
 fi
+
+derive_environment_names
 
 SQL_PRIVATE_DNS_ZONE_NAME="${SQL_PRIVATE_DNS_ZONE_NAME:-privatelink.database.windows.net}"
 APP_CONFIGURATION_PRIVATE_DNS_ZONE_NAME="${APP_CONFIGURATION_PRIVATE_DNS_ZONE_NAME:-privatelink.azconfig.io}"
@@ -347,10 +351,30 @@ assert_front_door_private_link_connections() {
   echo "Verified Azure Front Door private endpoint connections for ${managed_environment_name} are approved."
 }
 
-container_app_name="ca-${AZURE_APP_NAME}"
+container_app_name="$(
+  resolve_existing_resource_name_by_type \
+    'Microsoft.App/containerApps' \
+    'Container App' \
+    "$AZURE_EXPECTED_CONTAINER_APP_NAME" \
+    "$AZURE_LEGACY_CONTAINER_APP_NAME"
+)"
+if [[ -z "${container_app_name}" ]]; then
+  echo "Missing Container App in ${AZURE_RESOURCE_GROUP}."
+  exit 1
+fi
 APP_URL="$(resolve_app_url "${container_app_name}")"
 sql_server_name="${AZURE_SQL_SERVER_NAME:-$(require_single_resource_name 'Microsoft.Sql/servers' 'Azure SQL server')}"
-front_door_profile_name="$(require_single_resource_name 'Microsoft.Cdn/profiles' 'Azure Front Door profile')"
+front_door_profile_name="$(
+  resolve_existing_resource_name_by_type \
+    'Microsoft.Cdn/profiles' \
+    'Azure Front Door profile' \
+    "$AZURE_EXPECTED_FRONT_DOOR_PROFILE_NAME" \
+    "$AZURE_LEGACY_FRONT_DOOR_PROFILE_NAME"
+)"
+if [[ -z "${front_door_profile_name}" ]]; then
+  echo "Missing Azure Front Door profile in ${AZURE_RESOURCE_GROUP}."
+  exit 1
+fi
 
 assert_front_door_profile_sku "${front_door_profile_name}"
 
