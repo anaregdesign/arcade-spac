@@ -1,4 +1,4 @@
 interface:
   display_name: "Spec Driven Workflow"
-  short_description: "Default spec-first workflow for non-trivial app work"
-  default_prompt: "Use $spec-driven-workflow for non-trivial application-development work: write the current ideal requirement under /docs/spec, track execution in /docs/plans/plan.md, surface technical infeasibility, unresolved high-risk technical assumptions, contradictions, ambiguity, or redundancy before relying on them, and archive the completed plan when the current delivery slice is done."
+  short_description: "Keep app work on a canonical doc set"
+  default_prompt: "Use $spec-driven-workflow to keep non-trivial app work on a small canonical doc set: keep `/docs/spec/specification.md` for final functional requirements and goal image only, keep all transient work notes in `/docs/plans/plan.md`, update `/docs/operations.md` or `/docs/design.md` only for accepted long-lived rules, and archive the completed plan."
