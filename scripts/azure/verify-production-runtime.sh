@@ -11,6 +11,8 @@ APP_CONFIGURATION_PRIVATE_DNS_ZONE_NAME="${APP_CONFIGURATION_PRIVATE_DNS_ZONE_NA
 KEY_VAULT_PRIVATE_DNS_ZONE_NAME="${KEY_VAULT_PRIVATE_DNS_ZONE_NAME:-privatelink.vaultcore.azure.net}"
 EXPECTED_SQL_PUBLIC_NETWORK_ACCESS="${EXPECTED_SQL_PUBLIC_NETWORK_ACCESS:-Disabled}"
 EXPECTED_PRIVATE_CONFIG_STORES="${EXPECTED_PRIVATE_CONFIG_STORES:-true}"
+EXPECTED_FRONT_DOOR_SKU="${EXPECTED_FRONT_DOOR_SKU:-Premium_AzureFrontDoor}"
+EXPECTED_MANAGED_ENVIRONMENT_PUBLIC_NETWORK_ACCESS="${EXPECTED_MANAGED_ENVIRONMENT_PUBLIC_NETWORK_ACCESS:-Disabled}"
 
 resolve_container_app_name() {
   if [[ -n "${AZURE_CONTAINER_APP_NAME:-}" ]]; then
@@ -47,32 +49,48 @@ require_single_resource_name() {
   printf '%s\n' "${names[0]}"
 }
 
+require_single_resource_id() {
+  local resource_type="$1"
+  local label="$2"
+  local -a ids=()
+
+  while IFS= read -r resource_id; do
+    [[ -n "${resource_id}" ]] && ids+=("${resource_id}")
+  done < <(az resource list \
+    --resource-group "${AZURE_RESOURCE_GROUP}" \
+    --resource-type "${resource_type}" \
+    --query '[].id' \
+    -o tsv)
+
+  if [[ "${#ids[@]}" -ne 1 ]]; then
+    echo "Expected exactly one ${label} in ${AZURE_RESOURCE_GROUP}, found ${#ids[@]}."
+    exit 1
+  fi
+
+  printf '%s\n' "${ids[0]}"
+}
+
 resolve_app_url() {
   if [[ -n "${APP_URL:-}" ]]; then
     printf '%s\n' "${APP_URL}"
     return
   fi
 
-  local container_app_name="$1"
+  local front_door_endpoint_id
+  local front_door_host
 
-  if [[ -z "${container_app_name}" ]]; then
-    echo "APP_URL or AZURE_APP_NAME is required."
-    exit 1
-  fi
-
-  local container_app_fqdn
-  container_app_fqdn="$(az containerapp show \
-    --resource-group "${AZURE_RESOURCE_GROUP}" \
-    --name "${container_app_name}" \
-    --query properties.configuration.ingress.fqdn \
+  front_door_endpoint_id="$(require_single_resource_id 'Microsoft.Cdn/profiles/afdEndpoints' 'Azure Front Door endpoint')"
+  front_door_host="$(az resource show \
+    --ids "${front_door_endpoint_id}" \
+    --query properties.hostName \
     -o tsv)"
 
-  if [[ -z "${container_app_fqdn}" ]]; then
-    echo "Unable to resolve the Container App FQDN."
+  if [[ -z "${front_door_host}" ]]; then
+    echo "Unable to resolve the Azure Front Door endpoint host name."
     exit 1
   fi
 
-  printf 'https://%s\n' "${container_app_fqdn}"
+  printf 'https://%s\n' "${front_door_host}"
 }
 
 get_app_configuration_value() {
@@ -232,9 +250,77 @@ assert_role_assignment_for_principal() {
   echo "Verified ${label} role ${role_name} for principal ${principal_id}."
 }
 
+assert_front_door_profile_sku() {
+  local profile_name="$1"
+  local actual_sku
+
+  actual_sku="$(az resource show \
+    --resource-group "${AZURE_RESOURCE_GROUP}" \
+    --resource-type 'Microsoft.Cdn/profiles' \
+    --name "${profile_name}" \
+    --query sku.name \
+    -o tsv)"
+
+  if [[ "${actual_sku}" != "${EXPECTED_FRONT_DOOR_SKU}" ]]; then
+    echo "Azure Front Door profile ${profile_name} sku is ${actual_sku}, expected ${EXPECTED_FRONT_DOOR_SKU}."
+    exit 1
+  fi
+
+  echo "Verified Azure Front Door profile ${profile_name} sku=${actual_sku}."
+}
+
+assert_managed_environment_public_network_access() {
+  local managed_environment_name="$1"
+  local actual_value
+
+  actual_value="$(az containerapp env show \
+    --resource-group "${AZURE_RESOURCE_GROUP}" \
+    --name "${managed_environment_name}" \
+    --query properties.publicNetworkAccess \
+    -o tsv)"
+
+  if [[ "${actual_value}" != "${EXPECTED_MANAGED_ENVIRONMENT_PUBLIC_NETWORK_ACCESS}" ]]; then
+    echo "Container Apps environment ${managed_environment_name} publicNetworkAccess is ${actual_value}, expected ${EXPECTED_MANAGED_ENVIRONMENT_PUBLIC_NETWORK_ACCESS}."
+    exit 1
+  fi
+
+  echo "Verified Container Apps environment ${managed_environment_name} publicNetworkAccess=${actual_value}."
+}
+
+assert_front_door_private_link_connections() {
+  local managed_environment_name="$1"
+  local -a statuses=()
+
+  while IFS= read -r connection_status; do
+    [[ -n "${connection_status}" ]] && statuses+=("${connection_status}")
+  done < <(az network private-endpoint-connection list \
+    --name "${managed_environment_name}" \
+    --resource-group "${AZURE_RESOURCE_GROUP}" \
+    --type Microsoft.App/managedEnvironments \
+    --query "[?properties.privateLinkServiceConnectionState.description=='AFD Private Link Request'].properties.privateLinkServiceConnectionState.status" \
+    -o tsv)
+
+  if [[ "${#statuses[@]}" -lt 1 ]]; then
+    echo "No Azure Front Door private endpoint connections were found for ${managed_environment_name}."
+    exit 1
+  fi
+
+  for connection_status in "${statuses[@]}"; do
+    if [[ "${connection_status}" != "Approved" ]]; then
+      echo "Azure Front Door private endpoint connection for ${managed_environment_name} is ${connection_status}, expected Approved."
+      exit 1
+    fi
+  done
+
+  echo "Verified Azure Front Door private endpoint connections for ${managed_environment_name} are approved."
+}
+
 container_app_name="$(resolve_container_app_name)"
 APP_URL="$(resolve_app_url "${container_app_name}")"
 sql_server_name="${AZURE_SQL_SERVER_NAME:-$(require_single_resource_name 'Microsoft.Sql/servers' 'Azure SQL server')}"
+front_door_profile_name="$(require_single_resource_name 'Microsoft.Cdn/profiles' 'Azure Front Door profile')"
+
+assert_front_door_profile_sku "${front_door_profile_name}"
 
 actual_public_network_access="$(az sql server show \
   --resource-group "${AZURE_RESOURCE_GROUP}" \
@@ -340,6 +426,8 @@ if [[ -n "${container_app_name}" ]]; then
 
   container_apps_vnet_id="${infrastructure_subnet_id%/subnets/*}"
   echo "Verified Container Apps environment ${managed_environment_name} uses delegated subnet ${infrastructure_subnet_id}."
+  assert_managed_environment_public_network_access "${managed_environment_name}"
+  assert_front_door_private_link_connections "${managed_environment_name}"
 fi
 
 if [[ -n "${container_apps_vnet_id}" ]]; then

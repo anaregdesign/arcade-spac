@@ -43,6 +43,11 @@ var logAnalyticsWorkspaceName = 'law-${appName}'
 var applicationInsightsName = 'appi-${appName}'
 var managedEnvironmentName = 'cae-${appName}'
 var containerAppName = 'ca-${appName}'
+var frontDoorProfileName = 'afd-${appName}'
+var frontDoorEndpointName = toLower(take('afd-${normalizedAppName}-${uniqueString(subscription().id, resourceGroup().id)}', 50))
+var frontDoorOriginGroupName = 'og-${appName}'
+var frontDoorAppRouteName = 'route-app'
+var frontDoorAssetRouteName = 'route-assets'
 var appConfigurationName = take('appcs-${appName}-${uniqueString(resourceGroup().id)}', 50)
 var normalizedAppName = toLower(replace(appName, '-', ''))
 var keyVaultName = take('kv${normalizedAppName}${uniqueString(subscription().id, resourceGroup().id)}', 24)
@@ -59,6 +64,17 @@ var sqlMigrationIdentityName = take('id-sql-migrate-${appName}', 24)
 var sqlServerFqdn = '${sqlServerName}${environment().suffixes.sqlServerHostname}'
 var appConfigDataReaderRoleDefinitionId = subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '516239f1-63e1-4d78-a4de-a74fb236a071')
 var keyVaultSecretsUserRoleDefinitionId = subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '4633458b-17de-408a-b874-0445c86b69e6')
+var frontDoorPrivateLinkRequestMessage = 'AFD Private Link Request'
+var frontDoorAssetCacheContentTypes = [
+  'application/javascript'
+  'application/json'
+  'application/wasm'
+  'font/woff2'
+  'image/svg+xml'
+  'text/css'
+  'text/javascript'
+  'text/plain'
+]
 
 resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2023-09-01' = {
   name: logAnalyticsWorkspaceName
@@ -268,7 +284,7 @@ resource sqlMigrationIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@
   tags: tags
 }
 
-resource managedEnvironment 'Microsoft.App/managedEnvironments@2024-03-01' = {
+resource managedEnvironment 'Microsoft.App/managedEnvironments@2025-10-02-preview' = {
   name: managedEnvironmentName
   location: location
   tags: tags
@@ -280,6 +296,7 @@ resource managedEnvironment 'Microsoft.App/managedEnvironments@2024-03-01' = {
         sharedKey: logAnalyticsWorkspace.listKeys().primarySharedKey
       }
     }
+    publicNetworkAccess: 'Disabled'
     vnetConfiguration: {
       infrastructureSubnetId: containerAppsInfrastructureSubnet.id
       internal: false
@@ -291,6 +308,124 @@ resource managedEnvironment 'Microsoft.App/managedEnvironments@2024-03-01' = {
       }
     ]
   }
+}
+
+resource frontDoorProfile 'Microsoft.Cdn/profiles@2021-06-01' = {
+  name: frontDoorProfileName
+  location: 'global'
+  tags: tags
+  sku: {
+    name: 'Premium_AzureFrontDoor'
+  }
+  properties: {
+    originResponseTimeoutSeconds: 60
+  }
+}
+
+resource frontDoorEndpoint 'Microsoft.Cdn/profiles/afdEndpoints@2021-06-01' = {
+  parent: frontDoorProfile
+  name: frontDoorEndpointName
+  location: 'global'
+  properties: {
+    enabledState: 'Enabled'
+  }
+}
+
+resource frontDoorOriginGroup 'Microsoft.Cdn/profiles/originGroups@2021-06-01' = {
+  parent: frontDoorProfile
+  name: frontDoorOriginGroupName
+  properties: {
+    healthProbeSettings: {
+      probeIntervalInSeconds: 120
+      probePath: healthProbePath
+      probeProtocol: 'Https'
+      probeRequestType: 'GET'
+    }
+    loadBalancingSettings: {
+      additionalLatencyInMilliseconds: 0
+      sampleSize: 4
+      successfulSamplesRequired: 3
+    }
+    sessionAffinityState: 'Disabled'
+  }
+}
+
+resource frontDoorOrigin 'Microsoft.Cdn/profiles/originGroups/origins@2021-06-01' = {
+  parent: frontDoorOriginGroup
+  name: containerAppName
+  properties: {
+    enabledState: 'Enabled'
+    enforceCertificateNameCheck: true
+    hostName: containerApp.properties.configuration.ingress.fqdn
+    httpPort: 80
+    httpsPort: 443
+    originHostHeader: containerApp.properties.configuration.ingress.fqdn
+    priority: 1
+    sharedPrivateLinkResource: {
+      groupId: 'managedEnvironments'
+      privateLink: {
+        id: managedEnvironment.id
+      }
+      privateLinkLocation: location
+      requestMessage: frontDoorPrivateLinkRequestMessage
+    }
+    weight: 1000
+  }
+}
+
+resource frontDoorAppRoute 'Microsoft.Cdn/profiles/afdEndpoints/routes@2021-06-01' = {
+  parent: frontDoorEndpoint
+  name: frontDoorAppRouteName
+  properties: {
+    enabledState: 'Enabled'
+    forwardingProtocol: 'HttpsOnly'
+    httpsRedirect: 'Enabled'
+    linkToDefaultDomain: 'Enabled'
+    originGroup: {
+      id: frontDoorOriginGroup.id
+    }
+    patternsToMatch: [
+      '/*'
+    ]
+    supportedProtocols: [
+      'Http'
+      'Https'
+    ]
+  }
+  dependsOn: [
+    frontDoorOrigin
+  ]
+}
+
+resource frontDoorAssetRoute 'Microsoft.Cdn/profiles/afdEndpoints/routes@2021-06-01' = {
+  parent: frontDoorEndpoint
+  name: frontDoorAssetRouteName
+  properties: {
+    cacheConfiguration: {
+      compressionSettings: {
+        contentTypesToCompress: frontDoorAssetCacheContentTypes
+        isCompressionEnabled: true
+      }
+      queryStringCachingBehavior: 'IgnoreQueryString'
+    }
+    enabledState: 'Enabled'
+    forwardingProtocol: 'HttpsOnly'
+    httpsRedirect: 'Enabled'
+    linkToDefaultDomain: 'Enabled'
+    originGroup: {
+      id: frontDoorOriginGroup.id
+    }
+    patternsToMatch: [
+      '/assets/*'
+    ]
+    supportedProtocols: [
+      'Http'
+      'Https'
+    ]
+  }
+  dependsOn: [
+    frontDoorOrigin
+  ]
 }
 
 resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
@@ -518,6 +653,8 @@ output appConfigurationEndpoint string = appConfiguration.properties.endpoint
 output keyVaultUri string = keyVault.properties.vaultUri
 output virtualNetworkId string = virtualNetwork.id
 output containerAppsInfrastructureSubnetId string = containerAppsInfrastructureSubnet.id
+output frontDoorProfileName string = frontDoorProfile.name
+output frontDoorEndpointHostName string = frontDoorEndpoint.properties.hostName
 output privateEndpointSubnetId string = privateEndpointSubnet.id
 output sqlServerName string = deploySql ? sqlServer!.name : ''
 output sqlServerFullyQualifiedDomainName string = deploySql ? sqlServerFqdn : ''

@@ -4,10 +4,13 @@ This runbook records the repository-side production contract for Arcade on Azure
 
 ## Repository Target Contract
 
-- Container App: `ca-arcade`
 - Resource group: `rg-arcade-spec-dev`
-- App ingress: public
-- Container Apps environment: VNet-integrated through a delegated infrastructure subnet
+- Container App: `ca-arcade`
+- Container Apps environment: `cae-arcade`
+- Azure Front Door profile: `afd-arcade`
+- Public app URL: Azure Front Door endpoint host or the final custom domain
+- App ingress: external through Azure Front Door
+- Container Apps environment exposure: VNet-integrated delegated subnet with `publicNetworkAccess=Disabled`
 - Azure SQL: `Microsoft Entra ID` only auth, `publicNetworkAccess=Disabled`, `Private Endpoint`, and `privatelink.database.windows.net`
 - App Configuration and Key Vault: private endpoint backed hosted access
 - Runtime bootstrap: `AZURE_APPCONFIG_ENDPOINT` and `AZURE_KEY_VAULT_URI` env values, `Arcade:` App Configuration keys, and Key Vault references for secrets
@@ -21,10 +24,11 @@ This runbook records the repository-side production contract for Arcade on Azure
 ## Current Verification Status
 
 - The repository contract was updated on March 14, 2026 to prefer Azure SQL private connectivity and `Entra-only` auth.
+- The repository contract was updated on March 18, 2026 to publish through Azure Front Door Premium with a private-link origin to Azure Container Apps.
 - The repository contract now expects runtime config to be synced into private App Configuration and Key Vault before image rollout.
 - The repository release workflow now passes `manageRuntimeRoleAssignments=false`, so runtime App Configuration and Key Vault RBAC must be bootstrapped separately from day-to-day releases.
 - This workspace did not perform a production or shared-environment deployment.
-- After the next GitHub release deployment, refresh this file with the exact live image tag, revision, and any cloud-side deviations from the target contract.
+- After the next GitHub release deployment, refresh this file with the exact live Front Door host, image tag, revision, and any cloud-side deviations from the target contract.
 
 ## Repository Rename Note
 
@@ -37,6 +41,7 @@ This runbook records the repository-side production contract for Arcade on Azure
 - Roll back by redeploying the previous known-good immutable release tag through the existing Container App image update path.
 - Do not restore Azure SQL public access or the `AllowAzureServices` firewall rule as a rollback shortcut.
 - Keep the private-network contract intact while restoring the previous application image.
+- Re-run post-release checks through the Azure Front Door URL after rollback.
 
 Rollback command:
 
@@ -47,35 +52,47 @@ az containerapp update \
   --image ghcr.io/anaregdesign/arcade-spec:<known-good-tag>
 ```
 
-After rollback, re-run the health endpoint, smoke test, and private-network verification.
-
 ## Post-Release Smoke Procedure
 
 Pre-release requirement:
 
 1. Confirm the `Quality Gates` workflow passed for the release target commit.
 2. Run `npm run azure:check:production-data`.
-3. Run `npm run azure:sync:runtime-config` from a host that can reach the private App Configuration and Key Vault data plane.
-4. Publish the release so the GitHub workflow deploys the image.
+3. Resolve the Azure Front Door endpoint host and set `PUBLIC_APP_URL` to that URL or the final custom domain URL.
+4. Update the Microsoft Entra app registration redirect URI to `${PUBLIC_APP_URL}/auth/callback`.
+5. Run `npm run azure:sync:runtime-config` from a host that can reach the private App Configuration and Key Vault data plane.
+6. Publish the release so the GitHub workflow deploys the image.
 
 Post-release checks:
 
 1. Confirm the GitHub release workflow completed successfully through `publish`, `plan_infra`, `deploy_infra`, `deploy_app`, and `smoke_test`.
 2. Confirm `plan_infra` reported the expected infra status and that `deploy_infra` was skipped for app-only releases.
-3. Confirm the Container App image and latest ready revision match the intended release.
-4. Run the health endpoint check.
-5. Run `scripts/azure/verify-production-runtime.sh`.
-6. Run the scripted smoke test.
-7. Verify hosted sign-in, gameplay, result, rankings, and profile screens in a browser.
+3. Confirm `deploy_infra` approved the Azure Front Door private endpoint connections for the managed environment.
+4. Confirm the Container App image and latest ready revision match the intended release.
+5. Run the health endpoint check through Azure Front Door.
+6. Run `scripts/azure/verify-production-runtime.sh`.
+7. Run the scripted smoke test through Azure Front Door.
+8. Verify hosted sign-in, gameplay, result, rankings, and profile screens in a browser.
 
 Commands:
 
 ```bash
+FRONT_DOOR_ENDPOINT_ID="$(az resource list \
+  -g rg-arcade-spec-dev \
+  --resource-type Microsoft.Cdn/profiles/afdEndpoints \
+  --query '[0].id' \
+  -o tsv)"
+
+PUBLIC_APP_URL="https://$(az resource show \
+  --ids "${FRONT_DOOR_ENDPOINT_ID}" \
+  --query properties.hostName \
+  -o tsv)"
+
 npm run azure:check:production-data
 
 AZURE_APPCONFIG_ENDPOINT="https://<app-config-name>.azconfig.io" \
 AZURE_KEY_VAULT_URI="https://<key-vault-name>.vault.azure.net/" \
-PUBLIC_APP_URL="https://ca-arcade.bravepond-f695129a.japaneast.azurecontainerapps.io" \
+PUBLIC_APP_URL="${PUBLIC_APP_URL}" \
 ARCADE_AUTH_MODE="entra" \
 ENTRA_TENANT_ID="<tenant-id>" \
 ENTRA_CLIENT_ID="<client-id>" \
@@ -84,9 +101,9 @@ ARCADE_SESSION_SECRET="<session-secret>" \
 AZURE_RESOURCE_GROUP="rg-arcade-spec-dev" \
   npm run azure:sync:runtime-config
 
-curl -sS https://ca-arcade.bravepond-f695129a.japaneast.azurecontainerapps.io/health
+curl -sS "${PUBLIC_APP_URL}/health"
 
-APP_URL="https://ca-arcade.bravepond-f695129a.japaneast.azurecontainerapps.io" \
+APP_URL="${PUBLIC_APP_URL}" \
   ./scripts/azure/smoke-test.sh
 
 AZURE_RESOURCE_GROUP="rg-arcade-spec-dev" \
@@ -98,10 +115,34 @@ az containerapp show \
   -n ca-arcade \
   --query '{image:properties.template.containers[0].image,latestRevision:properties.latestRevisionName,latestReadyRevision:properties.latestReadyRevisionName}'
 
-curl -i -sS "https://ca-arcade.bravepond-f695129a.japaneast.azurecontainerapps.io/auth/start?returnTo=%2Fhome"
+curl -i -sS "${PUBLIC_APP_URL}/auth/start?returnTo=%2Fhome"
 ```
 
 ## Troubleshooting Entry Points
+
+- Azure Front Door host and enabled state:
+
+```bash
+FRONT_DOOR_ENDPOINT_ID="$(az resource list \
+  -g rg-arcade-spec-dev \
+  --resource-type Microsoft.Cdn/profiles/afdEndpoints \
+  --query '[0].id' \
+  -o tsv)"
+
+az resource show \
+  --ids "${FRONT_DOOR_ENDPOINT_ID}" \
+  --query '{hostName:properties.hostName,enabledState:properties.enabledState}'
+```
+
+- Azure Front Door private-link approval state:
+
+```bash
+az network private-endpoint-connection list \
+  --name cae-arcade \
+  --resource-group rg-arcade-spec-dev \
+  --type Microsoft.App/managedEnvironments \
+  --query "[?properties.privateLinkServiceConnectionState.description=='AFD Private Link Request'].{status:properties.privateLinkServiceConnectionState.status,id:id}"
+```
 
 - Revision state and image drift:
 
@@ -115,15 +156,13 @@ az containerapp revision list -g rg-arcade-spec-dev -n ca-arcade -o table
 az containerapp show -g rg-arcade-spec-dev -n ca-arcade -o json
 ```
 
-- Container Apps environment VNet integration:
+- Container Apps environment VNet integration and exposure:
 
 ```bash
-managed_env_name="$(az containerapp show -g rg-arcade-spec-dev -n ca-arcade --query properties.managedEnvironmentId -o tsv | awk -F/ '{print $NF}')"
-
 az containerapp env show \
   -g rg-arcade-spec-dev \
-  -n "${managed_env_name}" \
-  --query '{infrastructureSubnetId:properties.vnetConfiguration.infrastructureSubnetId}'
+  -n cae-arcade \
+  --query '{infrastructureSubnetId:properties.vnetConfiguration.infrastructureSubnetId,publicNetworkAccess:properties.publicNetworkAccess}'
 ```
 
 - Azure SQL `Entra-only` auth and admin state:
@@ -183,6 +222,7 @@ sqlcmd -S sql-arcade-qddhfw4moexbm.database.windows.net -d arcade -G -Q "SELECT 
 
 - A previous outage on March 14, 2026 was caused by drift between the runtime's dependency on the Azure SQL public endpoint and the server's `publicNetworkAccess` setting.
 - The repository contract now removes that dependency instead of teaching operators to restore public access.
-- The GitHub release workflow now plans infra before deploy and keeps app rollout separate from infra convergence, but it still does not populate private App Configuration or Key Vault data-plane values.
+- The repository contract now treats Azure Front Door as the canonical public entrypoint. Keep `PUBLIC_APP_URL`, browser smoke checks, and Entra redirect URIs aligned to that host.
+- The GitHub release workflow now plans infra before deploy, keeps app rollout separate from infra convergence, and approves Azure Front Door private-link requests, but it still does not populate private App Configuration or Key Vault data-plane values.
 - The GitHub release workflow intentionally does not reconcile App Configuration or Key Vault role assignments for the runtime Managed Identity. Treat missing RBAC on those stores as bootstrap drift, not as a reason to broaden routine release permissions.
-- If the hosted rollout has not happened yet, treat any live public SQL dependency as configuration drift that still needs to be remediated through the GitHub workflow path.
+- If the hosted rollout has not happened yet, treat any live public SQL dependency or direct Container App public-host dependency as configuration drift that still needs to be remediated through the GitHub workflow path.

@@ -5,14 +5,14 @@ This checklist captures what is already scaffolded in the repository and what st
 ## Already Scaffolded In Repo
 
 - `azure.yaml` targets Azure Container Apps.
-- `infra/main.bicep` provisions a VNet-integrated Container Apps environment, a delegated Container Apps subnet, a private-endpoint subnet, Azure SQL, App Configuration, Key Vault, Application Insights, and Log Analytics.
+- `infra/main.bicep` provisions a VNet-integrated Container Apps environment, a delegated Container Apps subnet, a private-endpoint subnet, Azure Front Door Premium, Azure SQL, App Configuration, Key Vault, Application Insights, and Log Analytics.
 - `infra/main.bicep` also provisions private DNS zones and `Private Endpoint` resources for Azure SQL, App Configuration, and Key Vault when those paths are enabled.
 - `.github/workflows/quality-gates.yml` runs typecheck, unit test, build, Bicep validation, and GitHub workflow lint on `main` pushes and pull requests.
-- `.github/workflows/release-container-image.yml` publishes immutable release images to GHCR, runs infra `what-if`, deploys infra only when real changes exist, rolls out the app revision, and smoke-tests the deployed app through GitHub Actions OIDC.
+- `.github/workflows/release-container-image.yml` publishes immutable release images to GHCR, runs infra `what-if`, deploys infra only when real changes exist, approves Azure Front Door private-link requests for the managed environment, rolls out the app revision, and smoke-tests the deployed app through GitHub Actions OIDC.
 - `scripts/azure/postprovision.sh` can attach a private container registry to the provisioned Container App.
 - `scripts/azure/sync-runtime-config.sh` can populate the expected App Configuration keys and Key Vault secrets for the runtime bootstrap.
-- `scripts/azure/smoke-test.sh` verifies the deployed `health` and `login` routes.
-- `scripts/azure/verify-production-runtime.sh` verifies the private-network runtime contract for Azure SQL, App Configuration, Key Vault, and Container Apps.
+- `scripts/azure/smoke-test.sh` verifies the deployed `health`, `login`, and `auth/start` routes with retry tolerance for Azure Front Door propagation.
+- `scripts/azure/verify-production-runtime.sh` verifies the private-network runtime contract for Azure Front Door, Azure SQL, App Configuration, Key Vault, and Container Apps.
 - `app/routes/health.ts` is available for smoke tests and health probes.
 
 ## Azure Subscription And Tenant Requirements
@@ -21,6 +21,7 @@ This checklist captures what is already scaffolded in the repository and what st
   - Virtual network and subnets
   - Private DNS zones and virtual network links
   - Private Endpoints
+  - Azure Front Door profile, endpoint, origin group, origin, and route resources
   - Azure Container Apps Managed Environment
   - Azure Container App
   - Azure SQL logical server and serverless database
@@ -34,6 +35,7 @@ This checklist captures what is already scaffolded in the repository and what st
 - Permission to create workload identity federation between GitHub Actions and Azure
 - Azure RBAC for the day-to-day release identity at the target resource-group scope:
   - `Contributor`
+- Permission to approve `Microsoft.App/managedEnvironments/privateEndpointConnections` for the Azure Front Door private-link origin path
 - Azure RBAC for bootstrap operators or any elevated provisioning path that runs `infra/main.bicep` with `manageRuntimeRoleAssignments=true`:
   - `Role Based Access Control Administrator` or `User Access Administrator`
 - Network ownership or approval for:
@@ -106,6 +108,8 @@ Current repository note:
 - `infra/main.bicep` no longer accepts runtime app secrets as deployment parameters. Runtime secrets must stay in Key Vault and App Configuration.
 - When `deploySql=true`, the sync script can derive a `DefaultAzureCredential`-backed `DATABASE_URL` from Azure SQL metadata when explicit `DATABASE_URL` is not provided.
 - The GitHub release workflow also passes `manageRuntimeRoleAssignments=false` so routine releases do not require `Microsoft.Authorization/roleAssignments/write`. Use an elevated bootstrap deployment when runtime RBAC assignments must be created or repaired.
+- `PUBLIC_APP_URL` should be the Azure Front Door endpoint URL or the final custom domain URL, not the Container App default FQDN.
+- After switching the public host to Front Door, update the Microsoft Entra app registration redirect URI to `https://<front-door-host-or-custom-domain>/auth/callback`.
 
 ## Azure SQL Provisioning Inputs
 
@@ -129,10 +133,12 @@ The template now defines two distinct identities for the database path:
 
 The repository target contract for the production data path is:
 
+- Azure Front Door Premium as the public edge endpoint
 - Azure SQL `publicNetworkAccess=Disabled`
 - No `AllowAzureServices` firewall dependency
 - Azure SQL `Private Endpoint` plus `privatelink.database.windows.net`
 - Hosted App Configuration and Key Vault behind private endpoints
+- Container Apps managed environment with `publicNetworkAccess=Disabled`
 - `Microsoft Entra ID` web sign-in with explicit tenant audience and confidential client secret stored outside repo files
 - Runtime and migration database permissions separated
 
@@ -161,9 +167,11 @@ These are no longer bootstrap blockers, but they still need active operational d
 6. Provision Azure resources.
 7. Confirm the Azure SQL Entra administrator, `Entra-only` auth, and database role split between the runtime and migration identities.
 8. Run `npm run azure:sync:runtime-config` from a host that can reach the private App Configuration and Key Vault data plane.
-9. Publish a release so the GitHub workflow runs `publish`, `plan_infra`, `deploy_infra`, `deploy_app`, and `smoke_test`.
-10. Verify `https://<container-app-fqdn>/health`.
-11. Run `scripts/azure/verify-production-runtime.sh`.
-12. Smoke-test login, gameplay, result, rankings, and profile flows in the hosted environment.
+9. Set `PUBLIC_APP_URL` to the Azure Front Door endpoint URL or custom domain URL and update the Entra redirect URI to match `/auth/callback`.
+10. Publish a release so the GitHub workflow runs `publish`, `plan_infra`, `deploy_infra`, `deploy_app`, and `smoke_test`.
+11. Confirm `deploy_infra` approved the Azure Front Door private endpoint connections for the managed environment.
+12. Verify `https://<front-door-host>/health`.
+13. Run `scripts/azure/verify-production-runtime.sh`.
+14. Smoke-test login, gameplay, result, rankings, and profile flows in the hosted environment through the Front Door URL.
 
 For the latest verified production values and rollback notes, see `docs/production-operations.md`.

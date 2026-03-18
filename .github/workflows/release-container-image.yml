@@ -222,6 +222,63 @@ jobs:
               containerImage="$INFRA_IMAGE_REF" \
             --output none
 
+      - name: Approve Azure Front Door private link connections
+        run: |
+          MANAGED_ENVIRONMENT_NAME="cae-${AZURE_APP_NAME}"
+          CONNECTION_IDS=()
+
+          for attempt in $(seq 1 18); do
+            mapfile -t CONNECTION_IDS < <(az network private-endpoint-connection list \
+              --name "$MANAGED_ENVIRONMENT_NAME" \
+              --resource-group "$AZURE_RESOURCE_GROUP" \
+              --type Microsoft.App/managedEnvironments \
+              --query "[?properties.privateLinkServiceConnectionState.description=='AFD Private Link Request'].id" \
+              --output tsv 2>/dev/null || true)
+
+            if [[ "${#CONNECTION_IDS[@]}" -gt 0 ]]; then
+              break
+            fi
+
+            sleep 10
+          done
+
+          if [[ "${#CONNECTION_IDS[@]}" -lt 1 ]]; then
+            echo "No Azure Front Door private endpoint connections were discovered for ${MANAGED_ENVIRONMENT_NAME}."
+            exit 1
+          fi
+
+          for connection_id in "${CONNECTION_IDS[@]}"; do
+            connection_status="$(
+              az resource show \
+                --ids "$connection_id" \
+                --query properties.privateLinkServiceConnectionState.status \
+                --output tsv
+            )"
+
+            if [[ "$connection_status" != "Approved" ]]; then
+              az network private-endpoint-connection approve --id "$connection_id" --output none
+            fi
+          done
+
+          for attempt in $(seq 1 18); do
+            pending_count="$(
+              az network private-endpoint-connection list \
+                --name "$MANAGED_ENVIRONMENT_NAME" \
+                --resource-group "$AZURE_RESOURCE_GROUP" \
+                --type Microsoft.App/managedEnvironments \
+                --query "[?properties.privateLinkServiceConnectionState.description=='AFD Private Link Request' && properties.privateLinkServiceConnectionState.status!='Approved'] | length(@)" \
+                --output tsv
+            )"
+
+            if [[ "$pending_count" == "0" ]]; then
+              break
+            fi
+
+            sleep 10
+          done
+
+          test "$pending_count" == "0" || { echo "Azure Front Door private endpoint connections are still pending approval."; exit 1; }
+
   deploy_app:
     name: Deploy Release To Azure Container Apps
     runs-on: ubuntu-latest
@@ -243,7 +300,7 @@ jobs:
       contents: read
       id-token: write
     outputs:
-      container_app_fqdn: ${{ steps.discover.outputs.container_app_fqdn }}
+      app_url: ${{ steps.public_endpoint.outputs.app_url }}
     env:
       AZURE_APP_NAME: ${{ vars.AZURE_APP_NAME }}
       AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
@@ -340,20 +397,28 @@ jobs:
               "STARTUP_MIGRATION_DATABASE_URL=${{ steps.migration_database_url.outputs.startup_migration_database_url }}" \
             --output none
 
-      - name: Discover deployed app endpoint
-        id: discover
-        env:
-          AZURE_CONTAINER_APP_NAME: ${{ needs.plan_infra.outputs.container_app_name }}
+      - name: Discover deployed public endpoint
+        id: public_endpoint
         run: |
-          CONTAINER_APP_FQDN="$(
-            az containerapp show \
+          FRONT_DOOR_ENDPOINT_ID="$(
+            az resource list \
               --resource-group "$AZURE_RESOURCE_GROUP" \
-              --name "$AZURE_CONTAINER_APP_NAME" \
-              --query properties.configuration.ingress.fqdn \
+              --resource-type "Microsoft.Cdn/profiles/afdEndpoints" \
+              --query "[0].id" \
               --output tsv
           )"
-          test -n "$CONTAINER_APP_FQDN" || { echo "Missing container app FQDN"; exit 1; }
-          echo "container_app_fqdn=$CONTAINER_APP_FQDN" >> "$GITHUB_OUTPUT"
+
+          test -n "$FRONT_DOOR_ENDPOINT_ID" || { echo "Missing Front Door endpoint resource."; exit 1; }
+
+          FRONT_DOOR_HOST="$(
+            az resource show \
+              --ids "$FRONT_DOOR_ENDPOINT_ID" \
+              --query properties.hostName \
+              --output tsv
+          )"
+
+          test -n "$FRONT_DOOR_HOST" || { echo "Missing Front Door endpoint host."; exit 1; }
+          echo "app_url=https://${FRONT_DOOR_HOST}" >> "$GITHUB_OUTPUT"
 
   smoke_test:
     name: Smoke Test Deployed Release
@@ -366,10 +431,10 @@ jobs:
 
       - name: Validate smoke test target
         env:
-          CONTAINER_APP_FQDN: ${{ needs.deploy_app.outputs.container_app_fqdn }}
-        run: test -n "$CONTAINER_APP_FQDN" || { echo "Missing deployment output container_app_fqdn"; exit 1; }
+          APP_URL: ${{ needs.deploy_app.outputs.app_url }}
+        run: test -n "$APP_URL" || { echo "Missing deployment output app_url"; exit 1; }
 
       - name: Smoke test deployed release
         env:
-          APP_URL: https://${{ needs.deploy_app.outputs.container_app_fqdn }}
+          APP_URL: ${{ needs.deploy_app.outputs.app_url }}
         run: ./scripts/azure/smoke-test.sh
