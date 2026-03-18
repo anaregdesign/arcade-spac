@@ -2,14 +2,8 @@ import { createHash, randomBytes } from "node:crypto";
 
 import { createRemoteJWKSet, decodeJwt, jwtVerify } from "jose";
 
+import { buildEntraOpenIdConfiguration, type OpenIdConfiguration } from "./entra-openid";
 import { getRuntimeConfig } from "../config/runtime-config.server";
-
-type OpenIdConfiguration = {
-  authorization_endpoint: string;
-  issuer: string;
-  jwks_uri: string;
-  token_endpoint: string;
-};
 
 type EntraIdentity = {
   avatarUrl: string | null;
@@ -17,8 +11,6 @@ type EntraIdentity = {
   entraObjectId: string;
   entraTenantId: string;
 };
-
-const metadataCache = new Map<string, Promise<OpenIdConfiguration>>();
 
 function encodeBase64Url(buffer: Buffer) {
   return buffer.toString("base64url");
@@ -64,23 +56,11 @@ function getExpectedIssuer(input: {
 async function getOpenIdConfiguration() {
   const runtimeConfig = getRuntimeConfig();
 
-  if (runtimeConfig.authMode !== "entra" || !runtimeConfig.entraAuthority) {
+  if (runtimeConfig.authMode !== "entra" || !runtimeConfig.entraAuthorityTenant) {
     throw new Error("Microsoft Entra ID authentication is not enabled.");
   }
 
-  if (!metadataCache.has(runtimeConfig.entraAuthority)) {
-    metadataCache.set(runtimeConfig.entraAuthority, (async () => {
-      const response = await fetch(`${runtimeConfig.entraAuthority}/.well-known/openid-configuration`);
-
-      if (!response.ok) {
-        throw new Error(`Failed to load Entra OpenID configuration: ${response.status}`);
-      }
-
-      return response.json() as Promise<OpenIdConfiguration>;
-    })());
-  }
-
-  return metadataCache.get(runtimeConfig.entraAuthority)!;
+  return buildEntraOpenIdConfiguration(runtimeConfig.entraAuthorityTenant);
 }
 
 export function isEntraAuthEnabled() {

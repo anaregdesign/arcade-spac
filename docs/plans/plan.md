@@ -93,5 +93,11 @@
 - [x] Summarize any remaining non-idempotent behavior that is intentionally limited to run-scoped artifact creation
 - [x] Fix the `actionlint` `shellcheck` failure in bootstrap workflow retry loops introduced by the idempotency hardening slice
 
+## Section 5 - Production Verification Recovery
+### Subsection 5.1 - Auth Redirect Reliability
+- [x] Confirm the original `Verify Production Runtime #125` `No subscriptions found` stop is cleared by restoring the `production` release principal RBAC
+- [x] Capture the follow-on `Verify Production Runtime` failure where `/auth/start` returns `504` after the workflow reaches runtime checks
+- [x] Remove live Entra OpenID discovery from the request path so `/auth/start` can build the authorization redirect without waiting on external metadata fetches
+
 Notes:
 - Remaining intentional non-idempotent behavior is limited to run-scoped artifact names such as Azure deployment names and transient Container Apps Job / execution names used by workflow runs.
