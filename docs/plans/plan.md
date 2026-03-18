@@ -83,6 +83,8 @@
 - [x] Verify the bootstrap workflow still leaves first-run schema creation to the hosted Prisma migration path
 - [x] Patch `Bootstrap Azure SQL Principals` so existing `SQL server` reuse re-establishes the bootstrap `Entra administrator` and `ad-only-auth` contract before starting the job
 - [x] Add repo checkout plus empty-job cleanup guards to `Bootstrap Azure SQL Principals` so bootstrap scripts can run and failed pre-create exits do not cascade
+- [x] Capture failed `Container Apps Job` execution diagnostics from `Bootstrap Azure SQL Principals` so reruns expose container-side startup errors directly in workflow logs
+- [x] Patch `Bootstrap Azure SQL Principals` to retry failed SQL bootstrap executions with backoff after converging the reused `SQL server` data-plane contract
 
 ### Subsection 4.4 - Validation
 - [x] Run local validation for touched shell scripts, workflow YAML, and targeted app/runtime scripts
