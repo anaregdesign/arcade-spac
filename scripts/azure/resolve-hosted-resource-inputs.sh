@@ -148,6 +148,7 @@ resolve_key_vault_name() {
   fi
 
   configured_name="kv${AZURE_SCOPED_APP_NAME_COMPACT}${normalized_suffix//-/}"
+  configured_name="${configured_name:0:24}"
 
   if [[ "${AZURE_RECOVER_GLOBAL_RESOURCES:-false}" == "true" ]]; then
     if maybe_recover_key_vault "$configured_name"; then
