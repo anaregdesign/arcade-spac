@@ -14,6 +14,7 @@ concurrency:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
+  AZURE_RESOURCE_GROUP_SUFFIX: green
 
 jobs:
   publish:
@@ -91,14 +92,15 @@ jobs:
       AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
       AZURE_GLOBAL_NAME_SUFFIX: ${{ vars.AZURE_GLOBAL_NAME_SUFFIX }}
       AZURE_RESOURCE_GROUP_PREFIX: ${{ vars.AZURE_RESOURCE_GROUP }}
-      AZURE_RESOURCE_GROUP_SUFFIX: green
-      AZURE_RESOURCE_GROUP: ${{ format('{0}-{1}', vars.AZURE_RESOURCE_GROUP, 'green') }}
       AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
       AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
       RELEASE_IMAGE_REF: ${{ needs.publish.outputs.image_ref }}
     steps:
       - name: Check out the repo
         uses: actions/checkout@v5
+
+      - name: Derive target resource group
+        run: echo "AZURE_RESOURCE_GROUP=${AZURE_RESOURCE_GROUP_PREFIX}-${AZURE_RESOURCE_GROUP_SUFFIX}" >> "$GITHUB_ENV"
 
       - name: Validate infra planning configuration
         run: |
@@ -194,14 +196,15 @@ jobs:
       AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
       AZURE_GLOBAL_NAME_SUFFIX: ${{ vars.AZURE_GLOBAL_NAME_SUFFIX }}
       AZURE_RESOURCE_GROUP_PREFIX: ${{ vars.AZURE_RESOURCE_GROUP }}
-      AZURE_RESOURCE_GROUP_SUFFIX: green
-      AZURE_RESOURCE_GROUP: ${{ format('{0}-{1}', vars.AZURE_RESOURCE_GROUP, 'green') }}
       AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
       AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
       INFRA_IMAGE_REF: ${{ needs.plan_infra.outputs.infra_image_ref }}
     steps:
       - name: Check out the repo
         uses: actions/checkout@v5
+
+      - name: Derive target resource group
+        run: echo "AZURE_RESOURCE_GROUP=${AZURE_RESOURCE_GROUP_PREFIX}-${AZURE_RESOURCE_GROUP_SUFFIX}" >> "$GITHUB_ENV"
 
       - name: Validate release deployment configuration
         run: |
@@ -248,81 +251,9 @@ jobs:
             --output none
 
       - name: Approve Azure Front Door private link connections
-        run: |
-          MANAGED_ENVIRONMENT_NAME="cae-${AZURE_APP_NAME}"
-          MANAGED_ENVIRONMENT_ID=""
-
-          for attempt in $(seq 1 30); do
-            MANAGED_ENVIRONMENT_ID="$(
-              az resource show \
-                --resource-group "$AZURE_RESOURCE_GROUP" \
-                --resource-type Microsoft.App/managedEnvironments \
-                --name "$MANAGED_ENVIRONMENT_NAME" \
-                --query id \
-                --output tsv 2>/dev/null || true
-            )"
-
-            if [[ -n "$MANAGED_ENVIRONMENT_ID" ]]; then
-              break
-            fi
-
-            sleep 10
-          done
-
-          test -n "$MANAGED_ENVIRONMENT_ID" || { echo "Unable to resolve the Container Apps environment ${MANAGED_ENVIRONMENT_NAME}."; exit 1; }
-          CONNECTION_IDS=()
-
-          for attempt in $(seq 1 30); do
-            mapfile -t CONNECTION_IDS < <(az network private-endpoint-connection list \
-              --name "$MANAGED_ENVIRONMENT_NAME" \
-              --resource-group "$AZURE_RESOURCE_GROUP" \
-              --type Microsoft.App/managedEnvironments \
-              --query "[].id" \
-              --output tsv 2>/dev/null || true)
-
-            if [[ "${#CONNECTION_IDS[@]}" -gt 0 ]]; then
-              break
-            fi
-
-            sleep 10
-          done
-
-          if [[ "${#CONNECTION_IDS[@]}" -lt 1 ]]; then
-            echo "No Azure Front Door private endpoint connections were discovered for ${MANAGED_ENVIRONMENT_NAME}."
-            exit 1
-          fi
-
-          for connection_id in "${CONNECTION_IDS[@]}"; do
-            connection_status="$(
-              az resource show \
-                --ids "$connection_id" \
-                --query properties.privateLinkServiceConnectionState.status \
-                --output tsv
-            )"
-
-            if [[ "$connection_status" != "Approved" ]]; then
-              az network private-endpoint-connection approve --id "$connection_id" --output none
-            fi
-          done
-
-          for attempt in $(seq 1 30); do
-            pending_count="$(
-              az network private-endpoint-connection list \
-                --name "$MANAGED_ENVIRONMENT_NAME" \
-                --resource-group "$AZURE_RESOURCE_GROUP" \
-                --type Microsoft.App/managedEnvironments \
-                --query "[?properties.privateLinkServiceConnectionState.status!='Approved'] | length(@)" \
-                --output tsv
-            )"
-
-            if [[ "$pending_count" == "0" ]]; then
-              break
-            fi
-
-            sleep 10
-          done
-
-          test "$pending_count" == "0" || { echo "Azure Front Door private endpoint connections are still pending approval."; exit 1; }
+        env:
+          DEPLOYMENT_NAME: ${{ steps.deploy_infra_async.outputs.deployment_name }}
+        run: ./scripts/azure/await-frontdoor-private-link.sh
 
       - name: Wait for infrastructure deployment completion
         run: |
@@ -378,8 +309,6 @@ jobs:
       AZURE_APP_NAME: ${{ vars.AZURE_APP_NAME }}
       AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
       AZURE_RESOURCE_GROUP_PREFIX: ${{ vars.AZURE_RESOURCE_GROUP }}
-      AZURE_RESOURCE_GROUP_SUFFIX: green
-      AZURE_RESOURCE_GROUP: ${{ format('{0}-{1}', vars.AZURE_RESOURCE_GROUP, 'green') }}
       AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
       AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
       ENTRA_AUTHORITY_TENANT: ${{ vars.ENTRA_AUTHORITY_TENANT }}
@@ -391,6 +320,9 @@ jobs:
     steps:
       - name: Check out the repo
         uses: actions/checkout@v5
+
+      - name: Derive target resource group
+        run: echo "AZURE_RESOURCE_GROUP=${AZURE_RESOURCE_GROUP_PREFIX}-${AZURE_RESOURCE_GROUP_SUFFIX}" >> "$GITHUB_ENV"
 
       - name: Validate runtime config sync contract
         run: |
@@ -446,8 +378,6 @@ jobs:
       AZURE_APP_NAME: ${{ vars.AZURE_APP_NAME }}
       AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
       AZURE_RESOURCE_GROUP_PREFIX: ${{ vars.AZURE_RESOURCE_GROUP }}
-      AZURE_RESOURCE_GROUP_SUFFIX: green
-      AZURE_RESOURCE_GROUP: ${{ format('{0}-{1}', vars.AZURE_RESOURCE_GROUP, 'green') }}
       AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
       AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
       CONTAINER_REGISTRY_IDENTITY: ${{ vars.CONTAINER_REGISTRY_IDENTITY }}
@@ -458,6 +388,9 @@ jobs:
     steps:
       - name: Check out the repo
         uses: actions/checkout@v5
+
+      - name: Derive target resource group
+        run: echo "AZURE_RESOURCE_GROUP=${AZURE_RESOURCE_GROUP_PREFIX}-${AZURE_RESOURCE_GROUP_SUFFIX}" >> "$GITHUB_ENV"
 
       - name: Validate app deployment configuration
         run: |

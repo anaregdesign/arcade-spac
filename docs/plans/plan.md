@@ -35,6 +35,8 @@
 - [x] Add an operator-managed global-name suffix path so bootstrap/release can rotate App Configuration / Key Vault names when clean-slate recovery needs a fresh global name
 - [x] Patch bootstrap/release private-link approval so it resolves `cae-${AZURE_APP_NAME}` directly instead of waiting for `ca-${AZURE_APP_NAME}` to exist
 - [x] Centralize resource-group suffix selection in workflow code so bootstrap can choose `green` / `blue` / `dev` without mutating the shared prefix variable
+- [x] Hoist the routine release and runtime verification `AZURE_RESOURCE_GROUP_SUFFIX` declaration near the top of each workflow so operators can confirm the target suffix without scanning job-local `env` blocks
+- [x] Patch bootstrap/release private-link approval so a terminal infra deployment failure surfaces its Azure operation errors immediately instead of timing out on missing private-link connections
 
 ## Section 3 - Release Delivery
 ### Subsection 3.1 - Push And Release

@@ -9,6 +9,9 @@ concurrency:
   group: verify-production-runtime
   cancel-in-progress: false
 
+env:
+  AZURE_RESOURCE_GROUP_SUFFIX: green
+
 jobs:
   verify:
     name: Verify Production Runtime
@@ -21,13 +24,14 @@ jobs:
       AZURE_APP_NAME: ${{ vars.AZURE_APP_NAME }}
       AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
       AZURE_RESOURCE_GROUP_PREFIX: ${{ vars.AZURE_RESOURCE_GROUP }}
-      AZURE_RESOURCE_GROUP_SUFFIX: green
-      AZURE_RESOURCE_GROUP: ${{ format('{0}-{1}', vars.AZURE_RESOURCE_GROUP, 'green') }}
       AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
       AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
     steps:
       - name: Check out the repo
         uses: actions/checkout@v5
+
+      - name: Derive target resource group
+        run: echo "AZURE_RESOURCE_GROUP=${AZURE_RESOURCE_GROUP_PREFIX}-${AZURE_RESOURCE_GROUP_SUFFIX}" >> "$GITHUB_ENV"
 
       - name: Validate production verification configuration
         run: |

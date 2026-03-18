@@ -43,6 +43,7 @@ Operator は GitHub Actions workflow を使って、GitHub Environment には sh
 - release / verification workflow は shared prefix と workflow-managed production suffix `green` から `rg-arcade-green` を決定する
 - bootstrap workflow は recreated `rg-arcade-green` 上で `production` release identity に必要な Azure role assignment を復元し、その後の runtime config sync と app deploy が継続できる
 - operator は global-name resource の recreate が必要なときだけ `production` / `production-bootstrap` の共通 suffix を更新し、App Configuration と Key Vault の name collision を回避できる
+- private-link approval 待機中に infra deployment が `Failed` / `Canceled` へ落ちた場合、workflow は generic な connection timeout ではなく Azure deployment error をその場で表示して停止する
 - release publish 後、workflow は `rg-arcade-green` を target に infra plan、runtime config sync、app deploy、smoke test を進める
 - 必要時には bootstrap/recovery workflow も同じ empty target に対して起動できる
 
@@ -54,6 +55,7 @@ Operator は GitHub Actions workflow を使って、GitHub Environment には sh
 - workflow-managed suffix selection により target resource group は `rg-arcade-green` に揃っている
 - 以前の resource group や live secret を参照しなくても、fresh provisioning input だけで bootstrap と release を開始できる
 - empty target の bootstrap / release workflow は Azure Front Door private link approval で deadlock せず、approval 後に deployment completion を待って次の job へ進む
+- private-link approval が開始済みでも、infra deployment 自体が `Failed` / `Canceled` になったら workflow は実際の failed deployment operation を出力して停止する
 - empty target の bootstrap workflow は `production-bootstrap` identity の stable-scope 権限で resource group を再作成し、recreated RG 上の `production` release RBAC を復元できる
 - soft-deleted App Configuration / Key Vault が残っていても、operator-managed suffix を回すことで同じ RG target に新しい global resource name で bootstrap / release を継続できる
 - release publish 後、対象 workflow が GitHub Actions 上で成功し、失敗した場合は失敗点が特定できる
