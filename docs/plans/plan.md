@@ -9,12 +9,13 @@
 - [x] Inventory the required `production` and `production-bootstrap` variables and secrets from the workflow contract
 - [x] Confirm the target Azure resource group naming and current repo-side mismatches
 - [x] Lock the provisioning test assumption that `rg-arcade-green` starts empty and existing resource groups stay out of scope
+- [x] Rewrite the GitHub Environment contract so `AZURE_RESOURCE_GROUP` stores only the shared prefix `rg-arcade`
 
 ## Section 2 - GitHub Environment Repair
 ### Subsection 2.1 - Environment Shape
 - [x] Create or repair the `production-bootstrap` GitHub Environment
-- [x] Update `production` variables so routine release targets `rg-arcade-green`
-- [x] Complete the remaining `production-bootstrap` variables so bootstrap/recovery targets `rg-arcade-green`
+- [x] Update `production` variables so routine release derives `rg-arcade-green` from the shared prefix contract
+- [x] Complete the remaining `production-bootstrap` variables so bootstrap/recovery derives full target names from the shared prefix contract
 
 ### Subsection 2.2 - Secret Registration
 - [x] Generate or retrieve fresh required `production` secrets for the empty-target provisioning test
@@ -33,6 +34,7 @@
 - [x] Identify that soft-deleted App Configuration / Key Vault names collide with deterministic global naming after RG recreation
 - [x] Add an operator-managed global-name suffix path so bootstrap/release can rotate App Configuration / Key Vault names when clean-slate recovery needs a fresh global name
 - [x] Patch bootstrap/release private-link approval so it resolves `cae-${AZURE_APP_NAME}` directly instead of waiting for `ca-${AZURE_APP_NAME}` to exist
+- [x] Centralize resource-group suffix selection in workflow code so bootstrap can choose `green` / `blue` / `dev` without mutating the shared prefix variable
 
 ## Section 3 - Release Delivery
 ### Subsection 3.1 - Push And Release
@@ -41,6 +43,7 @@
 - [ ] Monitor the workflow and capture the deploy result for `rg-arcade-green`
 
 ### Subsection 3.2 - Verification
+- [ ] Verify that bootstrap can target `green` / `blue` / `dev` via workflow suffix selection while `AZURE_RESOURCE_GROUP` stays at the shared prefix
 - [ ] Rerun the bootstrap workflow with the patched delivery path and confirm it succeeds against empty-target assumptions
 - [ ] Run or confirm the hosted verification workflow for the released target
 - [ ] Update the active plan to reflect the final release outcome and remaining drift, if any

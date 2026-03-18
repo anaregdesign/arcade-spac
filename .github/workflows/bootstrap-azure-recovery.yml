@@ -7,6 +7,15 @@ on:
         description: Immutable container image reference to recover, for example ghcr.io/anaregdesign/arcade-spec:v2026.03.18.1
         required: true
         type: string
+      resource_group_suffix:
+        description: Resource-group suffix appended to the shared AZURE_RESOURCE_GROUP prefix
+        required: true
+        default: green
+        type: choice
+        options:
+          - green
+          - blue
+          - dev
 
 permissions:
   contents: read
@@ -26,7 +35,9 @@ jobs:
     env:
       AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
       AZURE_LOCATION: ${{ vars.AZURE_LOCATION }}
-      AZURE_RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
+      AZURE_RESOURCE_GROUP_PREFIX: ${{ vars.AZURE_RESOURCE_GROUP }}
+      AZURE_RESOURCE_GROUP_SUFFIX: ${{ inputs.resource_group_suffix }}
+      AZURE_RESOURCE_GROUP: ${{ format('{0}-{1}', vars.AZURE_RESOURCE_GROUP, inputs.resource_group_suffix) }}
       AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
       AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
     steps:
@@ -35,7 +46,10 @@ jobs:
           test -n "$AZURE_CLIENT_ID" || { echo "Missing environment variable AZURE_CLIENT_ID"; exit 1; }
           test -n "$AZURE_TENANT_ID" || { echo "Missing environment variable AZURE_TENANT_ID"; exit 1; }
           test -n "$AZURE_SUBSCRIPTION_ID" || { echo "Missing environment variable AZURE_SUBSCRIPTION_ID"; exit 1; }
-          test -n "$AZURE_RESOURCE_GROUP" || { echo "Missing environment variable AZURE_RESOURCE_GROUP"; exit 1; }
+          test -n "$AZURE_RESOURCE_GROUP_PREFIX" || { echo "Missing environment variable AZURE_RESOURCE_GROUP"; exit 1; }
+          test -n "$AZURE_RESOURCE_GROUP_SUFFIX" || { echo "Missing workflow input resource_group_suffix"; exit 1; }
+          [[ "$AZURE_RESOURCE_GROUP_PREFIX" != *- ]] || { echo "AZURE_RESOURCE_GROUP must contain only the shared prefix without a suffix"; exit 1; }
+          test -n "$AZURE_RESOURCE_GROUP" || { echo "Missing derived target resource group"; exit 1; }
           test -n "$AZURE_LOCATION" || { echo "Missing environment variable AZURE_LOCATION"; exit 1; }
 
       - name: Log in to Azure with OIDC
@@ -66,7 +80,9 @@ jobs:
       AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
       AZURE_GLOBAL_NAME_SUFFIX: ${{ vars.AZURE_GLOBAL_NAME_SUFFIX }}
       AZURE_LOCATION: ${{ vars.AZURE_LOCATION }}
-      AZURE_RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
+      AZURE_RESOURCE_GROUP_PREFIX: ${{ vars.AZURE_RESOURCE_GROUP }}
+      AZURE_RESOURCE_GROUP_SUFFIX: ${{ inputs.resource_group_suffix }}
+      AZURE_RESOURCE_GROUP: ${{ format('{0}-{1}', vars.AZURE_RESOURCE_GROUP, inputs.resource_group_suffix) }}
       AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
       AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
       SQL_ADMINISTRATOR_LOGIN: ${{ vars.SQL_ADMINISTRATOR_LOGIN }}
@@ -81,7 +97,10 @@ jobs:
           test -n "$AZURE_CLIENT_ID" || { echo "Missing environment variable AZURE_CLIENT_ID"; exit 1; }
           test -n "$AZURE_TENANT_ID" || { echo "Missing environment variable AZURE_TENANT_ID"; exit 1; }
           test -n "$AZURE_SUBSCRIPTION_ID" || { echo "Missing environment variable AZURE_SUBSCRIPTION_ID"; exit 1; }
-          test -n "$AZURE_RESOURCE_GROUP" || { echo "Missing environment variable AZURE_RESOURCE_GROUP"; exit 1; }
+          test -n "$AZURE_RESOURCE_GROUP_PREFIX" || { echo "Missing environment variable AZURE_RESOURCE_GROUP"; exit 1; }
+          test -n "$AZURE_RESOURCE_GROUP_SUFFIX" || { echo "Missing workflow input resource_group_suffix"; exit 1; }
+          [[ "$AZURE_RESOURCE_GROUP_PREFIX" != *- ]] || { echo "AZURE_RESOURCE_GROUP must contain only the shared prefix without a suffix"; exit 1; }
+          test -n "$AZURE_RESOURCE_GROUP" || { echo "Missing derived target resource group"; exit 1; }
           test -n "$AZURE_LOCATION" || { echo "Missing environment variable AZURE_LOCATION"; exit 1; }
           test -n "$AZURE_APP_NAME" || { echo "Missing environment variable AZURE_APP_NAME"; exit 1; }
           test -n "$SQL_ADMINISTRATOR_LOGIN" || { echo "Missing environment variable SQL_ADMINISTRATOR_LOGIN"; exit 1; }
@@ -242,7 +261,9 @@ jobs:
       id-token: write
     env:
       AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
-      AZURE_RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
+      AZURE_RESOURCE_GROUP_PREFIX: ${{ vars.AZURE_RESOURCE_GROUP }}
+      AZURE_RESOURCE_GROUP_SUFFIX: ${{ inputs.resource_group_suffix }}
+      AZURE_RESOURCE_GROUP: ${{ format('{0}-{1}', vars.AZURE_RESOURCE_GROUP, inputs.resource_group_suffix) }}
       AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
       AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
       PRODUCTION_AZURE_PRINCIPAL_ID: ${{ vars.PRODUCTION_AZURE_PRINCIPAL_ID }}
@@ -252,7 +273,10 @@ jobs:
           test -n "$AZURE_CLIENT_ID" || { echo "Missing environment variable AZURE_CLIENT_ID"; exit 1; }
           test -n "$AZURE_TENANT_ID" || { echo "Missing environment variable AZURE_TENANT_ID"; exit 1; }
           test -n "$AZURE_SUBSCRIPTION_ID" || { echo "Missing environment variable AZURE_SUBSCRIPTION_ID"; exit 1; }
-          test -n "$AZURE_RESOURCE_GROUP" || { echo "Missing environment variable AZURE_RESOURCE_GROUP"; exit 1; }
+          test -n "$AZURE_RESOURCE_GROUP_PREFIX" || { echo "Missing environment variable AZURE_RESOURCE_GROUP"; exit 1; }
+          test -n "$AZURE_RESOURCE_GROUP_SUFFIX" || { echo "Missing workflow input resource_group_suffix"; exit 1; }
+          [[ "$AZURE_RESOURCE_GROUP_PREFIX" != *- ]] || { echo "AZURE_RESOURCE_GROUP must contain only the shared prefix without a suffix"; exit 1; }
+          test -n "$AZURE_RESOURCE_GROUP" || { echo "Missing derived target resource group"; exit 1; }
           test -n "$PRODUCTION_AZURE_PRINCIPAL_ID" || { echo "Missing environment variable PRODUCTION_AZURE_PRINCIPAL_ID"; exit 1; }
 
       - name: Log in to Azure with OIDC
@@ -327,7 +351,9 @@ jobs:
     env:
       AZURE_APP_NAME: ${{ vars.AZURE_APP_NAME }}
       AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
-      AZURE_RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
+      AZURE_RESOURCE_GROUP_PREFIX: ${{ vars.AZURE_RESOURCE_GROUP }}
+      AZURE_RESOURCE_GROUP_SUFFIX: ${{ inputs.resource_group_suffix }}
+      AZURE_RESOURCE_GROUP: ${{ format('{0}-{1}', vars.AZURE_RESOURCE_GROUP, inputs.resource_group_suffix) }}
       AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
       AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
       CONTAINER_REGISTRY_IDENTITY: ${{ vars.CONTAINER_REGISTRY_IDENTITY }}
@@ -341,7 +367,10 @@ jobs:
           test -n "$AZURE_CLIENT_ID" || { echo "Missing environment variable AZURE_CLIENT_ID"; exit 1; }
           test -n "$AZURE_TENANT_ID" || { echo "Missing environment variable AZURE_TENANT_ID"; exit 1; }
           test -n "$AZURE_SUBSCRIPTION_ID" || { echo "Missing environment variable AZURE_SUBSCRIPTION_ID"; exit 1; }
-          test -n "$AZURE_RESOURCE_GROUP" || { echo "Missing environment variable AZURE_RESOURCE_GROUP"; exit 1; }
+          test -n "$AZURE_RESOURCE_GROUP_PREFIX" || { echo "Missing environment variable AZURE_RESOURCE_GROUP"; exit 1; }
+          test -n "$AZURE_RESOURCE_GROUP_SUFFIX" || { echo "Missing workflow input resource_group_suffix"; exit 1; }
+          [[ "$AZURE_RESOURCE_GROUP_PREFIX" != *- ]] || { echo "AZURE_RESOURCE_GROUP must contain only the shared prefix without a suffix"; exit 1; }
+          test -n "$AZURE_RESOURCE_GROUP" || { echo "Missing derived target resource group"; exit 1; }
           test -n "$AZURE_APP_NAME" || { echo "Missing environment variable AZURE_APP_NAME"; exit 1; }
           test -n "$IMAGE_REF" || { echo "Missing workflow input image_ref"; exit 1; }
 
@@ -560,7 +589,9 @@ jobs:
     env:
       AZURE_APP_NAME: ${{ vars.AZURE_APP_NAME }}
       AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
-      AZURE_RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
+      AZURE_RESOURCE_GROUP_PREFIX: ${{ vars.AZURE_RESOURCE_GROUP }}
+      AZURE_RESOURCE_GROUP_SUFFIX: ${{ inputs.resource_group_suffix }}
+      AZURE_RESOURCE_GROUP: ${{ format('{0}-{1}', vars.AZURE_RESOURCE_GROUP, inputs.resource_group_suffix) }}
       AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
       AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
       ENTRA_AUTHORITY_TENANT: ${{ vars.ENTRA_AUTHORITY_TENANT }}
@@ -578,7 +609,10 @@ jobs:
           test -n "$AZURE_CLIENT_ID" || { echo "Missing environment variable AZURE_CLIENT_ID"; exit 1; }
           test -n "$AZURE_TENANT_ID" || { echo "Missing environment variable AZURE_TENANT_ID"; exit 1; }
           test -n "$AZURE_SUBSCRIPTION_ID" || { echo "Missing environment variable AZURE_SUBSCRIPTION_ID"; exit 1; }
-          test -n "$AZURE_RESOURCE_GROUP" || { echo "Missing environment variable AZURE_RESOURCE_GROUP"; exit 1; }
+          test -n "$AZURE_RESOURCE_GROUP_PREFIX" || { echo "Missing environment variable AZURE_RESOURCE_GROUP"; exit 1; }
+          test -n "$AZURE_RESOURCE_GROUP_SUFFIX" || { echo "Missing workflow input resource_group_suffix"; exit 1; }
+          [[ "$AZURE_RESOURCE_GROUP_PREFIX" != *- ]] || { echo "AZURE_RESOURCE_GROUP must contain only the shared prefix without a suffix"; exit 1; }
+          test -n "$AZURE_RESOURCE_GROUP" || { echo "Missing derived target resource group"; exit 1; }
           test -n "$AZURE_APP_NAME" || { echo "Missing environment variable AZURE_APP_NAME"; exit 1; }
           test -n "$ENTRA_CLIENT_ID" || { echo "Missing environment variable ENTRA_CLIENT_ID"; exit 1; }
           test -n "$ENTRA_CLIENT_SECRET" || { echo "Missing secret ENTRA_CLIENT_SECRET"; exit 1; }
@@ -611,7 +645,9 @@ jobs:
     env:
       AZURE_APP_NAME: ${{ vars.AZURE_APP_NAME }}
       AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
-      AZURE_RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
+      AZURE_RESOURCE_GROUP_PREFIX: ${{ vars.AZURE_RESOURCE_GROUP }}
+      AZURE_RESOURCE_GROUP_SUFFIX: ${{ inputs.resource_group_suffix }}
+      AZURE_RESOURCE_GROUP: ${{ format('{0}-{1}', vars.AZURE_RESOURCE_GROUP, inputs.resource_group_suffix) }}
       AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
       AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
       CONTAINER_REGISTRY_IDENTITY: ${{ vars.CONTAINER_REGISTRY_IDENTITY }}
@@ -628,7 +664,10 @@ jobs:
           test -n "$AZURE_CLIENT_ID" || { echo "Missing environment variable AZURE_CLIENT_ID"; exit 1; }
           test -n "$AZURE_TENANT_ID" || { echo "Missing environment variable AZURE_TENANT_ID"; exit 1; }
           test -n "$AZURE_SUBSCRIPTION_ID" || { echo "Missing environment variable AZURE_SUBSCRIPTION_ID"; exit 1; }
-          test -n "$AZURE_RESOURCE_GROUP" || { echo "Missing environment variable AZURE_RESOURCE_GROUP"; exit 1; }
+          test -n "$AZURE_RESOURCE_GROUP_PREFIX" || { echo "Missing environment variable AZURE_RESOURCE_GROUP"; exit 1; }
+          test -n "$AZURE_RESOURCE_GROUP_SUFFIX" || { echo "Missing workflow input resource_group_suffix"; exit 1; }
+          [[ "$AZURE_RESOURCE_GROUP_PREFIX" != *- ]] || { echo "AZURE_RESOURCE_GROUP must contain only the shared prefix without a suffix"; exit 1; }
+          test -n "$AZURE_RESOURCE_GROUP" || { echo "Missing derived target resource group"; exit 1; }
           test -n "$AZURE_APP_NAME" || { echo "Missing environment variable AZURE_APP_NAME"; exit 1; }
           test -n "$IMAGE_REF" || { echo "Missing workflow input image_ref"; exit 1; }
 
@@ -705,7 +744,9 @@ jobs:
     env:
       AZURE_APP_NAME: ${{ vars.AZURE_APP_NAME }}
       AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
-      AZURE_RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
+      AZURE_RESOURCE_GROUP_PREFIX: ${{ vars.AZURE_RESOURCE_GROUP }}
+      AZURE_RESOURCE_GROUP_SUFFIX: ${{ inputs.resource_group_suffix }}
+      AZURE_RESOURCE_GROUP: ${{ format('{0}-{1}', vars.AZURE_RESOURCE_GROUP, inputs.resource_group_suffix) }}
       AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
       AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
     steps:
@@ -718,7 +759,10 @@ jobs:
           test -n "$AZURE_TENANT_ID" || { echo "Missing environment variable AZURE_TENANT_ID"; exit 1; }
           test -n "$AZURE_SUBSCRIPTION_ID" || { echo "Missing environment variable AZURE_SUBSCRIPTION_ID"; exit 1; }
           test -n "$AZURE_APP_NAME" || { echo "Missing environment variable AZURE_APP_NAME"; exit 1; }
-          test -n "$AZURE_RESOURCE_GROUP" || { echo "Missing environment variable AZURE_RESOURCE_GROUP"; exit 1; }
+          test -n "$AZURE_RESOURCE_GROUP_PREFIX" || { echo "Missing environment variable AZURE_RESOURCE_GROUP"; exit 1; }
+          test -n "$AZURE_RESOURCE_GROUP_SUFFIX" || { echo "Missing workflow input resource_group_suffix"; exit 1; }
+          [[ "$AZURE_RESOURCE_GROUP_PREFIX" != *- ]] || { echo "AZURE_RESOURCE_GROUP must contain only the shared prefix without a suffix"; exit 1; }
+          test -n "$AZURE_RESOURCE_GROUP" || { echo "Missing derived target resource group"; exit 1; }
 
       - name: Log in to Azure with OIDC
         uses: azure/login@v2
