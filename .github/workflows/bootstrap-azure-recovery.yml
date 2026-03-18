@@ -646,8 +646,7 @@ jobs:
                 "ARCADE_SQL_DATABASE=$SQL_DATABASE_NAME" \
                 "ARCADE_SQL_RUNTIME_PRINCIPAL=$SQL_RUNTIME_PRINCIPAL_NAME" \
                 "ARCADE_SQL_MIGRATION_PRINCIPAL=$SQL_MIGRATION_PRINCIPAL_NAME" \
-              --command sh \
-              --args "-lc" "printf '%s' \"\$ARCADE_SQL_BOOTSTRAP_SOURCE_B64\" | base64 -d > /tmp/init-sql.mjs && node /tmp/init-sql.mjs" \
+              --command "sh,-lc,printf '%s' \"\$ARCADE_SQL_BOOTSTRAP_SOURCE_B64\" | base64 -d > /tmp/init-sql.mjs && node /tmp/init-sql.mjs" \
               "${registry_args[@]}" \
               --output none
 
