@@ -10,6 +10,7 @@ Operator は GitHub Actions workflow を使って、何も存在しない `rg-ar
 - target resource group を切り替えても、repo-side の variables と secrets が古いままだと別環境へ deploy される
 - Provisioning test で past resource がない前提なのに、以前の resource group や config store へ依存すると再現性が崩れる
 - empty target では Azure Front Door private link approval が ARM deployment completion を block しうるため、workflow 側が approval と deployment wait を正しい順序で扱わないと bootstrap / release が deadlock する
+- empty target で resource group 自体を作り直す場合、GitHub OIDC deploy identity の RG-scope role assignment も消えるため、bootstrap identity の stable-scope 権限と production release identity の RBAC restore path がないと recovery が再現できない
 - local から直接 Azure へ deploy すると、この repo の運用 policy と release traceability が崩れる
 
 ## Users and Scenarios
@@ -35,6 +36,7 @@ Operator は GitHub Actions workflow を使って、何も存在しない `rg-ar
 
 - GitHub 上で `production` と `production-bootstrap` の Environment が workflow contract 通りに揃っている
 - bootstrap / release workflow は empty `rg-arcade` に対しても Azure Front Door private link approval を処理し、その後 deployment completion まで進む
+- bootstrap workflow は recreated `rg-arcade` 上で `production` release identity に必要な Azure role assignment を復元し、その後の runtime config sync と app deploy が継続できる
 - release publish 後、workflow は `rg-arcade` を target に infra plan、runtime config sync、app deploy、smoke test を進める
 - 必要時には bootstrap/recovery workflow も同じ empty target に対して起動できる
 
@@ -45,6 +47,7 @@ Operator は GitHub Actions workflow を使って、何も存在しない `rg-ar
 - target resource group は `rg-arcade` に揃っている
 - 以前の resource group や live secret を参照しなくても、fresh provisioning input だけで bootstrap と release を開始できる
 - empty target の bootstrap / release workflow は Azure Front Door private link approval で deadlock せず、approval 後に deployment completion を待って次の job へ進む
+- empty target の bootstrap workflow は `production-bootstrap` identity の stable-scope 権限で resource group を再作成し、recreated RG 上の `production` release RBAC を復元できる
 - release publish 後、対象 workflow が GitHub Actions 上で成功し、失敗した場合は失敗点が特定できる
 
 ## Edge Cases

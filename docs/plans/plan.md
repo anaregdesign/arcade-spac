@@ -28,10 +28,12 @@
 ### Subsection 2.4 - Workflow Reliability
 - [x] Identify the empty-target Front Door private link approval deadlock in bootstrap/release delivery
 - [x] Patch the bootstrap and routine release workflows so deployment starts asynchronously, approval runs, and completion is awaited before downstream jobs
+- [x] Identify that RG-scope GitHub OIDC role assignments are destroyed with the empty target resource group
+- [ ] Patch the bootstrap workflow so bootstrap identity uses stable-scope permissions and restores `production` release RBAC on the recreated RG before production-environment jobs run
 
 ## Section 3 - Release Delivery
 ### Subsection 3.1 - Push And Release
-- [ ] Commit and push any repository-side changes required for this retarget
+- [ ] Commit and push any additional repository-side changes required after bootstrap retry findings
 - [ ] Publish a GitHub Release that triggers the routine release workflow
 - [ ] Monitor the workflow and capture the deploy result for `rg-arcade`
 

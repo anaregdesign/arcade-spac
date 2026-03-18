@@ -223,6 +223,89 @@ jobs:
             exit 1
           fi
 
+  restore_production_release_rbac:
+    name: Restore Production Release RBAC
+    runs-on: ubuntu-latest
+    needs:
+      - deploy_bootstrap_infra
+    environment: production-bootstrap
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+      AZURE_RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
+      AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+      PRODUCTION_AZURE_PRINCIPAL_ID: ${{ vars.PRODUCTION_AZURE_PRINCIPAL_ID }}
+    steps:
+      - name: Validate production release RBAC restore contract
+        run: |
+          test -n "$AZURE_CLIENT_ID" || { echo "Missing environment variable AZURE_CLIENT_ID"; exit 1; }
+          test -n "$AZURE_TENANT_ID" || { echo "Missing environment variable AZURE_TENANT_ID"; exit 1; }
+          test -n "$AZURE_SUBSCRIPTION_ID" || { echo "Missing environment variable AZURE_SUBSCRIPTION_ID"; exit 1; }
+          test -n "$AZURE_RESOURCE_GROUP" || { echo "Missing environment variable AZURE_RESOURCE_GROUP"; exit 1; }
+          test -n "$PRODUCTION_AZURE_PRINCIPAL_ID" || { echo "Missing environment variable PRODUCTION_AZURE_PRINCIPAL_ID"; exit 1; }
+
+      - name: Log in to Azure with OIDC
+        uses: azure/login@v2
+        with:
+          client-id: ${{ env.AZURE_CLIENT_ID }}
+          tenant-id: ${{ env.AZURE_TENANT_ID }}
+          subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Restore production release role assignments
+        run: |
+          require_single_resource_id() {
+            local resource_type="$1"
+            local label="$2"
+            local resource_id=""
+
+            resource_id="$(
+              az resource list \
+                --resource-group "$AZURE_RESOURCE_GROUP" \
+                --resource-type "$resource_type" \
+                --query "[0].id" \
+                --output tsv
+            )"
+
+            test -n "$resource_id" || { echo "Missing ${label} in ${AZURE_RESOURCE_GROUP}."; exit 1; }
+            printf '%s\n' "$resource_id"
+          }
+
+          ensure_role_assignment() {
+            local role_name="$1"
+            local scope="$2"
+
+            local existing_count=""
+            existing_count="$(
+              az role assignment list \
+                --assignee-object-id "$PRODUCTION_AZURE_PRINCIPAL_ID" \
+                --scope "$scope" \
+                --query "[?roleDefinitionName=='${role_name}'] | length(@)" \
+                --output tsv
+            )"
+
+            if [[ "$existing_count" == "0" ]]; then
+              az role assignment create \
+                --assignee-object-id "$PRODUCTION_AZURE_PRINCIPAL_ID" \
+                --assignee-principal-type ServicePrincipal \
+                --role "$role_name" \
+                --scope "$scope" \
+                --output none
+            fi
+          }
+
+          RESOURCE_GROUP_SCOPE="/subscriptions/${AZURE_SUBSCRIPTION_ID}/resourceGroups/${AZURE_RESOURCE_GROUP}"
+          APP_CONFIGURATION_ID="$(require_single_resource_id 'Microsoft.AppConfiguration/configurationStores' 'App Configuration store')"
+          KEY_VAULT_ID="$(require_single_resource_id 'Microsoft.KeyVault/vaults' 'Key Vault')"
+
+          ensure_role_assignment "Contributor" "$RESOURCE_GROUP_SCOPE"
+          ensure_role_assignment "App Configuration Data Owner" "$APP_CONFIGURATION_ID"
+          ensure_role_assignment "Key Vault Secrets Officer" "$KEY_VAULT_ID"
+
+          sleep 30
+
   bootstrap_sql:
     name: Bootstrap Azure SQL Principals
     runs-on: ubuntu-latest
@@ -461,6 +544,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - deploy_bootstrap_infra
+      - restore_production_release_rbac
     environment: production
     permissions:
       contents: read
