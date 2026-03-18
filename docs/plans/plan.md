@@ -1,20 +1,20 @@
 # Execution Plan
 
 ## Links
-- Spec: /docs/spec/production-rg-arcade-release-retarget.md
+- Spec: /docs/spec/production-rg-arcade-green-release-retarget.md
 
 ## Section 1 - Target Contract And Repository State
 ### Subsection 1.1 - Spec And Inventory
-- [x] Write the operator-facing spec for the `rg-arcade` release retarget
+- [x] Write the operator-facing spec for the `rg-arcade-green` release retarget
 - [x] Inventory the required `production` and `production-bootstrap` variables and secrets from the workflow contract
 - [x] Confirm the target Azure resource group naming and current repo-side mismatches
-- [x] Lock the provisioning test assumption that `rg-arcade` starts empty and existing resource groups stay out of scope
+- [x] Lock the provisioning test assumption that `rg-arcade-green` starts empty and existing resource groups stay out of scope
 
 ## Section 2 - GitHub Environment Repair
 ### Subsection 2.1 - Environment Shape
 - [x] Create or repair the `production-bootstrap` GitHub Environment
-- [x] Update `production` variables so routine release targets `rg-arcade`
-- [x] Complete the remaining `production-bootstrap` variables so bootstrap/recovery targets `rg-arcade`
+- [x] Update `production` variables so routine release targets `rg-arcade-green`
+- [x] Complete the remaining `production-bootstrap` variables so bootstrap/recovery targets `rg-arcade-green`
 
 ### Subsection 2.2 - Secret Registration
 - [x] Generate or retrieve fresh required `production` secrets for the empty-target provisioning test
@@ -22,7 +22,7 @@
 
 ### Subsection 2.3 - Identity And Access
 - [x] Confirm or create the `production-bootstrap` OIDC identity with the required federated credential
-- [x] Grant `production` the required `rg-arcade` roles for release-time infra and runtime config sync
+- [x] Grant `production` the required `rg-arcade-green` roles for release-time infra and runtime config sync
 - [x] Grant `production-bootstrap` the required bootstrap scope permissions for empty resource-group creation and role assignment
 
 ### Subsection 2.4 - Workflow Reliability
@@ -31,13 +31,14 @@
 - [x] Identify that RG-scope GitHub OIDC role assignments are destroyed with the empty target resource group
 - [x] Patch the bootstrap workflow so bootstrap identity uses stable-scope permissions and restores `production` release RBAC on the recreated RG before production-environment jobs run
 - [x] Identify that soft-deleted App Configuration / Key Vault names collide with deterministic global naming after RG recreation
-- [ ] Add an operator-managed global-name suffix path so bootstrap/release can rotate App Configuration / Key Vault names when clean-slate recovery needs a fresh global name
+- [x] Add an operator-managed global-name suffix path so bootstrap/release can rotate App Configuration / Key Vault names when clean-slate recovery needs a fresh global name
+- [x] Patch bootstrap/release private-link approval so it resolves `cae-${AZURE_APP_NAME}` directly instead of waiting for `ca-${AZURE_APP_NAME}` to exist
 
 ## Section 3 - Release Delivery
 ### Subsection 3.1 - Push And Release
 - [ ] Commit and push any additional repository-side changes required after bootstrap retry findings
 - [ ] Publish a GitHub Release that triggers the routine release workflow
-- [ ] Monitor the workflow and capture the deploy result for `rg-arcade`
+- [ ] Monitor the workflow and capture the deploy result for `rg-arcade-green`
 
 ### Subsection 3.2 - Verification
 - [ ] Rerun the bootstrap workflow with the patched delivery path and confirm it succeeds against empty-target assumptions

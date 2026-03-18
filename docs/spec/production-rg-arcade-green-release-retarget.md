@@ -1,8 +1,8 @@
-# Production Rg Arcade Release Retarget
+# Production Rg Arcade Green Release Retarget
 
 ## Summary
 
-Operator は GitHub Actions workflow を使って、何も存在しない `rg-arcade` を fresh target にした bootstrap、routine release、runtime verification を開始できる。
+Operator は GitHub Actions workflow を使って、何も存在しない `rg-arcade-green` を fresh target にした bootstrap、routine release、runtime verification を開始できる。
 
 ## User Problem
 
@@ -16,7 +16,7 @@ Operator は GitHub Actions workflow を使って、何も存在しない `rg-ar
 
 ## Users and Scenarios
 
-- Operator は `rg-arcade` 向けに GitHub Environment を再登録し、release workflow で再配備したい
+- Operator は `rg-arcade-green` 向けに GitHub Environment を再登録し、release workflow で再配備したい
 - Operator は resource group を失っても、`production-bootstrap` から bootstrap/recovery path を再実行できる状態を維持したい
 - Operator は release 後に runtime verification まで同じ workflow contract で確認したい
 
@@ -24,8 +24,8 @@ Operator は GitHub Actions workflow を使って、何も存在しない `rg-ar
 
 - `production` Environment の required variables と secrets を workflow contract に合わせる
 - `production-bootstrap` Environment を用意し、bootstrap/recovery path に必要な variables と secrets を登録する
-- `rg-arcade` を empty resource group 前提で bootstrap できるように fresh provisioning inputs を揃える
-- `rg-arcade` を target に release workflow を publish し、必要な verification workflow まで実行する
+- `rg-arcade-green` を empty resource group 前提で bootstrap できるように fresh provisioning inputs を揃える
+- `rg-arcade-green` を target に release workflow を publish し、必要な verification workflow まで実行する
 
 ## Non-Goals
 
@@ -36,17 +36,17 @@ Operator は GitHub Actions workflow を使って、何も存在しない `rg-ar
 ## User-Visible Behavior
 
 - GitHub 上で `production` と `production-bootstrap` の Environment が workflow contract 通りに揃っている
-- bootstrap / release workflow は empty `rg-arcade` に対しても Azure Front Door private link approval を処理し、その後 deployment completion まで進む
-- bootstrap workflow は recreated `rg-arcade` 上で `production` release identity に必要な Azure role assignment を復元し、その後の runtime config sync と app deploy が継続できる
+- bootstrap / release workflow は empty `rg-arcade-green` に対しても Azure Front Door private link approval を処理し、その後 deployment completion まで進む
+- bootstrap workflow は recreated `rg-arcade-green` 上で `production` release identity に必要な Azure role assignment を復元し、その後の runtime config sync と app deploy が継続できる
 - operator は global-name resource の recreate が必要なときだけ `production` / `production-bootstrap` の共通 suffix を更新し、App Configuration と Key Vault の name collision を回避できる
-- release publish 後、workflow は `rg-arcade` を target に infra plan、runtime config sync、app deploy、smoke test を進める
+- release publish 後、workflow は `rg-arcade-green` を target に infra plan、runtime config sync、app deploy、smoke test を進める
 - 必要時には bootstrap/recovery workflow も同じ empty target に対して起動できる
 
 ## Acceptance Criteria
 
 - `production` Environment に release workflow が要求する variables と secrets が存在する
 - `production-bootstrap` Environment に bootstrap workflow が要求する variables と secrets が存在する
-- target resource group は `rg-arcade` に揃っている
+- target resource group は `rg-arcade-green` に揃っている
 - 以前の resource group や live secret を参照しなくても、fresh provisioning input だけで bootstrap と release を開始できる
 - empty target の bootstrap / release workflow は Azure Front Door private link approval で deadlock せず、approval 後に deployment completion を待って次の job へ進む
 - empty target の bootstrap workflow は `production-bootstrap` identity の stable-scope 権限で resource group を再作成し、recreated RG 上の `production` release RBAC を復元できる

@@ -239,13 +239,16 @@ jobs:
 
       - name: Approve Azure Front Door private link connections
         run: |
+          MANAGED_ENVIRONMENT_NAME="cae-${AZURE_APP_NAME}"
           MANAGED_ENVIRONMENT_ID=""
-          for attempt in $(seq 1 18); do
+
+          for attempt in $(seq 1 30); do
             MANAGED_ENVIRONMENT_ID="$(
-              az containerapp show \
+              az resource show \
                 --resource-group "$AZURE_RESOURCE_GROUP" \
-                --name "ca-${AZURE_APP_NAME}" \
-                --query properties.managedEnvironmentId \
+                --resource-type Microsoft.App/managedEnvironments \
+                --name "$MANAGED_ENVIRONMENT_NAME" \
+                --query id \
                 --output tsv 2>/dev/null || true
             )"
 
@@ -256,12 +259,10 @@ jobs:
             sleep 10
           done
 
-          test -n "$MANAGED_ENVIRONMENT_ID" || { echo "Unable to resolve the Container Apps environment for ca-${AZURE_APP_NAME}."; exit 1; }
-
-          MANAGED_ENVIRONMENT_NAME="${MANAGED_ENVIRONMENT_ID##*/}"
+          test -n "$MANAGED_ENVIRONMENT_ID" || { echo "Unable to resolve the Container Apps environment ${MANAGED_ENVIRONMENT_NAME}."; exit 1; }
           CONNECTION_IDS=()
 
-          for attempt in $(seq 1 18); do
+          for attempt in $(seq 1 30); do
             mapfile -t CONNECTION_IDS < <(az network private-endpoint-connection list \
               --name "$MANAGED_ENVIRONMENT_NAME" \
               --resource-group "$AZURE_RESOURCE_GROUP" \
@@ -294,7 +295,7 @@ jobs:
             fi
           done
 
-          for attempt in $(seq 1 18); do
+          for attempt in $(seq 1 30); do
             pending_count="$(
               az network private-endpoint-connection list \
                 --name "$MANAGED_ENVIRONMENT_NAME" \
