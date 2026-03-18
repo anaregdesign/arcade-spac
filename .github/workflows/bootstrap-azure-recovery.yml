@@ -376,6 +376,9 @@ jobs:
           tenant-id: ${{ env.AZURE_TENANT_ID }}
           subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}
 
+      - name: Check out the repo
+        uses: actions/checkout@v5
+
       - name: Create and run the SQL bootstrap job
         id: run_bootstrap_job
         run: |
@@ -640,6 +643,7 @@ jobs:
         if: ${{ always() }}
         run: |
           JOB_NAME="${{ steps.run_bootstrap_job.outputs.job_name }}"
+          [[ -n "$JOB_NAME" ]] || exit 0
           if az containerapp job show --resource-group "$AZURE_RESOURCE_GROUP" --name "$JOB_NAME" --output none >/dev/null 2>&1; then
             az containerapp job delete --resource-group "$AZURE_RESOURCE_GROUP" --name "$JOB_NAME" --yes --output none
           fi

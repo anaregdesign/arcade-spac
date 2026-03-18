@@ -81,7 +81,8 @@
 ### Subsection 4.3 - SQL Bootstrap
 - [x] Refactor `scripts/azure/init-sql.mjs` so it converges principals and role membership without replaying schema DDL outside Prisma migration state
 - [x] Verify the bootstrap workflow still leaves first-run schema creation to the hosted Prisma migration path
-- [ ] Patch `Bootstrap Azure SQL Principals` so existing `SQL server` reuse re-establishes the bootstrap `Entra administrator` and `ad-only-auth` contract before starting the job
+- [x] Patch `Bootstrap Azure SQL Principals` so existing `SQL server` reuse re-establishes the bootstrap `Entra administrator` and `ad-only-auth` contract before starting the job
+- [x] Add repo checkout plus empty-job cleanup guards to `Bootstrap Azure SQL Principals` so bootstrap scripts can run and failed pre-create exits do not cascade
 
 ### Subsection 4.4 - Validation
 - [x] Run local validation for touched shell scripts, workflow YAML, and targeted app/runtime scripts
