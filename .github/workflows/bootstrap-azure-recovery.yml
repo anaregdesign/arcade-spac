@@ -116,18 +116,26 @@ jobs:
 
       - name: Approve Azure Front Door private link connections
         run: |
-          mapfile -t MANAGED_ENVIRONMENTS < <(az resource list \
-            --resource-group "$AZURE_RESOURCE_GROUP" \
-            --resource-type Microsoft.App/managedEnvironments \
-            --query '[].name' \
-            --output tsv)
+          MANAGED_ENVIRONMENT_ID=""
+          for attempt in $(seq 1 18); do
+            MANAGED_ENVIRONMENT_ID="$(
+              az containerapp show \
+                --resource-group "$AZURE_RESOURCE_GROUP" \
+                --name "ca-${AZURE_APP_NAME}" \
+                --query properties.managedEnvironmentId \
+                --output tsv 2>/dev/null || true
+            )"
 
-          if [[ "${#MANAGED_ENVIRONMENTS[@]}" -ne 1 ]]; then
-            echo "Expected exactly one Container Apps environment in ${AZURE_RESOURCE_GROUP}, found ${#MANAGED_ENVIRONMENTS[@]}."
-            exit 1
-          fi
+            if [[ -n "$MANAGED_ENVIRONMENT_ID" ]]; then
+              break
+            fi
 
-          MANAGED_ENVIRONMENT_NAME="${MANAGED_ENVIRONMENTS[0]}"
+            sleep 10
+          done
+
+          test -n "$MANAGED_ENVIRONMENT_ID" || { echo "Unable to resolve the Container Apps environment for ca-${AZURE_APP_NAME}."; exit 1; }
+
+          MANAGED_ENVIRONMENT_NAME="${MANAGED_ENVIRONMENT_ID##*/}"
           CONNECTION_IDS=()
 
           for attempt in $(seq 1 18); do
@@ -193,6 +201,7 @@ jobs:
       contents: read
       id-token: write
     env:
+      AZURE_APP_NAME: ${{ vars.AZURE_APP_NAME }}
       AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
       AZURE_RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
       AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
@@ -209,6 +218,7 @@ jobs:
           test -n "$AZURE_TENANT_ID" || { echo "Missing environment variable AZURE_TENANT_ID"; exit 1; }
           test -n "$AZURE_SUBSCRIPTION_ID" || { echo "Missing environment variable AZURE_SUBSCRIPTION_ID"; exit 1; }
           test -n "$AZURE_RESOURCE_GROUP" || { echo "Missing environment variable AZURE_RESOURCE_GROUP"; exit 1; }
+          test -n "$AZURE_APP_NAME" || { echo "Missing environment variable AZURE_APP_NAME"; exit 1; }
           test -n "$IMAGE_REF" || { echo "Missing workflow input image_ref"; exit 1; }
 
       - name: Log in to Azure with OIDC
@@ -245,8 +255,25 @@ jobs:
             printf '%s\n' "${names[0]}"
           }
 
-          MANAGED_ENVIRONMENT_NAME="$(require_single_resource_name 'Microsoft.App/managedEnvironments' 'Container Apps environment')"
-          CONTAINER_APP_NAME="$(require_single_resource_name 'Microsoft.App/containerApps' 'Container App')"
+          CONTAINER_APP_NAME="ca-${AZURE_APP_NAME}"
+          MANAGED_ENVIRONMENT_ID=""
+          for attempt in $(seq 1 18); do
+            MANAGED_ENVIRONMENT_ID="$(
+              az containerapp show \
+                --resource-group "$AZURE_RESOURCE_GROUP" \
+                --name "$CONTAINER_APP_NAME" \
+                --query properties.managedEnvironmentId \
+                --output tsv 2>/dev/null || true
+            )"
+
+            if [[ -n "$MANAGED_ENVIRONMENT_ID" ]]; then
+              break
+            fi
+
+            sleep 10
+          done
+
+          MANAGED_ENVIRONMENT_NAME="${MANAGED_ENVIRONMENT_ID##*/}"
           SQL_SERVER_NAME="$(require_single_resource_name 'Microsoft.Sql/servers' 'Azure SQL server')"
           SQL_DATABASE_NAME="$(az sql db list \
             --resource-group "$AZURE_RESOURCE_GROUP" \
@@ -280,6 +307,7 @@ jobs:
           test -n "$SQL_SERVER_NAME" || { echo "Missing Azure SQL server."; exit 1; }
           test -n "$SQL_DATABASE_NAME" || { echo "Missing Azure SQL database."; exit 1; }
           test -n "$CONTAINER_APP_NAME" || { echo "Missing Container App."; exit 1; }
+          test -n "$MANAGED_ENVIRONMENT_NAME" || { echo "Missing Container Apps environment."; exit 1; }
           test -n "$SQL_BOOTSTRAP_IDENTITY_NAME" || { echo "Missing SQL bootstrap identity name."; exit 1; }
           test -n "$SQL_BOOTSTRAP_IDENTITY_ID" || { echo "Missing SQL bootstrap identity id."; exit 1; }
           test -n "$SQL_BOOTSTRAP_IDENTITY_CLIENT_ID" || { echo "Missing SQL bootstrap identity client id."; exit 1; }
@@ -405,6 +433,7 @@ jobs:
       contents: read
       id-token: write
     env:
+      AZURE_APP_NAME: ${{ vars.AZURE_APP_NAME }}
       AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
       AZURE_RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
       AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
@@ -425,6 +454,7 @@ jobs:
           test -n "$AZURE_TENANT_ID" || { echo "Missing environment variable AZURE_TENANT_ID"; exit 1; }
           test -n "$AZURE_SUBSCRIPTION_ID" || { echo "Missing environment variable AZURE_SUBSCRIPTION_ID"; exit 1; }
           test -n "$AZURE_RESOURCE_GROUP" || { echo "Missing environment variable AZURE_RESOURCE_GROUP"; exit 1; }
+          test -n "$AZURE_APP_NAME" || { echo "Missing environment variable AZURE_APP_NAME"; exit 1; }
           test -n "$ENTRA_CLIENT_ID" || { echo "Missing environment variable ENTRA_CLIENT_ID"; exit 1; }
           test -n "$ENTRA_CLIENT_SECRET" || { echo "Missing secret ENTRA_CLIENT_SECRET"; exit 1; }
           test -n "$ARCADE_SESSION_SECRET" || { echo "Missing secret ARCADE_SESSION_SECRET"; exit 1; }
@@ -454,6 +484,7 @@ jobs:
     outputs:
       app_url: ${{ steps.public_endpoint.outputs.app_url }}
     env:
+      AZURE_APP_NAME: ${{ vars.AZURE_APP_NAME }}
       AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
       AZURE_RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
       AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
@@ -473,6 +504,7 @@ jobs:
           test -n "$AZURE_TENANT_ID" || { echo "Missing environment variable AZURE_TENANT_ID"; exit 1; }
           test -n "$AZURE_SUBSCRIPTION_ID" || { echo "Missing environment variable AZURE_SUBSCRIPTION_ID"; exit 1; }
           test -n "$AZURE_RESOURCE_GROUP" || { echo "Missing environment variable AZURE_RESOURCE_GROUP"; exit 1; }
+          test -n "$AZURE_APP_NAME" || { echo "Missing environment variable AZURE_APP_NAME"; exit 1; }
           test -n "$IMAGE_REF" || { echo "Missing workflow input image_ref"; exit 1; }
 
       - name: Log in to Azure with OIDC
@@ -482,34 +514,14 @@ jobs:
           tenant-id: ${{ env.AZURE_TENANT_ID }}
           subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Discover Container App
-        id: discover_container_app
-        run: |
-          mapfile -t CONTAINER_APPS < <(az resource list \
-            --resource-group "$AZURE_RESOURCE_GROUP" \
-            --resource-type Microsoft.App/containerApps \
-            --query '[].name' \
-            --output tsv)
-
-          if [[ "${#CONTAINER_APPS[@]}" -ne 1 ]]; then
-            echo "Expected exactly one Container App in ${AZURE_RESOURCE_GROUP}, found ${#CONTAINER_APPS[@]}."
-            exit 1
-          fi
-
-          echo "container_app_name=${CONTAINER_APPS[0]}" >> "$GITHUB_OUTPUT"
-
       - name: Configure registry access when required
-        env:
-          AZURE_CONTAINER_APP_NAME: ${{ steps.discover_container_app.outputs.container_app_name }}
         run: bash ./scripts/azure/postprovision.sh
 
       - name: Deploy immutable recovery image
-        env:
-          AZURE_CONTAINER_APP_NAME: ${{ steps.discover_container_app.outputs.container_app_name }}
         run: |
           az containerapp update \
             --resource-group "$AZURE_RESOURCE_GROUP" \
-            --name "$AZURE_CONTAINER_APP_NAME" \
+            --name "ca-${AZURE_APP_NAME}" \
             --image "$IMAGE_REF" \
             --output none
 
@@ -566,6 +578,7 @@ jobs:
       contents: read
       id-token: write
     env:
+      AZURE_APP_NAME: ${{ vars.AZURE_APP_NAME }}
       AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
       AZURE_RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
       AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
@@ -579,6 +592,7 @@ jobs:
           test -n "$AZURE_CLIENT_ID" || { echo "Missing environment variable AZURE_CLIENT_ID"; exit 1; }
           test -n "$AZURE_TENANT_ID" || { echo "Missing environment variable AZURE_TENANT_ID"; exit 1; }
           test -n "$AZURE_SUBSCRIPTION_ID" || { echo "Missing environment variable AZURE_SUBSCRIPTION_ID"; exit 1; }
+          test -n "$AZURE_APP_NAME" || { echo "Missing environment variable AZURE_APP_NAME"; exit 1; }
           test -n "$AZURE_RESOURCE_GROUP" || { echo "Missing environment variable AZURE_RESOURCE_GROUP"; exit 1; }
 
       - name: Log in to Azure with OIDC

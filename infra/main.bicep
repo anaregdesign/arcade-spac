@@ -2,30 +2,9 @@ param appName string = 'arcade'
 param location string = resourceGroup().location
 param containerImage string
 param manageRuntimeRoleAssignments bool = true
-param sqlDatabaseName string = 'arcade'
 param sqlAdministratorLogin string = ''
 @secure()
 param sqlAdministratorPassword string = ''
-param sqlEnableEntraOnlyAuthentication bool = true
-param entraTenantId string = tenant().tenantId
-param containerPort int = 3000
-param cpu int = 1
-param memory string = '2Gi'
-param healthProbePath string = '/health'
-param vnetAddressPrefix string = '10.0.0.0/16'
-param containerAppsInfrastructureSubnetPrefix string = '10.0.0.0/23'
-param privateEndpointSubnetPrefix string = '10.0.2.0/24'
-param environmentVariables array = [
-  {
-    name: 'NODE_ENV'
-    value: 'production'
-  }
-  {
-    name: 'PORT'
-    value: '3000'
-  }
-]
-param tags object = {}
 
 // Shared naming helpers and canonical Azure state strings.
 // Lower-cased app name fragment for resources with stricter naming rules.
@@ -44,13 +23,15 @@ var logAnalyticsWorkspaceName = 'law-${appName}'
 var applicationInsightsName = 'appi-${appName}'
 // Virtual network resource name.
 var virtualNetworkName = 'vnet-${appName}'
+// Azure tenant id used across runtime env vars and SQL admin configuration.
+var entraTenantId = tenant().tenantId
 // Delegated subnet name for the Container Apps environment.
 var containerAppsInfrastructureSubnetName = 'snet-cae'
 // Private endpoint subnet name for private-link resources.
 var privateEndpointSubnetName = 'snet-pe'
 // Container Apps managed environment resource name.
 var managedEnvironmentName = 'cae-${appName}'
-// Container App resource name.
+// Container App resource name derived from the canonical app name contract.
 var containerAppName = 'ca-${appName}'
 // App Configuration store resource name.
 var appConfigurationName = take('appcs-${appName}-${uniqueString(resourceGroup().id)}', 50)
@@ -90,6 +71,12 @@ var keyVaultSecretsUserRoleDefinitionId = subscriptionResourceId('Microsoft.Auth
 var roleAssignmentPrincipalType = 'ServicePrincipal'
 
 // Shared platform contract constants for hosted Azure services.
+// Virtual network address space for the hosted platform.
+var vnetAddressPrefix = '10.0.0.0/16'
+// Delegated subnet prefix for the Container Apps environment.
+var containerAppsInfrastructureSubnetPrefix = '10.0.0.0/23'
+// Private endpoint subnet prefix for private-link resources.
+var privateEndpointSubnetPrefix = '10.0.2.0/24'
 // Log Analytics SKU for the workspace backing the app environment.
 var logAnalyticsSkuName = 'PerGB2018'
 // Application Insights kind for the web application component.
@@ -158,14 +145,20 @@ var frontDoorAssetCacheContentTypes = [
 var containerAppIdentityType = 'SystemAssigned,UserAssigned'
 // Ingress transport mode exposed by the Container App.
 var containerAppIngressTransport = 'auto'
+// Ingress target port exposed by the Container App.
+var containerPort = 3000
 // Container name inside the Container App template.
 var containerAppContainerName = 'web'
+// CPU allocation for the Container App workload.
+var containerAppCpu = 1
+// Memory allocation for the Container App workload.
+var containerAppMemory = '2Gi'
+// Health endpoint path reused by probes and Front Door.
+var healthProbePath = '/health'
 // Env var name for the Application Insights connection string.
 var appInsightsConnectionStringEnvironmentVariableName = 'APPLICATIONINSIGHTS_CONNECTION_STRING'
 // Env var name for the app name exposed to the container runtime.
 var azureAppNameEnvironmentVariableName = 'AZURE_APP_NAME'
-// Env var name for the deployed Container App resource name.
-var azureContainerAppNameEnvironmentVariableName = 'AZURE_CONTAINER_APP_NAME'
 // Env var name for the App Configuration endpoint.
 var azureAppConfigEndpointEnvironmentVariableName = 'AZURE_APPCONFIG_ENDPOINT'
 // Env var name for the Key Vault URI.
@@ -182,18 +175,33 @@ var startupProbeType = 'Startup'
 var readinessProbeType = 'Readiness'
 // Probe type label for liveness health checks.
 var livenessProbeType = 'Liveness'
+// Default non-secret environment variables injected into the Container App.
+var defaultContainerEnvironmentVariables = [
+  {
+    name: 'NODE_ENV'
+    value: 'production'
+  }
+  {
+    name: 'PORT'
+    value: string(containerPort)
+  }
+]
 // Minimum replica count for the Container App.
 var containerAppScaleMinReplicas = 1
 // Maximum replica count for the Container App.
 var containerAppScaleMaxReplicas = 3
 
 // Azure SQL hosting and private-connectivity contract constants.
+// Database name used by the hosted Azure SQL deployment.
+var sqlDatabaseName = 'arcade'
 // Minimum TLS version enforced by the SQL server.
 var sqlMinimalTlsVersion = '1.2'
 // Azure SQL engine version for the logical server.
 var sqlServerVersion = '12.0'
 // Administrator type used for the SQL Entra admin contract.
 var sqlAdministratorType = 'ActiveDirectory'
+// Always enforce Entra-only authentication on the hosted Azure SQL server.
+var sqlEnableEntraOnlyAuthentication = true
 // Principal type used by the SQL bootstrap identity.
 var applicationPrincipalType = 'Application'
 // SKU name for the serverless SQL database.
@@ -218,7 +226,6 @@ var sqlPrivateDnsZoneConfigName = 'sql'
 resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2023-09-01' = {
   name: logAnalyticsWorkspaceName
   location: location
-  tags: tags
   properties: {
     sku: {
       name: logAnalyticsSkuName
@@ -231,7 +238,6 @@ resource applicationInsights 'Microsoft.Insights/components@2020-02-02' = {
   name: applicationInsightsName
   location: location
   kind: applicationInsightsKind
-  tags: tags
   properties: {
     Application_Type: applicationInsightsType
     WorkspaceResourceId: logAnalyticsWorkspace.id
@@ -241,7 +247,6 @@ resource applicationInsights 'Microsoft.Insights/components@2020-02-02' = {
 resource virtualNetwork 'Microsoft.Network/virtualNetworks@2024-05-01' = {
   name: virtualNetworkName
   location: location
-  tags: tags
   properties: {
     addressSpace: {
       addressPrefixes: [
@@ -279,7 +284,6 @@ resource privateEndpointSubnet 'Microsoft.Network/virtualNetworks/subnets@2024-0
 resource appConfiguration 'Microsoft.AppConfiguration/configurationStores@2024-05-01' = {
   name: appConfigurationName
   location: location
-  tags: tags
   sku: {
     name: appConfigurationSkuName
   }
@@ -293,7 +297,6 @@ resource appConfiguration 'Microsoft.AppConfiguration/configurationStores@2024-0
 resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
   name: keyVaultName
   location: location
-  tags: tags
   properties: {
     tenantId: tenant().tenantId
     sku: {
@@ -310,19 +313,16 @@ resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
 resource sqlMigrationIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
   name: sqlMigrationIdentityName
   location: location
-  tags: tags
 }
 
 resource sqlBootstrapIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
   name: sqlBootstrapIdentityName
   location: location
-  tags: tags
 }
 
 resource managedEnvironment 'Microsoft.App/managedEnvironments@2025-10-02-preview' = {
   name: managedEnvironmentName
   location: location
-  tags: tags
   properties: {
     appLogsConfiguration: {
       destination: logAnalyticsDestination
@@ -348,7 +348,6 @@ resource managedEnvironment 'Microsoft.App/managedEnvironments@2025-10-02-previe
 resource frontDoorProfile 'Microsoft.Cdn/profiles@2021-06-01' = {
   name: frontDoorProfileName
   location: globalLocation
-  tags: tags
   sku: {
     name: frontDoorSkuName
   }
@@ -456,7 +455,6 @@ resource frontDoorAssetRoute 'Microsoft.Cdn/profiles/afdEndpoints/routes@2021-06
 resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
   name: containerAppName
   location: location
-  tags: tags
   identity: {
     type: containerAppIdentityType
     userAssignedIdentities: {
@@ -488,10 +486,6 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
                 value: appName
               }
               {
-                name: azureContainerAppNameEnvironmentVariableName
-                value: containerAppName
-              }
-              {
                 name: azureAppConfigEndpointEnvironmentVariableName
                 value: appConfiguration.properties.endpoint
               }
@@ -512,7 +506,7 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
                 value: sqlStartupMigrationDatabaseUrl
               }
             ],
-            environmentVariables
+            defaultContainerEnvironmentVariables
           )
           probes: [
             {
@@ -550,8 +544,8 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
             }
           ]
           resources: {
-            cpu: cpu
-            memory: memory
+            cpu: containerAppCpu
+            memory: containerAppMemory
           }
         }
       ]
@@ -566,7 +560,6 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
 resource sqlServer 'Microsoft.Sql/servers@2021-11-01-preview' = {
   name: sqlServerName
   location: location
-  tags: tags
   properties: union(
     union(
       {
@@ -600,7 +593,6 @@ resource sqlDatabase 'Microsoft.Sql/servers/databases@2021-11-01-preview' = {
   parent: sqlServer
   name: sqlDatabaseName
   location: location
-  tags: tags
   sku: {
     name: sqlDatabaseSkuName
     tier: sqlDatabaseSkuTier
@@ -634,7 +626,6 @@ resource sqlPrivateDnsZoneVirtualNetworkLink 'Microsoft.Network/privateDnsZones/
 resource sqlPrivateEndpoint 'Microsoft.Network/privateEndpoints@2024-05-01' = {
   name: sqlPrivateEndpointName
   location: location
-  tags: tags
   properties: {
     subnet: {
       id: privateEndpointSubnet.id

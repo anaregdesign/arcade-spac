@@ -50,7 +50,7 @@ function requireAzureSetting(name: string, value: string | undefined) {
 }
 
 function getHostingTarget(): RuntimeConfig["hostingTarget"] {
-  return process.env.AZURE_CONTAINER_APP_NAME || process.env.AZURE_APP_NAME ? "azure" : "local";
+  return process.env.AZURE_APP_NAME ? "azure" : "local";
 }
 
 function selectAzureCredential(hostingTarget: RuntimeConfig["hostingTarget"]): TokenCredential {

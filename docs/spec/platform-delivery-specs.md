@@ -8,7 +8,7 @@
 
 - 現在の release workflow は image publish と app deploy を主に扱っており、`plan_infra` と `deploy_infra` が分離されていない
 - 現在の repository には push / pull request 向けの quality gate workflow がなく、workflow や Bicep の regression を release 前に止めにくい
-- GitHub `production` Environment contract が `AZURE_CONTAINER_APP_NAME` や GHCR 固有の変数に寄っており、shared skill の generic contract とずれている
+- GitHub `production` Environment contract が app identity と deploy target を別 variable に分けており、single-source-of-truth になっていない
 - runbook と prerequisite docs が現行 release workflow shape と runtime config sync responsibility を十分に表現していない
 - hardening 後の first push と first release で `Quality Gates` と `Release Azure Delivery` が fail しており、target contract への migration が完了していない
 - release workflow の infra plan が bootstrap-only な Azure RBAC assignment まで毎回評価しており、day-to-day deploy identity に不要な `roleAssignments/write` を要求している
@@ -63,7 +63,7 @@
 - `deploy_app` が release tag の immutable image を explicit に Container App へ反映する
 - `deploy_app` が registry auth を generic `CONTAINER_REGISTRY_*` contract で扱い、GHCR 固有の variable 名に依存しない
 - push / pull request の quality gate workflow が typecheck、unit test、build、Bicep validation、workflow lint を実行する
-- `scripts/azure/postprovision.sh` と `scripts/azure/verify-production-runtime.sh` が resource discovery based contract と両立する
+- `scripts/azure/postprovision.sh` と `scripts/azure/verify-production-runtime.sh` が `AZURE_APP_NAME` から `ca-${AZURE_APP_NAME}` を導き、Container App 名を resource-group discovery に fallback しない
 - `docs/azure-prerequisites.md`、`docs/production-operations.md`、関連 docs が新しい `production` / `production-bootstrap` Environment contract と workflow-only bootstrap flow を説明する
 - release workflow が bootstrap-only role assignment resources を deploy 対象から外し、`roleAssignments/write` を日常 release の前提にしない
 - hardening 後の push run で `Quality Gates` が success になる
@@ -71,7 +71,7 @@
 
 ## Edge Cases
 
-- helper script と verification path は dedicated resource group 内の single resource discovery を優先し、explicit override が必要な path だけ input を使う
+- helper script と verification path は operator-owned resource name を GitHub Environment variable から受け取り、pure derived resource だけ lookup する
 - GHCR package が public なら registry credentials を要求しない
 - private registry path が必要でも、ACR の場合は `CONTAINER_REGISTRY_IDENTITY` を優先し、username / password は fallback としてのみ扱う
 - initial bootstrap や RBAC reconciliation では elevated Azure RBAC assignment 権限が必要でも、day-to-day release workflow はその権限を常時要求しない

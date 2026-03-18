@@ -59,4 +59,5 @@ This runbook captures the remaining GitHub-side and Azure-side follow-up after s
 2. Confirm the bootstrap federated credential subject is `repo:anaregdesign/arcade-spec:environment:production-bootstrap`.
 3. Publish a release and confirm the workflow pushes a package under `ghcr.io/anaregdesign/arcade-spec`.
 4. Trigger `Bootstrap Azure Recovery` and confirm the workflow accepts an immutable image reference under the same GHCR namespace.
-5. Update the operational docs if the deployed image namespace has changed.
+5. Confirm `AZURE_RESOURCE_GROUP` and `AZURE_APP_NAME` are still aligned to the intended target environment after any environment switch.
+6. Update the operational docs if the deployed image namespace has changed.

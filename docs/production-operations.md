@@ -50,25 +50,28 @@ This runbook records the repository-side production contract for Arcade on Azure
 
 1. Confirm the `Quality Gates` workflow passed for the release target commit.
 2. Keep the GitHub `production` Environment runtime values and secrets current.
-3. Keep `PUBLIC_APP_URL` aligned to the final custom domain URL, or leave it unset so the workflow derives the current Front Door host automatically.
-4. Update the Microsoft Entra app registration redirect URI when the public host changes.
-5. Publish the release so the GitHub workflow runs `publish`, `plan_infra`, `deploy_infra`, `sync_runtime_config`, `deploy_app`, and `smoke_test`.
-6. Confirm the workflow completed successfully.
-7. Use `Verify Production Runtime` for the post-release contract check.
-8. Verify hosted sign-in, gameplay, result, rankings, and profile screens in a browser.
+3. When redeploying into another resource group during dev, update `AZURE_RESOURCE_GROUP` and `AZURE_APP_NAME` first.
+4. Keep `PUBLIC_APP_URL` aligned to the final custom domain URL, or leave it unset so the workflow derives the current Front Door host automatically.
+5. Update the Microsoft Entra app registration redirect URI when the public host changes.
+6. Publish the release so the GitHub workflow runs `publish`, `plan_infra`, `deploy_infra`, `sync_runtime_config`, `deploy_app`, and `smoke_test`.
+7. Confirm the workflow completed successfully.
+8. Use `Verify Production Runtime` for the post-release contract check.
+9. Verify hosted sign-in, gameplay, result, rankings, and profile screens in a browser.
 
 ## Full Bootstrap Or Recovery Procedure
 
 1. Choose a known-good immutable `image_ref`.
-2. Trigger `Bootstrap Azure Recovery`.
-3. Confirm `ensure_resource_group`, `deploy_bootstrap_infra`, `bootstrap_sql`, `sync_runtime_config`, `deploy_app`, `smoke_test`, and `verify_runtime` all succeed.
-4. Verify hosted sign-in and the core browser flows through the recovered public host.
-5. Refresh this document with the exact live Front Door host, image reference, revision, and any cloud-side deviations from the target contract.
+2. Confirm `AZURE_RESOURCE_GROUP`, `AZURE_LOCATION`, and `AZURE_APP_NAME` point at the target environment.
+3. Trigger `Bootstrap Azure Recovery`.
+4. Confirm `ensure_resource_group`, `deploy_bootstrap_infra`, `bootstrap_sql`, `sync_runtime_config`, `deploy_app`, `smoke_test`, and `verify_runtime` all succeed.
+5. Verify hosted sign-in and the core browser flows through the recovered public host.
+6. Refresh this document with the exact live Front Door host, image reference, revision, and any cloud-side deviations from the target contract.
 
 ## Operational Notes
 
 - The repository contract now treats Azure Front Door as the canonical public entrypoint. Keep `PUBLIC_APP_URL`, browser smoke checks, and Entra redirect URIs aligned to that host.
 - The repository contract no longer keeps a supported local Azure CLI bootstrap or recovery path.
+- GitHub Environment owns the canonical app identity through `AZURE_APP_NAME`; the Container App target is always derived as `ca-${AZURE_APP_NAME}` across bootstrap, release, verification, and workflow-owned helper scripts.
 - `Bootstrap Azure Recovery` owns resource-group creation and initial Azure SQL principal bootstrap through GitHub Actions OIDC.
 - `Release Azure Delivery` owns routine infra convergence, runtime config sync, image rollout, and smoke testing through GitHub Actions OIDC.
 - `Verify Production Runtime` owns the supported hosted contract verification path.

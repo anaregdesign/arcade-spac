@@ -3,7 +3,7 @@ import { spawn } from "node:child_process";
 const STARTUP_MIGRATION_DATABASE_URL_ENV_NAME = "STARTUP_MIGRATION_DATABASE_URL";
 
 function isAzureHosting() {
-  return Boolean(process.env.AZURE_CONTAINER_APP_NAME || process.env.AZURE_APP_NAME);
+  return Boolean(process.env.AZURE_APP_NAME);
 }
 
 function npmCommand() {

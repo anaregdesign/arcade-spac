@@ -145,6 +145,8 @@ Current repository note:
 - runtime secrets stay in Key Vault and App Configuration rather than deployment parameters or repo files
 - `PUBLIC_APP_URL` should be the Azure Front Door endpoint URL or the final custom domain URL
 - after changing the public host, update the Microsoft Entra app registration redirect URI to `https://<front-door-host-or-custom-domain>/auth/callback`
+- when switching to another resource group during dev, update `AZURE_RESOURCE_GROUP` and `AZURE_APP_NAME` before running bootstrap, release, or verification workflows
+- the repository derives the Container App resource name as `ca-${AZURE_APP_NAME}`; workflow-owned helper scripts use the same derivation instead of a separate environment variable
 
 ## Azure SQL Provisioning Inputs And Identities
 
@@ -186,6 +188,10 @@ The repository target contract for the production data path is:
 3. Confirm `ensure_resource_group`, `deploy_bootstrap_infra`, `bootstrap_sql`, `sync_runtime_config`, `deploy_app`, `smoke_test`, and `verify_runtime` all succeed.
 4. For routine forward deploys after bootstrap, publish a GitHub Release and confirm `publish`, `plan_infra`, `deploy_infra`, `sync_runtime_config`, `deploy_app`, and `smoke_test` succeed.
 5. Keep `Verify Production Runtime` available as the recurring hosted contract check.
+6. For a dev-phase resource-group switch, update the GitHub Environment variables first:
+   - `AZURE_RESOURCE_GROUP`
+   - `AZURE_APP_NAME`
+   - `AZURE_LOCATION` when the target region also changes
 
 ## Repository Rename Note
 

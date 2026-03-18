@@ -6,6 +6,11 @@ if [[ -z "${AZURE_RESOURCE_GROUP:-}" ]]; then
   exit 1
 fi
 
+if [[ -z "${AZURE_APP_NAME:-}" ]]; then
+  echo "AZURE_APP_NAME is required."
+  exit 1
+fi
+
 SQL_PRIVATE_DNS_ZONE_NAME="${SQL_PRIVATE_DNS_ZONE_NAME:-privatelink.database.windows.net}"
 APP_CONFIGURATION_PRIVATE_DNS_ZONE_NAME="${APP_CONFIGURATION_PRIVATE_DNS_ZONE_NAME:-privatelink.azconfig.io}"
 KEY_VAULT_PRIVATE_DNS_ZONE_NAME="${KEY_VAULT_PRIVATE_DNS_ZONE_NAME:-privatelink.vaultcore.azure.net}"
@@ -15,15 +20,6 @@ EXPECTED_APPCONFIG_PUBLIC_NETWORK_ACCESS="${EXPECTED_APPCONFIG_PUBLIC_NETWORK_AC
 EXPECTED_KEY_VAULT_PUBLIC_NETWORK_ACCESS="${EXPECTED_KEY_VAULT_PUBLIC_NETWORK_ACCESS:-Enabled}"
 EXPECTED_FRONT_DOOR_SKU="${EXPECTED_FRONT_DOOR_SKU:-Premium_AzureFrontDoor}"
 EXPECTED_MANAGED_ENVIRONMENT_PUBLIC_NETWORK_ACCESS="${EXPECTED_MANAGED_ENVIRONMENT_PUBLIC_NETWORK_ACCESS:-Disabled}"
-
-resolve_container_app_name() {
-  if [[ -n "${AZURE_CONTAINER_APP_NAME:-}" ]]; then
-    printf '%s\n' "${AZURE_CONTAINER_APP_NAME}"
-    return
-  fi
-
-  require_single_resource_name 'Microsoft.App/containerApps' 'Container App'
-}
 
 require_single_resource_name() {
   local resource_type="$1"
@@ -312,7 +308,7 @@ assert_front_door_private_link_connections() {
   echo "Verified Azure Front Door private endpoint connections for ${managed_environment_name} are approved."
 }
 
-container_app_name="$(resolve_container_app_name)"
+container_app_name="ca-${AZURE_APP_NAME}"
 APP_URL="$(resolve_app_url "${container_app_name}")"
 sql_server_name="${AZURE_SQL_SERVER_NAME:-$(require_single_resource_name 'Microsoft.Sql/servers' 'Azure SQL server')}"
 front_door_profile_name="$(require_single_resource_name 'Microsoft.Cdn/profiles' 'Azure Front Door profile')"
@@ -380,52 +376,46 @@ fi
 
 echo "Verified Azure SQL Entra administrator ${sql_entra_admin_login}."
 
-managed_environment_name=''
-container_apps_vnet_id=''
-container_app_principal_id=''
+container_app_status="$(az containerapp show \
+  --resource-group "${AZURE_RESOURCE_GROUP}" \
+  --name "${container_app_name}" \
+  --query properties.runningStatus \
+  -o tsv)"
 
-if [[ -n "${container_app_name}" ]]; then
-  container_app_status="$(az containerapp show \
-    --resource-group "${AZURE_RESOURCE_GROUP}" \
-    --name "${container_app_name}" \
-    --query properties.runningStatus \
-    -o tsv)"
-
-  if [[ "${container_app_status}" != "Running" ]]; then
-    echo "Container App ${container_app_name} is ${container_app_status}."
-    exit 1
-  fi
-
-  echo "Verified Container App ${container_app_name} is running."
-
-  managed_environment_id="$(az containerapp show \
-    --resource-group "${AZURE_RESOURCE_GROUP}" \
-    --name "${container_app_name}" \
-    --query properties.managedEnvironmentId \
-    -o tsv)"
-  managed_environment_name="${managed_environment_id##*/}"
-  container_app_principal_id="$(az containerapp show \
-    --resource-group "${AZURE_RESOURCE_GROUP}" \
-    --name "${container_app_name}" \
-    --query identity.principalId \
-    -o tsv)"
-
-  infrastructure_subnet_id="$(az containerapp env show \
-    --resource-group "${AZURE_RESOURCE_GROUP}" \
-    --name "${managed_environment_name}" \
-    --query properties.vnetConfiguration.infrastructureSubnetId \
-    -o tsv)"
-
-  if [[ -z "${infrastructure_subnet_id}" ]]; then
-    echo "Container Apps environment ${managed_environment_name} is not integrated with a delegated infrastructure subnet."
-    exit 1
-  fi
-
-  container_apps_vnet_id="${infrastructure_subnet_id%/subnets/*}"
-  echo "Verified Container Apps environment ${managed_environment_name} uses delegated subnet ${infrastructure_subnet_id}."
-  assert_managed_environment_public_network_access "${managed_environment_name}"
-  assert_front_door_private_link_connections "${managed_environment_name}"
+if [[ "${container_app_status}" != "Running" ]]; then
+  echo "Container App ${container_app_name} is ${container_app_status}."
+  exit 1
 fi
+
+echo "Verified Container App ${container_app_name} is running."
+
+managed_environment_id="$(az containerapp show \
+  --resource-group "${AZURE_RESOURCE_GROUP}" \
+  --name "${container_app_name}" \
+  --query properties.managedEnvironmentId \
+  -o tsv)"
+managed_environment_name="${managed_environment_id##*/}"
+container_app_principal_id="$(az containerapp show \
+  --resource-group "${AZURE_RESOURCE_GROUP}" \
+  --name "${container_app_name}" \
+  --query identity.principalId \
+  -o tsv)"
+
+infrastructure_subnet_id="$(az containerapp env show \
+  --resource-group "${AZURE_RESOURCE_GROUP}" \
+  --name "${managed_environment_name}" \
+  --query properties.vnetConfiguration.infrastructureSubnetId \
+  -o tsv)"
+
+if [[ -z "${infrastructure_subnet_id}" ]]; then
+  echo "Container Apps environment ${managed_environment_name} is not integrated with a delegated infrastructure subnet."
+  exit 1
+fi
+
+container_apps_vnet_id="${infrastructure_subnet_id%/subnets/*}"
+echo "Verified Container Apps environment ${managed_environment_name} uses delegated subnet ${infrastructure_subnet_id}."
+assert_managed_environment_public_network_access "${managed_environment_name}"
+assert_front_door_private_link_connections "${managed_environment_name}"
 
 if [[ -n "${container_apps_vnet_id}" ]]; then
   assert_private_dns_zone_linked_to_vnet "${SQL_PRIVATE_DNS_ZONE_NAME}" "${container_apps_vnet_id}"
@@ -477,19 +467,12 @@ key_vault_uri="${key_vault_uri:-$(get_key_vault_value "${key_vault_name}" 'prope
 assert_app_configuration_public_network_access "${app_configuration_name}" "${EXPECTED_APPCONFIG_PUBLIC_NETWORK_ACCESS}"
 assert_key_vault_public_network_access "${key_vault_name}" "${EXPECTED_KEY_VAULT_PUBLIC_NETWORK_ACCESS}"
 
-if [[ -n "${container_app_name}" ]]; then
-  assert_container_app_env_value "${container_app_name}" 'AZURE_CONTAINER_APP_NAME' "${container_app_name}"
-  if [[ -n "${AZURE_APP_NAME:-}" ]]; then
-    assert_container_app_env_value "${container_app_name}" 'AZURE_APP_NAME' "${AZURE_APP_NAME}"
-  fi
-  assert_container_app_env_value "${container_app_name}" 'AZURE_APPCONFIG_ENDPOINT' "${app_configuration_endpoint}"
-  assert_container_app_env_value "${container_app_name}" 'AZURE_KEY_VAULT_URI' "${key_vault_uri}"
-fi
+assert_container_app_env_value "${container_app_name}" 'AZURE_APP_NAME' "${AZURE_APP_NAME}"
+assert_container_app_env_value "${container_app_name}" 'AZURE_APPCONFIG_ENDPOINT' "${app_configuration_endpoint}"
+assert_container_app_env_value "${container_app_name}" 'AZURE_KEY_VAULT_URI' "${key_vault_uri}"
 
-if [[ -n "${container_app_principal_id}" ]]; then
-  assert_role_assignment_for_principal "${app_configuration_id}" "${container_app_principal_id}" 'App Configuration Data Reader' 'App Configuration access'
-  assert_role_assignment_for_principal "${key_vault_id}" "${container_app_principal_id}" 'Key Vault Secrets User' 'Key Vault access'
-fi
+assert_role_assignment_for_principal "${app_configuration_id}" "${container_app_principal_id}" 'App Configuration Data Reader' 'App Configuration access'
+assert_role_assignment_for_principal "${key_vault_id}" "${container_app_principal_id}" 'Key Vault Secrets User' 'Key Vault access'
 
 echo "Verified hosted Azure runtime contract for ${sql_server_name}."
 APP_URL="${APP_URL}" ./scripts/azure/smoke-test.sh
