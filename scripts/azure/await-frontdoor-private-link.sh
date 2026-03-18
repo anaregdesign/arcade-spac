@@ -53,6 +53,27 @@ assert_deployment_still_actionable() {
   fi
 }
 
+approve_connection() {
+  local connection_id="$1"
+  local error_file=""
+
+  error_file="$(mktemp)"
+  if az network private-endpoint-connection approve --id "${connection_id}" --output none 2>"${error_file}"; then
+    rm -f "${error_file}"
+    return 0
+  fi
+
+  if grep -qiE 'PrivateEndpointConnectionLockConflict|another operation is in progress' "${error_file}"; then
+    echo "Private endpoint connection ${connection_id} is locked by another Azure operation; retrying."
+    rm -f "${error_file}"
+    return 0
+  fi
+
+  cat "${error_file}" >&2
+  rm -f "${error_file}"
+  return 1
+}
+
 managed_environment_id=""
 for attempt in $(seq 1 "${approval_retries}"); do
   assert_deployment_still_actionable
@@ -97,22 +118,30 @@ done
 assert_deployment_still_actionable
 [[ "${#connection_ids[@]}" -gt 0 ]] || fail "No Azure Front Door private endpoint connections were discovered for ${managed_environment_name}."
 
-for connection_id in "${connection_ids[@]}"; do
-  connection_status="$(
-    az resource show \
-      --ids "${connection_id}" \
-      --query properties.privateLinkServiceConnectionState.status \
-      --output tsv
-  )"
-
-  if [[ "${connection_status}" != "Approved" ]]; then
-    az network private-endpoint-connection approve --id "${connection_id}" --output none
-  fi
-done
-
 pending_count=""
 for attempt in $(seq 1 "${approval_retries}"); do
   assert_deployment_still_actionable
+
+  pending_count="0"
+  for connection_id in "${connection_ids[@]}"; do
+    connection_status="$(
+      az resource show \
+        --ids "${connection_id}" \
+        --query properties.privateLinkServiceConnectionState.status \
+        --output tsv
+    )"
+
+    if [[ "${connection_status}" == "Approved" ]]; then
+      continue
+    fi
+
+    pending_count="$((pending_count + 1))"
+    approve_connection "${connection_id}" || fail "Failed to approve Azure Front Door private endpoint connection ${connection_id}."
+  done
+
+  if [[ "${pending_count}" == "0" ]]; then
+    break
+  fi
 
   pending_count="$(
     az network private-endpoint-connection list \

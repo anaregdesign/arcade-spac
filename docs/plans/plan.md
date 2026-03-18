@@ -40,6 +40,7 @@
 - [x] Patch bootstrap/release private-link approval so a terminal infra deployment failure surfaces its Azure operation errors immediately instead of timing out on missing private-link connections
 - [x] Upgrade bootstrap/release/verification workflows from `azure/login@v2` to `azure/login@v3`
 - [x] Verify the touched workflows remain valid after the `azure/login@v3` upgrade
+- [x] Patch `scripts/azure/await-frontdoor-private-link.sh` so transient `PrivateEndpointConnectionLockConflict` responses retry instead of aborting bootstrap/release before `production` RBAC restore
 
 ### Subsection 2.5 - Existing Resource Reuse
 - [x] Capture the canonical operator-facing requirement for suffix-scoped Azure environment isolation plus same-suffix reuse of existing or recoverable Azure resources
