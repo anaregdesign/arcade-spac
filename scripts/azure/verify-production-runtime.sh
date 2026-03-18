@@ -86,6 +86,45 @@ resolve_app_url() {
   printf 'https://%s\n' "${front_door_host}"
 }
 
+assert_auth_redirect_uses_public_app_url() {
+  local app_url="$1"
+  local expected_redirect_uri="${app_url%/}/auth/callback"
+  local headers_file
+  local location_header
+  local redirect_uri
+
+  headers_file="$(mktemp)"
+  trap 'rm -f "${headers_file}"' RETURN
+
+  curl -fsS \
+    -D "${headers_file}" \
+    -o /dev/null \
+    "${app_url%/}/auth/start"
+
+  location_header="$(awk 'BEGIN { IGNORECASE = 1 } /^location:/ { sub(/\r$/, "", $0); print substr($0, 11) }' "${headers_file}" | tail -n 1)"
+
+  if [[ -z "${location_header}" ]]; then
+    echo "Auth start endpoint did not return a redirect Location header."
+    exit 1
+  fi
+
+  redirect_uri="$(python3 - "${location_header}" <<'PY'
+import sys
+from urllib.parse import parse_qs, urlparse
+
+url = urlparse(sys.argv[1])
+print(parse_qs(url.query).get("redirect_uri", [""])[0])
+PY
+)"
+
+  if [[ "${redirect_uri}" != "${expected_redirect_uri}" ]]; then
+    echo "Auth redirect_uri is ${redirect_uri}, expected ${expected_redirect_uri}."
+    exit 1
+  fi
+
+  echo "Verified auth redirect_uri=${redirect_uri}."
+}
+
 get_app_configuration_value() {
   local store_name="$1"
   local query="$2"
@@ -473,6 +512,7 @@ assert_container_app_env_value "${container_app_name}" 'AZURE_KEY_VAULT_URI' "${
 
 assert_role_assignment_for_principal "${app_configuration_id}" "${container_app_principal_id}" 'App Configuration Data Reader' 'App Configuration access'
 assert_role_assignment_for_principal "${key_vault_id}" "${container_app_principal_id}" 'Key Vault Secrets User' 'Key Vault access'
+assert_auth_redirect_uses_public_app_url "${APP_URL}"
 
 echo "Verified hosted Azure runtime contract for ${sql_server_name}."
 APP_URL="${APP_URL}" ./scripts/azure/smoke-test.sh
