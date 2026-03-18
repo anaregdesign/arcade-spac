@@ -85,82 +85,63 @@ For local development, the app still supports shell-based fallback when `AZURE_A
 
 Hosted runtime config sync is workflow-owned. Use GitHub `Release Azure Delivery` or `Bootstrap Azure Recovery` instead of local Azure sync entrypoints.
 
-## Azure Deployment Assets
+## Azure Workflows
 
-The repository now includes these Azure-oriented assets:
+This repo uses GitHub Actions OIDC for hosted Azure delivery.
 
-- `azure.yaml` for `azd` service wiring
-- `infra/main.bicep` for VNet-integrated Azure Container Apps, Azure SQL, App Configuration, Key Vault, Log Analytics, and Application Insights
-- `infra/main.bicep` also defines the Azure SQL serverless database path, SQL `Private Endpoint` resources, private DNS links, Container App `/health` probes, a SQL bootstrap identity, and a separate user-assigned migration identity
-- `.github/workflows/bootstrap-azure-recovery.yml` for OIDC-only resource-group creation, hosted baseline bootstrap, SQL principal bootstrap, and recovery deploy
-- `.github/workflows/quality-gates.yml` for push / pull request validation of app code, Bicep, and GitHub workflow syntax
-- `.github/workflows/release-container-image.yml` for GitHub Releases to GHCR plus `plan_infra`, conditional `deploy_infra`, `sync_runtime_config`, `deploy_app`, and `smoke_test`
-- `scripts/azure/postprovision.sh` for post-provision registry wiring
-- `scripts/azure/sync-runtime-config.sh` for App Configuration and Key Vault runtime config synchronization
-- `scripts/azure/smoke-test.sh` for post-deploy smoke checks
-- `scripts/azure/verify-production-runtime.sh` for private-network and runtime verification
-- `app/routes/health.ts` for smoke checks
+- `.github/workflows/bootstrap-azure-recovery.yml`
+  Bootstrap from an empty resource group and worst-case recovery
+- `.github/workflows/release-container-image.yml`
+  Routine release delivery
+- `.github/workflows/verify-production-runtime.yml`
+  Scheduled and on-demand hosted runtime verification
 
-## Azure Prerequisites
+## Before Running GitHub Workflows
 
-Before a real hosted deployment, prepare all of the following:
+For this repo, the human-side setup is mostly these 3 buckets.
 
-- An Azure subscription and deployment region that support Azure Container Apps, Azure SQL, private DNS, and `Private Endpoint`
-- A target resource-group name for the GitHub bootstrap workflow to create or reconcile
-- A Microsoft Entra ID tenant and `web` app registration for the production sign-in flow
-- A virtual network plan that includes a delegated Container Apps infrastructure subnet and a separate private-endpoint subnet
-- Private DNS ownership or approval for:
-  - `privatelink.database.windows.net`
-- GitHub `production` Environment variables for routine OIDC release:
-  - `AZURE_CLIENT_ID`
-  - `AZURE_TENANT_ID`
-  - `AZURE_SUBSCRIPTION_ID`
-  - `AZURE_RESOURCE_GROUP`
-  - `AZURE_APP_NAME`
-- GitHub `production` Environment variables for runtime config sync:
-  - `ENTRA_CLIENT_ID`
-  - `ENTRA_TENANT_ID` when it differs from `AZURE_TENANT_ID`
-  - `ENTRA_AUTHORITY_TENANT` when the sign-in audience should not default to `ENTRA_TENANT_ID`
-  - `PUBLIC_APP_URL` when a custom domain should override the default Front Door host
-  - `SQL_ADMINISTRATOR_LOGIN`
-- GitHub `production-bootstrap` Environment variables for OIDC recovery bootstrap:
-  - `AZURE_CLIENT_ID`
-  - `AZURE_TENANT_ID`
-  - `AZURE_SUBSCRIPTION_ID`
-  - `AZURE_LOCATION`
-  - `AZURE_RESOURCE_GROUP`
-  - `AZURE_APP_NAME`
-  - `SQL_ADMINISTRATOR_LOGIN`
-- Azure RBAC split:
-  - Day-to-day GitHub release identity: `Contributor`, `App Configuration Data Owner`, and `Key Vault Secrets Officer` at the target resource-group scope so recovery can recreate the stores without a second grant step
-  - GitHub `production-bootstrap` identity: subscription or recovery-scope `Contributor`, plus `Role Based Access Control Administrator` or `User Access Administrator` when `manageRuntimeRoleAssignments=true`
-- Optional GitHub Environment variables for non-public or non-GHCR registry paths:
-  - `CONTAINER_REGISTRY_SERVER`
-  - `CONTAINER_REGISTRY_IDENTITY`
-  - `CONTAINER_REGISTRY_USERNAME`
-- Optional GitHub Environment secret:
-  - `CONTAINER_REGISTRY_PASSWORD`
-- GitHub `production` Environment secrets for runtime config sync and SQL bootstrap:
-  - `ARCADE_SESSION_SECRET`
-  - `ENTRA_CLIENT_SECRET`
-  - `SQL_ADMINISTRATOR_PASSWORD`
-- GitHub `production-bootstrap` Environment secret:
-  - `SQL_ADMINISTRATOR_PASSWORD`
-- Azure App Configuration values for non-secret runtime settings
-- Azure Key Vault secrets for secret runtime values such as `ARCADE_SESSION_SECRET` and the Entra confidential client secret
-- A dev or test `Microsoft Entra ID` app registration for local sign-in verification if the team wants production-like auth locally
-- A known-good immutable image reference for `.github/workflows/bootstrap-azure-recovery.yml`
+1. Create GitHub Actions OIDC identities in Azure.
+   Create 2 identities: `production` and `production-bootstrap`.
+   Each one needs a `federated credential`. Creating only a `Service Principal` is not enough; the required Azure RBAC must also be granted.
+   `production` needs `Contributor`, `App Configuration Data Owner`, and `Key Vault Secrets Officer` on the target resource group.
+   `production-bootstrap` needs permission to create the resource group and run bootstrap deploys, plus `Role Based Access Control Administrator` or `User Access Administrator`.
 
-See `docs/azure-prerequisites.md` for the detailed checklist and current gaps.
-See `docs/production-data-path.md` for the current database cutover contract.
-See `docs/production-operations.md` for the current repository target contract, smoke test procedure, rollback target, and observability entry points.
-See `docs/repository-rename-runbook.md` for repository rename, GHCR namespace, and Azure OIDC follow-up steps.
+2. Set GitHub Environment variables and secrets.
+   `production`:
 
-## Next Steps
+   | Type | Name | Purpose | How to get it |
+   | --- | --- | --- | --- |
+   | Variable | `AZURE_CLIENT_ID` | OIDC deploy identity used by routine release jobs | Use the `clientId` of the App registration / Service Principal created for the `production` Environment |
+   | Variable | `AZURE_TENANT_ID` | Azure login target tenant | Use the target Azure tenant `tenantId` |
+   | Variable | `AZURE_SUBSCRIPTION_ID` | Azure login target subscription | Use the target Azure subscription `subscriptionId` |
+   | Variable | `AZURE_RESOURCE_GROUP` | Routine deploy target resource group | Decide the target resource group name for routine deploys |
+   | Variable | `AZURE_APP_NAME` | Canonical app name. The Container App name is derived as `ca-${AZURE_APP_NAME}` | Set the repo-level app name. The current default is `arcade` |
+   | Variable | `ENTRA_CLIENT_ID` | `clientId` of the end-user sign-in `web` app registration | Use the `clientId` of the Entra app registration used by the app itself |
+   | Secret | `ARCADE_SESSION_SECRET` | Session cookie secret | Generate a strong random secret |
+   | Secret | `ENTRA_CLIENT_SECRET` | Client secret for the end-user sign-in `web` app registration | Create a client secret on the Entra app registration used by the app itself |
 
-- Keep the GitHub `production` Environment runtime values and secrets aligned so the release workflow can sync App Configuration and Key Vault before each rollout.
-- Keep the GitHub `production-bootstrap` Environment aligned so `Bootstrap Azure Recovery` can recreate the resource group and hosted baseline entirely through OIDC.
-- Keep runtime Managed Identity RBAC bootstrap separate from day-to-day release delivery. Routine releases now pass `manageRuntimeRoleAssignments=false` and should not require `roleAssignments/write`.
-- Keep the `Quality Gates` workflow required on `main` once branch protection is configured.
-- Keep release notes, rollback data, and smoke verification steps synchronized with `docs/production-operations.md` after each production release.
-- Keep local auth verification aligned with a documented dev or test Entra registration when production-like sign-in coverage is required.
+   `production-bootstrap`:
+
+   | Type | Name | Purpose | How to get it |
+   | --- | --- | --- | --- |
+   | Variable | `AZURE_CLIENT_ID` | OIDC bootstrap identity used by recovery jobs | Use the `clientId` of the App registration / Service Principal created for the `production-bootstrap` Environment |
+   | Variable | `AZURE_TENANT_ID` | Azure login target tenant | Use the target Azure tenant `tenantId` |
+   | Variable | `AZURE_SUBSCRIPTION_ID` | Azure login target subscription | Use the target Azure subscription `subscriptionId` |
+   | Variable | `AZURE_LOCATION` | Resource group and infra deploy region | Decide the target Azure region |
+   | Variable | `AZURE_RESOURCE_GROUP` | Bootstrap target resource group | Decide the target resource group name for bootstrap and recovery |
+   | Variable | `AZURE_APP_NAME` | Canonical app name. The Container App name is derived as `ca-${AZURE_APP_NAME}` | Set the repo-level app name. The current default is `arcade` |
+   | Variable | `SQL_ADMINISTRATOR_LOGIN` | Azure SQL server create-time administrator login | Decide the bootstrap SQL admin login name |
+   | Secret | `SQL_ADMINISTRATOR_PASSWORD` | Azure SQL server create-time administrator password | Generate a strong password for bootstrap-time SQL server creation |
+
+3. Create the app sign-in Entra app registration.
+   This is separate from the GitHub Actions OIDC identity.
+   The app itself needs a `web` app registration for end-user sign-in.
+   Store `ENTRA_CLIENT_ID` and `ENTRA_CLIENT_SECRET` in GitHub Environments, and set the redirect URI to `https://<public-host>/auth/callback`.
+
+For a dev-phase resource-group switch, usually changing `AZURE_RESOURCE_GROUP`, `AZURE_APP_NAME`, and `AZURE_LOCATION` is enough before rerunning the workflows.
+
+## More Detail
+
+- [docs/azure-prerequisites.md](/Users/hiroki/arcade-spec/docs/azure-prerequisites.md)
+- [docs/production-operations.md](/Users/hiroki/arcade-spec/docs/production-operations.md)
+- [docs/repository-rename-runbook.md](/Users/hiroki/arcade-spec/docs/repository-rename-runbook.md)
