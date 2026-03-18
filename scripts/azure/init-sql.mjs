@@ -4,6 +4,8 @@ import sql from "mssql";
 const {
   ARCADE_SQL_SERVER,
   ARCADE_SQL_DATABASE = "arcade",
+  ARCADE_SQL_MIGRATION_PRINCIPAL = "id-sql-migrate-arcade",
+  ARCADE_SQL_RUNTIME_PRINCIPAL = "ca-arcade",
 } = process.env;
 
 if (!ARCADE_SQL_SERVER) {
@@ -27,8 +29,8 @@ const connection = {
   },
 };
 
-const runtimePrincipal = "ca-arcade";
-const migrationPrincipal = "id-sql-migrate-arcade";
+const runtimePrincipal = ARCADE_SQL_RUNTIME_PRINCIPAL;
+const migrationPrincipal = ARCADE_SQL_MIGRATION_PRINCIPAL;
 
 function membershipGuard(roleName, principalName) {
   return `

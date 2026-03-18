@@ -1,114 +1,44 @@
-name: Release Azure Delivery
+name: Bootstrap Azure Recovery
 
 on:
-  release:
-    types: [published]
+  workflow_dispatch:
+    inputs:
+      image_ref:
+        description: Immutable container image reference to recover, for example ghcr.io/anaregdesign/arcade-spec:v2026.03.18.1
+        required: true
+        type: string
 
 permissions:
   contents: read
 
 concurrency:
-  group: release-${{ github.event.release.tag_name }}
+  group: bootstrap-azure-recovery
   cancel-in-progress: false
 
-env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
-
 jobs:
-  publish:
-    name: Build And Publish To GHCR
+  ensure_resource_group:
+    name: Ensure Azure Resource Group
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-      attestations: write
-      id-token: write
-    outputs:
-      image_ref: ${{ steps.image.outputs.image_ref }}
-    steps:
-      - name: Check out the repo
-        uses: actions/checkout@v5
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Log in to GHCR
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Extract Docker metadata
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          flavor: |
-            latest=false
-          tags: |
-            type=raw,value=${{ github.event.release.tag_name }}
-            type=sha,format=short
-
-      - name: Build and push image
-        id: push
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: ./Dockerfile
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-      - name: Record immutable image reference
-        id: image
-        run: echo "image_ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.event.release.tag_name }}" >> "$GITHUB_OUTPUT"
-
-      - name: Generate artifact attestation
-        uses: actions/attest-build-provenance@v3
-        with:
-          subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          subject-digest: ${{ steps.push.outputs.digest }}
-          push-to-registry: true
-
-  plan_infra:
-    name: Plan Azure Infrastructure
-    runs-on: ubuntu-latest
-    needs: publish
-    if: ${{ !github.event.release.prerelease }}
-    environment: production
+    environment: production-bootstrap
     permissions:
       contents: read
       id-token: write
-    outputs:
-      has_changes: ${{ steps.plan.outputs.has_changes }}
-      container_app_name: ${{ steps.discover.outputs.container_app_name }}
-      infra_image_ref: ${{ steps.discover.outputs.infra_image_ref }}
     env:
       AZURE_APP_NAME: ${{ vars.AZURE_APP_NAME }}
       AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+      AZURE_LOCATION: ${{ vars.AZURE_LOCATION }}
       AZURE_RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
       AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
       AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
-      SQL_ADMINISTRATOR_LOGIN: ${{ vars.SQL_ADMINISTRATOR_LOGIN }}
-      SQL_ADMINISTRATOR_PASSWORD: ${{ secrets.SQL_ADMINISTRATOR_PASSWORD }}
-      RELEASE_IMAGE_REF: ${{ needs.publish.outputs.image_ref }}
     steps:
-      - name: Check out the repo
-        uses: actions/checkout@v5
-
-      - name: Validate infra planning configuration
+      - name: Validate bootstrap resource-group configuration
         run: |
           test -n "$AZURE_CLIENT_ID" || { echo "Missing environment variable AZURE_CLIENT_ID"; exit 1; }
           test -n "$AZURE_TENANT_ID" || { echo "Missing environment variable AZURE_TENANT_ID"; exit 1; }
           test -n "$AZURE_SUBSCRIPTION_ID" || { echo "Missing environment variable AZURE_SUBSCRIPTION_ID"; exit 1; }
           test -n "$AZURE_RESOURCE_GROUP" || { echo "Missing environment variable AZURE_RESOURCE_GROUP"; exit 1; }
+          test -n "$AZURE_LOCATION" || { echo "Missing environment variable AZURE_LOCATION"; exit 1; }
           test -n "$AZURE_APP_NAME" || { echo "Missing environment variable AZURE_APP_NAME"; exit 1; }
-          test -n "$SQL_ADMINISTRATOR_LOGIN" || { echo "Missing environment variable SQL_ADMINISTRATOR_LOGIN"; exit 1; }
-          test -n "$SQL_ADMINISTRATOR_PASSWORD" || { echo "Missing secret SQL_ADMINISTRATOR_PASSWORD"; exit 1; }
 
       - name: Log in to Azure with OIDC
         uses: azure/login@v2
@@ -117,99 +47,47 @@ jobs:
           tenant-id: ${{ env.AZURE_TENANT_ID }}
           subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Validate Bicep entrypoint
-        run: az bicep build --file ./infra/main.bicep > /dev/null
-
-      - name: Discover current deploy state
-        id: discover
+      - name: Create or update the resource group
         run: |
-          CONTAINER_APP_NAME="ca-${AZURE_APP_NAME}"
-          CURRENT_IMAGE_REF="$(
-            az containerapp show \
-              --resource-group "$AZURE_RESOURCE_GROUP" \
-              --name "$CONTAINER_APP_NAME" \
-              --query 'properties.template.containers[0].image' \
-              --output tsv 2>/dev/null || true
-          )"
-          INFRA_IMAGE_REF="${CURRENT_IMAGE_REF:-$RELEASE_IMAGE_REF}"
+          az group create \
+            --name "$AZURE_RESOURCE_GROUP" \
+            --location "$AZURE_LOCATION" \
+            --output none
 
-          echo "container_app_name=$CONTAINER_APP_NAME" >> "$GITHUB_OUTPUT"
-          echo "infra_image_ref=$INFRA_IMAGE_REF" >> "$GITHUB_OUTPUT"
-
-      - name: Plan infrastructure changes
-        id: plan
-        run: |
-          parameters=(
-            appName="$AZURE_APP_NAME"
-            manageRuntimeRoleAssignments=false
-            containerImage="${{ steps.discover.outputs.infra_image_ref }}"
-            sqlAdministratorLogin="$SQL_ADMINISTRATOR_LOGIN"
-            sqlAdministratorPassword="$SQL_ADMINISTRATOR_PASSWORD"
-          )
-
-          az deployment group what-if \
-            --resource-group "$AZURE_RESOURCE_GROUP" \
-            --template-file ./infra/main.bicep \
-            --parameters "${parameters[@]}" \
-            --result-format ResourceIdOnly \
-            --no-pretty-print \
-            --output json > whatif.json
-
-          python3 - <<'PY'
-          import json
-          import os
-
-          with open("whatif.json", "r", encoding="utf-8") as handle:
-              payload = json.load(handle)
-
-          changes = []
-          if isinstance(payload, dict):
-              changes = payload.get("changes")
-              if changes is None:
-                  changes = payload.get("properties", {}).get("changes", [])
-
-          filtered = [
-              change for change in changes
-              if change.get("changeType") not in {"NoChange", "Ignore"}
-          ]
-
-          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as handle:
-              handle.write(f"has_changes={'true' if filtered else 'false'}\n")
-          PY
-
-  deploy_infra:
-    name: Deploy Azure Infrastructure
+  deploy_bootstrap_infra:
+    name: Deploy Bootstrap Infrastructure
     runs-on: ubuntu-latest
     needs:
-      - publish
-      - plan_infra
-    if: ${{ !github.event.release.prerelease && needs.plan_infra.outputs.has_changes == 'true' }}
-    environment: production
+      - ensure_resource_group
+    environment: production-bootstrap
     permissions:
       contents: read
       id-token: write
     env:
       AZURE_APP_NAME: ${{ vars.AZURE_APP_NAME }}
       AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+      AZURE_LOCATION: ${{ vars.AZURE_LOCATION }}
       AZURE_RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
       AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
       AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
       SQL_ADMINISTRATOR_LOGIN: ${{ vars.SQL_ADMINISTRATOR_LOGIN }}
       SQL_ADMINISTRATOR_PASSWORD: ${{ secrets.SQL_ADMINISTRATOR_PASSWORD }}
-      INFRA_IMAGE_REF: ${{ needs.plan_infra.outputs.infra_image_ref }}
+      IMAGE_REF: ${{ inputs.image_ref }}
     steps:
       - name: Check out the repo
         uses: actions/checkout@v5
 
-      - name: Validate release deployment configuration
+      - name: Validate bootstrap infrastructure configuration
         run: |
           test -n "$AZURE_CLIENT_ID" || { echo "Missing environment variable AZURE_CLIENT_ID"; exit 1; }
           test -n "$AZURE_TENANT_ID" || { echo "Missing environment variable AZURE_TENANT_ID"; exit 1; }
           test -n "$AZURE_SUBSCRIPTION_ID" || { echo "Missing environment variable AZURE_SUBSCRIPTION_ID"; exit 1; }
           test -n "$AZURE_RESOURCE_GROUP" || { echo "Missing environment variable AZURE_RESOURCE_GROUP"; exit 1; }
+          test -n "$AZURE_LOCATION" || { echo "Missing environment variable AZURE_LOCATION"; exit 1; }
           test -n "$AZURE_APP_NAME" || { echo "Missing environment variable AZURE_APP_NAME"; exit 1; }
           test -n "$SQL_ADMINISTRATOR_LOGIN" || { echo "Missing environment variable SQL_ADMINISTRATOR_LOGIN"; exit 1; }
           test -n "$SQL_ADMINISTRATOR_PASSWORD" || { echo "Missing secret SQL_ADMINISTRATOR_PASSWORD"; exit 1; }
+          test -n "$IMAGE_REF" || { echo "Missing workflow input image_ref"; exit 1; }
 
       - name: Log in to Azure with OIDC
         uses: azure/login@v2
@@ -221,22 +99,21 @@ jobs:
       - name: Validate Bicep entrypoint
         run: az bicep build --file ./infra/main.bicep > /dev/null
 
-      - name: Deploy infrastructure baseline
+      - name: Deploy the hosted baseline with bootstrap RBAC
         run: |
-          DEPLOYMENT_NAME="release-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
-          parameters=(
-            appName="$AZURE_APP_NAME"
-            manageRuntimeRoleAssignments=false
-            containerImage="$INFRA_IMAGE_REF"
-            sqlAdministratorLogin="$SQL_ADMINISTRATOR_LOGIN"
-            sqlAdministratorPassword="$SQL_ADMINISTRATOR_PASSWORD"
-          )
+          DEPLOYMENT_NAME="bootstrap-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
 
           az deployment group create \
             --resource-group "$AZURE_RESOURCE_GROUP" \
             --name "$DEPLOYMENT_NAME" \
             --template-file ./infra/main.bicep \
-            --parameters "${parameters[@]}" \
+            --parameters \
+              appName="$AZURE_APP_NAME" \
+              location="$AZURE_LOCATION" \
+              containerImage="$IMAGE_REF" \
+              manageRuntimeRoleAssignments=true \
+              sqlAdministratorLogin="$SQL_ADMINISTRATOR_LOGIN" \
+              sqlAdministratorPassword="$SQL_ADMINISTRATOR_PASSWORD" \
             --output none
 
       - name: Approve Azure Front Door private link connections
@@ -296,22 +173,186 @@ jobs:
 
           test "$pending_count" == "0" || { echo "Azure Front Door private endpoint connections are still pending approval."; exit 1; }
 
+  bootstrap_sql:
+    name: Bootstrap Azure SQL Principals
+    runs-on: ubuntu-latest
+    needs:
+      - deploy_bootstrap_infra
+    timeout-minutes: 30
+    environment: production-bootstrap
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      AZURE_APP_NAME: ${{ vars.AZURE_APP_NAME }}
+      AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+      AZURE_RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
+      AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+      CONTAINER_REGISTRY_IDENTITY: ${{ vars.CONTAINER_REGISTRY_IDENTITY }}
+      CONTAINER_REGISTRY_PASSWORD: ${{ secrets.CONTAINER_REGISTRY_PASSWORD }}
+      CONTAINER_REGISTRY_SERVER: ${{ vars.CONTAINER_REGISTRY_SERVER }}
+      CONTAINER_REGISTRY_USERNAME: ${{ vars.CONTAINER_REGISTRY_USERNAME }}
+      IMAGE_REF: ${{ inputs.image_ref }}
+    steps:
+      - name: Validate SQL bootstrap configuration
+        run: |
+          test -n "$AZURE_CLIENT_ID" || { echo "Missing environment variable AZURE_CLIENT_ID"; exit 1; }
+          test -n "$AZURE_TENANT_ID" || { echo "Missing environment variable AZURE_TENANT_ID"; exit 1; }
+          test -n "$AZURE_SUBSCRIPTION_ID" || { echo "Missing environment variable AZURE_SUBSCRIPTION_ID"; exit 1; }
+          test -n "$AZURE_RESOURCE_GROUP" || { echo "Missing environment variable AZURE_RESOURCE_GROUP"; exit 1; }
+          test -n "$AZURE_APP_NAME" || { echo "Missing environment variable AZURE_APP_NAME"; exit 1; }
+          test -n "$IMAGE_REF" || { echo "Missing workflow input image_ref"; exit 1; }
+
+      - name: Log in to Azure with OIDC
+        uses: azure/login@v2
+        with:
+          client-id: ${{ env.AZURE_CLIENT_ID }}
+          tenant-id: ${{ env.AZURE_TENANT_ID }}
+          subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Create and run the SQL bootstrap job
+        run: |
+          az config set extension.use_dynamic_install=yes_without_prompt >/dev/null
+          az config set extension.dynamic_install_allow_preview=true >/dev/null
+
+          MANAGED_ENVIRONMENT_NAME="cae-${AZURE_APP_NAME}"
+          SQL_SERVER_NAME="$(az resource list \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --resource-type Microsoft.Sql/servers \
+            --query '[0].name' \
+            --output tsv)"
+          SQL_BOOTSTRAP_IDENTITY_NAME="$(printf 'id-sql-bootstrap-%s' "$AZURE_APP_NAME" | cut -c1-24)"
+          SQL_MIGRATION_PRINCIPAL_NAME="$(printf 'id-sql-migrate-%s' "$AZURE_APP_NAME" | cut -c1-24)"
+          SQL_RUNTIME_PRINCIPAL_NAME="$(printf 'ca-%s' "$AZURE_APP_NAME" | cut -c1-32)"
+          JOB_NAME="$(printf 'job-sql-bootstrap-%s' "$AZURE_APP_NAME" | cut -c1-32)"
+          SQL_BOOTSTRAP_IDENTITY_ID="$(az identity show \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --name "$SQL_BOOTSTRAP_IDENTITY_NAME" \
+            --query id \
+            --output tsv)"
+          SQL_BOOTSTRAP_IDENTITY_CLIENT_ID="$(az identity show \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --name "$SQL_BOOTSTRAP_IDENTITY_NAME" \
+            --query clientId \
+            --output tsv)"
+
+          test -n "$SQL_SERVER_NAME" || { echo "Missing Azure SQL server."; exit 1; }
+          test -n "$SQL_BOOTSTRAP_IDENTITY_ID" || { echo "Missing SQL bootstrap identity id."; exit 1; }
+          test -n "$SQL_BOOTSTRAP_IDENTITY_CLIENT_ID" || { echo "Missing SQL bootstrap identity client id."; exit 1; }
+
+          registry_args=()
+          if [[ -n "${CONTAINER_REGISTRY_SERVER:-}" ]]; then
+            registry_args+=(--registry-server "$CONTAINER_REGISTRY_SERVER")
+
+            if [[ -n "${CONTAINER_REGISTRY_IDENTITY:-}" ]]; then
+              registry_args+=(--registry-identity "$CONTAINER_REGISTRY_IDENTITY")
+            elif [[ -n "${CONTAINER_REGISTRY_USERNAME:-}" && -n "${CONTAINER_REGISTRY_PASSWORD:-}" ]]; then
+              registry_args+=(--registry-username "$CONTAINER_REGISTRY_USERNAME" --registry-password "$CONTAINER_REGISTRY_PASSWORD")
+            else
+              echo "Registry configuration is incomplete."
+              exit 1
+            fi
+          fi
+
+          if az containerapp job show --resource-group "$AZURE_RESOURCE_GROUP" --name "$JOB_NAME" --output none >/dev/null 2>&1; then
+            az containerapp job delete --resource-group "$AZURE_RESOURCE_GROUP" --name "$JOB_NAME" --yes --output none
+          fi
+
+          az containerapp job create \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --name "$JOB_NAME" \
+            --environment "$MANAGED_ENVIRONMENT_NAME" \
+            --trigger-type Manual \
+            --replica-timeout 1800 \
+            --replica-retry-limit 0 \
+            --replica-completion-count 1 \
+            --parallelism 1 \
+            --container-name sql-bootstrap \
+            --image "$IMAGE_REF" \
+            --cpu 0.5 \
+            --memory 1.0Gi \
+            --mi-user-assigned "$SQL_BOOTSTRAP_IDENTITY_ID" \
+            --env-vars \
+              "AZURE_CLIENT_ID=$SQL_BOOTSTRAP_IDENTITY_CLIENT_ID" \
+              "ARCADE_SQL_SERVER=${SQL_SERVER_NAME}.database.windows.net" \
+              "ARCADE_SQL_DATABASE=arcade" \
+              "ARCADE_SQL_RUNTIME_PRINCIPAL=$SQL_RUNTIME_PRINCIPAL_NAME" \
+              "ARCADE_SQL_MIGRATION_PRINCIPAL=$SQL_MIGRATION_PRINCIPAL_NAME" \
+            --command node \
+            --args /app/scripts/azure/init-sql.mjs \
+            "${registry_args[@]}" \
+            --output none
+
+          az containerapp job start \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --name "$JOB_NAME" \
+            --output none
+
+          JOB_EXECUTION_NAME=""
+          for attempt in $(seq 1 18); do
+            JOB_EXECUTION_NAME="$(az containerapp job execution list \
+              --resource-group "$AZURE_RESOURCE_GROUP" \
+              --name "$JOB_NAME" \
+              --query "sort_by(@,&properties.startTime)[-1].name" \
+              --output tsv)"
+
+            if [[ -n "$JOB_EXECUTION_NAME" ]]; then
+              break
+            fi
+
+            sleep 10
+          done
+
+          test -n "$JOB_EXECUTION_NAME" || { echo "Missing SQL bootstrap job execution."; exit 1; }
+
+          for attempt in $(seq 1 90); do
+            JOB_STATUS="$(az containerapp job execution show \
+              --resource-group "$AZURE_RESOURCE_GROUP" \
+              --name "$JOB_NAME" \
+              --job-execution-name "$JOB_EXECUTION_NAME" \
+              --query properties.status \
+              --output tsv)"
+
+            echo "SQL bootstrap execution status: ${JOB_STATUS}"
+
+            if [[ "$JOB_STATUS" == "Succeeded" ]]; then
+              exit 0
+            fi
+
+            if [[ "$JOB_STATUS" == "Failed" ]]; then
+              az containerapp job execution show \
+                --resource-group "$AZURE_RESOURCE_GROUP" \
+                --name "$JOB_NAME" \
+                --job-execution-name "$JOB_EXECUTION_NAME" \
+                --output json
+              exit 1
+            fi
+
+            sleep 10
+          done
+
+          echo "Timed out waiting for SQL bootstrap job completion."
+          az containerapp job execution show \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --name "$JOB_NAME" \
+            --job-execution-name "$JOB_EXECUTION_NAME" \
+            --output json
+          exit 1
+
+      - name: Delete the SQL bootstrap job
+        if: ${{ always() }}
+        run: |
+          JOB_NAME="$(printf 'job-sql-bootstrap-%s' "$AZURE_APP_NAME" | cut -c1-32)"
+          if az containerapp job show --resource-group "$AZURE_RESOURCE_GROUP" --name "$JOB_NAME" --output none >/dev/null 2>&1; then
+            az containerapp job delete --resource-group "$AZURE_RESOURCE_GROUP" --name "$JOB_NAME" --yes --output none
+          fi
+
   sync_runtime_config:
     name: Sync Runtime Config To Azure Stores
     runs-on: ubuntu-latest
     needs:
-      - publish
-      - plan_infra
-      - deploy_infra
-    if: >-
-      ${{
-        always() &&
-        !cancelled() &&
-        !github.event.release.prerelease &&
-        needs.publish.result == 'success' &&
-        needs.plan_infra.result == 'success' &&
-        (needs.deploy_infra.result == 'success' || needs.deploy_infra.result == 'skipped')
-      }}
+      - deploy_bootstrap_infra
     environment: production
     permissions:
       contents: read
@@ -356,23 +397,11 @@ jobs:
         run: ./scripts/azure/sync-runtime-config.sh
 
   deploy_app:
-    name: Deploy Release To Azure Container Apps
+    name: Deploy Recovery Image To Azure Container Apps
     runs-on: ubuntu-latest
     needs:
-      - publish
-      - plan_infra
-      - deploy_infra
+      - bootstrap_sql
       - sync_runtime_config
-    if: >-
-      ${{
-        always() &&
-        !cancelled() &&
-        !github.event.release.prerelease &&
-        needs.publish.result == 'success' &&
-        needs.plan_infra.result == 'success' &&
-        (needs.deploy_infra.result == 'success' || needs.deploy_infra.result == 'skipped') &&
-        needs.sync_runtime_config.result == 'success'
-      }}
     environment: production
     permissions:
       contents: read
@@ -389,7 +418,7 @@ jobs:
       CONTAINER_REGISTRY_PASSWORD: ${{ secrets.CONTAINER_REGISTRY_PASSWORD }}
       CONTAINER_REGISTRY_SERVER: ${{ vars.CONTAINER_REGISTRY_SERVER }}
       CONTAINER_REGISTRY_USERNAME: ${{ vars.CONTAINER_REGISTRY_USERNAME }}
-      IMAGE_REF: ${{ needs.publish.outputs.image_ref }}
+      IMAGE_REF: ${{ inputs.image_ref }}
     steps:
       - name: Check out the repo
         uses: actions/checkout@v5
@@ -401,6 +430,7 @@ jobs:
           test -n "$AZURE_SUBSCRIPTION_ID" || { echo "Missing environment variable AZURE_SUBSCRIPTION_ID"; exit 1; }
           test -n "$AZURE_RESOURCE_GROUP" || { echo "Missing environment variable AZURE_RESOURCE_GROUP"; exit 1; }
           test -n "$AZURE_APP_NAME" || { echo "Missing environment variable AZURE_APP_NAME"; exit 1; }
+          test -n "$IMAGE_REF" || { echo "Missing workflow input image_ref"; exit 1; }
 
       - name: Log in to Azure with OIDC
         uses: azure/login@v2
@@ -448,12 +478,12 @@ jobs:
 
       - name: Configure registry access when required
         env:
-          AZURE_CONTAINER_APP_NAME: ${{ needs.plan_infra.outputs.container_app_name }}
+          AZURE_CONTAINER_APP_NAME: ca-${{ vars.AZURE_APP_NAME }}
         run: bash ./scripts/azure/postprovision.sh
 
       - name: Attach SQL migration identity to container app
         env:
-          AZURE_CONTAINER_APP_NAME: ${{ needs.plan_infra.outputs.container_app_name }}
+          AZURE_CONTAINER_APP_NAME: ca-${{ vars.AZURE_APP_NAME }}
         run: |
           az containerapp identity assign \
             --resource-group "$AZURE_RESOURCE_GROUP" \
@@ -462,9 +492,9 @@ jobs:
             --user-assigned "${{ steps.migrate_identity.outputs.sql_migration_identity_id }}" \
             --output none
 
-      - name: Deploy immutable release image
+      - name: Deploy immutable recovery image
         env:
-          AZURE_CONTAINER_APP_NAME: ${{ needs.plan_infra.outputs.container_app_name }}
+          AZURE_CONTAINER_APP_NAME: ca-${{ vars.AZURE_APP_NAME }}
         run: |
           az containerapp update \
             --resource-group "$AZURE_RESOURCE_GROUP" \
@@ -499,19 +529,10 @@ jobs:
           echo "app_url=https://${FRONT_DOOR_HOST}" >> "$GITHUB_OUTPUT"
 
   smoke_test:
-    name: Smoke Test Deployed Release
+    name: Smoke Test Recovered Release
     runs-on: ubuntu-latest
     needs:
       - deploy_app
-      - deploy_infra
-    if: >-
-      ${{
-        always() &&
-        !cancelled() &&
-        !github.event.release.prerelease &&
-        needs.deploy_app.result == 'success' &&
-        (needs.deploy_infra.result == 'success' || needs.deploy_infra.result == 'skipped')
-      }}
     steps:
       - name: Check out the repo
         uses: actions/checkout@v5
@@ -521,8 +542,49 @@ jobs:
           APP_URL: ${{ needs.deploy_app.outputs.app_url }}
         run: test -n "$APP_URL" || { echo "Missing deployment output app_url"; exit 1; }
 
-      - name: Smoke test deployed release
+      - name: Smoke test recovered release
         env:
           APP_URL: ${{ needs.deploy_app.outputs.app_url }}
-          SMOKE_TEST_RETRIES: ${{ needs.deploy_infra.result == 'success' && '90' || '18' }}
+          SMOKE_TEST_RETRIES: "90"
         run: ./scripts/azure/smoke-test.sh
+
+  verify_runtime:
+    name: Verify Recovered Runtime
+    runs-on: ubuntu-latest
+    needs:
+      - smoke_test
+    environment: production
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      AZURE_APP_NAME: ${{ vars.AZURE_APP_NAME }}
+      AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+      AZURE_RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
+      AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v5
+
+      - name: Validate runtime verification configuration
+        run: |
+          test -n "$AZURE_CLIENT_ID" || { echo "Missing environment variable AZURE_CLIENT_ID"; exit 1; }
+          test -n "$AZURE_TENANT_ID" || { echo "Missing environment variable AZURE_TENANT_ID"; exit 1; }
+          test -n "$AZURE_SUBSCRIPTION_ID" || { echo "Missing environment variable AZURE_SUBSCRIPTION_ID"; exit 1; }
+          test -n "$AZURE_RESOURCE_GROUP" || { echo "Missing environment variable AZURE_RESOURCE_GROUP"; exit 1; }
+          test -n "$AZURE_APP_NAME" || { echo "Missing environment variable AZURE_APP_NAME"; exit 1; }
+
+      - name: Log in to Azure with OIDC
+        uses: azure/login@v2
+        with:
+          client-id: ${{ env.AZURE_CLIENT_ID }}
+          tenant-id: ${{ env.AZURE_TENANT_ID }}
+          subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Verify recovered runtime
+        uses: azure/cli@v2
+        with:
+          inlineScript: |
+            chmod +x ./scripts/azure/verify-production-runtime.sh
+            ./scripts/azure/verify-production-runtime.sh

@@ -4,8 +4,6 @@
   "type": "module",
   "scripts": {
     "assets:game-previews": "tsx scripts/regenerate-game-previews.ts",
-    "azure:check:production-data": "./scripts/azure/check-production-data-path.sh",
-    "azure:sync:runtime-config": "./scripts/azure/sync-runtime-config.sh",
     "build": "react-router build",
     "dev": "react-router dev",
     "db:generate": "prisma generate",

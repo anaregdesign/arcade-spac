@@ -23,7 +23,7 @@
 - `Container Apps` managed environment を Front Door private connectivity 前提の公開設定へ更新する
 - release workflow と verification scripts を Front Door endpoint ベースへ更新する
 - Front Door 導入後の prerequisite / operations docs を更新する
-- runtime config の `PUBLIC_APP_URL` と Entra callback host の follow-up が Front Door host 基準で必要であることを docs に反映する
+- runtime config の `PUBLIC_APP_URL` と Entra callback host の follow-up が Front Door host 基準で workflow / docs に反映されるようにする
 
 ## Non-Goals
 
@@ -50,7 +50,7 @@
 - release workflow の smoke test は Front Door infra change 後でも propagation delay を吸収できる retry budget を持つ
 - `scripts/azure/verify-production-runtime.sh` が Front Door endpoint を解決し、Front Door private connectivity 前提の runtime contract を検証できる
 - `docs/azure-prerequisites.md` と `docs/production-operations.md` が Front Door host を `PUBLIC_APP_URL` と smoke target の基準として説明する
-- docs が Front Door への host 切替に合わせて Entra redirect URI と runtime config sync の follow-up を明示する
+- docs が Front Door への host 切替に合わせて Entra redirect URI と workflow-driven runtime config sync の follow-up を明示する
 
 ## Edge Cases
 
@@ -65,7 +65,7 @@
 - `Arcade` は認証付きの dynamic web app なので、全面 CDN cache ではなく Front Door reverse proxy + selective asset cache を採用する
 - deploy path は GitHub Workflow を使い、local session から production を直接更新しない
 - `Azure Front Door Premium` は Standard tier と異なり private link origin をサポートする
-- Front Door host への切替後は App Configuration の `PUBLIC_APP_URL` と Entra app registration の redirect URI を運用側で合わせる必要がある
+- Front Door host への切替後は workflow-driven runtime config sync が `PUBLIC_APP_URL` を合わせ、必要なら Entra app registration の redirect URI を運用側で合わせる必要がある
 
 ## Links
 

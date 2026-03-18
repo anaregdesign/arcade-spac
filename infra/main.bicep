@@ -2,21 +2,11 @@ param appName string = 'arcade'
 param location string = resourceGroup().location
 param containerImage string
 param manageRuntimeRoleAssignments bool = true
-param deploySql bool = false
 param sqlDatabaseName string = 'arcade'
 param sqlAdministratorLogin string = ''
 @secure()
 param sqlAdministratorPassword string = ''
 param sqlEnableEntraOnlyAuthentication bool = true
-param sqlEntraAdminLogin string = ''
-param sqlEntraAdminObjectId string = ''
-param sqlEntraAdminTenantId string = tenant().tenantId
-@allowed([
-  'User'
-  'Group'
-  'Application'
-])
-param sqlEntraAdminPrincipalType string = 'Group'
 param entraTenantId string = tenant().tenantId
 param containerPort int = 3000
 param cpu int = 1
@@ -25,8 +15,6 @@ param healthProbePath string = '/health'
 param vnetAddressPrefix string = '10.0.0.0/16'
 param containerAppsInfrastructureSubnetPrefix string = '10.0.0.0/23'
 param privateEndpointSubnetPrefix string = '10.0.2.0/24'
-param enablePrivateConfigStoreEndpoints bool = true
-param appConfigurationPrivateDnsZoneName string = 'privatelink.azconfig.io'
 param environmentVariables array = [
   {
     name: 'NODE_ENV'
@@ -57,10 +45,8 @@ var privateEndpointSubnetName = 'snet-pe'
 var sqlServerName = toLower(take('sql-${appName}-${uniqueString(resourceGroup().id)}', 63))
 var sqlPrivateEndpointName = 'pep-${sqlServerName}'
 var sqlPrivateDnsZoneName = 'privatelink${environment().suffixes.sqlServerHostname}'
-var appConfigurationPrivateEndpointName = 'pep-${appConfigurationName}'
-var keyVaultPrivateEndpointName = 'pep-${keyVaultName}'
-var keyVaultPrivateDnsZoneName = 'privatelink${replace(environment().suffixes.keyvaultDns, '.vault.', '.vaultcore.')}'
 var sqlMigrationIdentityName = take('id-sql-migrate-${appName}', 24)
+var sqlBootstrapIdentityName = take('id-sql-bootstrap-${appName}', 24)
 var sqlServerFqdn = '${sqlServerName}${environment().suffixes.sqlServerHostname}'
 var appConfigDataReaderRoleDefinitionId = subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '516239f1-63e1-4d78-a4de-a74fb236a071')
 var keyVaultSecretsUserRoleDefinitionId = subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '4633458b-17de-408a-b874-0445c86b69e6')
@@ -146,7 +132,7 @@ resource appConfiguration 'Microsoft.AppConfiguration/configurationStores@2024-0
   }
   properties: {
     disableLocalAuth: true
-    publicNetworkAccess: enablePrivateConfigStoreEndpoints ? 'Disabled' : 'Enabled'
+    publicNetworkAccess: 'Enabled'
     softDeleteRetentionInDays: 7
   }
 }
@@ -163,123 +149,19 @@ resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
     }
     enableRbacAuthorization: true
     enablePurgeProtection: true
-    publicNetworkAccess: enablePrivateConfigStoreEndpoints ? 'Disabled' : 'Enabled'
+    publicNetworkAccess: 'Enabled'
     softDeleteRetentionInDays: 90
   }
 }
 
-resource appConfigurationPrivateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' = if (enablePrivateConfigStoreEndpoints) {
-  name: appConfigurationPrivateDnsZoneName
-  location: 'global'
-  properties: {}
-}
-
-resource appConfigurationPrivateDnsZoneVirtualNetworkLink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2020-06-01' = if (enablePrivateConfigStoreEndpoints) {
-  parent: appConfigurationPrivateDnsZone
-  name: '${virtualNetworkName}-link'
-  location: 'global'
-  properties: {
-    registrationEnabled: false
-    virtualNetwork: {
-      id: virtualNetwork.id
-    }
-  }
-}
-
-resource appConfigurationPrivateEndpoint 'Microsoft.Network/privateEndpoints@2024-05-01' = if (enablePrivateConfigStoreEndpoints) {
-  name: appConfigurationPrivateEndpointName
-  location: location
-  tags: tags
-  properties: {
-    subnet: {
-      id: privateEndpointSubnet.id
-    }
-    privateLinkServiceConnections: [
-      {
-        name: '${appConfigurationPrivateEndpointName}-connection'
-        properties: {
-          privateLinkServiceId: appConfiguration.id
-          groupIds: [
-            'configurationStores'
-          ]
-        }
-      }
-    ]
-  }
-}
-
-resource appConfigurationPrivateEndpointDnsZoneGroup 'Microsoft.Network/privateEndpoints/privateDnsZoneGroups@2024-05-01' = if (enablePrivateConfigStoreEndpoints) {
-  parent: appConfigurationPrivateEndpoint
-  name: 'default'
-  properties: {
-    privateDnsZoneConfigs: [
-      {
-        name: 'appconfig'
-        properties: {
-          privateDnsZoneId: appConfigurationPrivateDnsZone.id
-        }
-      }
-    ]
-  }
-}
-
-resource keyVaultPrivateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' = if (enablePrivateConfigStoreEndpoints) {
-  name: keyVaultPrivateDnsZoneName
-  location: 'global'
-  properties: {}
-}
-
-resource keyVaultPrivateDnsZoneVirtualNetworkLink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2020-06-01' = if (enablePrivateConfigStoreEndpoints) {
-  parent: keyVaultPrivateDnsZone
-  name: '${virtualNetworkName}-link'
-  location: 'global'
-  properties: {
-    registrationEnabled: false
-    virtualNetwork: {
-      id: virtualNetwork.id
-    }
-  }
-}
-
-resource keyVaultPrivateEndpoint 'Microsoft.Network/privateEndpoints@2024-05-01' = if (enablePrivateConfigStoreEndpoints) {
-  name: keyVaultPrivateEndpointName
-  location: location
-  tags: tags
-  properties: {
-    subnet: {
-      id: privateEndpointSubnet.id
-    }
-    privateLinkServiceConnections: [
-      {
-        name: '${keyVaultPrivateEndpointName}-connection'
-        properties: {
-          privateLinkServiceId: keyVault.id
-          groupIds: [
-            'vault'
-          ]
-        }
-      }
-    ]
-  }
-}
-
-resource keyVaultPrivateEndpointDnsZoneGroup 'Microsoft.Network/privateEndpoints/privateDnsZoneGroups@2024-05-01' = if (enablePrivateConfigStoreEndpoints) {
-  parent: keyVaultPrivateEndpoint
-  name: 'default'
-  properties: {
-    privateDnsZoneConfigs: [
-      {
-        name: 'keyvault'
-        properties: {
-          privateDnsZoneId: keyVaultPrivateDnsZone.id
-        }
-      }
-    ]
-  }
-}
-
-resource sqlMigrationIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = if (deploySql) {
+resource sqlMigrationIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
   name: sqlMigrationIdentityName
+  location: location
+  tags: tags
+}
+
+resource sqlBootstrapIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
+  name: sqlBootstrapIdentityName
   location: location
   tags: tags
 }
@@ -527,7 +409,7 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
   }
 }
 
-resource sqlServer 'Microsoft.Sql/servers@2021-11-01-preview' = if (deploySql) {
+resource sqlServer 'Microsoft.Sql/servers@2021-11-01-preview' = {
   name: sqlServerName
   location: location
   tags: tags
@@ -540,10 +422,10 @@ resource sqlServer 'Microsoft.Sql/servers@2021-11-01-preview' = if (deploySql) {
       administrators: {
         administratorType: 'ActiveDirectory'
         azureADOnlyAuthentication: sqlEnableEntraOnlyAuthentication
-        login: sqlEntraAdminLogin
-        principalType: sqlEntraAdminPrincipalType
-        sid: sqlEntraAdminObjectId
-        tenantId: sqlEntraAdminTenantId
+        login: sqlBootstrapIdentity.name
+        principalType: 'Application'
+        sid: sqlBootstrapIdentity.properties.principalId
+        tenantId: tenant().tenantId
       }
     },
     empty(sqlAdministratorPassword)
@@ -554,7 +436,7 @@ resource sqlServer 'Microsoft.Sql/servers@2021-11-01-preview' = if (deploySql) {
   )
 }
 
-resource sqlDatabase 'Microsoft.Sql/servers/databases@2021-11-01-preview' = if (deploySql) {
+resource sqlDatabase 'Microsoft.Sql/servers/databases@2021-11-01-preview' = {
   parent: sqlServer
   name: sqlDatabaseName
   location: location
@@ -571,13 +453,13 @@ resource sqlDatabase 'Microsoft.Sql/servers/databases@2021-11-01-preview' = if (
   }
 }
 
-resource sqlPrivateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' = if (deploySql) {
+resource sqlPrivateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' = {
   name: sqlPrivateDnsZoneName
   location: 'global'
   properties: {}
 }
 
-resource sqlPrivateDnsZoneVirtualNetworkLink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2020-06-01' = if (deploySql) {
+resource sqlPrivateDnsZoneVirtualNetworkLink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2020-06-01' = {
   parent: sqlPrivateDnsZone
   name: '${virtualNetworkName}-link'
   location: 'global'
@@ -589,7 +471,7 @@ resource sqlPrivateDnsZoneVirtualNetworkLink 'Microsoft.Network/privateDnsZones/
   }
 }
 
-resource sqlPrivateEndpoint 'Microsoft.Network/privateEndpoints@2024-05-01' = if (deploySql) {
+resource sqlPrivateEndpoint 'Microsoft.Network/privateEndpoints@2024-05-01' = {
   name: sqlPrivateEndpointName
   location: location
   tags: tags
@@ -611,7 +493,7 @@ resource sqlPrivateEndpoint 'Microsoft.Network/privateEndpoints@2024-05-01' = if
   }
 }
 
-resource sqlPrivateEndpointDnsZoneGroup 'Microsoft.Network/privateEndpoints/privateDnsZoneGroups@2024-05-01' = if (deploySql) {
+resource sqlPrivateEndpointDnsZoneGroup 'Microsoft.Network/privateEndpoints/privateDnsZoneGroups@2024-05-01' = {
   parent: sqlPrivateEndpoint
   name: 'default'
   properties: {
@@ -656,9 +538,11 @@ output containerAppsInfrastructureSubnetId string = containerAppsInfrastructureS
 output frontDoorProfileName string = frontDoorProfile.name
 output frontDoorEndpointHostName string = frontDoorEndpoint.properties.hostName
 output privateEndpointSubnetId string = privateEndpointSubnet.id
-output sqlServerName string = deploySql ? sqlServer!.name : ''
-output sqlServerFullyQualifiedDomainName string = deploySql ? sqlServerFqdn : ''
-output sqlDatabaseName string = deploySql ? sqlDatabase!.name : ''
-output sqlRuntimeIdentityPrincipalId string = deploySql ? containerApp.identity.principalId : ''
-output sqlMigrationIdentityPrincipalId string = deploySql ? sqlMigrationIdentity!.properties.principalId : ''
-output sqlMigrationIdentityClientId string = deploySql ? sqlMigrationIdentity!.properties.clientId : ''
+output sqlServerName string = sqlServer.name
+output sqlServerFullyQualifiedDomainName string = sqlServerFqdn
+output sqlDatabaseName string = sqlDatabase.name
+output sqlRuntimeIdentityPrincipalId string = containerApp.identity.principalId
+output sqlMigrationIdentityPrincipalId string = sqlMigrationIdentity.properties.principalId
+output sqlMigrationIdentityClientId string = sqlMigrationIdentity.properties.clientId
+output sqlBootstrapIdentityPrincipalId string = sqlBootstrapIdentity.properties.principalId
+output sqlBootstrapIdentityClientId string = sqlBootstrapIdentity.properties.clientId

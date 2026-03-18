@@ -31,30 +31,7 @@ require_env() {
 require_command az
 az account show >/dev/null
 
-require_env AZURE_APPCONFIG_ENDPOINT
-require_env AZURE_KEY_VAULT_URI
-require_env ARCADE_AUTH_MODE
-require_env PUBLIC_APP_URL
 require_env ARCADE_SESSION_SECRET
-
-if [[ "${ARCADE_AUTH_MODE}" != "local" && "${ARCADE_AUTH_MODE}" != "entra" ]]; then
-  fail "ARCADE_AUTH_MODE must be 'local' or 'entra'."
-fi
-
-if [[ "${ARCADE_AUTH_MODE}" == "entra" ]]; then
-  require_env ENTRA_TENANT_ID
-  require_env ENTRA_CLIENT_ID
-  require_env ENTRA_CLIENT_SECRET
-fi
-
-ENTRA_AUTHORITY_TENANT="${ENTRA_AUTHORITY_TENANT:-${ENTRA_TENANT_ID:-}}"
-vault_host="${AZURE_KEY_VAULT_URI#https://}"
-vault_host="${vault_host%%/*}"
-vault_name="${vault_host%%.*}"
-
-if [[ -z "${vault_name}" ]]; then
-  fail "AZURE_KEY_VAULT_URI must point to a valid Key Vault URI."
-fi
 
 resolve_single_resource_name() {
   local resource_type="$1"
@@ -77,6 +54,100 @@ resolve_single_resource_name() {
 
   printf '%s\n' "${names[0]}"
 }
+
+resolve_appconfig_endpoint() {
+  if [[ -n "${AZURE_APPCONFIG_ENDPOINT:-}" ]]; then
+    printf '%s\n' "${AZURE_APPCONFIG_ENDPOINT}"
+    return
+  fi
+
+  local store_name
+  store_name="$(resolve_single_resource_name 'Microsoft.AppConfiguration/configurationStores' 'App Configuration store')"
+
+  az appconfig show \
+    --resource-group "${AZURE_RESOURCE_GROUP}" \
+    --name "${store_name}" \
+    --query endpoint \
+    -o tsv
+}
+
+resolve_key_vault_uri() {
+  if [[ -n "${AZURE_KEY_VAULT_URI:-}" ]]; then
+    printf '%s\n' "${AZURE_KEY_VAULT_URI}"
+    return
+  fi
+
+  local vault_name
+  vault_name="$(resolve_single_resource_name 'Microsoft.KeyVault/vaults' 'Key Vault')"
+
+  az keyvault show \
+    --resource-group "${AZURE_RESOURCE_GROUP}" \
+    --name "${vault_name}" \
+    --query properties.vaultUri \
+    -o tsv
+}
+
+resolve_public_app_url() {
+  if [[ -n "${PUBLIC_APP_URL:-}" ]]; then
+    printf '%s\n' "${PUBLIC_APP_URL}"
+    return
+  fi
+
+  local front_door_endpoint_id
+  local front_door_host
+
+  require_env AZURE_RESOURCE_GROUP
+
+  front_door_endpoint_id="$(az resource list \
+    --resource-group "${AZURE_RESOURCE_GROUP}" \
+    --resource-type 'Microsoft.Cdn/profiles/afdEndpoints' \
+    --query '[0].id' \
+    -o tsv)"
+
+  if [[ -z "${front_door_endpoint_id}" ]]; then
+    fail "PUBLIC_APP_URL is required when no Azure Front Door endpoint exists in ${AZURE_RESOURCE_GROUP}."
+  fi
+
+  front_door_host="$(az resource show \
+    --ids "${front_door_endpoint_id}" \
+    --query properties.hostName \
+    -o tsv)"
+
+  if [[ -z "${front_door_host}" ]]; then
+    fail "Unable to resolve Azure Front Door host name for ${AZURE_RESOURCE_GROUP}."
+  fi
+
+  printf 'https://%s\n' "${front_door_host}"
+}
+
+AZURE_APPCONFIG_ENDPOINT="$(resolve_appconfig_endpoint)"
+AZURE_KEY_VAULT_URI="$(resolve_key_vault_uri)"
+PUBLIC_APP_URL="$(resolve_public_app_url)"
+ARCADE_AUTH_MODE="${ARCADE_AUTH_MODE:-entra}"
+ENTRA_TENANT_ID="${ENTRA_TENANT_ID:-${AZURE_TENANT_ID:-}}"
+
+[[ -n "${AZURE_APPCONFIG_ENDPOINT}" ]] || fail "AZURE_APPCONFIG_ENDPOINT could not be resolved."
+[[ -n "${AZURE_KEY_VAULT_URI}" ]] || fail "AZURE_KEY_VAULT_URI could not be resolved."
+[[ -n "${PUBLIC_APP_URL}" ]] || fail "PUBLIC_APP_URL could not be resolved."
+
+if [[ "${ARCADE_AUTH_MODE}" != "local" && "${ARCADE_AUTH_MODE}" != "entra" ]]; then
+  fail "ARCADE_AUTH_MODE must be 'local' or 'entra'."
+fi
+
+if [[ "${ARCADE_AUTH_MODE}" == "entra" ]]; then
+  require_env ENTRA_TENANT_ID
+  require_env ENTRA_CLIENT_ID
+  require_env ENTRA_CLIENT_SECRET
+fi
+
+ENTRA_AUTHORITY_TENANT="${ENTRA_AUTHORITY_TENANT:-${ENTRA_TENANT_ID:-}}"
+vault_host="${AZURE_KEY_VAULT_URI#https://}"
+vault_host="${vault_host%%/*}"
+vault_name="${vault_host%%.*}"
+
+if [[ -z "${vault_name}" ]]; then
+  fail "AZURE_KEY_VAULT_URI must point to a valid Key Vault URI."
+fi
 
 resolve_sql_server_name() {
   if [[ -n "${ARCADE_SQL_SERVER_NAME:-}" ]]; then

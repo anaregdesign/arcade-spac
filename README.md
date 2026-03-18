@@ -5,7 +5,7 @@ Arcade is a React Router server-rendered web app for two competitive puzzle game
 ## Current State
 
 - Local development is working against SQL Server compatible paths with SSR, cookie session auth, real Minesweeper and Sudoku gameplay, rankings, result flows, and profile editing.
-- The repository target for hosted environments is Azure Container Apps with GitHub Release driven CD, `Microsoft Entra ID` sign-in, Azure SQL over `Private Endpoint`, private App Configuration and Key Vault access, Application Insights, and Log Analytics.
+- The repository target for hosted environments is Azure Container Apps with GitHub Release driven CD, `Microsoft Entra ID` sign-in, Azure SQL over `Private Endpoint`, App Configuration and Key Vault backed runtime config, Application Insights, and Log Analytics.
 - Operational notes for rollback, smoke checks, private-network verification, and observability live in `docs/production-operations.md`.
 
 ## Local Development
@@ -39,8 +39,6 @@ npm run db:migrate
 npm run db:migrate:deploy
 npm run db:migrate:status
 npm run db:seed
-npm run azure:check:production-data
-npm run azure:sync:runtime-config
 ```
 
 ## Verified Local Flows
@@ -85,17 +83,18 @@ Azure App Configuration should reference those Key Vault secrets for:
 
 For local development, the app still supports shell-based fallback when `AZURE_APPCONFIG_ENDPOINT` is intentionally unset or when the signed-in Azure path is unavailable. Do not add `.env` files to this repository.
 
-`npm run azure:sync:runtime-config` is the repository-supported sync path for those keys and secrets. Run it only from a host that can reach the private App Configuration and Key Vault data plane.
+Hosted runtime config sync is workflow-owned. Use GitHub `Release Azure Delivery` or `Bootstrap Azure Recovery` instead of local Azure sync entrypoints.
 
 ## Azure Deployment Assets
 
 The repository now includes these Azure-oriented assets:
 
 - `azure.yaml` for `azd` service wiring
-- `infra/main.bicep` for VNet-integrated Azure Container Apps, private-endpoint subnets, Azure SQL, App Configuration, Key Vault, Log Analytics, and Application Insights
-- `infra/main.bicep` also defines the Azure SQL serverless database path, `Private Endpoint` resources, private DNS links, Container App `/health` probes, and a separate user-assigned migration identity
+- `infra/main.bicep` for VNet-integrated Azure Container Apps, Azure SQL, App Configuration, Key Vault, Log Analytics, and Application Insights
+- `infra/main.bicep` also defines the Azure SQL serverless database path, SQL `Private Endpoint` resources, private DNS links, Container App `/health` probes, a SQL bootstrap identity, and a separate user-assigned migration identity
+- `.github/workflows/bootstrap-azure-recovery.yml` for OIDC-only resource-group creation, hosted baseline bootstrap, SQL principal bootstrap, and recovery deploy
 - `.github/workflows/quality-gates.yml` for push / pull request validation of app code, Bicep, and GitHub workflow syntax
-- `.github/workflows/release-container-image.yml` for GitHub Releases to GHCR plus `plan_infra`, conditional `deploy_infra`, `deploy_app`, and `smoke_test`
+- `.github/workflows/release-container-image.yml` for GitHub Releases to GHCR plus `plan_infra`, conditional `deploy_infra`, `sync_runtime_config`, `deploy_app`, and `smoke_test`
 - `scripts/azure/postprovision.sh` for post-provision registry wiring
 - `scripts/azure/sync-runtime-config.sh` for App Configuration and Key Vault runtime config synchronization
 - `scripts/azure/smoke-test.sh` for post-deploy smoke checks
@@ -106,37 +105,51 @@ The repository now includes these Azure-oriented assets:
 
 Before a real hosted deployment, prepare all of the following:
 
-- An Azure subscription, resource group, and deployment region that support Azure Container Apps, Azure SQL, private DNS, and `Private Endpoint`
+- An Azure subscription and deployment region that support Azure Container Apps, Azure SQL, private DNS, and `Private Endpoint`
+- A target resource-group name for the GitHub bootstrap workflow to create or reconcile
 - A Microsoft Entra ID tenant and `web` app registration for the production sign-in flow
 - A virtual network plan that includes a delegated Container Apps infrastructure subnet and a separate private-endpoint subnet
 - Private DNS ownership or approval for:
   - `privatelink.database.windows.net`
-  - `privatelink.azconfig.io`
-  - `privatelink.vaultcore.azure.net`
-- GitHub Environment variables for Azure OIDC deployment:
+- GitHub `production` Environment variables for routine OIDC release:
   - `AZURE_CLIENT_ID`
   - `AZURE_TENANT_ID`
   - `AZURE_SUBSCRIPTION_ID`
   - `AZURE_RESOURCE_GROUP`
   - `AZURE_APP_NAME`
+- GitHub `production` Environment variables for runtime config sync:
+  - `ENTRA_CLIENT_ID`
+  - `ENTRA_TENANT_ID` when it differs from `AZURE_TENANT_ID`
+  - `ENTRA_AUTHORITY_TENANT` when the sign-in audience should not default to `ENTRA_TENANT_ID`
+  - `PUBLIC_APP_URL` when a custom domain should override the default Front Door host
+  - `SQL_ADMINISTRATOR_LOGIN`
+- GitHub `production-bootstrap` Environment variables for OIDC recovery bootstrap:
+  - `AZURE_CLIENT_ID`
+  - `AZURE_TENANT_ID`
+  - `AZURE_SUBSCRIPTION_ID`
+  - `AZURE_LOCATION`
+  - `AZURE_RESOURCE_GROUP`
+  - `AZURE_APP_NAME`
+  - `SQL_ADMINISTRATOR_LOGIN`
 - Azure RBAC split:
-  - Day-to-day GitHub release identity: `Contributor` at the target resource-group scope
-  - Bootstrap operator or elevated provisioning path: `Role Based Access Control Administrator` or `User Access Administrator` when `manageRuntimeRoleAssignments=true`
+  - Day-to-day GitHub release identity: `Contributor`, `App Configuration Data Owner`, and `Key Vault Secrets Officer` at the target resource-group scope so recovery can recreate the stores without a second grant step
+  - GitHub `production-bootstrap` identity: subscription or recovery-scope `Contributor`, plus `Role Based Access Control Administrator` or `User Access Administrator` when `manageRuntimeRoleAssignments=true`
 - Optional GitHub Environment variables for non-public or non-GHCR registry paths:
   - `CONTAINER_REGISTRY_SERVER`
   - `CONTAINER_REGISTRY_IDENTITY`
   - `CONTAINER_REGISTRY_USERNAME`
 - Optional GitHub Environment secret:
   - `CONTAINER_REGISTRY_PASSWORD`
+- GitHub `production` Environment secrets for runtime config sync and SQL bootstrap:
+  - `ARCADE_SESSION_SECRET`
+  - `ENTRA_CLIENT_SECRET`
+  - `SQL_ADMINISTRATOR_PASSWORD`
+- GitHub `production-bootstrap` Environment secret:
+  - `SQL_ADMINISTRATOR_PASSWORD`
 - Azure App Configuration values for non-secret runtime settings
 - Azure Key Vault secrets for secret runtime values such as `ARCADE_SESSION_SECRET` and the Entra confidential client secret
-- A private-network-reachable operator path for `npm run azure:sync:runtime-config`
 - A dev or test `Microsoft Entra ID` app registration for local sign-in verification if the team wants production-like auth locally
-- Azure SQL bootstrap inputs if `deploySql=true` is enabled in the Bicep template:
-	- `sqlAdministratorLogin`
-	- `sqlAdministratorPassword`
-	- `sqlEntraAdminLogin`
-	- `sqlEntraAdminObjectId`
+- A known-good immutable image reference for `.github/workflows/bootstrap-azure-recovery.yml`
 
 See `docs/azure-prerequisites.md` for the detailed checklist and current gaps.
 See `docs/production-data-path.md` for the current database cutover contract.
@@ -145,7 +158,8 @@ See `docs/repository-rename-runbook.md` for repository rename, GHCR namespace, a
 
 ## Next Steps
 
-- Sync App Configuration and Key Vault from a host that can reach the private data plane, then roll out the new private-network contract through the repository GitHub Workflow path.
+- Keep the GitHub `production` Environment runtime values and secrets aligned so the release workflow can sync App Configuration and Key Vault before each rollout.
+- Keep the GitHub `production-bootstrap` Environment aligned so `Bootstrap Azure Recovery` can recreate the resource group and hosted baseline entirely through OIDC.
 - Keep runtime Managed Identity RBAC bootstrap separate from day-to-day release delivery. Routine releases now pass `manageRuntimeRoleAssignments=false` and should not require `roleAssignments/write`.
 - Keep the `Quality Gates` workflow required on `main` once branch protection is configured.
 - Keep release notes, rollback data, and smoke verification steps synchronized with `docs/production-operations.md` after each production release.

@@ -10,7 +10,9 @@ SQL_PRIVATE_DNS_ZONE_NAME="${SQL_PRIVATE_DNS_ZONE_NAME:-privatelink.database.win
 APP_CONFIGURATION_PRIVATE_DNS_ZONE_NAME="${APP_CONFIGURATION_PRIVATE_DNS_ZONE_NAME:-privatelink.azconfig.io}"
 KEY_VAULT_PRIVATE_DNS_ZONE_NAME="${KEY_VAULT_PRIVATE_DNS_ZONE_NAME:-privatelink.vaultcore.azure.net}"
 EXPECTED_SQL_PUBLIC_NETWORK_ACCESS="${EXPECTED_SQL_PUBLIC_NETWORK_ACCESS:-Disabled}"
-EXPECTED_PRIVATE_CONFIG_STORES="${EXPECTED_PRIVATE_CONFIG_STORES:-true}"
+EXPECTED_PRIVATE_CONFIG_STORES="${EXPECTED_PRIVATE_CONFIG_STORES:-false}"
+EXPECTED_APPCONFIG_PUBLIC_NETWORK_ACCESS="${EXPECTED_APPCONFIG_PUBLIC_NETWORK_ACCESS:-Enabled}"
+EXPECTED_KEY_VAULT_PUBLIC_NETWORK_ACCESS="${EXPECTED_KEY_VAULT_PUBLIC_NETWORK_ACCESS:-Enabled}"
 EXPECTED_FRONT_DOOR_SKU="${EXPECTED_FRONT_DOOR_SKU:-Premium_AzureFrontDoor}"
 EXPECTED_MANAGED_ENVIRONMENT_PUBLIC_NETWORK_ACCESS="${EXPECTED_MANAGED_ENVIRONMENT_PUBLIC_NETWORK_ACCESS:-Disabled}"
 
@@ -448,8 +450,8 @@ if [[ "${EXPECTED_PRIVATE_CONFIG_STORES}" == "true" ]]; then
   app_configuration_endpoint="$(get_app_configuration_value "${app_configuration_name}" 'endpoint')"
   key_vault_uri="$(get_key_vault_value "${key_vault_name}" 'properties.vaultUri')"
 
-  assert_app_configuration_public_network_access "${app_configuration_name}" 'Disabled'
-  assert_key_vault_public_network_access "${key_vault_name}" 'Disabled'
+  assert_app_configuration_public_network_access "${app_configuration_name}" "${EXPECTED_APPCONFIG_PUBLIC_NETWORK_ACCESS}"
+  assert_key_vault_public_network_access "${key_vault_name}" "${EXPECTED_KEY_VAULT_PUBLIC_NETWORK_ACCESS}"
 
   if [[ -n "${container_apps_vnet_id}" ]]; then
     assert_private_dns_zone_linked_to_vnet "${APP_CONFIGURATION_PRIVATE_DNS_ZONE_NAME}" "${container_apps_vnet_id}"
@@ -468,20 +470,31 @@ if [[ "${EXPECTED_PRIVATE_CONFIG_STORES}" == "true" ]]; then
     "${KEY_VAULT_PRIVATE_DNS_ZONE_NAME}" \
     "${key_vault_name}"
 
-  if [[ -n "${container_app_name}" ]]; then
-    assert_container_app_env_value "${container_app_name}" 'AZURE_CONTAINER_APP_NAME' "${container_app_name}"
-    if [[ -n "${AZURE_APP_NAME:-}" ]]; then
-      assert_container_app_env_value "${container_app_name}" 'AZURE_APP_NAME' "${AZURE_APP_NAME}"
-    fi
-    assert_container_app_env_value "${container_app_name}" 'AZURE_APPCONFIG_ENDPOINT' "${app_configuration_endpoint}"
-    assert_container_app_env_value "${container_app_name}" 'AZURE_KEY_VAULT_URI' "${key_vault_uri}"
-  fi
-
-  if [[ -n "${container_app_principal_id}" ]]; then
-    assert_role_assignment_for_principal "${app_configuration_id}" "${container_app_principal_id}" 'App Configuration Data Reader' 'App Configuration access'
-    assert_role_assignment_for_principal "${key_vault_id}" "${container_app_principal_id}" 'Key Vault Secrets User' 'Key Vault access'
-  fi
 fi
 
-echo "Verified private Azure runtime contract for ${sql_server_name}."
+app_configuration_name="${app_configuration_name:-$(require_single_resource_name 'Microsoft.AppConfiguration/configurationStores' 'App Configuration store')}"
+key_vault_name="${key_vault_name:-$(require_single_resource_name 'Microsoft.KeyVault/vaults' 'Key Vault')}"
+app_configuration_id="${app_configuration_id:-$(get_app_configuration_value "${app_configuration_name}" 'id')}"
+key_vault_id="${key_vault_id:-$(get_key_vault_value "${key_vault_name}" 'id')}"
+app_configuration_endpoint="${app_configuration_endpoint:-$(get_app_configuration_value "${app_configuration_name}" 'endpoint')}"
+key_vault_uri="${key_vault_uri:-$(get_key_vault_value "${key_vault_name}" 'properties.vaultUri')}"
+
+assert_app_configuration_public_network_access "${app_configuration_name}" "${EXPECTED_APPCONFIG_PUBLIC_NETWORK_ACCESS}"
+assert_key_vault_public_network_access "${key_vault_name}" "${EXPECTED_KEY_VAULT_PUBLIC_NETWORK_ACCESS}"
+
+if [[ -n "${container_app_name}" ]]; then
+  assert_container_app_env_value "${container_app_name}" 'AZURE_CONTAINER_APP_NAME' "${container_app_name}"
+  if [[ -n "${AZURE_APP_NAME:-}" ]]; then
+    assert_container_app_env_value "${container_app_name}" 'AZURE_APP_NAME' "${AZURE_APP_NAME}"
+  fi
+  assert_container_app_env_value "${container_app_name}" 'AZURE_APPCONFIG_ENDPOINT' "${app_configuration_endpoint}"
+  assert_container_app_env_value "${container_app_name}" 'AZURE_KEY_VAULT_URI' "${key_vault_uri}"
+fi
+
+if [[ -n "${container_app_principal_id}" ]]; then
+  assert_role_assignment_for_principal "${app_configuration_id}" "${container_app_principal_id}" 'App Configuration Data Reader' 'App Configuration access'
+  assert_role_assignment_for_principal "${key_vault_id}" "${container_app_principal_id}" 'Key Vault Secrets User' 'Key Vault access'
+fi
+
+echo "Verified hosted Azure runtime contract for ${sql_server_name}."
 APP_URL="${APP_URL}" ./scripts/azure/smoke-test.sh
