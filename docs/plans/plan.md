@@ -197,4 +197,4 @@ Notes:
 - [x] Validate the refactored workflow YAML locally and capture any remaining hosted follow-up
 
 Notes:
-- Local validation for the workflow role split used Ruby YAML parse for the three touched workflow files plus `git diff --check`; `actionlint` is still unavailable in this environment, so hosted validation remains the next follow-up.
+- Local validation for the workflow role split used Ruby YAML parse, `actionlint`, and `git diff --check` for the three touched workflow files. Hosted validation remains the next follow-up.

@@ -396,7 +396,7 @@ jobs:
     uses: ./.github/workflows/shared-azure-rollout.yml
     with:
       image_ref: ${{ needs.publish.outputs.image_ref }}
-      resource_group_suffix: ${{ env.AZURE_RESOURCE_GROUP_SUFFIX }}
+      resource_group_suffix: green
       bootstrap_environment: production
       deployment_environment: production
       smoke_test_retries: ${{ needs.deploy_infra.result == 'success' && '90' || '18' }}
