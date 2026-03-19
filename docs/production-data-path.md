@@ -45,7 +45,7 @@ These assets establish the repository-side contract for the hosted data path. Th
 ## Workflow-Owned Cutover Sequence
 
 1. `Bootstrap Azure Recovery` creates or updates the resource group and deploys the hosted baseline from `infra/main.bicep`.
-2. The same workflow runs an Azure-hosted `Container Apps Job` under the SQL bootstrap identity to create or reconcile the initial database principals and least-privilege role memberships for the runtime and migration identities.
+2. `Release Azure Delivery` and `Bootstrap Azure Recovery` both run an Azure-hosted `Container Apps Job` under the SQL bootstrap identity to create or reconcile the database principals and least-privilege role memberships for the runtime and migration identities.
 3. `Release Azure Delivery` and `Bootstrap Azure Recovery` both sync runtime config into App Configuration and Key Vault.
 4. `Release Azure Delivery` and `Bootstrap Azure Recovery` both run an Azure-hosted `Container Apps Job` under the migration identity to execute `Prisma migrate deploy`.
 5. The workflow deploys the chosen immutable image to the runtime `Container App`.

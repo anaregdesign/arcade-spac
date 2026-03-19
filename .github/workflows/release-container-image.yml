@@ -446,8 +446,8 @@ jobs:
           ARCADE_AUTH_MODE: entra
         run: ./scripts/azure/sync-runtime-config.sh
 
-  migrate_database:
-    name: Run Prisma Migrations In Azure
+  bootstrap_sql:
+    name: Bootstrap Azure SQL Principals
     runs-on: ubuntu-latest
     timeout-minutes: 60
     needs:
@@ -464,6 +464,71 @@ jobs:
         needs.plan_infra.result == 'success' &&
         (needs.deploy_infra.result == 'success' || needs.deploy_infra.result == 'skipped') &&
         needs.sync_runtime_config.result == 'success'
+      }}
+    environment: production
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      AZURE_APP_NAME: ${{ vars.AZURE_APP_NAME }}
+      AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+      AZURE_RESOURCE_GROUP_PREFIX: ${{ vars.AZURE_RESOURCE_GROUP }}
+      AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+      CONTAINER_REGISTRY_IDENTITY: ${{ vars.CONTAINER_REGISTRY_IDENTITY }}
+      CONTAINER_REGISTRY_PASSWORD: ${{ secrets.CONTAINER_REGISTRY_PASSWORD }}
+      CONTAINER_REGISTRY_SERVER: ${{ vars.CONTAINER_REGISTRY_SERVER }}
+      CONTAINER_REGISTRY_USERNAME: ${{ vars.CONTAINER_REGISTRY_USERNAME }}
+      IMAGE_REF: ${{ needs.publish.outputs.image_ref }}
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v5
+
+      - name: Derive target resource group
+        run: echo "AZURE_RESOURCE_GROUP=${AZURE_RESOURCE_GROUP_PREFIX}-${AZURE_RESOURCE_GROUP_SUFFIX}" >> "$GITHUB_ENV"
+
+      - name: Validate SQL bootstrap configuration
+        run: |
+          test -n "$AZURE_CLIENT_ID" || { echo "Missing environment variable AZURE_CLIENT_ID"; exit 1; }
+          test -n "$AZURE_TENANT_ID" || { echo "Missing environment variable AZURE_TENANT_ID"; exit 1; }
+          test -n "$AZURE_SUBSCRIPTION_ID" || { echo "Missing environment variable AZURE_SUBSCRIPTION_ID"; exit 1; }
+          test -n "$AZURE_RESOURCE_GROUP_PREFIX" || { echo "Missing environment variable AZURE_RESOURCE_GROUP"; exit 1; }
+          test -n "$AZURE_RESOURCE_GROUP_SUFFIX" || { echo "Missing workflow-managed resource-group suffix"; exit 1; }
+          [[ "$AZURE_RESOURCE_GROUP_PREFIX" != *- ]] || { echo "AZURE_RESOURCE_GROUP must contain only the shared prefix without a suffix"; exit 1; }
+          test -n "$AZURE_RESOURCE_GROUP" || { echo "Missing derived target resource group"; exit 1; }
+          test -n "$AZURE_APP_NAME" || { echo "Missing environment variable AZURE_APP_NAME"; exit 1; }
+          test -n "$IMAGE_REF" || { echo "Missing release image reference"; exit 1; }
+
+      - name: Log in to Azure with OIDC
+        uses: azure/login@v3
+        with:
+          client-id: ${{ env.AZURE_CLIENT_ID }}
+          tenant-id: ${{ env.AZURE_TENANT_ID }}
+          subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Run SQL bootstrap in Azure
+        run: bash ./scripts/azure/run-sql-bootstrap-job.sh
+
+  migrate_database:
+    name: Run Prisma Migrations In Azure
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    needs:
+      - publish
+      - plan_infra
+      - deploy_infra
+      - sync_runtime_config
+      - bootstrap_sql
+    if: >-
+      ${{
+        always() &&
+        !cancelled() &&
+        !github.event.release.prerelease &&
+        needs.publish.result == 'success' &&
+        needs.plan_infra.result == 'success' &&
+        (needs.deploy_infra.result == 'success' || needs.deploy_infra.result == 'skipped') &&
+        needs.sync_runtime_config.result == 'success' &&
+        needs.bootstrap_sql.result == 'success'
       }}
     environment: production
     permissions:

@@ -150,9 +150,10 @@
 - [x] Extend runtime verification so it asserts the runtime identity and env split after rollout
 
 ### Subsection 6.3 - Validation And Release
-- [ ] Run local validation for the refactored runtime scripts, workflow YAML, and Azure helper scripts
+- [x] Run local validation for the refactored runtime scripts, workflow YAML, and Azure helper scripts
 - [ ] Push the workflow-owned migration split to `main`
 - [ ] Publish a release that exercises the new migration-job flow and capture the hosted result
+- [x] Align routine release with the documented SQL principal bootstrap contract before the Azure-hosted migration job runs
 
 Notes:
 - Remaining intentional non-idempotent behavior is limited to run-scoped artifact names such as Azure deployment names and transient Container Apps Job / execution names used by workflow runs.
@@ -165,3 +166,4 @@ Notes:
 - Hosted run `23278246644` then failed earlier in `Resolve existing hosted resources` because the generic resolver treated all user-assigned identities in `rg-arcade-green` as one ambiguous type and aborted before infra deploy when `id-sql-runtime-arcade-green` was still absent. Identity resources need exact-match-or-default resolution instead of single-resource fallback.
 - Hosted run `23278395882` cleared infra deployment and SQL bootstrap, but the new revision `ca-arcade-green--0000013` still entered `CrashLoopBackOff`. The replica log shows `prisma migrate deploy` reaching Azure SQL and failing with `P1000 Authentication failed`, so the remaining issue is now the Prisma Managed Identity connection path rather than principal bootstrap orchestration.
 - Release run `23278951042` with image `v2026.03.19.1` proved the runtime wrapper is taking effect: replica `ca-arcade-green--0000015` logs `Using ActiveDirectoryManagedIdentity Prisma auth...`, but Prisma now fails earlier with `P1013 Invalid JDBC token`, which indicates the injected `msiEndpoint` / `msiSecret` values must be JDBC-escaped for the adapter parser.
+- Release run `23280239848` (`v2026.03.19.4`) proved the Azure-hosted migration job wiring works, but also exposed a contract gap: routine release skipped SQL principal convergence entirely while recovery still ran it. Because the migration identity can drift independently of the runtime image, routine release must run the same Azure-hosted SQL bootstrap job before the migration job.

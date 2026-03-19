@@ -36,10 +36,10 @@ production / shared Azure delivery は GitHub Workflow を唯一の control plan
 
 ## User-Visible Behavior
 
-- `Release Azure Delivery` は `publish -> plan_infra -> deploy_infra -> sync_runtime_config -> migrate_database -> deploy_app -> smoke_test` の順で進む
+- `Release Azure Delivery` は `publish -> plan_infra -> deploy_infra -> sync_runtime_config -> bootstrap_sql -> migrate_database -> deploy_app -> smoke_test` の順で進む
 - `Bootstrap Azure Recovery` は `ensure_resource_group -> deploy_bootstrap_infra -> restore_production_release_rbac -> bootstrap_sql -> sync_runtime_config -> run_database_migration -> deploy_app -> smoke_test -> verify_runtime` の順で進む
 - GitHub-hosted workflow は Azure SQL に直接 login しない
-- Azure SQL principal bootstrap は SQL bootstrap identity で動く Azure-hosted `Container Apps Job` が担当する
+- Azure SQL principal bootstrap は release / recovery の両 workflow で SQL bootstrap identity で動く Azure-hosted `Container Apps Job` が担当する
 - Prisma migration は migration identity で動く Azure-hosted `Container Apps Job` が担当する
 - `Container App` の default startup path は migration を待たずに server process を起動する
 - runtime `Container App` は runtime identity だけを attach し、migration identity は attach しない
