@@ -1,0 +1,293 @@
+name: Shared Azure Rollout
+
+on:
+  workflow_call:
+    inputs:
+      image_ref:
+        description: Immutable container image reference to deploy
+        required: true
+        type: string
+      resource_group_suffix:
+        description: Resource-group suffix appended to the shared AZURE_RESOURCE_GROUP prefix
+        required: true
+        type: string
+      bootstrap_environment:
+        description: GitHub Environment that owns SQL bootstrap credentials for this rollout
+        required: true
+        type: string
+      deployment_environment:
+        description: GitHub Environment that owns runtime config, deployment, and smoke-test credentials for this rollout
+        required: true
+        type: string
+      smoke_test_retries:
+        description: Retry budget for the final smoke test
+        required: false
+        default: "18"
+        type: string
+    outputs:
+      app_url:
+        description: Public application URL discovered after deployment
+        value: ${{ jobs.deploy_app.outputs.app_url }}
+      config_changed:
+        description: Whether runtime config sync changed the runtime contract
+        value: ${{ jobs.sync_runtime_config.outputs.config_changed }}
+
+env:
+  AZURE_RESOURCE_GROUP_SUFFIX: ${{ inputs.resource_group_suffix }}
+  IMAGE_REF: ${{ inputs.image_ref }}
+
+jobs:
+  sync_runtime_config:
+    name: Sync Runtime Config To Azure Stores
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.deployment_environment }}
+    permissions:
+      contents: read
+      id-token: write
+    outputs:
+      config_changed: ${{ steps.sync_runtime_config.outputs.config_changed }}
+    env:
+      AZURE_APP_NAME: ${{ vars.AZURE_APP_NAME }}
+      AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+      AZURE_RESOURCE_GROUP_PREFIX: ${{ vars.AZURE_RESOURCE_GROUP }}
+      AZURE_RESOURCE_GROUP: ${{ format('{0}-{1}', vars.AZURE_RESOURCE_GROUP, inputs.resource_group_suffix) }}
+      AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+      ENTRA_AUTHORITY_TENANT: ${{ vars.ENTRA_AUTHORITY_TENANT }}
+      ENTRA_CLIENT_ID: ${{ vars.ENTRA_CLIENT_ID }}
+      ENTRA_TENANT_ID: ${{ vars.ENTRA_TENANT_ID }}
+      PUBLIC_APP_URL: ${{ vars.PUBLIC_APP_URL }}
+      ARCADE_SESSION_SECRET: ${{ secrets.ARCADE_SESSION_SECRET }}
+      ENTRA_CLIENT_SECRET: ${{ secrets.ENTRA_CLIENT_SECRET }}
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v5
+
+      - name: Validate runtime config sync contract
+        run: |
+          test -n "$AZURE_CLIENT_ID" || { echo "Missing environment variable AZURE_CLIENT_ID"; exit 1; }
+          test -n "$AZURE_TENANT_ID" || { echo "Missing environment variable AZURE_TENANT_ID"; exit 1; }
+          test -n "$AZURE_SUBSCRIPTION_ID" || { echo "Missing environment variable AZURE_SUBSCRIPTION_ID"; exit 1; }
+          test -n "$AZURE_RESOURCE_GROUP_PREFIX" || { echo "Missing environment variable AZURE_RESOURCE_GROUP"; exit 1; }
+          test -n "$AZURE_RESOURCE_GROUP_SUFFIX" || { echo "Missing workflow-managed resource-group suffix"; exit 1; }
+          [[ "$AZURE_RESOURCE_GROUP_PREFIX" != *- ]] || { echo "AZURE_RESOURCE_GROUP must contain only the shared prefix without a suffix"; exit 1; }
+          test -n "$AZURE_RESOURCE_GROUP" || { echo "Missing derived target resource group"; exit 1; }
+          test -n "$AZURE_APP_NAME" || { echo "Missing environment variable AZURE_APP_NAME"; exit 1; }
+          test -n "$ENTRA_CLIENT_ID" || { echo "Missing environment variable ENTRA_CLIENT_ID"; exit 1; }
+          test -n "$ENTRA_CLIENT_SECRET" || { echo "Missing secret ENTRA_CLIENT_SECRET"; exit 1; }
+          test -n "$ARCADE_SESSION_SECRET" || { echo "Missing secret ARCADE_SESSION_SECRET"; exit 1; }
+
+      - name: Log in to Azure with OIDC
+        uses: azure/login@v3
+        with:
+          client-id: ${{ env.AZURE_CLIENT_ID }}
+          tenant-id: ${{ env.AZURE_TENANT_ID }}
+          subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Sync runtime config to App Configuration and Key Vault
+        id: sync_runtime_config
+        env:
+          ARCADE_AUTH_MODE: entra
+        run: ./scripts/azure/sync-runtime-config.sh
+
+  bootstrap_sql:
+    name: Bootstrap Azure SQL Principals
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    needs:
+      - sync_runtime_config
+    environment: ${{ inputs.bootstrap_environment }}
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      AZURE_APP_NAME: ${{ vars.AZURE_APP_NAME }}
+      AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+      AZURE_RESOURCE_GROUP_PREFIX: ${{ vars.AZURE_RESOURCE_GROUP }}
+      AZURE_RESOURCE_GROUP: ${{ format('{0}-{1}', vars.AZURE_RESOURCE_GROUP, inputs.resource_group_suffix) }}
+      AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+      CONTAINER_REGISTRY_IDENTITY: ${{ vars.CONTAINER_REGISTRY_IDENTITY }}
+      CONTAINER_REGISTRY_PASSWORD: ${{ secrets.CONTAINER_REGISTRY_PASSWORD }}
+      CONTAINER_REGISTRY_SERVER: ${{ vars.CONTAINER_REGISTRY_SERVER }}
+      CONTAINER_REGISTRY_USERNAME: ${{ vars.CONTAINER_REGISTRY_USERNAME }}
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v5
+
+      - name: Validate SQL bootstrap configuration
+        run: |
+          test -n "$AZURE_CLIENT_ID" || { echo "Missing environment variable AZURE_CLIENT_ID"; exit 1; }
+          test -n "$AZURE_TENANT_ID" || { echo "Missing environment variable AZURE_TENANT_ID"; exit 1; }
+          test -n "$AZURE_SUBSCRIPTION_ID" || { echo "Missing environment variable AZURE_SUBSCRIPTION_ID"; exit 1; }
+          test -n "$AZURE_RESOURCE_GROUP_PREFIX" || { echo "Missing environment variable AZURE_RESOURCE_GROUP"; exit 1; }
+          test -n "$AZURE_RESOURCE_GROUP_SUFFIX" || { echo "Missing workflow-managed resource-group suffix"; exit 1; }
+          [[ "$AZURE_RESOURCE_GROUP_PREFIX" != *- ]] || { echo "AZURE_RESOURCE_GROUP must contain only the shared prefix without a suffix"; exit 1; }
+          test -n "$AZURE_RESOURCE_GROUP" || { echo "Missing derived target resource group"; exit 1; }
+          test -n "$AZURE_APP_NAME" || { echo "Missing environment variable AZURE_APP_NAME"; exit 1; }
+          test -n "$IMAGE_REF" || { echo "Missing release image reference"; exit 1; }
+
+      - name: Log in to Azure with OIDC
+        uses: azure/login@v3
+        with:
+          client-id: ${{ env.AZURE_CLIENT_ID }}
+          tenant-id: ${{ env.AZURE_TENANT_ID }}
+          subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Run SQL bootstrap in Azure
+        run: bash ./scripts/azure/run-sql-bootstrap-job.sh
+
+  migrate_database:
+    name: Run Prisma Migrations In Azure
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    needs:
+      - sync_runtime_config
+      - bootstrap_sql
+    environment: ${{ inputs.deployment_environment }}
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      AZURE_APP_NAME: ${{ vars.AZURE_APP_NAME }}
+      AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+      AZURE_RESOURCE_GROUP_PREFIX: ${{ vars.AZURE_RESOURCE_GROUP }}
+      AZURE_RESOURCE_GROUP: ${{ format('{0}-{1}', vars.AZURE_RESOURCE_GROUP, inputs.resource_group_suffix) }}
+      AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+      CONTAINER_REGISTRY_IDENTITY: ${{ vars.CONTAINER_REGISTRY_IDENTITY }}
+      CONTAINER_REGISTRY_PASSWORD: ${{ secrets.CONTAINER_REGISTRY_PASSWORD }}
+      CONTAINER_REGISTRY_SERVER: ${{ vars.CONTAINER_REGISTRY_SERVER }}
+      CONTAINER_REGISTRY_USERNAME: ${{ vars.CONTAINER_REGISTRY_USERNAME }}
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v5
+
+      - name: Validate Prisma migration job configuration
+        run: |
+          test -n "$AZURE_CLIENT_ID" || { echo "Missing environment variable AZURE_CLIENT_ID"; exit 1; }
+          test -n "$AZURE_TENANT_ID" || { echo "Missing environment variable AZURE_TENANT_ID"; exit 1; }
+          test -n "$AZURE_SUBSCRIPTION_ID" || { echo "Missing environment variable AZURE_SUBSCRIPTION_ID"; exit 1; }
+          test -n "$AZURE_RESOURCE_GROUP_PREFIX" || { echo "Missing environment variable AZURE_RESOURCE_GROUP"; exit 1; }
+          test -n "$AZURE_RESOURCE_GROUP_SUFFIX" || { echo "Missing workflow-managed resource-group suffix"; exit 1; }
+          [[ "$AZURE_RESOURCE_GROUP_PREFIX" != *- ]] || { echo "AZURE_RESOURCE_GROUP must contain only the shared prefix without a suffix"; exit 1; }
+          test -n "$AZURE_RESOURCE_GROUP" || { echo "Missing derived target resource group"; exit 1; }
+          test -n "$AZURE_APP_NAME" || { echo "Missing environment variable AZURE_APP_NAME"; exit 1; }
+          test -n "$IMAGE_REF" || { echo "Missing release image reference"; exit 1; }
+
+      - name: Log in to Azure with OIDC
+        uses: azure/login@v3
+        with:
+          client-id: ${{ env.AZURE_CLIENT_ID }}
+          tenant-id: ${{ env.AZURE_TENANT_ID }}
+          subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Run Prisma migrations in Azure
+        run: bash ./scripts/azure/run-prisma-migration-job.sh
+
+  deploy_app:
+    name: Deploy Application Image To Azure Container Apps
+    runs-on: ubuntu-latest
+    needs:
+      - sync_runtime_config
+      - migrate_database
+    environment: ${{ inputs.deployment_environment }}
+    permissions:
+      contents: read
+      id-token: write
+    outputs:
+      app_url: ${{ steps.public_endpoint.outputs.app_url }}
+    env:
+      AZURE_APP_NAME: ${{ vars.AZURE_APP_NAME }}
+      AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+      AZURE_RESOURCE_GROUP_PREFIX: ${{ vars.AZURE_RESOURCE_GROUP }}
+      AZURE_RESOURCE_GROUP: ${{ format('{0}-{1}', vars.AZURE_RESOURCE_GROUP, inputs.resource_group_suffix) }}
+      AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+      ENTRA_AUTHORITY_TENANT: ${{ vars.ENTRA_AUTHORITY_TENANT }}
+      ENTRA_CLIENT_ID: ${{ vars.ENTRA_CLIENT_ID }}
+      ENTRA_TENANT_ID: ${{ vars.ENTRA_TENANT_ID }}
+      CONTAINER_REGISTRY_IDENTITY: ${{ vars.CONTAINER_REGISTRY_IDENTITY }}
+      CONTAINER_REGISTRY_PASSWORD: ${{ secrets.CONTAINER_REGISTRY_PASSWORD }}
+      CONTAINER_REGISTRY_SERVER: ${{ vars.CONTAINER_REGISTRY_SERVER }}
+      CONTAINER_REGISTRY_USERNAME: ${{ vars.CONTAINER_REGISTRY_USERNAME }}
+      FORCE_CONTAINER_APP_UPDATE: ${{ needs.sync_runtime_config.outputs.config_changed }}
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v5
+
+      - name: Validate app deployment configuration
+        run: |
+          test -n "$AZURE_CLIENT_ID" || { echo "Missing environment variable AZURE_CLIENT_ID"; exit 1; }
+          test -n "$AZURE_TENANT_ID" || { echo "Missing environment variable AZURE_TENANT_ID"; exit 1; }
+          test -n "$AZURE_SUBSCRIPTION_ID" || { echo "Missing environment variable AZURE_SUBSCRIPTION_ID"; exit 1; }
+          test -n "$AZURE_RESOURCE_GROUP_PREFIX" || { echo "Missing environment variable AZURE_RESOURCE_GROUP"; exit 1; }
+          test -n "$AZURE_RESOURCE_GROUP_SUFFIX" || { echo "Missing workflow-managed resource-group suffix"; exit 1; }
+          [[ "$AZURE_RESOURCE_GROUP_PREFIX" != *- ]] || { echo "AZURE_RESOURCE_GROUP must contain only the shared prefix without a suffix"; exit 1; }
+          test -n "$AZURE_RESOURCE_GROUP" || { echo "Missing derived target resource group"; exit 1; }
+          test -n "$AZURE_APP_NAME" || { echo "Missing environment variable AZURE_APP_NAME"; exit 1; }
+          test -n "$IMAGE_REF" || { echo "Missing release image reference"; exit 1; }
+
+      - name: Log in to Azure with OIDC
+        uses: azure/login@v3
+        with:
+          client-id: ${{ env.AZURE_CLIENT_ID }}
+          tenant-id: ${{ env.AZURE_TENANT_ID }}
+          subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Configure registry access when required
+        run: bash ./scripts/azure/postprovision.sh
+
+      - name: Deploy immutable application image
+        run: ./scripts/azure/deploy-container-app-image.sh
+
+      - name: Discover deployed public endpoint
+        id: public_endpoint
+        run: |
+          FRONT_DOOR_ENDPOINT_ID="$(
+            az resource list \
+              --resource-group "$AZURE_RESOURCE_GROUP" \
+              --resource-type "Microsoft.Cdn/profiles/afdEndpoints" \
+              --query "[0].id" \
+              --output tsv
+          )"
+
+          test -n "$FRONT_DOOR_ENDPOINT_ID" || { echo "Missing Front Door endpoint resource."; exit 1; }
+
+          FRONT_DOOR_HOST="$(
+            az resource show \
+              --ids "$FRONT_DOOR_ENDPOINT_ID" \
+              --query properties.hostName \
+              --output tsv
+          )"
+
+          test -n "$FRONT_DOOR_HOST" || { echo "Missing Front Door endpoint host."; exit 1; }
+          echo "app_url=https://${FRONT_DOOR_HOST}" >> "$GITHUB_OUTPUT"
+
+      - name: Sync Container App runtime env
+        env:
+          ARCADE_AUTH_MODE: entra
+          PUBLIC_APP_URL: ${{ steps.public_endpoint.outputs.app_url }}
+        run: ./scripts/azure/sync-container-app-runtime-env.sh
+
+  smoke_test:
+    name: Smoke Test Azure Delivery
+    runs-on: ubuntu-latest
+    needs:
+      - deploy_app
+    environment: ${{ inputs.deployment_environment }}
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v5
+
+      - name: Validate smoke test target
+        env:
+          APP_URL: ${{ needs.deploy_app.outputs.app_url }}
+        run: test -n "$APP_URL" || { echo "Missing deployment output app_url"; exit 1; }
+
+      - name: Smoke test deployed release
+        env:
+          APP_URL: ${{ needs.deploy_app.outputs.app_url }}
+          EXPECTED_ENTRA_AUTHORITY_TENANT: ${{ vars.ENTRA_AUTHORITY_TENANT || vars.ENTRA_TENANT_ID }}
+          SMOKE_TEST_RETRIES: ${{ inputs.smoke_test_retries }}
+        run: ./scripts/azure/smoke-test.sh

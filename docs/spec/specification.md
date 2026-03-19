@@ -22,6 +22,7 @@ production / shared Azure delivery は GitHub Workflow を唯一の control plan
 ## Scope
 
 - `release` / `recovery` workflow の責務分離を明示する
+- shared rollout responsibility を reusable workflow に集約し、entry workflow ごとの重複 job 定義をなくす
 - GitHub-hosted job と Azure-hosted job の execution surface を分離する
 - runtime / migration / SQL bootstrap identity の permission boundary を固定する
 - suffix-aware naming contract と same-suffix rerun contract を維持する
@@ -36,8 +37,8 @@ production / shared Azure delivery は GitHub Workflow を唯一の control plan
 
 ## User-Visible Behavior
 
-- `Release Azure Delivery` は `publish -> plan_infra -> deploy_infra -> sync_runtime_config -> bootstrap_sql -> migrate_database -> deploy_app -> smoke_test` の順で進む
-- `Bootstrap Azure Recovery` は `ensure_resource_group -> deploy_bootstrap_infra -> restore_production_release_rbac -> bootstrap_sql -> sync_runtime_config -> run_database_migration -> deploy_app -> smoke_test -> verify_runtime` の順で進む
+- `Release Azure Delivery` は routine release entry workflow として `publish -> plan_infra -> deploy_infra` までを担当し、その後 shared reusable rollout workflow を call して `sync_runtime_config -> bootstrap_sql -> migrate_database -> deploy_app -> smoke_test` を実行する
+- `Bootstrap Azure Recovery` は recovery entry workflow として `resolve_recovery_image -> ensure_resource_group -> deploy_bootstrap_infra -> restore_production_release_rbac` までを担当し、その後同じ shared reusable rollout workflow を call して `sync_runtime_config -> bootstrap_sql -> run_database_migration -> deploy_app -> smoke_test` を実行し、最後に `verify_runtime` を行う
 - GitHub-hosted workflow は Azure SQL に直接 login しない
 - Azure SQL principal bootstrap は release / recovery の両 workflow で SQL bootstrap identity で動く Azure-hosted `Container Apps Job` が担当する
 - schema migration は migration identity で動く Azure-hosted `Container Apps Job` が担当し、checked-in Prisma SQL files を direct `mssql` execution で適用する
@@ -50,6 +51,7 @@ production / shared Azure delivery は GitHub Workflow を唯一の control plan
 
 - GitHub-hosted workflow から Azure SQL `Private Endpoint` への direct data-plane dependency がない
 - Azure SQL principal bootstrap と schema migration はどちらも Azure-hosted `Container Apps Job` で実行される
+- routine release / recovery entry workflow に duplicated rollout job definition が残らず、shared rollout path は reusable workflow 1 か所で管理される
 - `Container App` revision restart や scale-out は schema migration の成否に依存しない
 - runtime `Container App` は runtime identity のみを attach し、migration identity attachment は不要になる
 - workflow docs に required Azure RBAC, SQL grants, GitHub Environment variables/secrets, registry prerequisite, network prerequisite が列挙されている

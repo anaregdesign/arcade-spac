@@ -180,3 +180,21 @@ Notes:
 - Release run `23281632418` (`v2026.03.19.7`) resolved that ambiguity: the direct `mssql` preflight succeeded under the migration identity and printed the expected Azure SQL login context, but `prisma migrate deploy` still failed with `P1000`. The blocker is Prisma CLI's hosted SQL Server auth path, not Azure SQL principal bootstrap.
 - Local validation on 2026-03-19 proved that the checked-in Prisma SQL files apply cleanly through the repo-owned `mssql` runner on a fresh SQL Server database and then skip cleanly on a second run. The custom runner must become the hosted migration contract instead of Prisma CLI.
 - Release run `23282301861` (`v2026.03.19.8`) reached the new Azure-hosted migration job, but the container failed with `ERR_MODULE_NOT_FOUND: Cannot find module '/app/scripts/prisma-sql-migration-runner.mjs'`. The repo-side logic is correct; the next rerun only needs the runtime image to copy the new runner file.
+- Release run `23284457421` (`v2026.03.19.10`) completed `success`; the last remaining hosted blocker was the smoke test's hardcoded `organizations` authority assertion, not the app-side tenant-scoped redirect contract.
+
+## Section 7 - Workflow Role Split
+### Subsection 7.1 - Contract And Plan
+- [x] Rewrite the durable workflow contract so entry workflows own only role-specific jobs and shared rollout responsibilities move to a reusable workflow
+- [x] Add the execution slice for the workflow role split to the active plan before substantial YAML refactoring
+
+### Subsection 7.2 - Reusable Rollout Refactor
+- [x] Extract the duplicated `sync_runtime_config -> bootstrap_sql -> migration -> deploy_app -> smoke_test` path into a shared reusable workflow
+- [x] Refactor `Release Azure Delivery` so it builds/publishes the image, plans/deploys infra, then calls the shared rollout workflow
+- [x] Refactor `Bootstrap Azure Recovery` so it resolves the recovery image, bootstraps infra/RBAC, then calls the shared rollout workflow before `verify_runtime`
+- [x] Preserve environment boundaries so release keeps `production`, recovery keeps `production-bootstrap` for bootstrap-only jobs, and shared rollout uses the correct caller-provided environment names
+
+### Subsection 7.3 - Validation
+- [x] Validate the refactored workflow YAML locally and capture any remaining hosted follow-up
+
+Notes:
+- Local validation for the workflow role split used Ruby YAML parse for the three touched workflow files plus `git diff --check`; `actionlint` is still unavailable in this environment, so hosted validation remains the next follow-up.
