@@ -159,6 +159,7 @@
 - [x] Prove under the hosted migration identity that direct `mssql` login succeeds even when Prisma CLI still returns `P1000`
 - [x] Replace Azure-hosted `prisma migrate deploy` with a repo-owned `mssql` runner that applies checked-in Prisma SQL migrations and records `_prisma_migrations` state
 - [x] Validate the repo-owned SQL migration runner locally against a fresh SQL Server database and idempotent rerun behavior
+- [x] Patch the runtime image packaging so the Azure-hosted migration job ships `scripts/prisma-sql-migration-runner.mjs`
 - [ ] Publish a release that exercises the repo-owned Azure-hosted SQL migration runner and capture the hosted result
 
 Notes:
@@ -177,3 +178,4 @@ Notes:
 - Release run `23281236661` (`v2026.03.19.6`) still failed with `P1000` even after preserving `DefaultAzureCredential`, which means the remaining ambiguity is now between the migration identity login itself and Prisma CLI's SQL Server auth support. The next rerun must log a direct `mssql` preflight under the same migration identity before `prisma migrate deploy`.
 - Release run `23281632418` (`v2026.03.19.7`) resolved that ambiguity: the direct `mssql` preflight succeeded under the migration identity and printed the expected Azure SQL login context, but `prisma migrate deploy` still failed with `P1000`. The blocker is Prisma CLI's hosted SQL Server auth path, not Azure SQL principal bootstrap.
 - Local validation on 2026-03-19 proved that the checked-in Prisma SQL files apply cleanly through the repo-owned `mssql` runner on a fresh SQL Server database and then skip cleanly on a second run. The custom runner must become the hosted migration contract instead of Prisma CLI.
+- Release run `23282301861` (`v2026.03.19.8`) reached the new Azure-hosted migration job, but the container failed with `ERR_MODULE_NOT_FOUND: Cannot find module '/app/scripts/prisma-sql-migration-runner.mjs'`. The repo-side logic is correct; the next rerun only needs the runtime image to copy the new runner file.

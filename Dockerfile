@@ -17,6 +17,7 @@ COPY ./prisma /app/prisma
 COPY ./prisma.config.ts /app/prisma.config.ts
 COPY ./scripts/azure/init-sql.mjs /app/scripts/azure/init-sql.mjs
 COPY ./scripts/prisma-managed-identity.mjs /app/scripts/prisma-managed-identity.mjs
+COPY ./scripts/prisma-sql-migration-runner.mjs /app/scripts/prisma-sql-migration-runner.mjs
 COPY ./scripts/run-migrations.mjs /app/scripts/run-migrations.mjs
 COPY ./scripts/start-server.mjs /app/scripts/start-server.mjs
 WORKDIR /app
