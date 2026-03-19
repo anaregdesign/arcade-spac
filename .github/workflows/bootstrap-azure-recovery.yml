@@ -494,37 +494,36 @@ jobs:
 
           write_sql_bootstrap_job_template() {
             local output_path="$1"
-
-            cat >"$output_path" <<EOF
-containers:
-  - name: sql-bootstrap
-    image: ${IMAGE_REF}
-    resources:
-      cpu: 0.5
-      memory: 1Gi
-    command:
-      - sh
-    args:
-      - -lc
-      - 'printf ''%s'' "\$ARCADE_SQL_BOOTSTRAP_SOURCE_B64" | base64 -d > /tmp/init-sql.mjs && node /tmp/init-sql.mjs'
-    env:
-      - name: AZURE_CLIENT_ID
-        value: ${SQL_BOOTSTRAP_IDENTITY_CLIENT_ID}
-      - name: ARCADE_SQL_BOOTSTRAP_SOURCE_B64
-        value: ${SQL_BOOTSTRAP_SOURCE_B64}
-      - name: ARCADE_SQL_SERVER
-        value: ${SQL_SERVER_NAME}.database.windows.net
-      - name: ARCADE_SQL_DATABASE
-        value: ${SQL_DATABASE_NAME}
-      - name: ARCADE_SQL_RUNTIME_PRINCIPAL
-        value: ${SQL_RUNTIME_PRINCIPAL_NAME}
-      - name: ARCADE_SQL_RUNTIME_OBJECT_ID
-        value: ${SQL_RUNTIME_PRINCIPAL_OBJECT_ID}
-      - name: ARCADE_SQL_MIGRATION_PRINCIPAL
-        value: ${SQL_MIGRATION_PRINCIPAL_NAME}
-      - name: ARCADE_SQL_MIGRATION_OBJECT_ID
-        value: ${SQL_MIGRATION_PRINCIPAL_OBJECT_ID}
-EOF
+            {
+              printf '%s\n' 'containers:'
+              printf '%s\n' '  - name: sql-bootstrap'
+              printf '    image: "%s"\n' "$IMAGE_REF"
+              printf '%s\n' '    resources:'
+              printf '%s\n' '      cpu: 0.5'
+              printf '%s\n' '      memory: 1Gi'
+              printf '%s\n' '    command:'
+              printf '%s\n' '      - sh'
+              printf '%s\n' '    args:'
+              printf '%s\n' '      - -lc'
+              printf '%s\n' "      - \"printf '%s' \\\"\$ARCADE_SQL_BOOTSTRAP_SOURCE_B64\\\" | base64 -d > /tmp/init-sql.mjs && node /tmp/init-sql.mjs\""
+              printf '%s\n' '    env:'
+              printf '%s\n' '      - name: AZURE_CLIENT_ID'
+              printf '        value: "%s"\n' "$SQL_BOOTSTRAP_IDENTITY_CLIENT_ID"
+              printf '%s\n' '      - name: ARCADE_SQL_BOOTSTRAP_SOURCE_B64'
+              printf '        value: "%s"\n' "$SQL_BOOTSTRAP_SOURCE_B64"
+              printf '%s\n' '      - name: ARCADE_SQL_SERVER'
+              printf '        value: "%s"\n' "${SQL_SERVER_NAME}.database.windows.net"
+              printf '%s\n' '      - name: ARCADE_SQL_DATABASE'
+              printf '        value: "%s"\n' "$SQL_DATABASE_NAME"
+              printf '%s\n' '      - name: ARCADE_SQL_RUNTIME_PRINCIPAL'
+              printf '        value: "%s"\n' "$SQL_RUNTIME_PRINCIPAL_NAME"
+              printf '%s\n' '      - name: ARCADE_SQL_RUNTIME_OBJECT_ID'
+              printf '        value: "%s"\n' "$SQL_RUNTIME_PRINCIPAL_OBJECT_ID"
+              printf '%s\n' '      - name: ARCADE_SQL_MIGRATION_PRINCIPAL'
+              printf '        value: "%s"\n' "$SQL_MIGRATION_PRINCIPAL_NAME"
+              printf '%s\n' '      - name: ARCADE_SQL_MIGRATION_OBJECT_ID'
+              printf '        value: "%s"\n' "$SQL_MIGRATION_PRINCIPAL_OBJECT_ID"
+            } >"$output_path"
           }
 
           wait_for_sql_bootstrap_job_execution() {
