@@ -151,7 +151,7 @@
 
 ### Subsection 6.3 - Validation And Release
 - [x] Run local validation for the refactored runtime scripts, workflow YAML, and Azure helper scripts
-- [ ] Push the workflow-owned migration split to `main`
+- [x] Push the workflow-owned migration split to `main`
 - [ ] Publish a release that exercises the new migration-job flow and capture the hosted result
 - [x] Align routine release with the documented SQL principal bootstrap contract before the Azure-hosted migration job runs
 
