@@ -82,6 +82,10 @@ function findAuthenticationMode(databaseUrl) {
   return value.trim().toLowerCase();
 }
 
+function braceEscapeConnectionStringValue(value) {
+  return `{${value.trim().replaceAll("}", "}}")}}`;
+}
+
 export function rewriteDatabaseUrlForManagedIdentity(databaseUrl, clientId, env = process.env) {
   const identityEndpoint = env[MANAGED_IDENTITY_ENDPOINT_ENV_NAME];
   const identityHeader = env[MANAGED_IDENTITY_HEADER_ENV_NAME];
@@ -108,8 +112,8 @@ export function rewriteDatabaseUrlForManagedIdentity(databaseUrl, clientId, env 
 
   rewrittenParts.push("authentication=ActiveDirectoryManagedIdentity");
   rewrittenParts.push(`clientId=${clientId.trim()}`);
-  rewrittenParts.push(`msiEndpoint=${identityEndpoint.trim()}`);
-  rewrittenParts.push(`msiSecret=${identityHeader.trim()}`);
+  rewrittenParts.push(`msiEndpoint=${braceEscapeConnectionStringValue(identityEndpoint)}`);
+  rewrittenParts.push(`msiSecret=${braceEscapeConnectionStringValue(identityHeader)}`);
 
   return rewrittenParts.join(";");
 }

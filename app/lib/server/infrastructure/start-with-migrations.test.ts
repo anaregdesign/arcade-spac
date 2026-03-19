@@ -14,8 +14,8 @@ describe("rewriteDatabaseUrlForManagedIdentity", () => {
 
     expect(result).toContain("authentication=ActiveDirectoryManagedIdentity");
     expect(result).toContain("clientId=11111111-1111-1111-1111-111111111111");
-    expect(result).toContain("msiEndpoint=http://127.0.0.1:42356/msi/token");
-    expect(result).toContain("msiSecret=header-token");
+    expect(result).toContain("msiEndpoint={http://127.0.0.1:42356/msi/token}");
+    expect(result).toContain("msiSecret={header-token}");
     expect(result).not.toContain("authentication=DefaultAzureCredential");
   });
 
