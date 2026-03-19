@@ -124,6 +124,8 @@
 - [x] Patch bootstrap recovery to create a simple Azure-hosted SQL bootstrap job and pass command/args/env overrides through `az containerapp job start --yaml`
 - [x] Capture the follow-on hosted SQL bootstrap failure where the injected `/tmp/init-sql.mjs` cannot resolve `mssql` from outside `/app/node_modules`
 - [x] Patch SQL bootstrap command injection so the transient script is written and executed from `/app` instead of `/tmp`, preserving Node package resolution inside the runtime image
+- [x] Capture the follow-on hosted SQL bootstrap failure where runtime and migration principal reconciliation redeclare the same SQL batch variables
+- [x] Patch SQL bootstrap reconciliation so runtime and migration principal blocks use distinct SQL variable names inside the shared batch
 - [ ] Push the SQL bootstrap principal repair to `main` and rerun `Bootstrap Azure Recovery` against `green` with the current immutable image so live Azure SQL principals are reconciled
 - [ ] Confirm the recovery workflow, smoke test, and scheduled or manual runtime verification succeed after the SQL principal repair
 
@@ -133,3 +135,4 @@ Notes:
 - Local Azure validation on scratch `Container Apps` reproduced the CLI parse failure for `az containerapp job start --args "-lc" ...` but succeeded with `az containerapp job start --yaml /tmp/aca-job-execution.yaml`, so the workflow path needs the YAML execution-override shape rather than direct `--args`.
 - Hosted run `23277105400` showed the YAML execution override reaching the job container, but the injected script failed with `ERR_MODULE_NOT_FOUND: Cannot find package 'mssql' imported from /tmp/init-sql.mjs`; the fix is to keep the injected file under `/app` so Node resolves `/app/node_modules`.
 - Local Docker validation against `ghcr.io/anaregdesign/arcade-spec:v2026.03.18.9` confirmed that writing the actual injected SQL bootstrap script to `/app/init-sql.injected.mjs` changes the first failure from `ERR_MODULE_NOT_FOUND` to the expected missing-env check (`ARCADE_SQL_SERVER must be set.`), proving package resolution is restored.
+- Hosted run `23277508599` moved past module resolution but failed inside Azure SQL because the generated bootstrap batch declared `@principal_name` and `@principal_object_id` twice; the next patch must isolate runtime and migration variable names within the same batch.

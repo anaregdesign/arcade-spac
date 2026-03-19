@@ -19,6 +19,16 @@ function bracketSqlIdentifier(value) {
   return `[${value.replaceAll("]", "]]")}]`;
 }
 
+function sqlVariableFragment(value) {
+  const normalized = value.replace(/[^A-Za-z0-9_]/g, "_");
+
+  if (!normalized) {
+    throw new Error("SQL variable scope must include at least one alphanumeric character.");
+  }
+
+  return /^[0-9]/.test(normalized) ? `_${normalized}` : normalized;
+}
+
 function membershipGuard(roleName, principalName) {
   const roleIdentifier = bracketSqlIdentifier(roleName);
   const principalIdentifier = bracketSqlIdentifier(principalName);
@@ -32,29 +42,32 @@ IF NOT EXISTS (
   JOIN sys.database_principals rolep ON drm.role_principal_id = rolep.principal_id
   JOIN sys.database_principals memberp ON drm.member_principal_id = memberp.principal_id
   WHERE rolep.name = N'${escapedRoleLiteral}' AND memberp.name = N'${escapedPrincipalLiteral}'
-)
+  )
   ALTER ROLE ${roleIdentifier} ADD MEMBER ${principalIdentifier};`;
 }
 
-export function buildPrincipalReconciliationSql(principalName, principalObjectId, roleNames) {
+export function buildPrincipalReconciliationSql(principalName, principalObjectId, roleNames, variableScope = "principal") {
   const escapedPrincipalLiteral = escapeSqlLiteral(principalName);
   const escapedObjectIdLiteral = escapeSqlLiteral(principalObjectId);
   const principalIdentifier = bracketSqlIdentifier(principalName);
   const principalIdentifierDynamicLiteral = escapeSqlLiteral(principalIdentifier);
+  const variableFragment = sqlVariableFragment(variableScope);
+  const principalNameVariable = `@principal_name_${variableFragment}`;
+  const principalObjectIdVariable = `@principal_object_id_${variableFragment}`;
   const membershipStatements = roleNames.map((roleName) => membershipGuard(roleName, principalName)).join("\n");
 
   return `
-DECLARE @principal_name sysname = N'${escapedPrincipalLiteral}';
-DECLARE @principal_object_id uniqueidentifier = CAST(N'${escapedObjectIdLiteral}' AS uniqueidentifier);
+DECLARE ${principalNameVariable} sysname = N'${escapedPrincipalLiteral}';
+DECLARE ${principalObjectIdVariable} uniqueidentifier = CAST(N'${escapedObjectIdLiteral}' AS uniqueidentifier);
 
 IF EXISTS (
   SELECT 1
   FROM sys.database_principals
-  WHERE name = @principal_name
+  WHERE name = ${principalNameVariable}
     AND (
       type <> 'E'
       OR TRY_CAST(sid AS uniqueidentifier) IS NULL
-      OR TRY_CAST(sid AS uniqueidentifier) <> @principal_object_id
+      OR TRY_CAST(sid AS uniqueidentifier) <> ${principalObjectIdVariable}
     )
 )
 BEGIN
@@ -65,7 +78,7 @@ END;
 IF NOT EXISTS (
   SELECT 1
   FROM sys.database_principals
-  WHERE name = @principal_name
+  WHERE name = ${principalNameVariable}
 )
 BEGIN
   PRINT N'Creating Azure SQL principal ${escapedPrincipalLiteral}.';
@@ -82,9 +95,14 @@ export function buildBootstrapSql({
   migrationPrincipalObjectId,
 }) {
   return `
-${buildPrincipalReconciliationSql(runtimePrincipalName, runtimePrincipalObjectId, ["db_datareader", "db_datawriter"])}
+${buildPrincipalReconciliationSql(runtimePrincipalName, runtimePrincipalObjectId, ["db_datareader", "db_datawriter"], "runtime")}
 
-${buildPrincipalReconciliationSql(migrationPrincipalName, migrationPrincipalObjectId, ["db_datareader", "db_datawriter", "db_ddladmin"])}
+${buildPrincipalReconciliationSql(
+  migrationPrincipalName,
+  migrationPrincipalObjectId,
+  ["db_datareader", "db_datawriter", "db_ddladmin"],
+  "migration",
+)}
 `;
 }
 

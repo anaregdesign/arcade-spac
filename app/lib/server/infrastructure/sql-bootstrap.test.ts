@@ -12,9 +12,14 @@ describe("sql bootstrap", () => {
       migrationPrincipalObjectId: "22222222-2222-2222-2222-222222222222",
     });
 
-    expect(sql).toContain("DECLARE @principal_object_id uniqueidentifier = CAST(N'11111111-1111-1111-1111-111111111111' AS uniqueidentifier);");
-    expect(sql).toContain("DECLARE @principal_object_id uniqueidentifier = CAST(N'22222222-2222-2222-2222-222222222222' AS uniqueidentifier);");
-    expect(sql).toContain("TRY_CAST(sid AS uniqueidentifier) <> @principal_object_id");
+    expect(sql).toContain(
+      "DECLARE @principal_object_id_runtime uniqueidentifier = CAST(N'11111111-1111-1111-1111-111111111111' AS uniqueidentifier);",
+    );
+    expect(sql).toContain(
+      "DECLARE @principal_object_id_migration uniqueidentifier = CAST(N'22222222-2222-2222-2222-222222222222' AS uniqueidentifier);",
+    );
+    expect(sql).toContain("TRY_CAST(sid AS uniqueidentifier) <> @principal_object_id_runtime");
+    expect(sql).toContain("TRY_CAST(sid AS uniqueidentifier) <> @principal_object_id_migration");
     expect(sql).toContain("EXEC(N'DROP USER [ca-arcade-green]');");
     expect(sql).toContain("EXEC(N'DROP USER [id-arcade-green-migration]');");
     expect(sql).toContain("ALTER ROLE [db_ddladmin] ADD MEMBER [id-arcade-green-migration];");
@@ -30,7 +35,7 @@ describe("sql bootstrap", () => {
     });
 
     expect(sql).toContain("EXEC(N'DROP USER [runtime]]principal]');");
-    expect(sql).toContain("DECLARE @principal_name sysname = N'migration''principal';");
+    expect(sql).toContain("DECLARE @principal_name_migration sysname = N'migration''principal';");
     expect(sql).toContain("EXEC(N'CREATE USER [migration''principal] FROM EXTERNAL PROVIDER;');");
     expect(sql).toContain("ALTER ROLE [db_ddladmin] ADD MEMBER [migration'principal];");
   });
