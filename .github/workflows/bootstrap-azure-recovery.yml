@@ -654,6 +654,8 @@ jobs:
               --cpu 0.5 \
               --memory 1.0Gi \
               --mi-user-assigned "$SQL_BOOTSTRAP_IDENTITY_ID" \
+              --command sh \
+              --args "-lc" "printf '%s' \"\$ARCADE_SQL_BOOTSTRAP_SOURCE_B64\" | base64 -d > /tmp/init-sql.mjs && node /tmp/init-sql.mjs" \
               --env-vars \
                 "AZURE_CLIENT_ID=$SQL_BOOTSTRAP_IDENTITY_CLIENT_ID" \
                 "ARCADE_SQL_BOOTSTRAP_SOURCE_B64=$SQL_BOOTSTRAP_SOURCE_B64" \
@@ -663,7 +665,6 @@ jobs:
                 "ARCADE_SQL_RUNTIME_OBJECT_ID=$SQL_RUNTIME_PRINCIPAL_OBJECT_ID" \
                 "ARCADE_SQL_MIGRATION_PRINCIPAL=$SQL_MIGRATION_PRINCIPAL_NAME" \
                 "ARCADE_SQL_MIGRATION_OBJECT_ID=$SQL_MIGRATION_PRINCIPAL_OBJECT_ID" \
-              --command "sh,-lc,printf '%s' \"\$ARCADE_SQL_BOOTSTRAP_SOURCE_B64\" | base64 -d > /tmp/init-sql.mjs && node /tmp/init-sql.mjs" \
               "${registry_args[@]}" \
               --output none
 

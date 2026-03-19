@@ -114,6 +114,8 @@
 - [x] Capture the follow-on hosted startup failure where `prisma migrate deploy` reaches Azure SQL but exits with `P1000 Authentication failed`
 - [x] Patch SQL bootstrap principal convergence so reused Azure SQL databases repair stale Entra principal `SID` mappings after runtime or migration identities are recreated with the same name
 - [x] Add regression coverage for SQL bootstrap principal reconciliation against current Entra object IDs
+- [x] Capture the bootstrap recovery failure where the SQL bootstrap Container Apps Job stays `Running` because `az containerapp job create` serialized `/bin/sh -lc ...` into a single malformed command string
+- [x] Patch bootstrap recovery so the SQL bootstrap job passes `--command` and `--args` as separate values and actually executes the injected `init-sql.mjs`
 - [ ] Push the SQL bootstrap principal repair to `main` and rerun `Bootstrap Azure Recovery` against `green` with the current immutable image so live Azure SQL principals are reconciled
 - [ ] Confirm the recovery workflow, smoke test, and scheduled or manual runtime verification succeed after the SQL principal repair
 
