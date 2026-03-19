@@ -1,6 +1,6 @@
 # Production Data Path
 
-This document records the repository contract for Arcade's hosted relational path after separating `runtime startup`, `Prisma migration`, and `Azure SQL principal bootstrap`.
+This document records the repository contract for Arcade's hosted relational path after separating `runtime startup`, `schema migration`, and `Azure SQL principal bootstrap`.
 
 ## Current Local State
 
@@ -17,7 +17,7 @@ Before Azure deployment is treated as production-ready, all of the following mus
 3. Azure SQL public network access is `Disabled`, and runtime reaches `<server>.database.windows.net` through `Private Endpoint` plus private DNS.
 4. The hosted runtime resolves `Arcade:*` App Configuration keys and the Key Vault-backed `ARCADE_SESSION_SECRET`, `DATABASE_URL`, and `ENTRA_CLIENT_SECRET` values through a managed configuration path rather than repo files.
 5. Azure SQL principal bootstrap runs only through the SQL bootstrap identity path.
-6. Prisma migration runs only through the migration identity path.
+6. Schema migration runs only through the migration identity path and applies checked-in Prisma SQL files through the repo-owned `mssql` runner.
 7. Runtime server startup runs only through the runtime identity path.
 
 ## Repo Support Added
@@ -29,6 +29,7 @@ Before Azure deployment is treated as production-ready, all of the following mus
 - `scripts/azure/init-sql.mjs`
 - `scripts/azure/run-prisma-migration-job.sh`
 - `scripts/run-migrations.mjs`
+- `scripts/prisma-sql-migration-runner.mjs`
 - `scripts/start-server.mjs`
 - `scripts/azure/verify-production-runtime.sh`
 
@@ -47,7 +48,7 @@ These assets establish the repository-side contract for the hosted data path. Th
 1. `Bootstrap Azure Recovery` creates or updates the resource group and deploys the hosted baseline from `infra/main.bicep`.
 2. `Release Azure Delivery` and `Bootstrap Azure Recovery` both run an Azure-hosted `Container Apps Job` under the SQL bootstrap identity to create or reconcile the database principals and least-privilege role memberships for the runtime and migration identities.
 3. `Release Azure Delivery` and `Bootstrap Azure Recovery` both sync runtime config into App Configuration and Key Vault.
-4. `Release Azure Delivery` and `Bootstrap Azure Recovery` both run an Azure-hosted `Container Apps Job` under the migration identity to execute `Prisma migrate deploy`.
+4. `Release Azure Delivery` and `Bootstrap Azure Recovery` both run an Azure-hosted `Container Apps Job` under the migration identity to execute the repo-owned `mssql` runner over checked-in Prisma SQL migration files.
 5. The workflow deploys the chosen immutable image to the runtime `Container App`.
 6. Runtime server startup begins immediately and does not wait for migration.
 7. `Verify Production Runtime` confirms the hosted data path contract after rollout.

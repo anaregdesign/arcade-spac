@@ -54,8 +54,16 @@ function parseBooleanConnectionStringValue(value, fallback) {
 export function parseAzureSqlConnectionConfig(databaseUrl) {
   const [prefix = ""] = splitConnectionStringParts(databaseUrl);
   const normalizedPrefix = prefix.replace(/^sqlserver:\/\//i, "");
-  const [serverWithPort = ""] = normalizedPrefix.split(";", 1);
-  const [server = ""] = serverWithPort.split(",", 1);
+  const [serverToken = ""] = normalizedPrefix.split(";", 1);
+  const portFromComma = serverToken.includes(",")
+    ? serverToken.split(",", 2)[1]
+    : null;
+  const portFromColon = !serverToken.includes(",") && /^.+:\d+$/.test(serverToken)
+    ? serverToken.split(":", 2)[1]
+    : null;
+  const server = serverToken
+    .replace(/,\d+$/, "")
+    .replace(/:\d+$/, "");
   const database = readConnectionStringValue(databaseUrl, "database")
     ?? readConnectionStringValue(databaseUrl, "databaseName");
 
@@ -65,6 +73,7 @@ export function parseAzureSqlConnectionConfig(databaseUrl) {
 
   return {
     server,
+    port: Number.parseInt(portFromComma ?? portFromColon ?? "1433", 10),
     database,
     encrypt: parseBooleanConnectionStringValue(readConnectionStringValue(databaseUrl, "encrypt"), true),
     trustServerCertificate: parseBooleanConnectionStringValue(
@@ -124,7 +133,7 @@ export async function verifyManagedIdentitySqlLogin(databaseUrl, clientId) {
   const connectionConfig = parseAzureSqlConnectionConfig(databaseUrl);
   const pool = await sql.connect({
     server: connectionConfig.server,
-    port: 1433,
+    port: connectionConfig.port,
     database: connectionConfig.database,
     authentication: {
       type: "azure-active-directory-default",

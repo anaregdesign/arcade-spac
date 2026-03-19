@@ -9,6 +9,7 @@ export function rewriteDatabaseUrlForManagedIdentity(
 ): string;
 export function parseAzureSqlConnectionConfig(databaseUrl: string): {
   server: string;
+  port: number;
   database: string;
   encrypt: boolean;
   trustServerCertificate: boolean;

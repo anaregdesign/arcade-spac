@@ -2,7 +2,7 @@
 
 ## Summary
 
-production / shared Azure delivery は GitHub Workflow を唯一の control plane entrypoint としつつ、`Private Endpoint` 配下の Azure SQL data-plane 操作は Azure-hosted `Container Apps Job` に限定する。`Container App runtime` は server process の起動だけを担当し、`Prisma migration` は release / recovery workflow 上の dedicated job に分離する。suffix-aware naming contract は維持し、`green` / `blue` / `dev` ごとに hosted environment を独立させる。
+production / shared Azure delivery は GitHub Workflow を唯一の control plane entrypoint としつつ、`Private Endpoint` 配下の Azure SQL data-plane 操作は Azure-hosted `Container Apps Job` に限定する。`Container App runtime` は server process の起動だけを担当し、schema change は release / recovery workflow 上の dedicated migration job に分離する。migration job は `prisma migrate deploy` を直接叩かず、checked-in Prisma SQL migrations を Azure-hosted `mssql` runner で適用する。suffix-aware naming contract は維持し、`green` / `blue` / `dev` ごとに hosted environment を独立させる。
 
 ## User Problem
 
@@ -40,7 +40,7 @@ production / shared Azure delivery は GitHub Workflow を唯一の control plan
 - `Bootstrap Azure Recovery` は `ensure_resource_group -> deploy_bootstrap_infra -> restore_production_release_rbac -> bootstrap_sql -> sync_runtime_config -> run_database_migration -> deploy_app -> smoke_test -> verify_runtime` の順で進む
 - GitHub-hosted workflow は Azure SQL に直接 login しない
 - Azure SQL principal bootstrap は release / recovery の両 workflow で SQL bootstrap identity で動く Azure-hosted `Container Apps Job` が担当する
-- Prisma migration は migration identity で動く Azure-hosted `Container Apps Job` が担当する
+- schema migration は migration identity で動く Azure-hosted `Container Apps Job` が担当し、checked-in Prisma SQL files を direct `mssql` execution で適用する
 - `Container App` の default startup path は migration を待たずに server process を起動する
 - runtime `Container App` は runtime identity だけを attach し、migration identity は attach しない
 - runtime container env には `AZURE_SQL_RUNTIME_CLIENT_ID` だけが残り、`AZURE_SQL_MIGRATION_CLIENT_ID` と `STARTUP_MIGRATION_DATABASE_URL` は残らない
@@ -49,7 +49,7 @@ production / shared Azure delivery は GitHub Workflow を唯一の control plan
 ## Acceptance Criteria
 
 - GitHub-hosted workflow から Azure SQL `Private Endpoint` への direct data-plane dependency がない
-- Azure SQL principal bootstrap と Prisma migration はどちらも Azure-hosted `Container Apps Job` で実行される
+- Azure SQL principal bootstrap と schema migration はどちらも Azure-hosted `Container Apps Job` で実行される
 - `Container App` revision restart や scale-out は schema migration の成否に依存しない
 - runtime `Container App` は runtime identity のみを attach し、migration identity attachment は不要になる
 - workflow docs に required Azure RBAC, SQL grants, GitHub Environment variables/secrets, registry prerequisite, network prerequisite が列挙されている

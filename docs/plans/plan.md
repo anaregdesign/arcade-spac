@@ -156,6 +156,10 @@
 - [x] Align routine release with the documented SQL principal bootstrap contract before the Azure-hosted migration job runs
 - [ ] Correct the hosted Prisma managed-identity path to stop rewriting `DATABASE_URL`, validate locally, and rerun the routine release until it completes
 - [x] Add Azure-hosted SQL preflight logging to the migration job so the next rerun can distinguish managed-identity login failure from Prisma CLI failure
+- [x] Prove under the hosted migration identity that direct `mssql` login succeeds even when Prisma CLI still returns `P1000`
+- [x] Replace Azure-hosted `prisma migrate deploy` with a repo-owned `mssql` runner that applies checked-in Prisma SQL migrations and records `_prisma_migrations` state
+- [x] Validate the repo-owned SQL migration runner locally against a fresh SQL Server database and idempotent rerun behavior
+- [ ] Publish a release that exercises the repo-owned Azure-hosted SQL migration runner and capture the hosted result
 
 Notes:
 - Remaining intentional non-idempotent behavior is limited to run-scoped artifact names such as Azure deployment names and transient Container Apps Job / execution names used by workflow runs.
@@ -171,3 +175,5 @@ Notes:
 - Release run `23280239848` (`v2026.03.19.4`) proved the Azure-hosted migration job wiring works, but also exposed a contract gap: routine release skipped SQL principal convergence entirely while recovery still ran it. Because the migration identity can drift independently of the runtime image, routine release must run the same Azure-hosted SQL bootstrap job before the migration job.
 - Release run `23280741512` (`v2026.03.19.5`) proved routine release now runs SQL principal bootstrap successfully before the migration job, but the migration job still failed with `P1000` after logging `Using ActiveDirectoryManagedIdentity Prisma auth...`. Local package inspection shows both Prisma's MSSQL adapter and query-plan executor already support `authentication=DefaultAzureCredential`, so the hosted contract should preserve `DATABASE_URL` and rely on `AZURE_CLIENT_ID` instead of rewriting to `ActiveDirectoryManagedIdentity`.
 - Release run `23281236661` (`v2026.03.19.6`) still failed with `P1000` even after preserving `DefaultAzureCredential`, which means the remaining ambiguity is now between the migration identity login itself and Prisma CLI's SQL Server auth support. The next rerun must log a direct `mssql` preflight under the same migration identity before `prisma migrate deploy`.
+- Release run `23281632418` (`v2026.03.19.7`) resolved that ambiguity: the direct `mssql` preflight succeeded under the migration identity and printed the expected Azure SQL login context, but `prisma migrate deploy` still failed with `P1000`. The blocker is Prisma CLI's hosted SQL Server auth path, not Azure SQL principal bootstrap.
+- Local validation on 2026-03-19 proved that the checked-in Prisma SQL files apply cleanly through the repo-owned `mssql` runner on a fresh SQL Server database and then skip cleanly on a second run. The custom runner must become the hosted migration contract instead of Prisma CLI.

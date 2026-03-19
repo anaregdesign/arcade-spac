@@ -21,7 +21,7 @@ This runbook records the repository-side production contract for Arcade on Azure
 - Full bootstrap or worst-case recovery:
   - `.github/workflows/bootstrap-azure-recovery.yml`
   - uses the `production-bootstrap` OIDC identity to create the resource group, deploy the hosted baseline, approve Azure Front Door private-link requests, and bootstrap Azure SQL principals
-  - uses the `production` OIDC identity to sync runtime config, run Prisma migration in an Azure-hosted job, deploy the recovery image, smoke-test the result, and verify the runtime contract
+  - uses the `production` OIDC identity to sync runtime config, run schema migration in an Azure-hosted job, deploy the recovery image, smoke-test the result, and verify the runtime contract
 - Routine deploy:
   - `.github/workflows/release-container-image.yml`
   - job shape: `publish` -> `plan_infra` -> `deploy_infra` -> `sync_runtime_config` -> `migrate_database` -> `deploy_app` -> `smoke_test`
@@ -32,7 +32,7 @@ This runbook records the repository-side production contract for Arcade on Azure
 
 - The repository contract was updated on March 14, 2026 to prefer Azure SQL private connectivity and `Entra-only` auth.
 - The repository contract was updated on March 18, 2026 to publish through Azure Front Door Premium with a private-link origin to Azure Container Apps.
-- The repository contract now expects resource-group bootstrap, Azure SQL principal creation, runtime config sync, workflow-owned Prisma migration, release deploy, smoke test, and runtime verification to be workflow-driven through GitHub Actions OIDC.
+- The repository contract now expects resource-group bootstrap, Azure SQL principal creation, runtime config sync, workflow-owned schema migration, release deploy, smoke test, and runtime verification to be workflow-driven through GitHub Actions OIDC.
 - The routine release workflow still passes `manageRuntimeRoleAssignments=false`, so least-privilege day-to-day delivery remains narrower than the bootstrap workflow.
 - The routine `production` Environment no longer carries SQL admin login/password; that bootstrap-only secret surface is isolated to `production-bootstrap`.
 - This workspace did not perform a production or shared-environment deployment.
@@ -54,9 +54,10 @@ This runbook records the repository-side production contract for Arcade on Azure
 4. Keep `PUBLIC_APP_URL` aligned to the final custom domain URL, or leave it unset so the workflow derives the current Front Door host automatically.
 5. Update the Microsoft Entra app registration redirect URI when the public host changes.
 6. Publish the release so the GitHub workflow runs `publish`, `plan_infra`, `deploy_infra`, `sync_runtime_config`, `migrate_database`, `deploy_app`, and `smoke_test`.
-7. Confirm the workflow completed successfully.
-8. Use `Verify Production Runtime` for the post-release contract check.
-9. Verify hosted sign-in, gameplay, result, rankings, and profile screens in a browser.
+7. Confirm the Azure-hosted migration job applied the checked-in Prisma SQL files successfully before the app rollout is treated as complete.
+8. Confirm the workflow completed successfully.
+9. Use `Verify Production Runtime` for the post-release contract check.
+10. Verify hosted sign-in, gameplay, result, rankings, and profile screens in a browser.
 
 ## Full Bootstrap Or Recovery Procedure
 
@@ -73,7 +74,7 @@ This runbook records the repository-side production contract for Arcade on Azure
 - The repository contract no longer keeps a supported local Azure CLI bootstrap or recovery path.
 - GitHub Environment owns the canonical app identity through `AZURE_APP_NAME`; the Container App target is always derived as `ca-${AZURE_APP_NAME}` across bootstrap, release, verification, and workflow-owned helper scripts.
 - `Bootstrap Azure Recovery` owns resource-group creation and initial Azure SQL principal bootstrap through GitHub Actions OIDC.
-- `Release Azure Delivery` owns routine infra convergence, runtime config sync, workflow-owned Prisma migration, image rollout, and smoke testing through GitHub Actions OIDC.
+- `Release Azure Delivery` owns routine infra convergence, runtime config sync, workflow-owned schema migration, image rollout, and smoke testing through GitHub Actions OIDC.
 - `Verify Production Runtime` owns the supported hosted contract verification path.
 - GitHub-hosted workflow jobs do not connect directly to Azure SQL `Private Endpoint`; every SQL data-plane action must stay inside Azure-hosted jobs.
 - If `sync_runtime_config` fails, treat missing resource-group scope `App Configuration Data Owner` or `Key Vault Secrets Officer` rights on the `production` OIDC identity as bootstrap drift first.

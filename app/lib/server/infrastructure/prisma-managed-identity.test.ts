@@ -77,6 +77,7 @@ describe("parseAzureSqlConnectionConfig", () => {
       ),
     ).toEqual({
       server: "sql-arcade-green.database.windows.net",
+      port: 1433,
       database: "arcade",
       encrypt: true,
       trustServerCertificate: false,
@@ -88,10 +89,11 @@ describe("parseAzureSqlConnectionConfig", () => {
 
     expect(
       parseAzureSqlConnectionConfig(
-        "sqlserver://localhost,1433;databaseName=arcade;encrypt=false;trustServerCertificate=true",
+        "sqlserver://localhost:1433;databaseName=arcade;encrypt=false;trustServerCertificate=true",
       ),
     ).toEqual({
       server: "localhost",
+      port: 1433,
       database: "arcade",
       encrypt: false,
       trustServerCertificate: true,

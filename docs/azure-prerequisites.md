@@ -1,6 +1,6 @@
 # Azure Deployment Prerequisites
 
-This checklist captures the repository contract for Azure-hosted delivery after the workflow split between `control plane`, `SQL principal bootstrap`, `Prisma migration`, and `runtime startup`.
+This checklist captures the repository contract for Azure-hosted delivery after the workflow split between `control plane`, `SQL principal bootstrap`, `schema migration`, and `runtime startup`.
 
 ## Execution Model
 
@@ -13,18 +13,20 @@ This checklist captures the repository contract for Azure-hosted delivery after 
   - hosted smoke test and runtime verification
 - Azure-hosted `Container Apps Job` executions own Azure SQL data-plane operations:
   - `Release Azure Delivery` and `Bootstrap Azure Recovery` both run `bootstrap_sql` under the SQL bootstrap identity
-  - `Release Azure Delivery` and `Bootstrap Azure Recovery` both run dedicated Prisma migration jobs under the SQL migration identity
-- `Container App runtime` starts the server only. It does not run `Prisma migration` during replica startup.
+  - `Release Azure Delivery` and `Bootstrap Azure Recovery` both run dedicated schema migration jobs under the SQL migration identity
+- The schema migration job applies checked-in Prisma SQL files through the repo-owned `mssql` runner instead of invoking `prisma migrate deploy` in Azure.
+- `Container App runtime` starts the server only. It does not run schema migration during replica startup.
 
 ## Already Scaffolded In Repo
 
 - `infra/main.bicep` provisions a VNet-integrated Container Apps environment, delegated Container Apps subnet, private-endpoint subnet, Azure Front Door Premium, Azure SQL, App Configuration, Key Vault, Application Insights, Log Analytics, a SQL runtime identity, a SQL migration identity, and a SQL bootstrap identity.
-- `.github/workflows/bootstrap-azure-recovery.yml` creates the resource group, deploys the hosted baseline, restores production release RBAC, bootstraps Azure SQL principals through an Azure-hosted job, syncs runtime config, runs Prisma migration through an Azure-hosted job, deploys the recovery image, smoke-tests it, and verifies the runtime contract.
-- `.github/workflows/release-container-image.yml` publishes immutable release images to GHCR, runs infra `what-if`, deploys infra only when real changes exist, syncs runtime config, bootstraps Azure SQL principals through an Azure-hosted job, runs Prisma migration through an Azure-hosted job, deploys the app revision, and smoke-tests it.
+- `.github/workflows/bootstrap-azure-recovery.yml` creates the resource group, deploys the hosted baseline, restores production release RBAC, bootstraps Azure SQL principals through an Azure-hosted job, syncs runtime config, runs schema migration through an Azure-hosted job, deploys the recovery image, smoke-tests it, and verifies the runtime contract.
+- `.github/workflows/release-container-image.yml` publishes immutable release images to GHCR, runs infra `what-if`, deploys infra only when real changes exist, syncs runtime config, bootstraps Azure SQL principals through an Azure-hosted job, runs schema migration through an Azure-hosted job, deploys the app revision, and smoke-tests it.
 - `scripts/azure/init-sql.mjs` is the Azure SQL principal reconciliation implementation.
 - `scripts/azure/run-sql-bootstrap-job.sh` is the workflow helper that starts the Azure-hosted SQL bootstrap job.
-- `scripts/azure/run-prisma-migration-job.sh` is the workflow helper that starts the Azure-hosted Prisma migration job.
-- `scripts/run-migrations.mjs` is the image entrypoint for the migration job.
+- `scripts/azure/run-prisma-migration-job.sh` is the workflow helper that starts the Azure-hosted schema migration job.
+- `scripts/run-migrations.mjs` is the image entrypoint for the schema migration job and runs the repo-owned `mssql` migration runner.
+- `scripts/prisma-sql-migration-runner.mjs` applies checked-in Prisma SQL migrations and records state in `_prisma_migrations`.
 - `scripts/start-server.mjs` is the image entrypoint for runtime server startup.
 
 ## Azure Subscription And Tenant Requirements
@@ -111,7 +113,7 @@ Required SQL grants:
 
 Purpose:
 
-- workflow-owned `Prisma migration`
+- workflow-owned schema migration
 
 Required SQL grants:
 

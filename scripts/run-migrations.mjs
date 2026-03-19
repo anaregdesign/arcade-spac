@@ -4,8 +4,8 @@ import {
   describeDatabaseUrlSource,
   resolveMigrationDatabaseUrl,
   verifyManagedIdentitySqlLogin,
-  runNpmCommand,
 } from "./prisma-managed-identity.mjs";
+import { applyPrismaSqlMigrations } from "./prisma-sql-migration-runner.mjs";
 
 async function main() {
   const resolvedDatabaseUrl = resolveMigrationDatabaseUrl();
@@ -48,10 +48,10 @@ async function main() {
     }
   }
 
-  await runNpmCommand(["run", "db:migrate:deploy"], migrationEnv);
+  await applyPrismaSqlMigrations(migrationEnv.DATABASE_URL, migrationClientId);
 }
 
 main().catch((error) => {
-  console.error("Failed to run Prisma migrations.", error);
+  console.error("Failed to run Azure-hosted Prisma SQL migrations.", error);
   process.exit(1);
 });
