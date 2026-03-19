@@ -131,8 +131,8 @@
 - [x] Capture the follow-on recovery planning failure where `resolve-hosted-resource-inputs.sh` treated all user-assigned identities as a single pool and aborted before infra deploy when the new runtime identity did not yet exist
 - [x] Patch hosted resource resolution so SQL runtime, migration, and bootstrap identities use exact-match-or-default name selection instead of generic single-resource inference
 - [x] Capture the follow-on runtime crash where Prisma still returned `P1000` under `DefaultAzureCredential` after SQL principal bootstrap succeeded
-- [x] Patch the startup wrapper so Prisma rewrites Azure-hosted `DefaultAzureCredential` SQL URLs to explicit `ActiveDirectoryManagedIdentity` URLs using the live Container Apps identity endpoint plus the intended managed identity client ID
-- [x] Brace-escape injected `msiEndpoint` and `msiSecret` values so Prisma's JDBC-style MSSQL parser accepts the rewritten `ActiveDirectoryManagedIdentity` connection string
+- [x] Patch the hosted Prisma path so runtime and migration preserve `DefaultAzureCredential` URLs and target the intended user-assigned identity through `AZURE_CLIENT_ID`
+- [x] Remove the temporary `ActiveDirectoryManagedIdentity` rewrite path after confirming Prisma's hosted MSSQL path accepts `DefaultAzureCredential` directly
 - [x] Push the SQL bootstrap principal repair to `main` and rerun `Bootstrap Azure Recovery` against `green` with the current immutable image so live Azure SQL principals are reconciled
 - [ ] Confirm the recovery workflow, smoke test, and scheduled or manual runtime verification succeed after the SQL principal repair
 
@@ -154,6 +154,7 @@
 - [x] Push the workflow-owned migration split to `main`
 - [ ] Publish a release that exercises the new migration-job flow and capture the hosted result
 - [x] Align routine release with the documented SQL principal bootstrap contract before the Azure-hosted migration job runs
+- [ ] Correct the hosted Prisma managed-identity path to stop rewriting `DATABASE_URL`, validate locally, and rerun the routine release until it completes
 
 Notes:
 - Remaining intentional non-idempotent behavior is limited to run-scoped artifact names such as Azure deployment names and transient Container Apps Job / execution names used by workflow runs.
@@ -165,5 +166,6 @@ Notes:
 - Hosted run `23277832944` moved past batch-variable collisions and showed the deeper Azure SQL constraint: `CREATE USER ... FROM EXTERNAL PROVIDER` failed for both runtime and migration service principals because the logical server had no server identity / Microsoft Graph lookup path (`Msg 33134`). The durable repo-side fix is to bootstrap dedicated runtime and migration user-assigned identities by client ID with `CREATE USER ... WITH SID, TYPE = E`, which avoids Microsoft Graph resolution entirely for Azure SQL Database.
 - Hosted run `23278246644` then failed earlier in `Resolve existing hosted resources` because the generic resolver treated all user-assigned identities in `rg-arcade-green` as one ambiguous type and aborted before infra deploy when `id-sql-runtime-arcade-green` was still absent. Identity resources need exact-match-or-default resolution instead of single-resource fallback.
 - Hosted run `23278395882` cleared infra deployment and SQL bootstrap, but the new revision `ca-arcade-green--0000013` still entered `CrashLoopBackOff`. The replica log shows `prisma migrate deploy` reaching Azure SQL and failing with `P1000 Authentication failed`, so the remaining issue is now the Prisma Managed Identity connection path rather than principal bootstrap orchestration.
-- Release run `23278951042` with image `v2026.03.19.1` proved the runtime wrapper is taking effect: replica `ca-arcade-green--0000015` logs `Using ActiveDirectoryManagedIdentity Prisma auth...`, but Prisma now fails earlier with `P1013 Invalid JDBC token`, which indicates the injected `msiEndpoint` / `msiSecret` values must be JDBC-escaped for the adapter parser.
+- Release run `23278951042` with image `v2026.03.19.1` proved the runtime wrapper was taking effect, but the later package inspection showed that preserving `DefaultAzureCredential` was the better contract than injecting `ActiveDirectoryManagedIdentity`.
 - Release run `23280239848` (`v2026.03.19.4`) proved the Azure-hosted migration job wiring works, but also exposed a contract gap: routine release skipped SQL principal convergence entirely while recovery still ran it. Because the migration identity can drift independently of the runtime image, routine release must run the same Azure-hosted SQL bootstrap job before the migration job.
+- Release run `23280741512` (`v2026.03.19.5`) proved routine release now runs SQL principal bootstrap successfully before the migration job, but the migration job still failed with `P1000` after logging `Using ActiveDirectoryManagedIdentity Prisma auth...`. Local package inspection shows both Prisma's MSSQL adapter and query-plan executor already support `authentication=DefaultAzureCredential`, so the hosted contract should preserve `DATABASE_URL` and rely on `AZURE_CLIENT_ID` instead of rewriting to `ActiveDirectoryManagedIdentity`.

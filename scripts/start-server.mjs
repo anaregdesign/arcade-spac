@@ -12,11 +12,8 @@ async function main() {
   if (
     typeof runtimeClientId === "string"
     && runtimeClientId.trim().length > 0
-    && typeof process.env.DATABASE_URL === "string"
-    && process.env.DATABASE_URL.trim().length > 0
-    && serverEnv.DATABASE_URL !== process.env.DATABASE_URL
   ) {
-    console.log(`Using ActiveDirectoryManagedIdentity Prisma auth for server runtime with client ID ${runtimeClientId.trim()}.`);
+    console.log(`Using DefaultAzureCredential Prisma auth for server runtime with client ID ${runtimeClientId.trim()}.`);
   }
 
   delete serverEnv[STARTUP_MIGRATION_DATABASE_URL_ENV_NAME];

@@ -229,7 +229,7 @@ Key Vault secrets:
 Current repository note:
 
 - `DATABASE_URL` remains `DefaultAzureCredential` based at rest in Key Vault / App Configuration.
-- runtime and migration entrypoints rewrite that URL to `ActiveDirectoryManagedIdentity` only inside the Azure-hosted process when `IDENTITY_ENDPOINT` and `IDENTITY_HEADER` are present.
+- runtime and migration entrypoints preserve that URL and scope `AZURE_CLIENT_ID` to the intended user-assigned managed identity inside the Azure-hosted process.
 - keep `AZURE_RESOURCE_GROUP` as the shared prefix and select `green` / `blue` / `dev` through the workflow-managed suffix contract instead of editing resource names per run.
 
 ## Workflow Entry Points

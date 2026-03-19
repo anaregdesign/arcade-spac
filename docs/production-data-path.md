@@ -13,7 +13,7 @@ This document records the repository contract for Arcade's hosted relational pat
 Before Azure deployment is treated as production-ready, all of the following must be true:
 
 1. `DATABASE_URL` points to Azure SQL or another hosted SQL Server compatible endpoint and does not use a SQLite-style `file:` URL.
-2. The hosted Azure SQL path uses `Microsoft Entra ID` authentication, and runtime / migration processes rewrite `DefaultAzureCredential` URLs to `ActiveDirectoryManagedIdentity` only inside Azure-hosted execution.
+2. The hosted Azure SQL path uses `Microsoft Entra ID` authentication, and runtime / migration processes keep `DefaultAzureCredential` in `DATABASE_URL` while scoping `AZURE_CLIENT_ID` to the intended user-assigned managed identity inside Azure-hosted execution.
 3. Azure SQL public network access is `Disabled`, and runtime reaches `<server>.database.windows.net` through `Private Endpoint` plus private DNS.
 4. The hosted runtime resolves `Arcade:*` App Configuration keys and the Key Vault-backed `ARCADE_SESSION_SECRET`, `DATABASE_URL`, and `ENTRA_CLIENT_SECRET` values through a managed configuration path rather than repo files.
 5. Azure SQL principal bootstrap runs only through the SQL bootstrap identity path.

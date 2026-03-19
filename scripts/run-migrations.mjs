@@ -25,9 +25,8 @@ async function main() {
     typeof migrationClientId === "string"
     && migrationClientId.trim().length > 0
     && resolvedDatabaseUrl
-    && migrationEnv.DATABASE_URL !== resolvedDatabaseUrl.value
   ) {
-    console.log(`Using ActiveDirectoryManagedIdentity Prisma auth for migration job with client ID ${migrationClientId.trim()}.`);
+    console.log(`Using DefaultAzureCredential Prisma auth for migration job with client ID ${migrationClientId.trim()}.`);
   }
 
   await runNpmCommand(["run", "db:migrate:deploy"], migrationEnv);
