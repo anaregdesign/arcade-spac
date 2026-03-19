@@ -111,6 +111,11 @@
 - [x] Extend `Verify Production Runtime` failure output so the workflow prints `Container App` revision, replica, and recent logs when auth/smoke checks still time out after the infrastructure contract passes
 - [x] Capture the hosted `Container App` CrashLoopBackOff log showing `prisma migrate deploy` cannot find `datasource.url` because the runtime image omits `prisma.config.ts`
 - [x] Patch the runtime Docker image so `prisma.config.ts` is copied into the final stage and startup migrations can resolve the Azure SQL URL before the server starts
+- [x] Capture the follow-on hosted startup failure where `prisma migrate deploy` reaches Azure SQL but exits with `P1000 Authentication failed`
+- [x] Patch SQL bootstrap principal convergence so reused Azure SQL databases repair stale Entra principal `SID` mappings after runtime or migration identities are recreated with the same name
+- [x] Add regression coverage for SQL bootstrap principal reconciliation against current Entra object IDs
+- [ ] Push the SQL bootstrap principal repair to `main` and rerun `Bootstrap Azure Recovery` against `green` with the current immutable image so live Azure SQL principals are reconciled
+- [ ] Confirm the recovery workflow, smoke test, and scheduled or manual runtime verification succeed after the SQL principal repair
 
 Notes:
 - Remaining intentional non-idempotent behavior is limited to run-scoped artifact names such as Azure deployment names and transient Container Apps Job / execution names used by workflow runs.
