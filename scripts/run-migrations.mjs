@@ -3,6 +3,7 @@ import {
   buildManagedIdentityPrismaEnv,
   describeDatabaseUrlSource,
   resolveMigrationDatabaseUrl,
+  verifyManagedIdentitySqlLogin,
   runNpmCommand,
 } from "./prisma-managed-identity.mjs";
 
@@ -27,6 +28,24 @@ async function main() {
     && resolvedDatabaseUrl
   ) {
     console.log(`Using DefaultAzureCredential Prisma auth for migration job with client ID ${migrationClientId.trim()}.`);
+  }
+
+  if (resolvedDatabaseUrl) {
+    try {
+      const loginContext = await verifyManagedIdentitySqlLogin(
+        migrationEnv.DATABASE_URL,
+        migrationClientId,
+      );
+
+      if (loginContext) {
+        console.log("Managed identity SQL preflight succeeded.", loginContext);
+      } else {
+        console.log("Managed identity SQL preflight succeeded.");
+      }
+    } catch (error) {
+      console.error("Managed identity SQL preflight failed before Prisma migrate.", error);
+      throw error;
+    }
   }
 
   await runNpmCommand(["run", "db:migrate:deploy"], migrationEnv);

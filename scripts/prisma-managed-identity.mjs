@@ -1,4 +1,5 @@
 import { spawn } from "node:child_process";
+import sql from "mssql";
 
 export const STARTUP_MIGRATION_DATABASE_URL_ENV_NAME = "STARTUP_MIGRATION_DATABASE_URL";
 export const AZURE_SQL_RUNTIME_CLIENT_ID_ENV_NAME = "AZURE_SQL_RUNTIME_CLIENT_ID";
@@ -12,11 +13,65 @@ function npmCommand() {
   return process.platform === "win32" ? "npm.cmd" : "npm";
 }
 
+export function splitConnectionStringParts(databaseUrl) {
+  return databaseUrl
+    .split(";")
+    .map((part) => part.trim())
+    .filter((part) => part.length > 0);
+}
+
 export function rewriteDatabaseUrlForManagedIdentity(databaseUrl) {
   // Prisma's MSSQL adapter and query-plan executor both accept
   // `authentication=DefaultAzureCredential` directly. The hosted process only
   // needs `AZURE_CLIENT_ID` to target the intended user-assigned identity.
   return databaseUrl;
+}
+
+function readConnectionStringValue(databaseUrl, keyName) {
+  const targetKey = keyName.toLowerCase();
+  const matchingPart = splitConnectionStringParts(databaseUrl)
+    .find((part) => {
+      const [rawKey = ""] = part.split("=", 1);
+      return rawKey.trim().toLowerCase() === targetKey;
+    });
+
+  if (!matchingPart) {
+    return null;
+  }
+
+  const [, value = ""] = matchingPart.split(/=(.+)/, 2);
+  return value.trim();
+}
+
+function parseBooleanConnectionStringValue(value, fallback) {
+  if (typeof value !== "string" || value.length === 0) {
+    return fallback;
+  }
+
+  return value.trim().toLowerCase() === "true";
+}
+
+export function parseAzureSqlConnectionConfig(databaseUrl) {
+  const [prefix = ""] = splitConnectionStringParts(databaseUrl);
+  const normalizedPrefix = prefix.replace(/^sqlserver:\/\//i, "");
+  const [serverWithPort = ""] = normalizedPrefix.split(";", 1);
+  const [server = ""] = serverWithPort.split(",", 1);
+  const database = readConnectionStringValue(databaseUrl, "database")
+    ?? readConnectionStringValue(databaseUrl, "databaseName");
+
+  if (!server || !database) {
+    throw new Error("DATABASE_URL must include Azure SQL server and database values.");
+  }
+
+  return {
+    server,
+    database,
+    encrypt: parseBooleanConnectionStringValue(readConnectionStringValue(databaseUrl, "encrypt"), true),
+    trustServerCertificate: parseBooleanConnectionStringValue(
+      readConnectionStringValue(databaseUrl, "trustServerCertificate"),
+      false,
+    ),
+  };
 }
 
 export function buildManagedIdentityPrismaEnv(baseEnv, clientId, databaseUrl = baseEnv.DATABASE_URL) {
@@ -63,6 +118,38 @@ export function resolveMigrationDatabaseUrl(env = process.env) {
 export function describeDatabaseUrlSource(databaseUrl) {
   const [prefix] = databaseUrl.split(";");
   return prefix || "sqlserver://<redacted>";
+}
+
+export async function verifyManagedIdentitySqlLogin(databaseUrl, clientId) {
+  const connectionConfig = parseAzureSqlConnectionConfig(databaseUrl);
+  const pool = await sql.connect({
+    server: connectionConfig.server,
+    port: 1433,
+    database: connectionConfig.database,
+    authentication: {
+      type: "azure-active-directory-default",
+      options: typeof clientId === "string" && clientId.trim().length > 0
+        ? { clientId: clientId.trim() }
+        : {},
+    },
+    options: {
+      encrypt: connectionConfig.encrypt,
+      trustServerCertificate: connectionConfig.trustServerCertificate,
+    },
+  });
+
+  try {
+    const result = await pool.request().query(`
+      SELECT
+        ORIGINAL_LOGIN() AS original_login,
+        SUSER_SNAME() AS suser_sname,
+        USER_NAME() AS user_name,
+        DB_NAME() AS database_name;
+    `);
+    return result.recordset[0] ?? null;
+  } finally {
+    await pool.close();
+  }
 }
 
 export function runNpmCommand(args, env) {

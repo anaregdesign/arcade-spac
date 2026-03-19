@@ -3,9 +3,16 @@ export const AZURE_SQL_RUNTIME_CLIENT_ID_ENV_NAME: string;
 export const AZURE_SQL_MIGRATION_CLIENT_ID_ENV_NAME: string;
 
 export function isAzureHosting(env?: NodeJS.ProcessEnv): boolean;
+export function splitConnectionStringParts(databaseUrl: string): string[];
 export function rewriteDatabaseUrlForManagedIdentity(
   databaseUrl: string,
 ): string;
+export function parseAzureSqlConnectionConfig(databaseUrl: string): {
+  server: string;
+  database: string;
+  encrypt: boolean;
+  trustServerCertificate: boolean;
+};
 export function buildManagedIdentityPrismaEnv(
   baseEnv: NodeJS.ProcessEnv,
   clientId?: string,
@@ -15,4 +22,8 @@ export function resolveMigrationDatabaseUrl(
   env?: NodeJS.ProcessEnv,
 ): { source: string; value: string } | null;
 export function describeDatabaseUrlSource(databaseUrl: string): string;
+export function verifyManagedIdentitySqlLogin(
+  databaseUrl: string,
+  clientId?: string,
+): Promise<Record<string, unknown> | null>;
 export function runNpmCommand(args: string[], env: NodeJS.ProcessEnv): Promise<void>;

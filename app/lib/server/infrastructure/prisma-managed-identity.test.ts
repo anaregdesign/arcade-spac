@@ -66,3 +66,35 @@ describe("buildManagedIdentityPrismaEnv", () => {
     );
   });
 });
+
+describe("parseAzureSqlConnectionConfig", () => {
+  it("extracts server, database, and TLS flags from a JDBC-style SQL Server URL", async () => {
+    const { parseAzureSqlConnectionConfig } = await import(prismaManagedIdentityModulePath);
+
+    expect(
+      parseAzureSqlConnectionConfig(
+        "sqlserver://sql-arcade-green.database.windows.net;database=arcade;authentication=DefaultAzureCredential;encrypt=true;trustServerCertificate=false",
+      ),
+    ).toEqual({
+      server: "sql-arcade-green.database.windows.net",
+      database: "arcade",
+      encrypt: true,
+      trustServerCertificate: false,
+    });
+  });
+
+  it("accepts SQL Server URLs that include databaseName and explicit host ports", async () => {
+    const { parseAzureSqlConnectionConfig } = await import(prismaManagedIdentityModulePath);
+
+    expect(
+      parseAzureSqlConnectionConfig(
+        "sqlserver://localhost,1433;databaseName=arcade;encrypt=false;trustServerCertificate=true",
+      ),
+    ).toEqual({
+      server: "localhost",
+      database: "arcade",
+      encrypt: false,
+      trustServerCertificate: true,
+    });
+  });
+});

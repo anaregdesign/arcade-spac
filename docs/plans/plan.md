@@ -155,6 +155,7 @@
 - [ ] Publish a release that exercises the new migration-job flow and capture the hosted result
 - [x] Align routine release with the documented SQL principal bootstrap contract before the Azure-hosted migration job runs
 - [ ] Correct the hosted Prisma managed-identity path to stop rewriting `DATABASE_URL`, validate locally, and rerun the routine release until it completes
+- [x] Add Azure-hosted SQL preflight logging to the migration job so the next rerun can distinguish managed-identity login failure from Prisma CLI failure
 
 Notes:
 - Remaining intentional non-idempotent behavior is limited to run-scoped artifact names such as Azure deployment names and transient Container Apps Job / execution names used by workflow runs.
@@ -169,3 +170,4 @@ Notes:
 - Release run `23278951042` with image `v2026.03.19.1` proved the runtime wrapper was taking effect, but the later package inspection showed that preserving `DefaultAzureCredential` was the better contract than injecting `ActiveDirectoryManagedIdentity`.
 - Release run `23280239848` (`v2026.03.19.4`) proved the Azure-hosted migration job wiring works, but also exposed a contract gap: routine release skipped SQL principal convergence entirely while recovery still ran it. Because the migration identity can drift independently of the runtime image, routine release must run the same Azure-hosted SQL bootstrap job before the migration job.
 - Release run `23280741512` (`v2026.03.19.5`) proved routine release now runs SQL principal bootstrap successfully before the migration job, but the migration job still failed with `P1000` after logging `Using ActiveDirectoryManagedIdentity Prisma auth...`. Local package inspection shows both Prisma's MSSQL adapter and query-plan executor already support `authentication=DefaultAzureCredential`, so the hosted contract should preserve `DATABASE_URL` and rely on `AZURE_CLIENT_ID` instead of rewriting to `ActiveDirectoryManagedIdentity`.
+- Release run `23281236661` (`v2026.03.19.6`) still failed with `P1000` even after preserving `DefaultAzureCredential`, which means the remaining ambiguity is now between the migration identity login itself and Prisma CLI's SQL Server auth support. The next rerun must log a direct `mssql` preflight under the same migration identity before `prisma migrate deploy`.
