@@ -1,80 +1,78 @@
-# Suffix Scoped Azure Environment Isolation
+# Workflow-Owned Azure Delivery Contract
 
 ## Summary
 
-`green` / `blue` / `dev` suffix ごとに Azure hosted environment を完全に独立させる。`OIDC` や `Service Principal` などの app 共通 identity は人間が最初に作成したものを使い回しつつ、deploy target ごとの Azure resource 名は suffix を含めて衝突しないようにする。同一 suffix 内の rerun では、その suffix environment に属する active resource や recoverable resource を再利用できる必要がある。
+production / shared Azure delivery は GitHub Workflow を唯一の control plane entrypoint としつつ、`Private Endpoint` 配下の Azure SQL data-plane 操作は Azure-hosted `Container Apps Job` に限定する。`Container App runtime` は server process の起動だけを担当し、`Prisma migration` は release / recovery workflow 上の dedicated job に分離する。suffix-aware naming contract は維持し、`green` / `blue` / `dev` ごとに hosted environment を独立させる。
 
 ## User Problem
 
-operator は破壊的変更の切り替え先として `green` / `blue` / `dev` を使い分けたいが、現在の naming contract では suffix が変わっても Azure resource 名の多くが共通で、cross-suffix で識別しづらく、global-name resource では collision が起こりうる。さらに同一 suffix の retry では partial resource や soft-deleted resource を再利用できないと recovery 自体が止まる。
+現状は `runtime startup`、`Prisma migration`、`Azure SQL principal bootstrap`、`GitHub-hosted workflow` の責務境界が曖昧で、以下が起きやすい。
+
+- `Container App` の replica restart が schema change failure に巻き込まれる
+- GitHub-hosted runner では到達できない `Private Endpoint` / `Managed Identity` 前提の処理を workflow 側で担ってしまい、failure reason がぶれる
+- release / recovery で必要な permission と preconfiguration が暗黙化し、operator が drift を見落としやすい
+- same-suffix rerun 時に partial state を再収束できても、runtime startup failure が hosted rollout 全体を止める
 
 ## Users And Scenarios
 
-- operator が `Bootstrap Azure Recovery` を `rg-arcade-green` / `rg-arcade-blue` / `rg-arcade-dev` に対して実行する
-- operator が destructive change 前に別 suffix environment へ切り替えて rollout する
-- operator が同一 suffix environment の bootstrap / recovery を rerun する
+- operator が routine release を GitHub Release publish で実行する
+- operator が `Bootstrap Azure Recovery` を `green` / `blue` / `dev` の任意 suffix に対して rerun する
+- operator が Azure SQL principal drift や runtime crash の原因を permission / identity / preconfiguration 単位で切り分ける
 
 ## Scope
 
-- infra と workflow の naming contract が suffix-aware になる
-- suffix ごとに独立すべき Azure resources が他 suffix と名前衝突しない
-- shared identity resource だけは suffix を増やして複製しない
-- bootstrap / release / verification / helper scripts が suffix-aware resource name を同じ規則で導出する
-- 同一 suffix 内の rerun では active hosted resource を再利用し、recoverable `App Configuration` / `Key Vault` は recover して再利用できる
-- workflow が管理する Azure state は、run-scoped artifact を除いて no-op rerun で余計な revision / version / recreate を増やさない
+- `release` / `recovery` workflow の責務分離を明示する
+- GitHub-hosted job と Azure-hosted job の execution surface を分離する
+- runtime / migration / SQL bootstrap identity の permission boundary を固定する
+- suffix-aware naming contract と same-suffix rerun contract を維持する
+- required GitHub Environment variables, secrets, Azure RBAC, SQL grants, registry preconfiguration, network prerequisite を repo docs に明示する
 
 ## Non-Goals
 
-- shared identity を suffix ごとに複製すること
-- soft-deleted resource を purge する destructive recovery path を workflow に追加すること
-- Azure topology や GitHub Environment contract 全体を別方式へ置き換えること
+- production/shared deploy を local Azure CLI path に戻すこと
+- `Private Endpoint` を外して GitHub-hosted runner から Azure SQL へ直接接続すること
+- runtime identity と migration identity を 1 つに統合すること
+- destructive rollback shortcut として `AllowAzureServices` や Azure SQL public access を再導入すること
 
 ## User-Visible Behavior
 
-- `green` / `blue` / `dev` で deployment される Azure hosted resources は、resource 名に suffix を含むか、suffix ごとに一意になる naming rule を持つ
-- workflow-owned helper script は `Container App`、`Container Apps environment`、`Front Door`、`SQL server`、`App Configuration`、`Key Vault` などの target resource 名を suffix-aware に解決する
-- shared `OIDC` / `Service Principal` / app registration などの app 共通 identity は既存の共通 account を使い回す
-- `Bootstrap Azure Recovery` の `image_ref` input は workflow 冒頭で canonical な full image reference に正規化され、operator が release tag だけを渡した場合は current repository の `GHCR` namespace を使って解決される
-- bootstrap / release は同一 suffix environment に既存 active resource がある場合、その suffix environment の resource を再利用する
-- bootstrap は同一 suffix environment の target `App Configuration` / `Key Vault` が recoverable 状態なら recover してから deployment を続行する
-- malformed な `image_ref` input は Azure deployment や `Container Apps Job` 作成まで進まず、workflow input validation の段階で fail fast する
-- `sync-runtime-config` は `Key Vault secret version` や `App Configuration revision` を毎回増やさず、value や `Key Vault reference` が変わった時だけ update する
-- `deploy_app` は target image や registry contract が既に desired state なら `Container App` update を skip する
-- SQL bootstrap は同じ database に何度 rerun しても principal / role convergence だけを行い、schema migration は Prisma の migration state に委ねる
+- `Release Azure Delivery` は `publish -> plan_infra -> deploy_infra -> sync_runtime_config -> migrate_database -> deploy_app -> smoke_test` の順で進む
+- `Bootstrap Azure Recovery` は `ensure_resource_group -> deploy_bootstrap_infra -> restore_production_release_rbac -> bootstrap_sql -> sync_runtime_config -> run_database_migration -> deploy_app -> smoke_test -> verify_runtime` の順で進む
+- GitHub-hosted workflow は Azure SQL に直接 login しない
+- Azure SQL principal bootstrap は SQL bootstrap identity で動く Azure-hosted `Container Apps Job` が担当する
+- Prisma migration は migration identity で動く Azure-hosted `Container Apps Job` が担当する
+- `Container App` の default startup path は migration を待たずに server process を起動する
+- runtime `Container App` は runtime identity だけを attach し、migration identity は attach しない
+- runtime container env には `AZURE_SQL_RUNTIME_CLIENT_ID` だけが残り、`AZURE_SQL_MIGRATION_CLIENT_ID` と `STARTUP_MIGRATION_DATABASE_URL` は残らない
+- suffix-aware naming により `green` / `blue` / `dev` は cross-suffix collision を起こさない
 
 ## Acceptance Criteria
 
-- `green` / `blue` / `dev` のいずれを選んでも、environment-scoped Azure resource 名が別 suffix と重複しない
-- `Bootstrap Azure Recovery`、`Release Azure Delivery`、`Verify Recovered Runtime` と helper script 群が同じ suffix-aware naming rule を使う
-- shared identity contract は suffix を変えても変わらず、bootstrap / release workflow は共通 `OIDC` / `Service Principal` を使い続ける
-- `Bootstrap Azure Recovery` は operator input の `image_ref` を一度だけ canonical な full image reference に解決し、infra bootstrap / SQL bootstrap / app rollout が同じ resolved value を使う
-- latest bootstrap failure と同じ `rg-arcade-dev` partial state を想定しても、workflow contract 上は `existing SQL server` と recoverable `App Configuration` / `Key Vault` を再利用できる
-- infra template と workflow parameter flow は existing `SQL server` reuse 時に `AadOnlyAuthenticationIsEnabled` を再発させない
-- workflow-managed Azure operations は、`deployment name` や `job execution name` のような run-scoped artifact を除いて rerun 時に追加 drift を生まない
-- same input で rerun した時、`Key Vault secret version`、`App Configuration key revision`、`Container App revision` は不要に増えない
-- SQL bootstrap rerun は既存 principal / role を再利用し、pending migration が無い限り schema side effect を増やさない
-- touched workflow YAML と `infra/main.bicep` は local validation を通る
+- GitHub-hosted workflow から Azure SQL `Private Endpoint` への direct data-plane dependency がない
+- Azure SQL principal bootstrap と Prisma migration はどちらも Azure-hosted `Container Apps Job` で実行される
+- `Container App` revision restart や scale-out は schema migration の成否に依存しない
+- runtime `Container App` は runtime identity のみを attach し、migration identity attachment は不要になる
+- workflow docs に required Azure RBAC, SQL grants, GitHub Environment variables/secrets, registry prerequisite, network prerequisite が列挙されている
+- release / recovery workflow は touched YAML validation と local verification を通る
 
 ## Edge Cases
 
-- target resource group に同一 type resource が複数ある場合は曖昧なまま進まず fail fast する
-- shared identity resource は suffix を付けずにそのまま使うが、environment-scoped resource は suffix-aware naming にする
-- operator が `image_ref` に release tag だけを渡した場合は current repository の `GHCR` image path を補完してから後続 job に渡す
-- active resource がなく recoverable resource もない場合だけ create path を使う
-- `AZURE_GLOBAL_NAME_SUFFIX` と active resource 名が一致しなくても、同一 suffix environment の active resource 実名が優先される
-- recover command が permission 不足で失敗した場合は、その resource type と required operator action が分かる形で fail する
-- registry host や repository を解決できない `image_ref` は Docker Hub default resolution にフォールバックさせず、workflow 側で reject する
-- run-scoped deployment metadata や one-shot verification execution は完全固定名にせず、persistent Azure state のみ strict idempotency の対象にする
+- target resource group に同一 type resource が複数ある場合は fail fast する
+- same-suffix rerun では active resource または recoverable resource を優先して reuse / recover する
+- `App Configuration` / `Key Vault` の global-name collision は operator-managed suffix rotation で逃がせる
+- registry access が `identity` か `username/password` のどちらでもない場合は `Container Apps Job` 作成前に fail する
+- migration job が fail した場合、`deploy_app` は進まない
 
 ## Constraints And Dependencies
 
-- GitHub Actions OIDC と Azure CLI を使う repository policy は維持する
-- production/shared environment の deployment は GitHub Workflow 経由のみとする
-- shared app identity は既存の人手 bootstrap 済み account を使い回す
-- Bootstrap / release / verification helper script と `infra/main.bicep` の naming contract は整合している必要がある
-- `App Configuration` / `Key Vault` の global name uniqueness と soft-delete behavior を前提にする
+- production/shared environment の deploy は GitHub Workflow 経由のみ
+- GitHub-hosted runner は Azure SQL `Private Endpoint` に直接到達しない前提を守る
+- Azure SQL は `Entra-only` auth, `publicNetworkAccess=Disabled`, `Private Endpoint` を維持する
+- `Container App` runtime config は GitHub Workflow が App Configuration / Key Vault / Container App env contract を収束させる
+- shared app identity や Entra app registration など human-managed shared identity は suffix ごとに複製しない
 
 ## Links
 
 - Active plan: `/docs/plans/plan.md`
-- Related legacy spec: `/docs/spec/production-rg-arcade-green-release-retarget.md`
+- Azure prerequisites: `/docs/azure-prerequisites.md`
+- Production data path: `/docs/production-data-path.md`

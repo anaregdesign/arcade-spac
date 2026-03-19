@@ -81,7 +81,7 @@ var sqlPrivateDnsZoneVirtualNetworkLinkName = '${resolvedVirtualNetworkName}-lin
 // User-assigned identity name used by the runtime server process.
 var defaultSqlRuntimeIdentityName = 'id-sql-runtime-${scopedAppName}'
 var resolvedSqlRuntimeIdentityName = empty(sqlRuntimeIdentityResourceName) ? defaultSqlRuntimeIdentityName : sqlRuntimeIdentityResourceName
-// User-assigned identity name used for startup migrations.
+// User-assigned identity name used by workflow-owned Prisma migrations.
 var defaultSqlMigrationIdentityName = 'id-sql-migrate-${scopedAppName}'
 var resolvedSqlMigrationIdentityName = empty(sqlMigrationIdentityResourceName) ? defaultSqlMigrationIdentityName : sqlMigrationIdentityResourceName
 // User-assigned identity name used for initial SQL bootstrap.
@@ -206,10 +206,6 @@ var azureKeyVaultUriEnvironmentVariableName = 'AZURE_KEY_VAULT_URI'
 var azureTenantIdEnvironmentVariableName = 'AZURE_TENANT_ID'
 // Env var name for the user-assigned runtime identity client id.
 var azureSqlRuntimeClientIdEnvironmentVariableName = 'AZURE_SQL_RUNTIME_CLIENT_ID'
-// Env var name for the user-assigned migration identity client id.
-var azureSqlMigrationClientIdEnvironmentVariableName = 'AZURE_SQL_MIGRATION_CLIENT_ID'
-// Env var name for the startup migration database URL.
-var startupMigrationDatabaseUrlEnvironmentVariableName = 'STARTUP_MIGRATION_DATABASE_URL'
 // Probe type label for startup health checks.
 var startupProbeType = 'Startup'
 // Probe type label for readiness health checks.
@@ -251,8 +247,6 @@ var sqlDatabaseSkuName = 'GP_S_Gen5_1'
 var sqlDatabaseSkuTier = 'GeneralPurpose'
 // Read scale mode for the serverless SQL database.
 var sqlDatabaseReadScale = disabledState
-// DefaultAzureCredential-based database URL injected for startup migrations.
-var sqlStartupMigrationDatabaseUrl = 'sqlserver://${sqlServerFqdn};database=${sqlDatabaseName};authentication=DefaultAzureCredential;encrypt=true;trustServerCertificate=false'
 // Private endpoint connection resource name for the SQL server.
 var sqlPrivateEndpointConnectionName = '${sqlPrivateEndpointName}-connection'
 // Private-link group ids used by the SQL private endpoint.
@@ -505,7 +499,6 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
     type: containerAppIdentityType
     userAssignedIdentities: {
       '${sqlRuntimeIdentity.id}': {}
-      '${sqlMigrationIdentity.id}': {}
     }
   }
   properties: {
@@ -547,14 +540,6 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
               {
                 name: azureSqlRuntimeClientIdEnvironmentVariableName
                 value: sqlRuntimeIdentity.properties.clientId
-              }
-              {
-                name: azureSqlMigrationClientIdEnvironmentVariableName
-                value: sqlMigrationIdentity.properties.clientId
-              }
-              {
-                name: startupMigrationDatabaseUrlEnvironmentVariableName
-                value: sqlStartupMigrationDatabaseUrl
               }
             ],
             defaultContainerEnvironmentVariables

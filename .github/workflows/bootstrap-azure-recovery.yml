@@ -812,11 +812,64 @@ jobs:
           ARCADE_AUTH_MODE: entra
         run: ./scripts/azure/sync-runtime-config.sh
 
+  run_database_migration:
+    name: Run Prisma Migrations In Azure
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    needs:
+      - bootstrap_sql
+      - resolve_recovery_image
+      - sync_runtime_config
+    environment: production
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      AZURE_APP_NAME: ${{ vars.AZURE_APP_NAME }}
+      AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+      AZURE_RESOURCE_GROUP_PREFIX: ${{ vars.AZURE_RESOURCE_GROUP }}
+      AZURE_RESOURCE_GROUP_SUFFIX: ${{ inputs.resource_group_suffix }}
+      AZURE_RESOURCE_GROUP: ${{ format('{0}-{1}', vars.AZURE_RESOURCE_GROUP, inputs.resource_group_suffix) }}
+      AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+      CONTAINER_REGISTRY_IDENTITY: ${{ vars.CONTAINER_REGISTRY_IDENTITY }}
+      CONTAINER_REGISTRY_PASSWORD: ${{ secrets.CONTAINER_REGISTRY_PASSWORD }}
+      CONTAINER_REGISTRY_SERVER: ${{ vars.CONTAINER_REGISTRY_SERVER }}
+      CONTAINER_REGISTRY_USERNAME: ${{ vars.CONTAINER_REGISTRY_USERNAME }}
+      IMAGE_REF: ${{ needs.resolve_recovery_image.outputs.image_ref }}
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v5
+
+      - name: Validate Prisma migration job configuration
+        run: |
+          test -n "$AZURE_CLIENT_ID" || { echo "Missing environment variable AZURE_CLIENT_ID"; exit 1; }
+          test -n "$AZURE_TENANT_ID" || { echo "Missing environment variable AZURE_TENANT_ID"; exit 1; }
+          test -n "$AZURE_SUBSCRIPTION_ID" || { echo "Missing environment variable AZURE_SUBSCRIPTION_ID"; exit 1; }
+          test -n "$AZURE_RESOURCE_GROUP_PREFIX" || { echo "Missing environment variable AZURE_RESOURCE_GROUP"; exit 1; }
+          test -n "$AZURE_RESOURCE_GROUP_SUFFIX" || { echo "Missing workflow input resource_group_suffix"; exit 1; }
+          [[ "$AZURE_RESOURCE_GROUP_PREFIX" != *- ]] || { echo "AZURE_RESOURCE_GROUP must contain only the shared prefix without a suffix"; exit 1; }
+          test -n "$AZURE_RESOURCE_GROUP" || { echo "Missing derived target resource group"; exit 1; }
+          test -n "$AZURE_APP_NAME" || { echo "Missing environment variable AZURE_APP_NAME"; exit 1; }
+          test -n "$IMAGE_REF" || { echo "Missing workflow input image_ref"; exit 1; }
+          test -n "$ENTRA_CLIENT_ID" || { echo "Missing environment variable ENTRA_CLIENT_ID"; exit 1; }
+          test -n "$ENTRA_TENANT_ID" || { echo "Missing environment variable ENTRA_TENANT_ID"; exit 1; }
+
+      - name: Log in to Azure with OIDC
+        uses: azure/login@v3
+        with:
+          client-id: ${{ env.AZURE_CLIENT_ID }}
+          tenant-id: ${{ env.AZURE_TENANT_ID }}
+          subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Run Prisma migrations in Azure
+        run: bash ./scripts/azure/run-prisma-migration-job.sh
+
   deploy_app:
     name: Deploy Recovery Image To Azure Container Apps
     runs-on: ubuntu-latest
     needs:
-      - bootstrap_sql
+      - run_database_migration
       - resolve_recovery_image
       - sync_runtime_config
     environment: production
@@ -833,6 +886,9 @@ jobs:
       AZURE_RESOURCE_GROUP: ${{ format('{0}-{1}', vars.AZURE_RESOURCE_GROUP, inputs.resource_group_suffix) }}
       AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
       AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+      ENTRA_AUTHORITY_TENANT: ${{ vars.ENTRA_AUTHORITY_TENANT }}
+      ENTRA_CLIENT_ID: ${{ vars.ENTRA_CLIENT_ID }}
+      ENTRA_TENANT_ID: ${{ vars.ENTRA_TENANT_ID }}
       CONTAINER_REGISTRY_IDENTITY: ${{ vars.CONTAINER_REGISTRY_IDENTITY }}
       CONTAINER_REGISTRY_PASSWORD: ${{ secrets.CONTAINER_REGISTRY_PASSWORD }}
       CONTAINER_REGISTRY_SERVER: ${{ vars.CONTAINER_REGISTRY_SERVER }}
@@ -890,6 +946,12 @@ jobs:
 
           test -n "$FRONT_DOOR_HOST" || { echo "Missing Front Door endpoint host."; exit 1; }
           echo "app_url=https://${FRONT_DOOR_HOST}" >> "$GITHUB_OUTPUT"
+
+      - name: Sync Container App runtime env
+        env:
+          ARCADE_AUTH_MODE: entra
+          PUBLIC_APP_URL: ${{ steps.public_endpoint.outputs.app_url }}
+        run: ./scripts/azure/sync-container-app-runtime-env.sh
 
   smoke_test:
     name: Smoke Test Recovered Release

@@ -16,7 +16,9 @@ COPY --from=build-env /app/build /app/build
 COPY ./prisma /app/prisma
 COPY ./prisma.config.ts /app/prisma.config.ts
 COPY ./scripts/azure/init-sql.mjs /app/scripts/azure/init-sql.mjs
-COPY ./scripts/start-with-migrations.mjs /app/scripts/start-with-migrations.mjs
+COPY ./scripts/prisma-managed-identity.mjs /app/scripts/prisma-managed-identity.mjs
+COPY ./scripts/run-migrations.mjs /app/scripts/run-migrations.mjs
+COPY ./scripts/start-server.mjs /app/scripts/start-server.mjs
 WORKDIR /app
 ENV NODE_ENV=production
 EXPOSE 3000

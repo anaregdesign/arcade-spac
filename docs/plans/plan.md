@@ -131,10 +131,28 @@
 - [x] Capture the follow-on recovery planning failure where `resolve-hosted-resource-inputs.sh` treated all user-assigned identities as a single pool and aborted before infra deploy when the new runtime identity did not yet exist
 - [x] Patch hosted resource resolution so SQL runtime, migration, and bootstrap identities use exact-match-or-default name selection instead of generic single-resource inference
 - [x] Capture the follow-on runtime crash where Prisma still returned `P1000` under `DefaultAzureCredential` after SQL principal bootstrap succeeded
-- [ ] Patch the startup wrapper so Prisma rewrites Azure-hosted `DefaultAzureCredential` SQL URLs to explicit `ActiveDirectoryManagedIdentity` URLs using the live Container Apps identity endpoint plus the intended managed identity client ID
-- [ ] Brace-escape injected `msiEndpoint` and `msiSecret` values so Prisma's JDBC-style MSSQL parser accepts the rewritten `ActiveDirectoryManagedIdentity` connection string
-- [ ] Push the SQL bootstrap principal repair to `main` and rerun `Bootstrap Azure Recovery` against `green` with the current immutable image so live Azure SQL principals are reconciled
+- [x] Patch the startup wrapper so Prisma rewrites Azure-hosted `DefaultAzureCredential` SQL URLs to explicit `ActiveDirectoryManagedIdentity` URLs using the live Container Apps identity endpoint plus the intended managed identity client ID
+- [x] Brace-escape injected `msiEndpoint` and `msiSecret` values so Prisma's JDBC-style MSSQL parser accepts the rewritten `ActiveDirectoryManagedIdentity` connection string
+- [x] Push the SQL bootstrap principal repair to `main` and rerun `Bootstrap Azure Recovery` against `green` with the current immutable image so live Azure SQL principals are reconciled
 - [ ] Confirm the recovery workflow, smoke test, and scheduled or manual runtime verification succeed after the SQL principal repair
+
+## Section 6 - Workflow-Owned Migration Split
+### Subsection 6.1 - Flow And Contract Redesign
+- [x] Re-inventory the release and recovery execution flow against the actual `Private Endpoint` and `Managed Identity` constraints
+- [x] Rewrite the canonical spec so GitHub-hosted workflow jobs stay on the Azure control plane and Azure SQL data-plane work moves to Azure-hosted jobs
+- [x] Enumerate required GitHub Environment variables, secrets, Azure RBAC, SQL grants, registry preconfiguration, and network prerequisites in the durable docs
+
+### Subsection 6.2 - Runtime And Workflow Refactor
+- [x] Remove Prisma migration from `Container App` runtime startup and make the runtime image start the server process only
+- [x] Add a dedicated Azure-hosted Prisma migration job path for routine release
+- [x] Add a dedicated Azure-hosted Prisma migration job path for bootstrap recovery
+- [x] Remove migration identity attachment and startup migration env drift from the runtime `Container App` contract
+- [x] Extend runtime verification so it asserts the runtime identity and env split after rollout
+
+### Subsection 6.3 - Validation And Release
+- [ ] Run local validation for the refactored runtime scripts, workflow YAML, and Azure helper scripts
+- [ ] Push the workflow-owned migration split to `main`
+- [ ] Publish a release that exercises the new migration-job flow and capture the hosted result
 
 Notes:
 - Remaining intentional non-idempotent behavior is limited to run-scoped artifact names such as Azure deployment names and transient Container Apps Job / execution names used by workflow runs.

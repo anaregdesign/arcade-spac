@@ -1,6 +1,6 @@
 # Production Data Path
 
-This document records the repository contract for Arcade's hosted relational path and the workflow-owned checks that must pass before an Azure deployment is treated as production-ready.
+This document records the repository contract for Arcade's hosted relational path after separating `runtime startup`, `Prisma migration`, and `Azure SQL principal bootstrap`.
 
 ## Current Local State
 
@@ -13,11 +13,12 @@ This document records the repository contract for Arcade's hosted relational pat
 Before Azure deployment is treated as production-ready, all of the following must be true:
 
 1. `DATABASE_URL` points to Azure SQL or another hosted SQL Server compatible endpoint and does not use a SQLite-style `file:` URL.
-2. The hosted Azure SQL path uses `Microsoft Entra ID` authentication, with `authentication=DefaultAzureCredential` for the managed runtime path so Prisma can resolve the Container Apps identity without driver-specific MSI endpoint wiring.
-3. Azure SQL public network access is `Disabled`, and the runtime reaches `<server>.database.windows.net` through `Private Endpoint` plus private DNS.
+2. The hosted Azure SQL path uses `Microsoft Entra ID` authentication, and runtime / migration processes rewrite `DefaultAzureCredential` URLs to `ActiveDirectoryManagedIdentity` only inside Azure-hosted execution.
+3. Azure SQL public network access is `Disabled`, and runtime reaches `<server>.database.windows.net` through `Private Endpoint` plus private DNS.
 4. The hosted runtime resolves `Arcade:*` App Configuration keys and the Key Vault-backed `ARCADE_SESSION_SECRET`, `DATABASE_URL`, and `ENTRA_CLIENT_SECRET` values through a managed configuration path rather than repo files.
-5. Database migrations run through the hosted migration identity path rather than through local DBA steps.
-6. Runtime, migration, and bootstrap SQL permissions stay separated.
+5. Azure SQL principal bootstrap runs only through the SQL bootstrap identity path.
+6. Prisma migration runs only through the migration identity path.
+7. Runtime server startup runs only through the runtime identity path.
 
 ## Repo Support Added
 
@@ -25,30 +26,35 @@ Before Azure deployment is treated as production-ready, all of the following mus
 - `.github/workflows/bootstrap-azure-recovery.yml`
 - `.github/workflows/release-container-image.yml`
 - `.github/workflows/verify-production-runtime.yml`
-- `scripts/start-with-migrations.mjs`
 - `scripts/azure/init-sql.mjs`
+- `scripts/azure/run-prisma-migration-job.sh`
+- `scripts/run-migrations.mjs`
+- `scripts/start-server.mjs`
 - `scripts/azure/verify-production-runtime.sh`
 
 These assets establish the repository-side contract for the hosted data path. They intentionally prefer workflow execution over local Azure bootstrap.
 
 ## Runtime, Migration, And Bootstrap Identity Split
 
-- Container App system-assigned managed identity: runtime reads and writes only, typically `db_datareader` and `db_datawriter`
-- User-assigned migration identity: controlled schema changes and application startup migrations
+- Container App system-assigned managed identity: App Configuration and Key Vault access only
+- User-assigned SQL runtime identity: application runtime reads and writes only, typically `db_datareader` and `db_datawriter`
+- User-assigned SQL migration identity: workflow-owned schema changes only
 - User-assigned SQL bootstrap identity: Azure SQL Microsoft Entra administrator used only by the bootstrap workflow job
-- SQL administrator login/password: GitHub Environment bootstrap secret, never runtime auth
+- SQL administrator login/password: bootstrap-only fallback for fresh logical-server creation, never runtime auth
 
 ## Workflow-Owned Cutover Sequence
 
 1. `Bootstrap Azure Recovery` creates or updates the resource group and deploys the hosted baseline from `infra/main.bicep`.
-2. The same workflow runs an Azure-hosted Container Apps Job under the SQL bootstrap identity to create the initial database principals and least-privilege role memberships for the runtime and migration identities.
-3. The workflow syncs runtime config into App Configuration and Key Vault.
-4. The workflow deploys the chosen immutable image while keeping the migration identity attachment and startup migration database URL on the template-owned Container App contract.
-5. Application startup runs `db:migrate:deploy` through the migration identity path.
-6. `Verify Production Runtime` confirms the hosted data path contract after rollout.
+2. The same workflow runs an Azure-hosted `Container Apps Job` under the SQL bootstrap identity to create or reconcile the initial database principals and least-privilege role memberships for the runtime and migration identities.
+3. `Release Azure Delivery` and `Bootstrap Azure Recovery` both sync runtime config into App Configuration and Key Vault.
+4. `Release Azure Delivery` and `Bootstrap Azure Recovery` both run an Azure-hosted `Container Apps Job` under the migration identity to execute `Prisma migrate deploy`.
+5. The workflow deploys the chosen immutable image to the runtime `Container App`.
+6. Runtime server startup begins immediately and does not wait for migration.
+7. `Verify Production Runtime` confirms the hosted data path contract after rollout.
 
-## Remaining Verification
+## Guardrails
 
-- This repository change does not itself prove that the live Azure environment has already moved to the private path.
-- `Release Azure Delivery` and `Bootstrap Azure Recovery` now both depend on workflow-owned Azure SQL bootstrap and runtime config sync paths.
-- After the next successful workflow run, verify the hosted Container Apps path resolves Azure SQL through private DNS and that the runtime no longer depends on `AllowAzureServices`.
+- GitHub-hosted workflow jobs do not connect directly to Azure SQL `Private Endpoint`.
+- Runtime `Container App` does not attach the migration identity.
+- Runtime `Container App` does not expose `AZURE_SQL_MIGRATION_CLIENT_ID` or `STARTUP_MIGRATION_DATABASE_URL`.
+- `Verify Production Runtime` asserts the runtime identity and env contract after rollout.

@@ -409,6 +409,63 @@ assert_container_app_env_value() {
   echo "Verified Container App ${container_app_name} env ${env_name}=${actual_value}."
 }
 
+assert_container_app_env_absent() {
+  local container_app_name="$1"
+  local env_name="$2"
+  local env_count
+
+  env_count="$(az containerapp show \
+    --resource-group "${AZURE_RESOURCE_GROUP}" \
+    --name "${container_app_name}" \
+    --query "length(properties.template.containers[0].env[?name=='${env_name}'])" \
+    -o tsv)"
+
+  if [[ "${env_count}" != "0" ]]; then
+    echo "Container App ${container_app_name} still exposes env ${env_name}, but the runtime contract requires it to be absent."
+    exit 1
+  fi
+
+  echo "Verified Container App ${container_app_name} does not expose env ${env_name}."
+}
+
+assert_container_app_user_assigned_identity_present() {
+  local container_app_name="$1"
+  local identity_id="$2"
+  local is_attached
+
+  is_attached="$(az containerapp show \
+    --resource-group "${AZURE_RESOURCE_GROUP}" \
+    --name "${container_app_name}" \
+    --query "contains(keys(identity.userAssignedIdentities), '${identity_id}')" \
+    -o tsv)"
+
+  if [[ "${is_attached}" != "true" ]]; then
+    echo "Container App ${container_app_name} is missing required user-assigned identity ${identity_id}."
+    exit 1
+  fi
+
+  echo "Verified Container App ${container_app_name} attaches user-assigned identity ${identity_id}."
+}
+
+assert_container_app_user_assigned_identity_absent() {
+  local container_app_name="$1"
+  local identity_id="$2"
+  local is_attached
+
+  is_attached="$(az containerapp show \
+    --resource-group "${AZURE_RESOURCE_GROUP}" \
+    --name "${container_app_name}" \
+    --query "contains(keys(identity.userAssignedIdentities), '${identity_id}')" \
+    -o tsv)"
+
+  if [[ "${is_attached}" != "false" ]]; then
+    echo "Container App ${container_app_name} still attaches user-assigned identity ${identity_id}, but the runtime contract requires it to be absent."
+    exit 1
+  fi
+
+  echo "Verified Container App ${container_app_name} does not attach user-assigned identity ${identity_id}."
+}
+
 assert_role_assignment_for_principal() {
   local scope_id="$1"
   local principal_id="$2"
@@ -671,6 +728,35 @@ app_configuration_id="${app_configuration_id:-$(get_app_configuration_value "${a
 key_vault_id="${key_vault_id:-$(get_key_vault_value "${key_vault_name}" 'id')}"
 app_configuration_endpoint="${app_configuration_endpoint:-$(get_app_configuration_value "${app_configuration_name}" 'endpoint')}"
 key_vault_uri="${key_vault_uri:-$(get_key_vault_value "${key_vault_name}" 'properties.vaultUri')}"
+sql_runtime_identity_name="$(
+  resolve_existing_resource_name_by_type \
+    'Microsoft.ManagedIdentity/userAssignedIdentities' \
+    'SQL runtime identity' \
+    "${AZURE_EXPECTED_SQL_RUNTIME_IDENTITY_NAME}" \
+    "${AZURE_LEGACY_SQL_RUNTIME_IDENTITY_NAME}"
+)"
+sql_migration_identity_name="$(
+  resolve_existing_resource_name_by_type \
+    'Microsoft.ManagedIdentity/userAssignedIdentities' \
+    'SQL migration identity' \
+    "${AZURE_EXPECTED_SQL_MIGRATION_IDENTITY_NAME}" \
+    "${AZURE_LEGACY_SQL_MIGRATION_IDENTITY_NAME}"
+)"
+sql_runtime_identity_id="$(az identity show \
+  --resource-group "${AZURE_RESOURCE_GROUP}" \
+  --name "${sql_runtime_identity_name}" \
+  --query id \
+  -o tsv)"
+sql_runtime_identity_client_id="$(az identity show \
+  --resource-group "${AZURE_RESOURCE_GROUP}" \
+  --name "${sql_runtime_identity_name}" \
+  --query clientId \
+  -o tsv)"
+sql_migration_identity_id="$(az identity show \
+  --resource-group "${AZURE_RESOURCE_GROUP}" \
+  --name "${sql_migration_identity_name}" \
+  --query id \
+  -o tsv)"
 
 assert_app_configuration_public_network_access "${app_configuration_name}" "${EXPECTED_APPCONFIG_PUBLIC_NETWORK_ACCESS}"
 assert_key_vault_public_network_access "${key_vault_name}" "${EXPECTED_KEY_VAULT_PUBLIC_NETWORK_ACCESS}"
@@ -678,6 +764,11 @@ assert_key_vault_public_network_access "${key_vault_name}" "${EXPECTED_KEY_VAULT
 assert_container_app_env_value "${container_app_name}" 'AZURE_APP_NAME' "${AZURE_APP_NAME}"
 assert_container_app_env_value "${container_app_name}" 'AZURE_APPCONFIG_ENDPOINT' "${app_configuration_endpoint}"
 assert_container_app_env_value "${container_app_name}" 'AZURE_KEY_VAULT_URI' "${key_vault_uri}"
+assert_container_app_env_value "${container_app_name}" 'AZURE_SQL_RUNTIME_CLIENT_ID' "${sql_runtime_identity_client_id}"
+assert_container_app_env_absent "${container_app_name}" 'AZURE_SQL_MIGRATION_CLIENT_ID'
+assert_container_app_env_absent "${container_app_name}" 'STARTUP_MIGRATION_DATABASE_URL'
+assert_container_app_user_assigned_identity_present "${container_app_name}" "${sql_runtime_identity_id}"
+assert_container_app_user_assigned_identity_absent "${container_app_name}" "${sql_migration_identity_id}"
 
 assert_role_assignment_for_principal "${app_configuration_id}" "${container_app_principal_id}" 'App Configuration Data Reader' 'App Configuration access'
 assert_role_assignment_for_principal "${key_vault_id}" "${container_app_principal_id}" 'Key Vault Secrets User' 'Key Vault access'

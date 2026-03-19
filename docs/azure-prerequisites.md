@@ -1,18 +1,30 @@
 # Azure Deployment Prerequisites
 
-This checklist captures the current repository contract for Azure-hosted delivery. Bootstrap and recovery are workflow-driven through GitHub Actions OIDC; local Azure CLI bootstrap is not part of the supported path.
+This checklist captures the repository contract for Azure-hosted delivery after the workflow split between `control plane`, `SQL principal bootstrap`, `Prisma migration`, and `runtime startup`.
+
+## Execution Model
+
+- GitHub-hosted workflow jobs own Azure control-plane operations only:
+  - resource group creation
+  - Bicep deployment
+  - Azure Front Door private-link approval
+  - App Configuration / Key Vault sync
+  - Container App image rollout
+  - hosted smoke test and runtime verification
+- Azure-hosted `Container Apps Job` executions own Azure SQL data-plane operations:
+  - `Bootstrap Azure Recovery` runs `bootstrap_sql` under the SQL bootstrap identity
+  - `Release Azure Delivery` and `Bootstrap Azure Recovery` both run dedicated Prisma migration jobs under the SQL migration identity
+- `Container App runtime` starts the server only. It does not run `Prisma migration` during replica startup.
 
 ## Already Scaffolded In Repo
 
-- `azure.yaml` targets Azure Container Apps.
-- `infra/main.bicep` provisions a VNet-integrated Container Apps environment, delegated Container Apps subnet, private-endpoint subnet, Azure Front Door Premium, Azure SQL, App Configuration, Key Vault, Application Insights, Log Analytics, a SQL bootstrap identity, and a separate SQL migration identity.
-- `.github/workflows/bootstrap-azure-recovery.yml` creates the resource group, deploys the hosted baseline with bootstrap RBAC, bootstraps initial Azure SQL principals through an Azure-run Container Apps Job, syncs runtime config, deploys a known-good image, smoke-tests the result, and verifies the recovered runtime.
-- `.github/workflows/release-container-image.yml` publishes immutable release images to GHCR, runs infra `what-if`, deploys infra only when real changes exist, syncs runtime config to App Configuration and Key Vault through GitHub Actions OIDC, rolls out the app revision, and smoke-tests the deployed app.
-- `.github/workflows/verify-production-runtime.yml` verifies the hosted runtime contract through GitHub Actions OIDC.
-- `scripts/azure/sync-runtime-config.sh` is the workflow implementation for hosted runtime config synchronization.
-- `scripts/azure/init-sql.mjs` is the workflow implementation for initial Azure SQL principal and role bootstrap.
-- `scripts/azure/smoke-test.sh` and `scripts/azure/verify-production-runtime.sh` are workflow-owned verification helpers.
-- `app/routes/health.ts` is available for smoke tests and health probes.
+- `infra/main.bicep` provisions a VNet-integrated Container Apps environment, delegated Container Apps subnet, private-endpoint subnet, Azure Front Door Premium, Azure SQL, App Configuration, Key Vault, Application Insights, Log Analytics, a SQL runtime identity, a SQL migration identity, and a SQL bootstrap identity.
+- `.github/workflows/bootstrap-azure-recovery.yml` creates the resource group, deploys the hosted baseline, restores production release RBAC, bootstraps Azure SQL principals through an Azure-hosted job, syncs runtime config, runs Prisma migration through an Azure-hosted job, deploys the recovery image, smoke-tests it, and verifies the runtime contract.
+- `.github/workflows/release-container-image.yml` publishes immutable release images to GHCR, runs infra `what-if`, deploys infra only when real changes exist, syncs runtime config, runs Prisma migration through an Azure-hosted job, deploys the app revision, and smoke-tests it.
+- `scripts/azure/init-sql.mjs` is the Azure SQL principal reconciliation implementation.
+- `scripts/azure/run-prisma-migration-job.sh` is the workflow helper that starts the Azure-hosted Prisma migration job.
+- `scripts/run-migrations.mjs` is the image entrypoint for the migration job.
+- `scripts/start-server.mjs` is the image entrypoint for runtime server startup.
 
 ## Azure Subscription And Tenant Requirements
 
@@ -37,6 +49,86 @@ This checklist captures the current repository contract for Azure-hosted deliver
   - the delegated Container Apps infrastructure subnet
   - the private-endpoint subnet
   - `privatelink.database.windows.net`
+
+## Required Identity Split
+
+### GitHub `production` OIDC identity
+
+Purpose:
+
+- routine infra convergence
+- runtime config sync
+- migration job create/start
+- app rollout
+- runtime verification
+
+Required Azure RBAC:
+
+- `Contributor` at the target resource-group scope
+- `App Configuration Data Owner` on the target App Configuration store
+- `Key Vault Secrets Officer` on the target Key Vault
+
+### GitHub `production-bootstrap` OIDC identity
+
+Purpose:
+
+- resource-group creation
+- bootstrap infra deployment with `manageRuntimeRoleAssignments=true`
+- recovery-time RBAC restore
+- SQL bootstrap job create/start
+
+Required Azure RBAC:
+
+- permission to create or update the target resource group
+- permission to deploy the hosted baseline in that resource group
+- `Role Based Access Control Administrator` or `User Access Administrator` on the scopes where recovery restores release-time RBAC
+
+### Container App system-assigned identity
+
+Purpose:
+
+- runtime access to App Configuration and Key Vault references
+
+Required Azure RBAC:
+
+- `App Configuration Data Reader` on the target App Configuration store
+- `Key Vault Secrets User` on the target Key Vault
+
+### SQL runtime user-assigned identity
+
+Purpose:
+
+- application runtime reads and writes
+
+Required SQL grants:
+
+- database user with `TYPE = E`
+- `db_datareader`
+- `db_datawriter`
+
+### SQL migration user-assigned identity
+
+Purpose:
+
+- workflow-owned `Prisma migration`
+
+Required SQL grants:
+
+- database user with `TYPE = E`
+- `db_datareader`
+- `db_datawriter`
+- `db_ddladmin`
+
+### SQL bootstrap user-assigned identity
+
+Purpose:
+
+- Azure SQL principal reconciliation only
+
+Required Azure SQL server contract:
+
+- configured as Azure SQL Microsoft Entra administrator
+- Azure SQL `Entra-only` auth enabled
 
 ## GitHub Environment Configuration
 
@@ -69,12 +161,6 @@ Optional secrets:
 
 - `CONTAINER_REGISTRY_PASSWORD`
 
-Required Azure RBAC for the `production` OIDC identity:
-
-- `Contributor` at the target resource-group scope
-- `App Configuration Data Owner` at the target resource-group scope so the recreated store inherits the role during recovery
-- `Key Vault Secrets Officer` at the target resource-group scope so the recreated vault inherits the role during recovery
-
 ### `production-bootstrap`
 
 Required variables:
@@ -85,7 +171,12 @@ Required variables:
 - `AZURE_LOCATION`
 - `AZURE_RESOURCE_GROUP`
 - `AZURE_APP_NAME`
+- `PRODUCTION_AZURE_PRINCIPAL_ID`
+
+Conditionally required variables:
+
 - `SQL_ADMINISTRATOR_LOGIN`
+  Use when a fresh Azure SQL logical server may need to be created.
 
 Optional variables:
 
@@ -93,36 +184,31 @@ Optional variables:
 - `CONTAINER_REGISTRY_IDENTITY`
 - `CONTAINER_REGISTRY_USERNAME`
 
-Required secrets:
+Conditionally required secrets:
 
 - `SQL_ADMINISTRATOR_PASSWORD`
+  Use when a fresh Azure SQL logical server may need to be created.
 
 Optional secrets:
 
 - `CONTAINER_REGISTRY_PASSWORD`
 
-Required Azure RBAC for the `production-bootstrap` OIDC identity:
+### OIDC subject contract
 
-- permission to create or update the target resource group
-- permission to deploy the hosted baseline in that resource group
-- `Role Based Access Control Administrator` or `User Access Administrator` where `manageRuntimeRoleAssignments=true` will be used
+- `production`: `repo:anaregdesign/arcade-spec:environment:production`
+- `production-bootstrap`: `repo:anaregdesign/arcade-spec:environment:production-bootstrap`
 
-The `production-bootstrap` federated credential subject should match:
+## Registry Prerequisites
 
-- `repo:anaregdesign/arcade-spec:environment:production-bootstrap`
-
-The `production` federated credential subject should match:
-
-- `repo:anaregdesign/arcade-spec:environment:production`
+- Preferred: `CONTAINER_REGISTRY_IDENTITY` is configured and has pull access to the target registry.
+- Fallback: `CONTAINER_REGISTRY_SERVER`, `CONTAINER_REGISTRY_USERNAME`, and `CONTAINER_REGISTRY_PASSWORD` are configured together.
+- If neither contract is complete, Azure-hosted `Container Apps Job` creation must fail before execution starts.
 
 ## Runtime Configuration Requirements
-
-These values must exist before the hosted app can boot correctly:
 
 Hosted bootstrap environment values:
 
 - `AZURE_APPCONFIG_ENDPOINT`
-- `AZURE_APPCONFIG_LABEL` when labeled App Configuration values are used
 - `AZURE_KEY_VAULT_URI`
 
 App Configuration values:
@@ -141,35 +227,9 @@ Key Vault secrets:
 
 Current repository note:
 
-- runtime config sync is workflow-owned through `.github/workflows/release-container-image.yml` and `.github/workflows/bootstrap-azure-recovery.yml`
-- runtime secrets stay in Key Vault and App Configuration rather than deployment parameters or repo files
-- `PUBLIC_APP_URL` should be the Azure Front Door endpoint URL or the final custom domain URL
-- after changing the public host, update the Microsoft Entra app registration redirect URI to `https://<front-door-host-or-custom-domain>/auth/callback`
-- keep `AZURE_RESOURCE_GROUP` as the shared prefix and select `green` / `blue` / `dev` through the workflow-managed suffix contract instead of editing resource names per run
-- workflow-owned helper scripts derive suffix-aware environment-scoped resource names from `AZURE_APP_NAME` plus the selected suffix, then prefer active same-suffix resources when they already exist
-
-## Azure SQL Provisioning Inputs And Identities
-
-Bootstrap inputs still required from the `production-bootstrap` GitHub Environment:
-
-- `sqlAdministratorLogin`
-- `sqlAdministratorPassword`
-
-The template now defines three distinct identities for the database path:
-
-- Container App system-assigned managed identity for runtime reads and writes
-- User-assigned migration identity for application startup migrations
-- User-assigned SQL bootstrap identity that becomes the Azure SQL Microsoft Entra administrator and is used only by the bootstrap workflow job
-
-The repository target contract for the production data path is:
-
-- Azure Front Door Premium as the public edge endpoint
-- Azure SQL `publicNetworkAccess=Disabled`
-- no `AllowAzureServices` firewall dependency
-- Azure SQL `Private Endpoint` plus `privatelink.database.windows.net`
-- hosted App Configuration and Key Vault synced through GitHub Actions OIDC and protected by Azure RBAC
-- Container Apps managed environment with `publicNetworkAccess=Disabled`
-- runtime, migration, and bootstrap SQL permissions separated
+- `DATABASE_URL` remains `DefaultAzureCredential` based at rest in Key Vault / App Configuration.
+- runtime and migration entrypoints rewrite that URL to `ActiveDirectoryManagedIdentity` only inside the Azure-hosted process when `IDENTITY_ENDPOINT` and `IDENTITY_HEADER` are present.
+- keep `AZURE_RESOURCE_GROUP` as the shared prefix and select `green` / `blue` / `dev` through the workflow-managed suffix contract instead of editing resource names per run.
 
 ## Workflow Entry Points
 
@@ -184,19 +244,9 @@ The repository target contract for the production data path is:
 ## Suggested Workflow-Only Sequence
 
 1. Confirm `Quality Gates` is green for the target commit.
-2. If the resource group or hosted baseline is missing, run `Bootstrap Azure Recovery` with a known-good release tag or immutable full image reference.
-3. Confirm `ensure_resource_group`, `deploy_bootstrap_infra`, `bootstrap_sql`, `sync_runtime_config`, `deploy_app`, `smoke_test`, and `verify_runtime` all succeed.
-4. For routine forward deploys after bootstrap, publish a GitHub Release and confirm `publish`, `plan_infra`, `deploy_infra`, `sync_runtime_config`, `deploy_app`, and `smoke_test` succeed.
+2. If the resource group or hosted baseline is missing, run `Bootstrap Azure Recovery`.
+3. Confirm `bootstrap_sql` and `run_database_migration` both succeed before trusting the recovered app rollout.
+4. For routine forward deploys, publish a GitHub Release and confirm `migrate_database` succeeds before `deploy_app`.
 5. Keep `Verify Production Runtime` available as the recurring hosted contract check.
-6. For a dev-phase resource-group switch, update the GitHub Environment variables first:
-   - `AZURE_RESOURCE_GROUP`
-   - `AZURE_APP_NAME`
-   - `AZURE_LOCATION` when the target region also changes
-
-## Repository Rename Note
-
-- The canonical GitHub repository slug is `anaregdesign/arcade-spec`.
-- Release workflows publish GHCR images under `ghcr.io/anaregdesign/arcade-spec`.
-- Keep the `production` and `production-bootstrap` OIDC subjects aligned with that repository slug after future identity changes.
 
 For the live release baseline, rollback notes, and operational checks, see `docs/production-operations.md`.
