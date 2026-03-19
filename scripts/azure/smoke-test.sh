@@ -6,6 +6,8 @@ if [[ -z "${APP_URL:-}" ]]; then
   exit 1
 fi
 
+EXPECTED_ENTRA_AUTHORITY_TENANT="${EXPECTED_ENTRA_AUTHORITY_TENANT:-${ENTRA_AUTHORITY_TENANT:-${ENTRA_TENANT_ID:-${AZURE_TENANT_ID:-organizations}}}}"
+EXPECTED_ENTRA_AUTHORIZATION_PREFIX="https://login.microsoftonline.com/${EXPECTED_ENTRA_AUTHORITY_TENANT}/oauth2/v2.0/authorize"
 SMOKE_TEST_RETRIES="${SMOKE_TEST_RETRIES:-18}"
 SMOKE_TEST_DELAY_SECONDS="${SMOKE_TEST_DELAY_SECONDS:-10}"
 HEALTH_OUTPUT_FILE="$(mktemp)"
@@ -101,6 +103,7 @@ check_login() {
 }
 
 check_auth_start() {
+  local auth_location
   local status
   status="$(curl --silent --show-error --output "${AUTH_OUTPUT_FILE}" --dump-header "${AUTH_HEADERS_FILE}" --write-out '%{http_code}' --max-time 30 "${APP_URL%/}/auth/start?returnTo=%2Fhome")" || {
     record_failure_details "Auth start request failed before a response was received."
@@ -112,8 +115,17 @@ check_auth_start() {
     return 1
   fi
 
-  if ! tr -d '\r' <"${AUTH_HEADERS_FILE}" | grep -qi 'login\.microsoftonline\.com/organizations/oauth2/v2\.0/authorize'; then
-    record_failure_details "$(printf 'Auth start route did not redirect to the organizations authorization endpoint.\nHeaders preview:\n%s' "$(preview_file "${AUTH_HEADERS_FILE}")")"
+  auth_location="$(
+    tr -d '\r' <"${AUTH_HEADERS_FILE}" | sed -n '/^[Ll][Oo][Cc][Aa][Tt][Ii][Oo][Nn]: / { s/^[^:]*: //; p; q; }'
+  )"
+
+  if [[ -z "${auth_location}" ]]; then
+    record_failure_details "$(printf 'Auth start route returned HTTP %s but no Location header was present.\nHeaders preview:\n%s' "${status}" "$(preview_file "${AUTH_HEADERS_FILE}")")"
+    return 1
+  fi
+
+  if [[ "${auth_location}" != "${EXPECTED_ENTRA_AUTHORIZATION_PREFIX}"* ]]; then
+    record_failure_details "$(printf 'Auth start route did not redirect to the expected authorization endpoint for authority tenant %s.\nLocation: %s\nHeaders preview:\n%s' "${EXPECTED_ENTRA_AUTHORITY_TENANT}" "${auth_location}" "$(preview_file "${AUTH_HEADERS_FILE}")")"
     return 1
   fi
 
@@ -124,6 +136,6 @@ trap cleanup EXIT
 
 retry_until_success "Health endpoint did not return 200." check_health
 retry_until_success "Login route did not render the expected sign-in content." check_login
-retry_until_success "Auth start route did not redirect to the organizations authorization endpoint." check_auth_start
+retry_until_success "Auth start route did not redirect to the expected authorization endpoint." check_auth_start
 
 echo "Smoke test passed for ${APP_URL%/}."

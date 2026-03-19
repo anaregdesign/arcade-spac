@@ -108,6 +108,7 @@
 - [x] Patch server runtime config resolution so Azure hosting skips remote App Configuration bootstrap when the required runtime settings are already present in `process.env`
 - [x] Fix the Azure env bootstrap regression where `ARCADE_SESSION_SECRET` and `DATABASE_URL` still required store-backed values even after the runtime switched to the complete `process.env` path
 - [x] Add regression coverage for the Azure complete-env bootstrap path so the server bundle can import without touching App Configuration
+- [x] Align hosted smoke-test auth redirect assertions with the runtime-configured Entra authority tenant instead of hardcoding `organizations`
 - [x] Extend `Verify Production Runtime` failure output so the workflow prints `Container App` revision, replica, and recent logs when auth/smoke checks still time out after the infrastructure contract passes
 - [x] Capture the hosted `Container App` CrashLoopBackOff log showing `prisma migrate deploy` cannot find `datasource.url` because the runtime image omits `prisma.config.ts`
 - [x] Patch the runtime Docker image so `prisma.config.ts` is copied into the final stage and startup migrations can resolve the Azure SQL URL before the server starts

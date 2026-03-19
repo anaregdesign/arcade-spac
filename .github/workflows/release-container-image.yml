@@ -678,6 +678,7 @@ jobs:
   smoke_test:
     name: Smoke Test Deployed Release
     runs-on: ubuntu-latest
+    environment: production
     needs:
       - deploy_app
       - deploy_infra
@@ -701,5 +702,6 @@ jobs:
       - name: Smoke test deployed release
         env:
           APP_URL: ${{ needs.deploy_app.outputs.app_url }}
+          EXPECTED_ENTRA_AUTHORITY_TENANT: ${{ vars.ENTRA_AUTHORITY_TENANT || vars.ENTRA_TENANT_ID }}
           SMOKE_TEST_RETRIES: ${{ needs.deploy_infra.result == 'success' && '90' || '18' }}
         run: ./scripts/azure/smoke-test.sh
