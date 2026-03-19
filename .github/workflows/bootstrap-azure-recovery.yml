@@ -492,6 +492,41 @@ jobs:
             echo "::endgroup::"
           }
 
+          write_sql_bootstrap_job_template() {
+            local output_path="$1"
+
+            cat >"$output_path" <<EOF
+containers:
+  - name: sql-bootstrap
+    image: ${IMAGE_REF}
+    resources:
+      cpu: 0.5
+      memory: 1Gi
+    command:
+      - sh
+    args:
+      - -lc
+      - 'printf ''%s'' "\$ARCADE_SQL_BOOTSTRAP_SOURCE_B64" | base64 -d > /tmp/init-sql.mjs && node /tmp/init-sql.mjs'
+    env:
+      - name: AZURE_CLIENT_ID
+        value: ${SQL_BOOTSTRAP_IDENTITY_CLIENT_ID}
+      - name: ARCADE_SQL_BOOTSTRAP_SOURCE_B64
+        value: ${SQL_BOOTSTRAP_SOURCE_B64}
+      - name: ARCADE_SQL_SERVER
+        value: ${SQL_SERVER_NAME}.database.windows.net
+      - name: ARCADE_SQL_DATABASE
+        value: ${SQL_DATABASE_NAME}
+      - name: ARCADE_SQL_RUNTIME_PRINCIPAL
+        value: ${SQL_RUNTIME_PRINCIPAL_NAME}
+      - name: ARCADE_SQL_RUNTIME_OBJECT_ID
+        value: ${SQL_RUNTIME_PRINCIPAL_OBJECT_ID}
+      - name: ARCADE_SQL_MIGRATION_PRINCIPAL
+        value: ${SQL_MIGRATION_PRINCIPAL_NAME}
+      - name: ARCADE_SQL_MIGRATION_OBJECT_ID
+        value: ${SQL_MIGRATION_PRINCIPAL_OBJECT_ID}
+EOF
+          }
+
           wait_for_sql_bootstrap_job_execution() {
             local job_name="$1"
             local job_execution_name="$2"
@@ -597,6 +632,7 @@ jobs:
             --query clientId \
             --output tsv)"
           SQL_BOOTSTRAP_SOURCE_B64="$(base64 < ./scripts/azure/init-sql.mjs | tr -d '\n')"
+          SQL_BOOTSTRAP_TEMPLATE_PATH="/tmp/sql-bootstrap-template.yaml"
 
           test -n "$SQL_SERVER_NAME" || { echo "Missing Azure SQL server."; exit 1; }
           test -n "$SQL_DATABASE_NAME" || { echo "Missing Azure SQL database."; exit 1; }
@@ -607,6 +643,7 @@ jobs:
           test -n "$SQL_BOOTSTRAP_IDENTITY_ID" || { echo "Missing SQL bootstrap identity id."; exit 1; }
           test -n "$SQL_BOOTSTRAP_IDENTITY_CLIENT_ID" || { echo "Missing SQL bootstrap identity client id."; exit 1; }
           test -n "$SQL_BOOTSTRAP_SOURCE_B64" || { echo "Missing SQL bootstrap source."; exit 1; }
+          test -n "$SQL_BOOTSTRAP_TEMPLATE_PATH" || { echo "Missing SQL bootstrap template path."; exit 1; }
           test -n "$SQL_MIGRATION_IDENTITY_ID" || { echo "Missing SQL migration identity id."; exit 1; }
           test -n "$SQL_MIGRATION_PRINCIPAL_NAME" || { echo "Missing SQL migration principal name."; exit 1; }
           test -n "$SQL_MIGRATION_PRINCIPAL_OBJECT_ID" || { echo "Missing SQL migration principal object id."; exit 1; }
@@ -638,6 +675,7 @@ jobs:
               "$SQL_BOOTSTRAP_IDENTITY_NAME" \
               "$SQL_BOOTSTRAP_IDENTITY_PRINCIPAL_ID"
             ensure_sql_server_entra_only_auth "$SQL_SERVER_NAME"
+            write_sql_bootstrap_job_template "$SQL_BOOTSTRAP_TEMPLATE_PATH"
 
             echo "Creating SQL bootstrap job ${JOB_NAME} (attempt ${bootstrap_attempt}/${MAX_SQL_BOOTSTRAP_ATTEMPTS})."
             az containerapp job create \
@@ -654,17 +692,6 @@ jobs:
               --cpu 0.5 \
               --memory 1.0Gi \
               --mi-user-assigned "$SQL_BOOTSTRAP_IDENTITY_ID" \
-              --command sh \
-              --args "-lc" "printf '%s' \"\$ARCADE_SQL_BOOTSTRAP_SOURCE_B64\" | base64 -d > /tmp/init-sql.mjs && node /tmp/init-sql.mjs" \
-              --env-vars \
-                "AZURE_CLIENT_ID=$SQL_BOOTSTRAP_IDENTITY_CLIENT_ID" \
-                "ARCADE_SQL_BOOTSTRAP_SOURCE_B64=$SQL_BOOTSTRAP_SOURCE_B64" \
-                "ARCADE_SQL_SERVER=${SQL_SERVER_NAME}.database.windows.net" \
-                "ARCADE_SQL_DATABASE=$SQL_DATABASE_NAME" \
-                "ARCADE_SQL_RUNTIME_PRINCIPAL=$SQL_RUNTIME_PRINCIPAL_NAME" \
-                "ARCADE_SQL_RUNTIME_OBJECT_ID=$SQL_RUNTIME_PRINCIPAL_OBJECT_ID" \
-                "ARCADE_SQL_MIGRATION_PRINCIPAL=$SQL_MIGRATION_PRINCIPAL_NAME" \
-                "ARCADE_SQL_MIGRATION_OBJECT_ID=$SQL_MIGRATION_PRINCIPAL_OBJECT_ID" \
               "${registry_args[@]}" \
               --output none
 
@@ -672,6 +699,7 @@ jobs:
             az containerapp job start \
               --resource-group "$AZURE_RESOURCE_GROUP" \
               --name "$JOB_NAME" \
+              --yaml "$SQL_BOOTSTRAP_TEMPLATE_PATH" \
               --output none
 
             JOB_EXECUTION_NAME=""

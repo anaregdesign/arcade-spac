@@ -116,8 +116,16 @@
 - [x] Add regression coverage for SQL bootstrap principal reconciliation against current Entra object IDs
 - [x] Capture the bootstrap recovery failure where the SQL bootstrap Container Apps Job stays `Running` because `az containerapp job create` serialized `/bin/sh -lc ...` into a single malformed command string
 - [x] Patch bootstrap recovery so the SQL bootstrap job passes `--command` and `--args` as separate values and actually executes the injected `init-sql.mjs`
+- [x] Capture the follow-on bootstrap recovery failure where `az containerapp job create` still rejects `--args` and aborts before the Azure-hosted SQL bootstrap job starts
+- [x] Prove locally that the shared runtime image can switch between default app startup and injected SQL bootstrap command execution via command override
+- [x] Use the local command-override result to settle the bootstrap workflow shape before the next recovery rerun
+- [x] Validate the same shared `GHCR` image on an isolated Azure `Container Apps` environment by deploying a scratch Runtime resource from local CLI
+- [x] Validate the same shared `GHCR` image on the same isolated Azure `Container Apps` environment by deploying and starting a scratch manual Job with execution-time command override from local CLI
+- [x] Patch bootstrap recovery to create a simple Azure-hosted SQL bootstrap job and pass command/args/env overrides through `az containerapp job start --yaml`
 - [ ] Push the SQL bootstrap principal repair to `main` and rerun `Bootstrap Azure Recovery` against `green` with the current immutable image so live Azure SQL principals are reconciled
 - [ ] Confirm the recovery workflow, smoke test, and scheduled or manual runtime verification succeed after the SQL principal repair
 
 Notes:
 - Remaining intentional non-idempotent behavior is limited to run-scoped artifact names such as Azure deployment names and transient Container Apps Job / execution names used by workflow runs.
+- Local command-override verification used the published `GHCR` image `ghcr.io/anaregdesign/arcade-spec:v2026.03.18.9`; because the package is currently `linux/amd64` only, the local Docker run used `--platform linux/amd64` on the Apple Silicon workstation.
+- Local Azure validation on scratch `Container Apps` reproduced the CLI parse failure for `az containerapp job start --args "-lc" ...` but succeeded with `az containerapp job start --yaml /tmp/aca-job-execution.yaml`, so the workflow path needs the YAML execution-override shape rather than direct `--args`.
