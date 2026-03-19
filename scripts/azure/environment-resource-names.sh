@@ -67,10 +67,9 @@ list_resource_names_by_type() {
   )
 }
 
-resolve_existing_resource_name_by_type() {
+resolve_matching_resource_name_by_type() {
   local resource_type="$1"
-  local label="$2"
-  shift 2
+  shift
 
   local -a candidate_names=("$@")
   local -a active_names=()
@@ -90,6 +89,27 @@ resolve_existing_resource_name_by_type() {
       fi
     done
   done
+}
+
+resolve_existing_resource_name_by_type() {
+  local resource_type="$1"
+  local label="$2"
+  shift 2
+
+  local -a candidate_names=("$@")
+  local -a active_names=()
+  local active_name=""
+  local matching_name=""
+
+  matching_name="$(resolve_matching_resource_name_by_type "${resource_type}" "${candidate_names[@]-}")"
+  if [[ -n "${matching_name}" ]]; then
+    printf '%s\n' "${matching_name}"
+    return 0
+  fi
+
+  while IFS= read -r active_name; do
+    [[ -n "${active_name}" ]] && active_names+=("${active_name}")
+  done < <(list_resource_names_by_type "${resource_type}")
 
   if [[ "${#active_names[@]}" -eq 0 ]]; then
     return 0

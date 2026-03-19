@@ -194,6 +194,36 @@ resolve_named_resource() {
   fi
 }
 
+resolve_named_identity_resource() {
+  local output_key="$1"
+  local resolution_key="$2"
+  local resource_type="$3"
+  shift 3
+
+  local -a candidate_names=("$@")
+  local resolved_name=""
+  local active_name=""
+  local candidate_name=""
+
+  active_name="$(resolve_matching_resource_name_by_type "$resource_type" "${candidate_names[@]}")"
+
+  for candidate_name in "${candidate_names[@]-}"; do
+    if [[ -n "$candidate_name" ]]; then
+      resolved_name="$candidate_name"
+      break
+    fi
+  done
+
+  if [[ -n "$active_name" ]]; then
+    append_output "$output_key" "$active_name"
+    append_output "$resolution_key" "active"
+    return 0
+  fi
+
+  append_output "$output_key" "$resolved_name"
+  append_output "$resolution_key" "default"
+}
+
 require_env "AZURE_APP_NAME"
 require_env "AZURE_RESOURCE_GROUP"
 derive_environment_names
@@ -238,27 +268,24 @@ resolve_named_resource \
   "$AZURE_EXPECTED_CONTAINER_APP_NAME" \
   "$AZURE_LEGACY_CONTAINER_APP_NAME"
 
-resolve_named_resource \
+resolve_named_identity_resource \
   "sql_runtime_identity_name" \
   "sql_runtime_identity_resolution" \
   "Microsoft.ManagedIdentity/userAssignedIdentities" \
-  "SQL runtime identity" \
   "$AZURE_EXPECTED_SQL_RUNTIME_IDENTITY_NAME" \
   "$AZURE_LEGACY_SQL_RUNTIME_IDENTITY_NAME"
 
-resolve_named_resource \
+resolve_named_identity_resource \
   "sql_migration_identity_name" \
   "sql_migration_identity_resolution" \
   "Microsoft.ManagedIdentity/userAssignedIdentities" \
-  "SQL migration identity" \
   "$AZURE_EXPECTED_SQL_MIGRATION_IDENTITY_NAME" \
   "$AZURE_LEGACY_SQL_MIGRATION_IDENTITY_NAME"
 
-resolve_named_resource \
+resolve_named_identity_resource \
   "sql_bootstrap_identity_name" \
   "sql_bootstrap_identity_resolution" \
   "Microsoft.ManagedIdentity/userAssignedIdentities" \
-  "SQL bootstrap identity" \
   "$AZURE_EXPECTED_SQL_BOOTSTRAP_IDENTITY_NAME" \
   "$AZURE_LEGACY_SQL_BOOTSTRAP_IDENTITY_NAME"
 
