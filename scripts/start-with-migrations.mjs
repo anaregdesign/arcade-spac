@@ -2,6 +2,9 @@ import { spawn } from "node:child_process";
 
 const STARTUP_MIGRATION_DATABASE_URL_ENV_NAME = "STARTUP_MIGRATION_DATABASE_URL";
 const AZURE_SQL_RUNTIME_CLIENT_ID_ENV_NAME = "AZURE_SQL_RUNTIME_CLIENT_ID";
+const AZURE_SQL_MIGRATION_CLIENT_ID_ENV_NAME = "AZURE_SQL_MIGRATION_CLIENT_ID";
+const MANAGED_IDENTITY_ENDPOINT_ENV_NAME = "IDENTITY_ENDPOINT";
+const MANAGED_IDENTITY_HEADER_ENV_NAME = "IDENTITY_HEADER";
 
 function isAzureHosting() {
   return Boolean(process.env.AZURE_APP_NAME);
@@ -60,21 +63,76 @@ function describeDatabaseUrlSource(databaseUrl) {
   return prefix || "sqlserver://<redacted>";
 }
 
+function splitConnectionStringParts(databaseUrl) {
+  return databaseUrl
+    .split(";")
+    .map((part) => part.trim())
+    .filter((part) => part.length > 0);
+}
+
+function findAuthenticationMode(databaseUrl) {
+  const authenticationPart = splitConnectionStringParts(databaseUrl)
+    .find((part) => part.toLowerCase().startsWith("authentication="));
+
+  if (!authenticationPart) {
+    return null;
+  }
+
+  const [, value = ""] = authenticationPart.split(/=(.+)/, 2);
+  return value.trim().toLowerCase();
+}
+
+export function rewriteDatabaseUrlForManagedIdentity(databaseUrl, clientId, env = process.env) {
+  const identityEndpoint = env[MANAGED_IDENTITY_ENDPOINT_ENV_NAME];
+  const identityHeader = env[MANAGED_IDENTITY_HEADER_ENV_NAME];
+  const authenticationMode = findAuthenticationMode(databaseUrl);
+
+  if (
+    typeof clientId !== "string"
+    || clientId.trim().length === 0
+    || typeof identityEndpoint !== "string"
+    || identityEndpoint.trim().length === 0
+    || typeof identityHeader !== "string"
+    || identityHeader.trim().length === 0
+    || authenticationMode !== "defaultazurecredential"
+  ) {
+    return databaseUrl;
+  }
+
+  const rewrittenParts = splitConnectionStringParts(databaseUrl)
+    .filter((part) => {
+      const [rawKey = ""] = part.split("=", 1);
+      const key = rawKey.trim().toLowerCase();
+      return key !== "authentication" && key !== "clientid" && key !== "msiendpoint" && key !== "msisecret";
+    });
+
+  rewrittenParts.push("authentication=ActiveDirectoryManagedIdentity");
+  rewrittenParts.push(`clientId=${clientId.trim()}`);
+  rewrittenParts.push(`msiEndpoint=${identityEndpoint.trim()}`);
+  rewrittenParts.push(`msiSecret=${identityHeader.trim()}`);
+
+  return rewrittenParts.join(";");
+}
+
 async function main() {
   const databaseUrl = await resolveDatabaseUrl();
 
   if (databaseUrl) {
+    const migrationClientId = process.env[AZURE_SQL_MIGRATION_CLIENT_ID_ENV_NAME];
+    const migrationDatabaseUrl = rewriteDatabaseUrlForManagedIdentity(databaseUrl.value, migrationClientId);
     console.log(
       `Resolved startup migration database URL from ${databaseUrl.source} (${describeDatabaseUrlSource(databaseUrl.value)}).`,
     );
     const migrationEnv = {
       ...process.env,
-      DATABASE_URL: databaseUrl.value,
+      DATABASE_URL: migrationDatabaseUrl,
     };
-    const migrationClientId = process.env.AZURE_SQL_MIGRATION_CLIENT_ID;
 
     if (migrationClientId) {
       migrationEnv.AZURE_CLIENT_ID = migrationClientId;
+      if (migrationDatabaseUrl !== databaseUrl.value) {
+        console.log(`Using ActiveDirectoryManagedIdentity Prisma auth for startup migration with client ID ${migrationClientId}.`);
+      }
     }
 
     await runCommand(["run", "db:migrate:deploy"], migrationEnv);
@@ -84,6 +142,13 @@ async function main() {
   const runtimeClientId = process.env[AZURE_SQL_RUNTIME_CLIENT_ID_ENV_NAME];
   if (typeof runtimeClientId === "string" && runtimeClientId.trim().length > 0) {
     serverEnv.AZURE_CLIENT_ID = runtimeClientId.trim();
+    if (typeof serverEnv.DATABASE_URL === "string" && serverEnv.DATABASE_URL.trim().length > 0) {
+      const runtimeDatabaseUrl = rewriteDatabaseUrlForManagedIdentity(serverEnv.DATABASE_URL, runtimeClientId, serverEnv);
+      if (runtimeDatabaseUrl !== serverEnv.DATABASE_URL) {
+        console.log(`Using ActiveDirectoryManagedIdentity Prisma auth for server runtime with client ID ${runtimeClientId.trim()}.`);
+      }
+      serverEnv.DATABASE_URL = runtimeDatabaseUrl;
+    }
   } else {
     delete serverEnv.AZURE_CLIENT_ID;
   }
