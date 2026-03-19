@@ -505,7 +505,7 @@ jobs:
               printf '%s\n' '      - sh'
               printf '%s\n' '    args:'
               printf '%s\n' '      - -lc'
-              printf '%s\n' "      - \"printf '%s' \\\"\$ARCADE_SQL_BOOTSTRAP_SOURCE_B64\\\" | base64 -d > /tmp/init-sql.mjs && node /tmp/init-sql.mjs\""
+              printf '%s\n' "      - \"printf '%s' \\\"\$ARCADE_SQL_BOOTSTRAP_SOURCE_B64\\\" | base64 -d > /app/init-sql.injected.mjs && node /app/init-sql.injected.mjs\""
               printf '%s\n' '    env:'
               printf '%s\n' '      - name: AZURE_CLIENT_ID'
               printf '        value: "%s"\n' "$SQL_BOOTSTRAP_IDENTITY_CLIENT_ID"

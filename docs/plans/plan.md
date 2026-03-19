@@ -122,6 +122,8 @@
 - [x] Validate the same shared `GHCR` image on an isolated Azure `Container Apps` environment by deploying a scratch Runtime resource from local CLI
 - [x] Validate the same shared `GHCR` image on the same isolated Azure `Container Apps` environment by deploying and starting a scratch manual Job with execution-time command override from local CLI
 - [x] Patch bootstrap recovery to create a simple Azure-hosted SQL bootstrap job and pass command/args/env overrides through `az containerapp job start --yaml`
+- [x] Capture the follow-on hosted SQL bootstrap failure where the injected `/tmp/init-sql.mjs` cannot resolve `mssql` from outside `/app/node_modules`
+- [x] Patch SQL bootstrap command injection so the transient script is written and executed from `/app` instead of `/tmp`, preserving Node package resolution inside the runtime image
 - [ ] Push the SQL bootstrap principal repair to `main` and rerun `Bootstrap Azure Recovery` against `green` with the current immutable image so live Azure SQL principals are reconciled
 - [ ] Confirm the recovery workflow, smoke test, and scheduled or manual runtime verification succeed after the SQL principal repair
 
@@ -129,3 +131,5 @@ Notes:
 - Remaining intentional non-idempotent behavior is limited to run-scoped artifact names such as Azure deployment names and transient Container Apps Job / execution names used by workflow runs.
 - Local command-override verification used the published `GHCR` image `ghcr.io/anaregdesign/arcade-spec:v2026.03.18.9`; because the package is currently `linux/amd64` only, the local Docker run used `--platform linux/amd64` on the Apple Silicon workstation.
 - Local Azure validation on scratch `Container Apps` reproduced the CLI parse failure for `az containerapp job start --args "-lc" ...` but succeeded with `az containerapp job start --yaml /tmp/aca-job-execution.yaml`, so the workflow path needs the YAML execution-override shape rather than direct `--args`.
+- Hosted run `23277105400` showed the YAML execution override reaching the job container, but the injected script failed with `ERR_MODULE_NOT_FOUND: Cannot find package 'mssql' imported from /tmp/init-sql.mjs`; the fix is to keep the injected file under `/app` so Node resolves `/app/node_modules`.
+- Local Docker validation against `ghcr.io/anaregdesign/arcade-spec:v2026.03.18.9` confirmed that writing the actual injected SQL bootstrap script to `/app/init-sql.injected.mjs` changes the first failure from `ERR_MODULE_NOT_FOUND` to the expected missing-env check (`ARCADE_SQL_SERVER must be set.`), proving package resolution is restored.
