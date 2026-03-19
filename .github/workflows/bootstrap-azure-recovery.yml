@@ -340,6 +340,9 @@ jobs:
       - resolve_recovery_image
       - deploy_bootstrap_infra
       - restore_production_release_rbac
+    permissions:
+      contents: read
+      id-token: write
     uses: ./.github/workflows/shared-azure-rollout.yml
     with:
       image_ref: ${{ needs.resolve_recovery_image.outputs.image_ref }}

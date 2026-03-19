@@ -393,6 +393,9 @@ jobs:
         needs.plan_infra.result == 'success' &&
         (needs.deploy_infra.result == 'success' || needs.deploy_infra.result == 'skipped')
       }}
+    permissions:
+      contents: read
+      id-token: write
     uses: ./.github/workflows/shared-azure-rollout.yml
     with:
       image_ref: ${{ needs.publish.outputs.image_ref }}

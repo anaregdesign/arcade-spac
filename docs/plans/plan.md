@@ -198,3 +198,4 @@ Notes:
 
 Notes:
 - Local validation for the workflow role split used Ruby YAML parse, `actionlint`, and `git diff --check` for the three touched workflow files. Hosted validation remains the next follow-up.
+- Release run `23285650832` (`v2026.03.19.12`) reached reusable workflow resolution but failed at workflow startup because the caller job did not grant `id-token: write`; reusable workflow callers need to declare the OIDC permission budget that nested jobs consume.
