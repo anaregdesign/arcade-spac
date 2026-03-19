@@ -9,6 +9,7 @@ param applicationInsightsResourceName string = ''
 param virtualNetworkResourceName string = ''
 param managedEnvironmentResourceName string = ''
 param containerAppResourceName string = ''
+param sqlRuntimeIdentityResourceName string = ''
 param sqlMigrationIdentityResourceName string = ''
 param sqlBootstrapIdentityResourceName string = ''
 param frontDoorProfileResourceName string = ''
@@ -77,6 +78,9 @@ var sqlPrivateDnsZoneName = 'privatelink${environment().suffixes.sqlServerHostna
 var sqlPrivateEndpointName = 'pep-${resolvedSqlServerName}'
 // Private DNS virtual network link resource name for the SQL zone.
 var sqlPrivateDnsZoneVirtualNetworkLinkName = '${resolvedVirtualNetworkName}-link'
+// User-assigned identity name used by the runtime server process.
+var defaultSqlRuntimeIdentityName = 'id-sql-runtime-${scopedAppName}'
+var resolvedSqlRuntimeIdentityName = empty(sqlRuntimeIdentityResourceName) ? defaultSqlRuntimeIdentityName : sqlRuntimeIdentityResourceName
 // User-assigned identity name used for startup migrations.
 var defaultSqlMigrationIdentityName = 'id-sql-migrate-${scopedAppName}'
 var resolvedSqlMigrationIdentityName = empty(sqlMigrationIdentityResourceName) ? defaultSqlMigrationIdentityName : sqlMigrationIdentityResourceName
@@ -200,6 +204,8 @@ var azureAppConfigEndpointEnvironmentVariableName = 'AZURE_APPCONFIG_ENDPOINT'
 var azureKeyVaultUriEnvironmentVariableName = 'AZURE_KEY_VAULT_URI'
 // Env var name for the Azure tenant id exposed to the runtime.
 var azureTenantIdEnvironmentVariableName = 'AZURE_TENANT_ID'
+// Env var name for the user-assigned runtime identity client id.
+var azureSqlRuntimeClientIdEnvironmentVariableName = 'AZURE_SQL_RUNTIME_CLIENT_ID'
 // Env var name for the user-assigned migration identity client id.
 var azureSqlMigrationClientIdEnvironmentVariableName = 'AZURE_SQL_MIGRATION_CLIENT_ID'
 // Env var name for the startup migration database URL.
@@ -343,6 +349,11 @@ resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
     publicNetworkAccess: enabledState
     softDeleteRetentionInDays: 90
   }
+}
+
+resource sqlRuntimeIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
+  name: resolvedSqlRuntimeIdentityName
+  location: location
 }
 
 resource sqlMigrationIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
@@ -493,6 +504,7 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
   identity: {
     type: containerAppIdentityType
     userAssignedIdentities: {
+      '${sqlRuntimeIdentity.id}': {}
       '${sqlMigrationIdentity.id}': {}
     }
   }
@@ -531,6 +543,10 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
               {
                 name: azureTenantIdEnvironmentVariableName
                 value: entraTenantId
+              }
+              {
+                name: azureSqlRuntimeClientIdEnvironmentVariableName
+                value: sqlRuntimeIdentity.properties.clientId
               }
               {
                 name: azureSqlMigrationClientIdEnvironmentVariableName
@@ -728,7 +744,8 @@ output privateEndpointSubnetId string = privateEndpointSubnet.id
 output sqlServerName string = resolvedSqlServerName
 output sqlServerFullyQualifiedDomainName string = sqlServerFqdn
 output sqlDatabaseName string = sqlDatabaseName
-output sqlRuntimeIdentityPrincipalId string = containerApp.identity.principalId
+output sqlRuntimeIdentityPrincipalId string = sqlRuntimeIdentity.properties.principalId
+output sqlRuntimeIdentityClientId string = sqlRuntimeIdentity.properties.clientId
 output sqlMigrationIdentityPrincipalId string = sqlMigrationIdentity.properties.principalId
 output sqlMigrationIdentityClientId string = sqlMigrationIdentity.properties.clientId
 output sqlBootstrapIdentityPrincipalId string = sqlBootstrapIdentity.properties.principalId

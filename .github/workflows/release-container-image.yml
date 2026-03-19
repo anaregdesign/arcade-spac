@@ -161,6 +161,7 @@ jobs:
           VIRTUAL_NETWORK_NAME='${{ steps.resolve_resources.outputs.virtual_network_name }}'
           MANAGED_ENVIRONMENT_NAME='${{ steps.resolve_resources.outputs.managed_environment_name }}'
           CONTAINER_APP_NAME='${{ steps.resolve_resources.outputs.container_app_name }}'
+          SQL_RUNTIME_IDENTITY_NAME='${{ steps.resolve_resources.outputs.sql_runtime_identity_name }}'
           SQL_MIGRATION_IDENTITY_NAME='${{ steps.resolve_resources.outputs.sql_migration_identity_name }}'
           SQL_BOOTSTRAP_IDENTITY_NAME='${{ steps.resolve_resources.outputs.sql_bootstrap_identity_name }}'
           FRONT_DOOR_PROFILE_NAME='${{ steps.resolve_resources.outputs.front_door_profile_name }}'
@@ -184,6 +185,7 @@ jobs:
             VIRTUAL_NETWORK_NAME="$VIRTUAL_NETWORK_NAME" \
             MANAGED_ENVIRONMENT_NAME="$MANAGED_ENVIRONMENT_NAME" \
             CONTAINER_APP_NAME="$CONTAINER_APP_NAME" \
+            SQL_RUNTIME_IDENTITY_NAME="$SQL_RUNTIME_IDENTITY_NAME" \
             SQL_MIGRATION_IDENTITY_NAME="$SQL_MIGRATION_IDENTITY_NAME" \
             SQL_BOOTSTRAP_IDENTITY_NAME="$SQL_BOOTSTRAP_IDENTITY_NAME" \
             FRONT_DOOR_PROFILE_NAME="$FRONT_DOOR_PROFILE_NAME" \
@@ -292,6 +294,7 @@ jobs:
           VIRTUAL_NETWORK_NAME='${{ steps.resolve_resources.outputs.virtual_network_name }}'
           MANAGED_ENVIRONMENT_NAME='${{ steps.resolve_resources.outputs.managed_environment_name }}'
           CONTAINER_APP_NAME='${{ steps.resolve_resources.outputs.container_app_name }}'
+          SQL_RUNTIME_IDENTITY_NAME='${{ steps.resolve_resources.outputs.sql_runtime_identity_name }}'
           SQL_MIGRATION_IDENTITY_NAME='${{ steps.resolve_resources.outputs.sql_migration_identity_name }}'
           SQL_BOOTSTRAP_IDENTITY_NAME='${{ steps.resolve_resources.outputs.sql_bootstrap_identity_name }}'
           FRONT_DOOR_PROFILE_NAME='${{ steps.resolve_resources.outputs.front_door_profile_name }}'
@@ -316,6 +319,7 @@ jobs:
             VIRTUAL_NETWORK_NAME="$VIRTUAL_NETWORK_NAME" \
             MANAGED_ENVIRONMENT_NAME="$MANAGED_ENVIRONMENT_NAME" \
             CONTAINER_APP_NAME="$CONTAINER_APP_NAME" \
+            SQL_RUNTIME_IDENTITY_NAME="$SQL_RUNTIME_IDENTITY_NAME" \
             SQL_MIGRATION_IDENTITY_NAME="$SQL_MIGRATION_IDENTITY_NAME" \
             SQL_BOOTSTRAP_IDENTITY_NAME="$SQL_BOOTSTRAP_IDENTITY_NAME" \
             FRONT_DOOR_PROFILE_NAME="$FRONT_DOOR_PROFILE_NAME" \

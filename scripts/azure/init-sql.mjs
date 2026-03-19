@@ -46,19 +46,23 @@ IF NOT EXISTS (
   ALTER ROLE ${roleIdentifier} ADD MEMBER ${principalIdentifier};`;
 }
 
-export function buildPrincipalReconciliationSql(principalName, principalObjectId, roleNames, variableScope = "principal") {
+export function buildPrincipalReconciliationSql(principalName, principalClientId, roleNames, variableScope = "principal") {
   const escapedPrincipalLiteral = escapeSqlLiteral(principalName);
-  const escapedObjectIdLiteral = escapeSqlLiteral(principalObjectId);
+  const escapedClientIdLiteral = escapeSqlLiteral(principalClientId);
   const principalIdentifier = bracketSqlIdentifier(principalName);
   const principalIdentifierDynamicLiteral = escapeSqlLiteral(principalIdentifier);
   const variableFragment = sqlVariableFragment(variableScope);
   const principalNameVariable = `@principal_name_${variableFragment}`;
-  const principalObjectIdVariable = `@principal_object_id_${variableFragment}`;
+  const principalClientIdVariable = `@principal_client_id_${variableFragment}`;
+  const principalSidVariable = `@principal_sid_${variableFragment}`;
+  const principalSidLiteralVariable = `@principal_sid_literal_${variableFragment}`;
   const membershipStatements = roleNames.map((roleName) => membershipGuard(roleName, principalName)).join("\n");
 
   return `
 DECLARE ${principalNameVariable} sysname = N'${escapedPrincipalLiteral}';
-DECLARE ${principalObjectIdVariable} uniqueidentifier = CAST(N'${escapedObjectIdLiteral}' AS uniqueidentifier);
+DECLARE ${principalClientIdVariable} uniqueidentifier = CAST(N'${escapedClientIdLiteral}' AS uniqueidentifier);
+DECLARE ${principalSidVariable} varbinary(16) = CONVERT(VARBINARY(16), ${principalClientIdVariable});
+DECLARE ${principalSidLiteralVariable} varchar(max) = CONVERT(VARCHAR(MAX), ${principalSidVariable}, 1);
 
 IF EXISTS (
   SELECT 1
@@ -66,12 +70,12 @@ IF EXISTS (
   WHERE name = ${principalNameVariable}
     AND (
       type <> 'E'
-      OR TRY_CAST(sid AS uniqueidentifier) IS NULL
-      OR TRY_CAST(sid AS uniqueidentifier) <> ${principalObjectIdVariable}
+      OR sid IS NULL
+      OR sid <> ${principalSidVariable}
     )
 )
 BEGIN
-  PRINT N'Recreating Azure SQL principal ${escapedPrincipalLiteral} to match the current Entra object ID.';
+  PRINT N'Recreating Azure SQL principal ${escapedPrincipalLiteral} to match the current managed identity client ID.';
   EXEC(N'DROP USER ${principalIdentifierDynamicLiteral}');
 END;
 
@@ -81,8 +85,8 @@ IF NOT EXISTS (
   WHERE name = ${principalNameVariable}
 )
 BEGIN
-  PRINT N'Creating Azure SQL principal ${escapedPrincipalLiteral}.';
-  EXEC(N'CREATE USER ${principalIdentifierDynamicLiteral} FROM EXTERNAL PROVIDER;');
+  PRINT N'Creating Azure SQL principal ${escapedPrincipalLiteral} without Microsoft Entra validation.';
+  EXEC(N'CREATE USER ${principalIdentifierDynamicLiteral} WITH SID = ' + ${principalSidLiteralVariable} + N', TYPE = E;');
 END;
 
 ${membershipStatements}`;
@@ -90,16 +94,16 @@ ${membershipStatements}`;
 
 export function buildBootstrapSql({
   runtimePrincipalName,
-  runtimePrincipalObjectId,
+  runtimePrincipalClientId,
   migrationPrincipalName,
-  migrationPrincipalObjectId,
+  migrationPrincipalClientId,
 }) {
   return `
-${buildPrincipalReconciliationSql(runtimePrincipalName, runtimePrincipalObjectId, ["db_datareader", "db_datawriter"], "runtime")}
+${buildPrincipalReconciliationSql(runtimePrincipalName, runtimePrincipalClientId, ["db_datareader", "db_datawriter"], "runtime")}
 
 ${buildPrincipalReconciliationSql(
   migrationPrincipalName,
-  migrationPrincipalObjectId,
+  migrationPrincipalClientId,
   ["db_datareader", "db_datawriter", "db_ddladmin"],
   "migration",
 )}
@@ -119,18 +123,18 @@ export async function main() {
     },
   };
   const runtimePrincipalName = requireEnv("ARCADE_SQL_RUNTIME_PRINCIPAL");
-  const runtimePrincipalObjectId = requireEnv("ARCADE_SQL_RUNTIME_OBJECT_ID");
+  const runtimePrincipalClientId = requireEnv("ARCADE_SQL_RUNTIME_CLIENT_ID");
   const migrationPrincipalName = requireEnv("ARCADE_SQL_MIGRATION_PRINCIPAL");
-  const migrationPrincipalObjectId = requireEnv("ARCADE_SQL_MIGRATION_OBJECT_ID");
+  const migrationPrincipalClientId = requireEnv("ARCADE_SQL_MIGRATION_CLIENT_ID");
   const pool = await sql.connect(connection);
 
   try {
     await pool.request().batch(
       buildBootstrapSql({
         runtimePrincipalName,
-        runtimePrincipalObjectId,
+        runtimePrincipalClientId,
         migrationPrincipalName,
-        migrationPrincipalObjectId,
+        migrationPrincipalClientId,
       }),
     );
 

@@ -16,6 +16,7 @@ append_parameter "applicationInsightsResourceName" "${APPLICATION_INSIGHTS_NAME:
 append_parameter "virtualNetworkResourceName" "${VIRTUAL_NETWORK_NAME:-}"
 append_parameter "managedEnvironmentResourceName" "${MANAGED_ENVIRONMENT_NAME:-}"
 append_parameter "containerAppResourceName" "${CONTAINER_APP_NAME:-}"
+append_parameter "sqlRuntimeIdentityResourceName" "${SQL_RUNTIME_IDENTITY_NAME:-}"
 append_parameter "sqlMigrationIdentityResourceName" "${SQL_MIGRATION_IDENTITY_NAME:-}"
 append_parameter "sqlBootstrapIdentityResourceName" "${SQL_BOOTSTRAP_IDENTITY_NAME:-}"
 append_parameter "frontDoorProfileResourceName" "${FRONT_DOOR_PROFILE_NAME:-}"

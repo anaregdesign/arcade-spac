@@ -1,6 +1,7 @@
 import { spawn } from "node:child_process";
 
 const STARTUP_MIGRATION_DATABASE_URL_ENV_NAME = "STARTUP_MIGRATION_DATABASE_URL";
+const AZURE_SQL_RUNTIME_CLIENT_ID_ENV_NAME = "AZURE_SQL_RUNTIME_CLIENT_ID";
 
 function isAzureHosting() {
   return Boolean(process.env.AZURE_APP_NAME);
@@ -80,7 +81,12 @@ async function main() {
   }
 
   const serverEnv = { ...process.env };
-  delete serverEnv.AZURE_CLIENT_ID;
+  const runtimeClientId = process.env[AZURE_SQL_RUNTIME_CLIENT_ID_ENV_NAME];
+  if (typeof runtimeClientId === "string" && runtimeClientId.trim().length > 0) {
+    serverEnv.AZURE_CLIENT_ID = runtimeClientId.trim();
+  } else {
+    delete serverEnv.AZURE_CLIENT_ID;
+  }
   delete serverEnv[STARTUP_MIGRATION_DATABASE_URL_ENV_NAME];
 
   await runCommand(["run", "start:server"], serverEnv);

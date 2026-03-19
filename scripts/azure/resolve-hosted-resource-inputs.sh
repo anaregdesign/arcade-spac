@@ -239,6 +239,14 @@ resolve_named_resource \
   "$AZURE_LEGACY_CONTAINER_APP_NAME"
 
 resolve_named_resource \
+  "sql_runtime_identity_name" \
+  "sql_runtime_identity_resolution" \
+  "Microsoft.ManagedIdentity/userAssignedIdentities" \
+  "SQL runtime identity" \
+  "$AZURE_EXPECTED_SQL_RUNTIME_IDENTITY_NAME" \
+  "$AZURE_LEGACY_SQL_RUNTIME_IDENTITY_NAME"
+
+resolve_named_resource \
   "sql_migration_identity_name" \
   "sql_migration_identity_resolution" \
   "Microsoft.ManagedIdentity/userAssignedIdentities" \

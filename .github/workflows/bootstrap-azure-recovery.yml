@@ -150,6 +150,7 @@ jobs:
           VIRTUAL_NETWORK_NAME='${{ steps.resolve_resources.outputs.virtual_network_name }}'
           MANAGED_ENVIRONMENT_NAME='${{ steps.resolve_resources.outputs.managed_environment_name }}'
           CONTAINER_APP_NAME='${{ steps.resolve_resources.outputs.container_app_name }}'
+          SQL_RUNTIME_IDENTITY_NAME='${{ steps.resolve_resources.outputs.sql_runtime_identity_name }}'
           SQL_MIGRATION_IDENTITY_NAME='${{ steps.resolve_resources.outputs.sql_migration_identity_name }}'
           SQL_BOOTSTRAP_IDENTITY_NAME='${{ steps.resolve_resources.outputs.sql_bootstrap_identity_name }}'
           FRONT_DOOR_PROFILE_NAME='${{ steps.resolve_resources.outputs.front_door_profile_name }}'
@@ -175,6 +176,7 @@ jobs:
             VIRTUAL_NETWORK_NAME="$VIRTUAL_NETWORK_NAME" \
             MANAGED_ENVIRONMENT_NAME="$MANAGED_ENVIRONMENT_NAME" \
             CONTAINER_APP_NAME="$CONTAINER_APP_NAME" \
+            SQL_RUNTIME_IDENTITY_NAME="$SQL_RUNTIME_IDENTITY_NAME" \
             SQL_MIGRATION_IDENTITY_NAME="$SQL_MIGRATION_IDENTITY_NAME" \
             SQL_BOOTSTRAP_IDENTITY_NAME="$SQL_BOOTSTRAP_IDENTITY_NAME" \
             FRONT_DOOR_PROFILE_NAME="$FRONT_DOOR_PROFILE_NAME" \
@@ -517,12 +519,12 @@ jobs:
               printf '        value: "%s"\n' "$SQL_DATABASE_NAME"
               printf '%s\n' '      - name: ARCADE_SQL_RUNTIME_PRINCIPAL'
               printf '        value: "%s"\n' "$SQL_RUNTIME_PRINCIPAL_NAME"
-              printf '%s\n' '      - name: ARCADE_SQL_RUNTIME_OBJECT_ID'
-              printf '        value: "%s"\n' "$SQL_RUNTIME_PRINCIPAL_OBJECT_ID"
+              printf '%s\n' '      - name: ARCADE_SQL_RUNTIME_CLIENT_ID'
+              printf '        value: "%s"\n' "$SQL_RUNTIME_PRINCIPAL_CLIENT_ID"
               printf '%s\n' '      - name: ARCADE_SQL_MIGRATION_PRINCIPAL'
               printf '        value: "%s"\n' "$SQL_MIGRATION_PRINCIPAL_NAME"
-              printf '%s\n' '      - name: ARCADE_SQL_MIGRATION_OBJECT_ID'
-              printf '        value: "%s"\n' "$SQL_MIGRATION_PRINCIPAL_OBJECT_ID"
+              printf '%s\n' '      - name: ARCADE_SQL_MIGRATION_CLIENT_ID'
+              printf '        value: "%s"\n' "$SQL_MIGRATION_PRINCIPAL_CLIENT_ID"
             } >"$output_path"
           }
 
@@ -572,6 +574,20 @@ jobs:
               "$AZURE_EXPECTED_SQL_BOOTSTRAP_IDENTITY_NAME" \
               "$AZURE_LEGACY_SQL_BOOTSTRAP_IDENTITY_NAME"
           )"
+          SQL_RUNTIME_IDENTITY_NAME="$(
+            resolve_existing_resource_name_by_type \
+              'Microsoft.ManagedIdentity/userAssignedIdentities' \
+              'SQL runtime identity' \
+              "$AZURE_EXPECTED_SQL_RUNTIME_IDENTITY_NAME" \
+              "$AZURE_LEGACY_SQL_RUNTIME_IDENTITY_NAME"
+          )"
+          SQL_MIGRATION_IDENTITY_NAME="$(
+            resolve_existing_resource_name_by_type \
+              'Microsoft.ManagedIdentity/userAssignedIdentities' \
+              'SQL migration identity' \
+              "$AZURE_EXPECTED_SQL_MIGRATION_IDENTITY_NAME" \
+              "$AZURE_LEGACY_SQL_MIGRATION_IDENTITY_NAME"
+          )"
           MANAGED_ENVIRONMENT_ID=""
           for ((attempt = 1; attempt <= 18; attempt++)); do
             MANAGED_ENVIRONMENT_ID="$(
@@ -601,24 +617,18 @@ jobs:
             --name "$SQL_BOOTSTRAP_IDENTITY_NAME" \
             --query principalId \
             --output tsv)"
-          SQL_MIGRATION_IDENTITY_ID="$(az containerapp show \
+          SQL_RUNTIME_PRINCIPAL_CLIENT_ID="$(az identity show \
             --resource-group "$AZURE_RESOURCE_GROUP" \
-            --name "$CONTAINER_APP_NAME" \
-            --query 'keys(identity.userAssignedIdentities)[0]' \
+            --name "$SQL_RUNTIME_IDENTITY_NAME" \
+            --query clientId \
             --output tsv)"
-          SQL_MIGRATION_IDENTITY_NAME="${SQL_MIGRATION_IDENTITY_ID##*/}"
-          SQL_MIGRATION_PRINCIPAL_OBJECT_ID="$(az identity show \
+          SQL_MIGRATION_PRINCIPAL_CLIENT_ID="$(az identity show \
             --resource-group "$AZURE_RESOURCE_GROUP" \
             --name "$SQL_MIGRATION_IDENTITY_NAME" \
-            --query principalId \
+            --query clientId \
             --output tsv)"
-          SQL_MIGRATION_PRINCIPAL_NAME="${SQL_MIGRATION_IDENTITY_ID##*/}"
-          SQL_RUNTIME_PRINCIPAL_NAME="$CONTAINER_APP_NAME"
-          SQL_RUNTIME_PRINCIPAL_OBJECT_ID="$(az containerapp show \
-            --resource-group "$AZURE_RESOURCE_GROUP" \
-            --name "$CONTAINER_APP_NAME" \
-            --query identity.principalId \
-            --output tsv)"
+          SQL_MIGRATION_PRINCIPAL_NAME="$SQL_MIGRATION_IDENTITY_NAME"
+          SQL_RUNTIME_PRINCIPAL_NAME="$SQL_RUNTIME_IDENTITY_NAME"
           JOB_NAME="sqlb-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           SQL_BOOTSTRAP_IDENTITY_ID="$(az identity show \
             --resource-group "$AZURE_RESOURCE_GROUP" \
@@ -638,15 +648,17 @@ jobs:
           test -n "$CONTAINER_APP_NAME" || { echo "Missing Container App."; exit 1; }
           test -n "$MANAGED_ENVIRONMENT_NAME" || { echo "Missing Container Apps environment."; exit 1; }
           test -n "$SQL_BOOTSTRAP_IDENTITY_NAME" || { echo "Missing SQL bootstrap identity name."; exit 1; }
+          test -n "$SQL_RUNTIME_IDENTITY_NAME" || { echo "Missing SQL runtime identity name."; exit 1; }
+          test -n "$SQL_MIGRATION_IDENTITY_NAME" || { echo "Missing SQL migration identity name."; exit 1; }
           test -n "$SQL_BOOTSTRAP_IDENTITY_PRINCIPAL_ID" || { echo "Missing SQL bootstrap identity principal id."; exit 1; }
           test -n "$SQL_BOOTSTRAP_IDENTITY_ID" || { echo "Missing SQL bootstrap identity id."; exit 1; }
           test -n "$SQL_BOOTSTRAP_IDENTITY_CLIENT_ID" || { echo "Missing SQL bootstrap identity client id."; exit 1; }
           test -n "$SQL_BOOTSTRAP_SOURCE_B64" || { echo "Missing SQL bootstrap source."; exit 1; }
           test -n "$SQL_BOOTSTRAP_TEMPLATE_PATH" || { echo "Missing SQL bootstrap template path."; exit 1; }
-          test -n "$SQL_MIGRATION_IDENTITY_ID" || { echo "Missing SQL migration identity id."; exit 1; }
           test -n "$SQL_MIGRATION_PRINCIPAL_NAME" || { echo "Missing SQL migration principal name."; exit 1; }
-          test -n "$SQL_MIGRATION_PRINCIPAL_OBJECT_ID" || { echo "Missing SQL migration principal object id."; exit 1; }
-          test -n "$SQL_RUNTIME_PRINCIPAL_OBJECT_ID" || { echo "Missing SQL runtime principal object id."; exit 1; }
+          test -n "$SQL_MIGRATION_PRINCIPAL_CLIENT_ID" || { echo "Missing SQL migration principal client id."; exit 1; }
+          test -n "$SQL_RUNTIME_PRINCIPAL_NAME" || { echo "Missing SQL runtime principal name."; exit 1; }
+          test -n "$SQL_RUNTIME_PRINCIPAL_CLIENT_ID" || { echo "Missing SQL runtime principal client id."; exit 1; }
 
           MAX_SQL_BOOTSTRAP_ATTEMPTS=3
           SQL_BOOTSTRAP_RETRY_DELAY_SECONDS=30

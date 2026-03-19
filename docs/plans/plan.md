@@ -126,6 +126,8 @@
 - [x] Patch SQL bootstrap command injection so the transient script is written and executed from `/app` instead of `/tmp`, preserving Node package resolution inside the runtime image
 - [x] Capture the follow-on hosted SQL bootstrap failure where runtime and migration principal reconciliation redeclare the same SQL batch variables
 - [x] Patch SQL bootstrap reconciliation so runtime and migration principal blocks use distinct SQL variable names inside the shared batch
+- [x] Capture the follow-on hosted SQL bootstrap failure where `CREATE USER ... FROM EXTERNAL PROVIDER` cannot resolve runtime or migration principals because the Azure SQL logical server has no Microsoft Entra lookup identity
+- [x] Patch hosted runtime and SQL bootstrap identity plumbing so Azure SQL principal creation uses dedicated user-assigned runtime and migration identities with `CREATE USER ... WITH SID, TYPE = E`, avoiding Microsoft Graph resolution during recovery
 - [ ] Push the SQL bootstrap principal repair to `main` and rerun `Bootstrap Azure Recovery` against `green` with the current immutable image so live Azure SQL principals are reconciled
 - [ ] Confirm the recovery workflow, smoke test, and scheduled or manual runtime verification succeed after the SQL principal repair
 
@@ -136,3 +138,4 @@ Notes:
 - Hosted run `23277105400` showed the YAML execution override reaching the job container, but the injected script failed with `ERR_MODULE_NOT_FOUND: Cannot find package 'mssql' imported from /tmp/init-sql.mjs`; the fix is to keep the injected file under `/app` so Node resolves `/app/node_modules`.
 - Local Docker validation against `ghcr.io/anaregdesign/arcade-spec:v2026.03.18.9` confirmed that writing the actual injected SQL bootstrap script to `/app/init-sql.injected.mjs` changes the first failure from `ERR_MODULE_NOT_FOUND` to the expected missing-env check (`ARCADE_SQL_SERVER must be set.`), proving package resolution is restored.
 - Hosted run `23277508599` moved past module resolution but failed inside Azure SQL because the generated bootstrap batch declared `@principal_name` and `@principal_object_id` twice; the next patch must isolate runtime and migration variable names within the same batch.
+- Hosted run `23277832944` moved past batch-variable collisions and showed the deeper Azure SQL constraint: `CREATE USER ... FROM EXTERNAL PROVIDER` failed for both runtime and migration service principals because the logical server had no server identity / Microsoft Graph lookup path (`Msg 33134`). The durable repo-side fix is to bootstrap dedicated runtime and migration user-assigned identities by client ID with `CREATE USER ... WITH SID, TYPE = E`, which avoids Microsoft Graph resolution entirely for Azure SQL Database.
