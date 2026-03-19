@@ -852,8 +852,6 @@ jobs:
           test -n "$AZURE_RESOURCE_GROUP" || { echo "Missing derived target resource group"; exit 1; }
           test -n "$AZURE_APP_NAME" || { echo "Missing environment variable AZURE_APP_NAME"; exit 1; }
           test -n "$IMAGE_REF" || { echo "Missing workflow input image_ref"; exit 1; }
-          test -n "$ENTRA_CLIENT_ID" || { echo "Missing environment variable ENTRA_CLIENT_ID"; exit 1; }
-          test -n "$ENTRA_TENANT_ID" || { echo "Missing environment variable ENTRA_TENANT_ID"; exit 1; }
 
       - name: Log in to Azure with OIDC
         uses: azure/login@v3
