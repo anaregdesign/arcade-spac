@@ -17,8 +17,8 @@ const host = process.env.HOST;
 
 const ONE_HOUR_IN_SECONDS = 60 * 60;
 const ONE_YEAR_IN_SECONDS = 60 * 60 * 24 * 365;
-const IMMUTABLE_ASSET_CACHE_CONTROL = `public, max-age=${ONE_YEAR_IN_SECONDS}, immutable`;
-const STATIC_FILE_CACHE_CONTROL = `public, max-age=${ONE_HOUR_IN_SECONDS}`;
+const IMMUTABLE_ASSET_CACHE_CONTROL = `public, max-age=${ONE_YEAR_IN_SECONDS}, immutable, no-transform`;
+const STATIC_FILE_CACHE_CONTROL = `public, max-age=${ONE_HOUR_IN_SECONDS}, no-transform`;
 
 const mimeTypes = new Map([
   [".css", "text/css; charset=UTF-8"],
