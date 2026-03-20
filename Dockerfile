@@ -19,6 +19,7 @@ COPY ./scripts/azure/init-sql.mjs /app/scripts/azure/init-sql.mjs
 COPY ./scripts/prisma-managed-identity.mjs /app/scripts/prisma-managed-identity.mjs
 COPY ./scripts/prisma-sql-migration-runner.mjs /app/scripts/prisma-sql-migration-runner.mjs
 COPY ./scripts/run-migrations.mjs /app/scripts/run-migrations.mjs
+COPY ./scripts/serve-runtime.mjs /app/scripts/serve-runtime.mjs
 COPY ./scripts/start-server.mjs /app/scripts/start-server.mjs
 WORKDIR /app
 ENV NODE_ENV=production
