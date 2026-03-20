@@ -27,6 +27,7 @@ production / shared Azure delivery は GitHub Workflow を唯一の control plan
 - runtime / migration / SQL bootstrap identity の permission boundary を固定する
 - suffix-aware naming contract と same-suffix rerun contract を維持する
 - required GitHub Environment variables, secrets, Azure RBAC, SQL grants, registry preconfiguration, network prerequisite を repo docs に明示する
+- Azure Front Door 配下でも hashed static asset が `HTML fallback` や compressed-transfer abort に巻き込まれない runtime / edge contract を明示する
 
 ## Non-Goals
 
@@ -46,6 +47,9 @@ production / shared Azure delivery は GitHub Workflow を唯一の control plan
 - runtime `Container App` は runtime identity だけを attach し、migration identity は attach しない
 - runtime container env には `AZURE_SQL_RUNTIME_CLIENT_ID` だけが残り、`AZURE_SQL_MIGRATION_CLIENT_ID` と `STARTUP_MIGRATION_DATABASE_URL` は残らない
 - suffix-aware naming により `green` / `blue` / `dev` は cross-suffix collision を起こさない
+- runtime server は `build/client` と `public` の static file を application routing より前に直接返し、hashed asset には `public, max-age=31536000, immutable` を付ける
+- Front Door の asset route は cache を維持しつつ edge compression を有効にせず、origin からの static asset body を途中切断なく配信する
+- login / home / game routes の first paint は missing CSS による layout collapse を起こさず、root stylesheet request が practical latency で完了する
 
 ## Acceptance Criteria
 
@@ -56,6 +60,8 @@ production / shared Azure delivery は GitHub Workflow を唯一の control plan
 - runtime `Container App` は runtime identity のみを attach し、migration identity attachment は不要になる
 - workflow docs に required Azure RBAC, SQL grants, GitHub Environment variables/secrets, registry prerequisite, network prerequisite が列挙されている
 - release / recovery workflow は touched YAML validation と local verification を通る
+- Front Door default domain から取得する `root-*.css` と route-level `*.css` / `*.js` asset が `200` と expected cache headers を返し、HTML fallback を返さない
+- static asset GET は `accept-encoding: identity` workaround を必要とせず browser default request で完走する
 
 ## Edge Cases
 

@@ -167,18 +167,6 @@ var frontDoorAssetPatternsToMatch = [
 ]
 // Query string caching mode for Front Door asset delivery.
 var frontDoorQueryStringCachingBehavior = 'IgnoreQueryString'
-// MIME types compressed and cached by the Front Door asset route.
-var frontDoorAssetCacheContentTypes = [
-  'application/javascript'
-  'application/json'
-  'application/wasm'
-  'font/woff2'
-  'image/svg+xml'
-  'text/css'
-  'text/javascript'
-  'text/plain'
-]
-
 // Container App runtime contract constants.
 // Identity type assigned to the Container App resource.
 var containerAppIdentityType = 'SystemAssigned,UserAssigned'
@@ -471,10 +459,6 @@ resource frontDoorAssetRoute 'Microsoft.Cdn/profiles/afdEndpoints/routes@2021-06
   name: frontDoorAssetRouteName
   properties: {
     cacheConfiguration: {
-      compressionSettings: {
-        contentTypesToCompress: frontDoorAssetCacheContentTypes
-        isCompressionEnabled: true
-      }
       queryStringCachingBehavior: frontDoorQueryStringCachingBehavior
     }
     enabledState: enabledState

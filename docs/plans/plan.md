@@ -4,6 +4,26 @@
 - Spec: /docs/spec/specification.md
 - Legacy reference: /docs/spec/production-rg-arcade-green-release-retarget.md
 
+## Section 8 - Front Door Asset Delivery Reliability
+### Subsection 8.1 - Investigation
+- [x] Reproduce the deployed Front Door slowness and CSS delivery failure against the current default domain
+- [x] Confirm the deployed HTML references hashed CSS Module bundles while default asset GET requests terminate or fall back incorrectly under browser-style compression
+- [x] Prove the same build serves the referenced `/assets/*` files correctly when started locally outside the deployed Azure edge path
+
+### Subsection 8.2 - Runtime And Edge Fix
+- [x] Replace `react-router-serve` compression-based startup with a thin custom Node server that serves `build/client` and `public` static files before React Router request handling
+- [x] Preserve immutable cache headers for hashed assets while removing origin-side compressed static delivery from the production startup path
+- [x] Remove Front Door asset-route edge compression so browser-default CSS and JS transfers complete reliably through Azure Front Door
+
+### Subsection 8.3 - Validation
+- [x] Validate the custom runtime locally by fetching hashed CSS assets and confirming `200` plus long-lived cache headers without transfer aborts
+- [x] Run the repo quality gates affected by the startup/runtime changes
+- [ ] Summarize the release follow-up required to move the deployed Front Door environment onto the fixed runtime and edge contract
+
+Notes:
+- Deployed Front Door investigation on 2026-03-19 showed browser-default GET requests for referenced CSS assets terminating mid-transfer, while the same requests succeeded with `accept-encoding: identity`; local origin delivery did not reproduce the failure, which isolates the issue to the deployed compressed asset path rather than CSS Module generation.
+- Local validation after switching to `scripts/serve-runtime.mjs` showed `/assets/root-BA8tMkpb.css` and `/assets/manifest-9ea62102.js` returning `200`, `Cache-Control: public, max-age=31536000, immutable`, and no `content-encoding` header.
+
 ## Section 1 - Target Contract And Repository State
 ### Subsection 1.1 - Spec And Inventory
 - [x] Write the operator-facing spec for the `rg-arcade-green` release retarget

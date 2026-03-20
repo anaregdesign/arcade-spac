@@ -14,7 +14,7 @@
     "db:seed": "tsx prisma/seed.ts",
     "db:studio": "prisma studio",
     "start": "node ./scripts/start-server.mjs",
-    "start:server": "react-router-serve ./build/server/index.js",
+    "start:server": "node ./scripts/serve-runtime.mjs",
     "test:unit": "vitest run",
     "test:unit:coverage": "vitest run --coverage",
     "typecheck": "react-router typegen && tsc"
