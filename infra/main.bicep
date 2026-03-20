@@ -459,6 +459,9 @@ resource frontDoorAssetRoute 'Microsoft.Cdn/profiles/afdEndpoints/routes@2021-06
   name: frontDoorAssetRouteName
   properties: {
     cacheConfiguration: {
+      compressionSettings: {
+        isCompressionEnabled: false
+      }
       queryStringCachingBehavior: frontDoorQueryStringCachingBehavior
     }
     enabledState: enabledState
