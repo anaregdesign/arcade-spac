@@ -65,8 +65,9 @@ This runbook records the repository-side production contract for Arcade on Azure
 2. Confirm `AZURE_RESOURCE_GROUP`, `AZURE_LOCATION`, and `AZURE_APP_NAME` point at the target environment.
 3. Trigger `Bootstrap Azure Recovery`.
 4. Confirm `ensure_resource_group`, `deploy_bootstrap_infra`, `restore_production_release_rbac`, `bootstrap_sql`, `sync_runtime_config`, `run_database_migration`, `deploy_app`, `smoke_test`, and `verify_runtime` all succeed.
-5. Verify hosted sign-in and the core browser flows through the recovered public host.
-6. Refresh this document with the exact live Front Door host, image reference, revision, and any cloud-side deviations from the target contract.
+5. Treat recovery `verify_runtime` as an infra/runtime contract check first; it may skip `/auth/start` redirect validation until the shared Microsoft Entra app registration includes the recovered Front Door callback URI.
+6. Verify hosted sign-in and the core browser flows through the recovered public host after the shared redirect URI list is updated.
+7. Refresh this document with the exact live Front Door host, image reference, revision, and any cloud-side deviations from the target contract.
 
 ## Operational Notes
 

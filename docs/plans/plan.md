@@ -17,6 +17,12 @@
 - [x] Wire release and recovery workflows to the new approval wait contract so slow Azure propagation does not produce false timeout failures
 - [x] Validate the updated approval watcher and touched workflows locally, then record the remaining hosted follow-up
 
+## Section 11 - Recovery Verification Contract Relaxation
+### Subsection 11.1 - Auth Redirect Optionality
+- [x] Confirm the current recovery verification failure is the expected shared OAuth callback drift rather than an infra/runtime deployment failure
+- [x] Relax recovery verification so `/auth/start` redirect validation is optional until the shared Entra app registration is updated for the recovered Front Door host
+- [x] Validate the updated recovery verification contract locally and prepare the hosted blue recovery workflow rerun
+
 ## Section 8 - Front Door Asset Delivery Reliability
 ### Subsection 8.1 - Investigation
 - [x] Reproduce the deployed Front Door slowness and CSS delivery failure against the current default domain

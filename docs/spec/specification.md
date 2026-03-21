@@ -42,6 +42,7 @@ production / shared Azure delivery は GitHub Workflow を唯一の control plan
 
 - `Release Azure Delivery` は routine release entry workflow として `publish -> plan_infra -> deploy_infra` までを担当し、その後 shared reusable rollout workflow を call して `sync_runtime_config -> bootstrap_sql -> migrate_database -> deploy_app -> smoke_test` を実行する
 - `Bootstrap Azure Recovery` は recovery entry workflow として routine production suffix とは別の recovery suffix を validation したうえで `resolve_recovery_image -> ensure_resource_group -> deploy_bootstrap_infra -> restore_production_release_rbac` までを担当し、その後同じ shared reusable rollout workflow を call して `sync_runtime_config -> bootstrap_sql -> run_database_migration -> deploy_app -> smoke_test` を実行し、最後に `verify_runtime` を行う
+- recovery の `verify_runtime` は hosted infra, private-link, identity, runtime env, smoke-test 後の contract verification を担当し、shared Entra app registration に recovery host callback がまだ追加されていない間は `/auth/start` redirect assertion を必須にしない
 - GitHub-hosted workflow は Azure SQL に直接 login しない
 - Azure SQL principal bootstrap は release / recovery の両 workflow で SQL bootstrap identity で動く Azure-hosted `Container Apps Job` が担当する
 - schema migration は migration identity で動く Azure-hosted `Container Apps Job` が担当し、checked-in Prisma SQL files を direct `mssql` execution で適用する
@@ -64,6 +65,7 @@ production / shared Azure delivery は GitHub Workflow を唯一の control plan
 - runtime `Container App` は runtime identity のみを attach し、migration identity attachment は不要になる
 - workflow docs に required Azure RBAC, SQL grants, GitHub Environment variables/secrets, registry prerequisite, network prerequisite が列挙されている
 - release / recovery workflow は touched YAML validation と local verification を通る
+- recovery verification は shared Entra redirect URI reconciliation 前でも infra/runtime contract の検証を継続でき、auth redirect assertion は production verification から分離できる
 - Front Door private-link approval は Azure deployment が継続中のあいだ deadline まで retry し、deployment failure は待機タイムアウトに埋もれずその場で surfacing される
 - Front Door default domain から取得する `root-*.css` と route-level `*.css` / `*.js` asset が `200` と expected cache headers を返し、HTML fallback を返さない
 - static asset GET は `accept-encoding: identity` workaround を必要とせず browser default request で完走する
