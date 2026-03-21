@@ -155,7 +155,6 @@ print_container_app_diagnostics() {
     az containerapp logs show \
       --resource-group "${AZURE_RESOURCE_GROUP}" \
       --name "${container_app_name}" \
-      --revision "${latest_revision_name}" \
       --type system \
       --tail 100 \
       --format text || true
