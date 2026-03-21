@@ -2,6 +2,7 @@
 /node_modules/
 /prisma/dev.db
 /coverage/
+/infra/*.json
 
 # React Router
 /.react-router/
