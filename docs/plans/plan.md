@@ -21,7 +21,10 @@
 ### Subsection 11.1 - Auth Redirect Optionality
 - [x] Confirm the current recovery verification failure is the expected shared OAuth callback drift rather than an infra/runtime deployment failure
 - [x] Relax recovery verification so `/auth/start` redirect validation is optional until the shared Entra app registration is updated for the recovered Front Door host
-- [x] Validate the updated recovery verification contract locally and prepare the hosted blue recovery workflow rerun
+- [x] Validate the updated recovery verification contract locally and through the hosted blue recovery workflow
+
+Notes:
+- Hosted blue recovery run `23374175760` completed successfully after disabling the recovery-only auth redirect assertion while keeping the runtime, private-link, identity, and smoke-test checks intact.
 
 ## Section 8 - Front Door Asset Delivery Reliability
 ### Subsection 8.1 - Investigation
