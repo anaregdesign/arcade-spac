@@ -6,6 +6,7 @@ import { AppShell } from "../components/shared/AppShell";
 import { buildSharedHelpSections } from "../components/shared/help-content";
 import { useHomeHub } from "../lib/client/usecase/home-hub/use-home-hub";
 import { requireCurrentUserId } from "../lib/server/infrastructure/auth/session.server";
+import { toggleUserFavoriteGame } from "../lib/server/infrastructure/repositories/user-favorites.repository.server";
 import { getHomeDashboard } from "../lib/server/usecase/get-home-dashboard.server";
 
 export function meta({}: Route.MetaArgs) {
@@ -18,6 +19,22 @@ export function meta({}: Route.MetaArgs) {
 export async function loader({ request }: Route.LoaderArgs) {
   const userId = await requireCurrentUserId(request);
   return getHomeDashboard(userId);
+}
+
+export async function action({ request }: Route.ActionArgs) {
+  const userId = await requireCurrentUserId(request);
+  const formData = await request.formData();
+  const intent = formData.get("intent");
+  const gameKey = formData.get("gameKey");
+
+  if (intent !== "toggleFavorite" || typeof gameKey !== "string") {
+    throw new Response("Unsupported action", { status: 400 });
+  }
+
+  return toggleUserFavoriteGame({
+    userId,
+    gameKey,
+  });
 }
 
 export default function Home() {
@@ -51,12 +68,15 @@ export default function Home() {
       user={dashboard.user}
     >
       <HomeDashboard
+        clearFilters={hub.clearFilters}
+        favoritesOnly={hub.favoritesOnly}
         games={hub.visibleGameCards}
         hasMore={hub.hasMore}
         loadMoreTriggerRef={hub.loadMoreTriggerRef}
         matchCount={hub.matchCount}
         search={hub.search}
         showMore={hub.showMore}
+        setFavoritesOnly={hub.setFavoritesOnly}
         setSearch={hub.setSearch}
         setSort={hub.setSort}
         setTag={hub.setTag}
@@ -64,8 +84,7 @@ export default function Home() {
         sortOptions={hub.sortOptions}
         tag={hub.tag}
         tagOptions={hub.tagOptions}
-        visibleRankedCount={hub.visibleRankedCount}
-        visibleUnplayedCount={hub.visibleUnplayedCount}
+        visibleFavoriteCount={hub.visibleFavoriteCount}
       />
     </AppShell>
   );

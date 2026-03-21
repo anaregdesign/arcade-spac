@@ -214,6 +214,14 @@ export async function getPlayResultById(resultId: string) {
         user: {
           include: {
             profile: true,
+            favorites: {
+              include: {
+                game: true,
+              },
+              orderBy: {
+                createdAt: "asc",
+              },
+            },
             playResults: {
               include: {
                 game: true,
@@ -239,6 +247,14 @@ export async function getPlayResultByShareToken(shareToken: string) {
         user: {
           include: {
             profile: true,
+            favorites: {
+              include: {
+                game: true,
+              },
+              orderBy: {
+                createdAt: "asc",
+              },
+            },
             playResults: {
               include: {
                 game: true,

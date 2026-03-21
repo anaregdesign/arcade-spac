@@ -69,14 +69,20 @@
 ### Home
 
 - Home はゲーム探索と起動に集中した画面とする
-- ゲームカードは screenshot または thumbnail を主役にし、ゲーム名と最小限の状態ラベルだけで比較できる
-- 検索、カテゴリまたはタグ、並び替え、追加読込を組み合わせて大量のゲームを探索できる
+- ゲームカードは screenshot または thumbnail を主役にし、ゲーム名とお気に入り操作のような最小限の要素だけで比較できる
+- 検索、カテゴリまたはタグ、お気に入り状態、並び替え、追加読込を組み合わせて大量のゲームを探索できる
 - ダッシュボード的な補助情報は主役にせず、ゲーム一覧を最初の視野で見せる
+- `NEW` や `NO RECORD` のような汎用 status bubble は Home card に常設しない
+- Home search 下の summary badge から `VISIBLE UNPLAYED` と `VISIBLE RANKED` は外す
+- sign-in 済み利用者は各ゲームカードからお気に入り状態を直接 toggle できる
+- sign-in 済み利用者は Home の filter から、お気に入り登録したゲームだけに一覧を絞り込める
 
 ### Game
 
 - Board、現在の状態、主要操作が最優先で見える
 - How to play は常設本文ではなく、必要時に開く補助導線として提供する
+- プレイヤーは Game 画面から現在の game と difficulty を保ったまま、新しい run を即座に開始できる
+- sign-in 済み利用者は Game 画面からも現在のゲームをお気に入りへ追加または解除できる
 - Touch device でも desktop と同じ完了条件まで到達できる
 - プレイ終了時は、そのまま Result へ遷移する
 
@@ -84,7 +90,9 @@
 
 - 今回の記録が最初の視線で分かる score-first レイアウトを使う
 - 自己ベスト差分、順位やポイントへの影響、共有可否、保存状態を短く整理して見せる
-- Replay、Rankings、Share、Home への導線を近接配置する
+- Replay と Share を主要 action として近接配置し、Home と Rankings への result-local action は常設しない
+- sign-in 済み利用者は Result 画面からも対象ゲームをお気に入りへ追加または解除できる
+- Result 下部には冗長な detail block を常設せず、次に遊ぶ候補として recommendation ベースの 3 ゲームを表示する
 
 ### Rankings
 
@@ -97,6 +105,7 @@
 - ゲーム別ベスト、総合ポイントの内訳、成長推移を確認できる
 - 表示名、公開範囲、表示テーマを調整できる
 - お気に入りや得意分野を把握しやすい構成にする
+- お気に入りゲームは利用者ごとに保持され、再訪時も同じ状態で確認できる
 
 ### Help And Recovery
 

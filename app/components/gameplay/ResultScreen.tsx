@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { Form, Link } from "react-router";
 
 import { useResultScreen } from "../../lib/client/usecase/result-screen/use-result-screen";
 import sharedStyles from "./workspace/GameWorkspaceShared.module.css";
+import { FavoriteToggle } from "../shared/FavoriteToggle";
 import { SummaryCard } from "../shared/SummaryCard";
 import styles from "./ResultScreen.module.css";
 
@@ -37,8 +39,16 @@ type ResultScreenProps = {
       };
     };
     stateExplanation: string | null;
+    gameDescription: string;
     gameKey: string;
     gameName: string;
+    isFavorite: boolean;
+    recommendations: Array<{
+      key: string;
+      name: string;
+      recommendationText: string;
+      shortDescription: string;
+    }>;
     shareUrl: string;
     shareText: string;
     shareAvailabilityNote: string;
@@ -49,6 +59,17 @@ type ResultScreenProps = {
 
 export function ResultScreen({ result }: ResultScreenProps) {
   const screen = useResultScreen(result);
+  const [isShareOpen, setIsShareOpen] = useState(false);
+  const [copyStatus, setCopyStatus] = useState<"idle" | "copied" | "failed">("idle");
+
+  async function handleCopyShareText() {
+    try {
+      await navigator.clipboard.writeText(result.shareText);
+      setCopyStatus("copied");
+    } catch {
+      setCopyStatus("failed");
+    }
+  }
 
   return (
     <div className="dashboard-stack">
@@ -84,39 +105,11 @@ export function ResultScreen({ result }: ResultScreenProps) {
               <span>Replay {result.gameName}</span>
             </button>
           </Form>
-          <Link
-            aria-label="Open rankings"
-            className="action-link action-link-secondary action-link-icon"
-            title="Open rankings"
-            to={result.rankingsHref}
-          >
-            <span aria-hidden="true" className="action-link-icon-mark">🏆</span>
-          </Link>
-          {result.viewerMode === "owner"
-            ? result.canShare ? (
-              <Form method="post" target="_blank">
-                <input type="hidden" name="intent" value="shareToTeams" />
-                <input type="hidden" name="teamsShareHref" value={screen.teamsShareHref} />
-                <button className="action-link action-link-secondary" type="submit">
-                  <span aria-hidden="true" className="action-link-icon-mark">⇪</span>
-                  <span>Share to Teams</span>
-                </button>
-              </Form>
-            ) : (
-              <span className="action-link action-link-secondary action-link-disabled" aria-disabled="true">
-                <span aria-hidden="true" className="action-link-icon-mark">⇪</span>
-                <span>Share to Teams</span>
-              </span>
-            )
-            : null}
-          <Link
-            aria-label="Back to home"
-            className="action-link action-link-secondary action-link-icon"
-            title="Back to home"
-            to="/home"
-          >
-            <span aria-hidden="true" className="action-link-icon-mark">⌂</span>
-          </Link>
+          <button className="action-link action-link-secondary" onClick={() => setIsShareOpen(true)} type="button">
+            <span aria-hidden="true" className="action-link-icon-mark">⇪</span>
+            <span>Share</span>
+          </button>
+          <FavoriteToggle compact gameKey={result.gameKey} gameName={result.gameName} isFavorite={result.isFavorite} />
         </div>
       </section>
 
@@ -127,56 +120,32 @@ export function ResultScreen({ result }: ResultScreenProps) {
       </section>
 
       <section className={["feature-card", sharedStyles["workspace-card"], styles["result-detail-card"]].join(" ")}>
-        <details className={["disclosure-card", styles["workspace-disclosure"]].join(" ")}>
-          <summary>Run detail</summary>
-          <div className="disclosure-body">
-            <p className="compact-copy">{result.summaryText}</p>
-            {result.stateExplanation ? <p className="compact-copy">{result.stateExplanation}</p> : null}
-            <dl className={["stat-grid", "compact-stat-grid", styles["result-detail-grid"]].join(" ")}>
-              <div>
-                <dt>{result.supportMetricLabel}</dt>
-                <dd>{result.supportMetricValue}</dd>
-              </div>
-              <div>
-                <dt>Vs best</dt>
-                <dd>{result.selfBestDeltaLabel}</dd>
-              </div>
-              <div>
-                <dt>Game rank</dt>
-                <dd>{result.impact.gameRank.value}</dd>
-              </div>
-              <div>
-                <dt>Total points</dt>
-                <dd>{result.impact.totalPoints.value}</dd>
-              </div>
-              <div>
-                <dt>Overall rank</dt>
-                <dd>{result.impact.overallRank.value}</dd>
-              </div>
-              <div>
-                <dt>Share</dt>
-                <dd>{screen.shareStatusLabel}</dd>
-                </div>
-              </dl>
-            <div className={styles["result-detail-copy"]}>
-              <p className="compact-copy">{result.selfBestDetail}</p>
-              <p className="compact-copy">{result.supportMetricNote}</p>
-              <p className="compact-copy">{result.impact.gameRank.note}</p>
-              <p className="compact-copy">{result.impact.totalPoints.note}</p>
-              <p className="compact-copy">{result.impact.overallRank.note}</p>
-              <p className="compact-copy">{result.shareAvailabilityNote}</p>
-            </div>
-            {screen.alternateGames.length > 0 ? (
-              <div className="hero-actions compact-action-strip">
-                {screen.alternateGames.map((game) => (
-                  <Link key={game.key} className="action-link action-link-secondary" to={game.href}>
-                    {game.label}
-                  </Link>
-                ))}
-              </div>
-            ) : null}
+        <div className="section-heading">
+          <div>
+            <p className="eyebrow">Recommendation</p>
+            <h2 className="section-title">Pick the next game</h2>
           </div>
-        </details>
+        </div>
+        <div className={styles["result-detail-copy"]}>
+          <p className="compact-copy">{result.summaryText}</p>
+          {result.stateExplanation ? <p className="compact-copy">{result.stateExplanation}</p> : null}
+          <p className="compact-copy">{result.selfBestDetail}</p>
+          <p className="compact-copy">{result.supportMetricNote}</p>
+          <p className="compact-copy">{result.shareAvailabilityNote}</p>
+        </div>
+        <div className={styles["result-recommendation-grid"]}>
+          {screen.recommendationCards.map((game) => (
+            <article className={styles["result-recommendation-card"]} key={game.key}>
+              <p className="eyebrow">Next game</p>
+              <h3 className="card-title">{game.name}</h3>
+              <p className="compact-copy">{game.recommendationText}</p>
+              <p className="compact-copy">{game.shortDescription}</p>
+              <Link className="action-link action-link-secondary" to={`/games/${game.key}`}>
+                Play {game.name}
+              </Link>
+            </article>
+          ))}
+        </div>
       </section>
 
       {result.status === "PENDING_SAVE" && result.viewerMode === "owner" ? (
@@ -190,6 +159,34 @@ export function ResultScreen({ result }: ResultScreenProps) {
               Retry save
             </button>
           </Form>
+        </section>
+      ) : null}
+
+      {isShareOpen ? (
+        <section className="help-overlay" aria-label="Share game dialog">
+          <div aria-modal="true" className={["help-dialog", "feature-card", styles["result-share-dialog"]].join(" ")} role="dialog">
+            <div className="section-heading">
+              <div>
+                <p className="eyebrow">Share</p>
+                <h2 className="section-title">Share {result.gameName}</h2>
+              </div>
+              <button className="action-link action-link-secondary" onClick={() => setIsShareOpen(false)} type="button">
+                Close
+              </button>
+            </div>
+            <div className={styles["result-share-preview"]}>
+              {screen.sharePreviewLines.map((line) => (
+                <p className="compact-copy" key={line}>{line}</p>
+              ))}
+            </div>
+            <div className="hero-actions compact-action-strip">
+              <button className="action-link action-link-primary" onClick={handleCopyShareText} type="button">
+                Copy to clipboard
+              </button>
+            </div>
+            {copyStatus === "copied" ? <p className="compact-copy">Share text copied.</p> : null}
+            {copyStatus === "failed" ? <p className="compact-copy">Clipboard copy failed. Try again.</p> : null}
+          </div>
         </section>
       ) : null}
     </div>

@@ -7,6 +7,7 @@ import { buildSharedHelpSections } from "../components/shared/help-content";
 import { recommendationFeedbackEventType } from "../lib/domain/services/contextual-recommendation";
 import { requireCurrentUserId } from "../lib/server/infrastructure/auth/session.server";
 import { getRuntimeConfig } from "../lib/server/infrastructure/config/runtime-config.server";
+import { toggleUserFavoriteGame } from "../lib/server/infrastructure/repositories/user-favorites.repository.server";
 import { getPlayResultByShareToken } from "../lib/server/infrastructure/repositories/gameplay.repository.server";
 import { getHomeDashboard } from "../lib/server/usecase/get-home-dashboard.server";
 import { buildPersistedResultView } from "../lib/server/usecase/gameplay/get-result-view.server";
@@ -44,6 +45,28 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   };
 }
 
+export async function action({ request, params }: Route.ActionArgs) {
+  const userId = await requireCurrentUserId(request);
+  const formData = await request.formData();
+  const intent = formData.get("intent");
+  const gameKey = formData.get("gameKey");
+
+  if (intent !== "toggleFavorite" || typeof gameKey !== "string") {
+    throw new Response("Unsupported action", { status: 400 });
+  }
+
+  const result = await getPlayResultByShareToken(params.shareToken);
+
+  if (!result || result.status !== "COMPLETED" || !result.shareToken || result.user.visibilityScope !== "TENANT_ONLY") {
+    throw new Response("Shared result not found", { status: 404 });
+  }
+
+  return toggleUserFavoriteGame({
+    userId,
+    gameKey,
+  });
+}
+
 export default function SharedResultRoute() {
   const { dashboard, result } = useLoaderData<typeof loader>();
 
@@ -56,7 +79,7 @@ export default function SharedResultRoute() {
           {
             eyebrow: "5. Shared result",
             title: "Use rankings and replay without exposing profile details",
-            body: "A shared result shows the board impact and next moves, but only the owner can post the Teams share again or retry a pending save.",
+            body: "A shared result shows the board impact and next moves, while replay and favorite stay available without exposing extra profile detail.",
           },
         ]),
         title: "Result help",

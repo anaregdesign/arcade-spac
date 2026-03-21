@@ -5,7 +5,7 @@
 
 .home-hub-toolbar {
   display: grid;
-  grid-template-columns: minmax(0, 1.8fr) repeat(2, minmax(180px, 1fr));
+  grid-template-columns: minmax(0, 1.8fr) repeat(3, minmax(160px, 1fr));
   gap: 12px;
   align-items: end;
 }
@@ -31,7 +31,16 @@
 }
 
 .home-game-card {
+  display: grid;
+  gap: 10px;
   height: 100%;
+}
+
+.home-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
 }
 
 .game-preview-link {
@@ -72,7 +81,7 @@
   letter-spacing: 0.08em;
 }
 
-.home-card-status-row {
+.home-card-meta {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -90,9 +99,8 @@
 
 .home-card-heading {
   display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 8px 12px;
+  flex-direction: column;
+  gap: 4px;
   flex-wrap: wrap;
 }
 
@@ -102,6 +110,15 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+
+.home-hub-toggle-block {
+  align-items: stretch;
+}
+
+.home-hub-toggle {
+  width: 100%;
+  justify-content: center;
 }
 
 @media (max-width: 1100px) {

@@ -8,7 +8,7 @@ type LoginOption = {
   tagline: string;
   totalPoints: number;
   rank: number | null;
-  favoriteGame: string;
+  favoriteSummary: string;
 };
 
 type LoginScreenProps = {
@@ -94,8 +94,8 @@ export function LoginScreen({ authMode, errorMessage, entraSignInHref, returnTo,
                   <dd>{user.totalPoints}</dd>
                 </div>
                 <div>
-                  <dt>Favorite game</dt>
-                  <dd>{user.favoriteGame}</dd>
+                  <dt>Favorites</dt>
+                  <dd>{user.favoriteSummary}</dd>
                 </div>
               </dl>
               <form method="post" className={styles["login-form"]}>

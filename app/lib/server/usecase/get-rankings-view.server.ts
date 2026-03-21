@@ -38,7 +38,7 @@ export async function getRankingsView(userId: string, input: { period: RankingPe
     boardMeta: {
       boardLabel: input.scope === "overall" ? "Overall" : selectedGame?.name ?? "Game",
       periodLabel: input.period === "SEASON" ? "Season" : "Lifetime",
-      visibilityNote: "Rankings show player display names. Private visibility stays out of shared boards and Teams shares until it is changed on Profile.",
+      visibilityNote: "Rankings show player display names. Private visibility stays out of shared boards until it is changed on Profile.",
     },
     games: games.map((game) => ({
       key: game.key.toLowerCase(),

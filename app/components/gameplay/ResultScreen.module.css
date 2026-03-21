@@ -108,6 +108,34 @@
   margin-top: 14px;
 }
 
+.result-recommendation-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.result-recommendation-card {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border-radius: 18px;
+  background: var(--card-muted);
+}
+
+.result-share-dialog {
+  display: grid;
+  gap: 14px;
+}
+
+.result-share-preview {
+  display: grid;
+  gap: 8px;
+  padding: 14px;
+  border-radius: 16px;
+  background: var(--card-muted);
+}
+
 .workspace-disclosure {
   margin-top: 14px;
 }
@@ -118,6 +146,10 @@
   }
 
   .result-quick-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .result-recommendation-grid {
     grid-template-columns: 1fr;
   }
 }

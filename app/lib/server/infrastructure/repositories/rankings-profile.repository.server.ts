@@ -1,5 +1,5 @@
 import { prisma } from "../prisma.server";
-import type { GameKey, StoredGameKey } from "../../../domain/entities/game-catalog";
+import type { GameKey } from "../../../domain/entities/game-catalog";
 import { toStoredGameKey } from "../../../domain/entities/game-catalog";
 import {
   getThemePreferenceByUserIdFixture,
@@ -13,7 +13,6 @@ import { ensureCanonicalGameCatalog } from "./game-catalog.repository.server";
 
 type RankingPeriod = "SEASON" | "LIFETIME";
 type RankingScope = "overall" | GameKey;
-type FavoriteGame = StoredGameKey | null;
 type VisibilityScope = "TENANT_ONLY" | "PRIVATE";
 
 export async function listRankingGames() {
@@ -58,6 +57,14 @@ export async function getProfileRecord(userId: string) {
       where: { id: userId },
       include: {
         profile: true,
+        favorites: {
+          include: {
+            game: true,
+          },
+          orderBy: {
+            createdAt: "asc",
+          },
+        },
         overallSummaries: {
           orderBy: {
             periodType: "asc",
@@ -93,7 +100,6 @@ export async function updateProfileRecord(input: {
   displayName: string;
   visibilityScope: VisibilityScope;
   tagline: string;
-  favoriteGame: FavoriteGame;
   themePreference: "LIGHT" | "DARK";
 }) {
   const trimmedDisplayName = input.displayName.trim();
@@ -109,12 +115,10 @@ export async function updateProfileRecord(input: {
           upsert: {
             create: {
               tagline: trimmedTagline,
-              favoriteGame: input.favoriteGame,
               themePreference: input.themePreference,
             },
             update: {
               tagline: trimmedTagline,
-              favoriteGame: input.favoriteGame,
               themePreference: input.themePreference,
             },
           },

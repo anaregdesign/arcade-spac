@@ -1,11 +1,11 @@
-import { buildAlternateGameLinks } from "../../../domain/entities/game-catalog";
-
 type ResultView = {
   canShare: boolean;
   competitivePoints: number;
   difficulty: string;
+  gameDescription: string;
   gameKey: string;
   gameName: string;
+  isFavorite: boolean;
   impact: {
     gameRank: {
       note: string;
@@ -29,6 +29,12 @@ type ResultView = {
   shareAvailabilityNote: string;
   shareText: string;
   shareUrl: string;
+  recommendations: Array<{
+    key: string;
+    name: string;
+    recommendationText: string;
+    shortDescription: string;
+  }>;
   stateExplanation: string | null;
   status: string;
   statusLabel: string;
@@ -57,7 +63,6 @@ function getCompactStateCopy(result: ResultView) {
 
 export function useResultScreen(result: ResultView) {
   return {
-    alternateGames: buildAlternateGameLinks(result.gameKey),
     compactStateCopy: getCompactStateCopy(result),
     impactCards: [
       { key: "game-rank", label: "Game rank", value: result.impact.gameRank.value },
@@ -69,12 +74,12 @@ export function useResultScreen(result: ResultView) {
       { label: "Vs best", value: result.selfBestDeltaLabel },
       { label: "Board score", value: String(result.competitivePoints) },
     ],
-    shareStatusLabel: result.viewerMode === "owner" ? result.canShare ? "Ready" : "Locked" : "Owner only",
+    recommendationCards: result.recommendations,
+    sharePreviewLines: [result.gameName, result.gameDescription, result.shareUrl],
     statusBadgeClass: result.status === "COMPLETED"
       ? "status-badge status-badge-success"
       : result.status === "PENDING_SAVE"
         ? "status-badge status-badge-pending"
         : "status-badge status-badge-neutral",
-    teamsShareHref: `https://teams.microsoft.com/share?href=${encodeURIComponent(result.shareUrl)}&msgText=${encodeURIComponent(result.shareText)}`,
   };
 }

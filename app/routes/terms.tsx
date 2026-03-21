@@ -9,7 +9,7 @@ export default function Terms() {
           Do not attempt to bypass ranking, sharing, or visibility controls.
         </p>
         <p className="hero-copy">
-          Shared results are for collaboration between signed-in players. Private profiles stay out of shared leaderboards and cannot publish Teams share links until visibility changes.
+          Shared results are for collaboration between signed-in players. Private profiles stay out of shared leaderboards until visibility changes.
         </p>
       </section>
     </main>

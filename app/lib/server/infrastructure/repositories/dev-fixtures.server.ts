@@ -4,7 +4,6 @@ import { listPersistedGames, toStoredGameKey } from "../../../domain/entities/ga
 
 type RankingPeriod = "SEASON" | "LIFETIME";
 type RankingScope = "overall" | GameKey;
-type FavoriteGame = StoredGameKey | null;
 type VisibilityScope = "TENANT_ONLY" | "PRIVATE";
 
 type DevUser = {
@@ -21,11 +20,16 @@ type DevUser = {
 type DevUserProfile = {
   userId: string;
   tagline: string | null;
-  favoriteGame: FavoriteGame;
   themePreference: "LIGHT" | "DARK";
   streakDays: number;
   totalPlayCount: number;
   lastPlayedAt: Date | null;
+};
+
+type DevUserFavorite = {
+  userId: string;
+  gameId: number;
+  createdAt: Date;
 };
 
 type DevGame = {
@@ -109,6 +113,7 @@ type DevLeaderboardEntry = {
 type DevState = {
   users: DevUser[];
   profiles: DevUserProfile[];
+  favorites: DevUserFavorite[];
   games: DevGame[];
   playResults: DevPlayResult[];
   feedbackLogs: DevUserFeedbackLog[];
@@ -180,7 +185,6 @@ function createInitialState(): DevState {
       {
         userId: "user-aiko",
         tagline: "Going for top seasonal rank across every puzzle.",
-        favoriteGame: "MINESWEEPER",
         themePreference: "LIGHT",
         streakDays: 5,
         totalPlayCount: 18,
@@ -189,7 +193,6 @@ function createInitialState(): DevState {
       {
         userId: "user-hiroki",
         tagline: null,
-        favoriteGame: null,
         themePreference: "LIGHT",
         streakDays: 0,
         totalPlayCount: 0,
@@ -198,7 +201,6 @@ function createInitialState(): DevState {
       {
         userId: "user-mio",
         tagline: "New challenger learning the full lineup.",
-        favoriteGame: "SUDOKU",
         themePreference: "DARK",
         streakDays: 1,
         totalPlayCount: 4,
@@ -207,11 +209,27 @@ function createInitialState(): DevState {
       {
         userId: "user-ren",
         tagline: "Sudoku specialist building overall score.",
-        favoriteGame: "SUDOKU",
         themePreference: "LIGHT",
         streakDays: 3,
         totalPlayCount: 11,
         lastPlayedAt: new Date("2026-03-11T19:42:10.000Z"),
+      },
+    ],
+    favorites: [
+      {
+        userId: "user-aiko",
+        gameId: minesweeperGameId,
+        createdAt: new Date("2026-03-05T09:00:00.000Z"),
+      },
+      {
+        userId: "user-mio",
+        gameId: sudokuGameId,
+        createdAt: new Date("2026-03-09T09:00:00.000Z"),
+      },
+      {
+        userId: "user-ren",
+        gameId: sudokuGameId,
+        createdAt: new Date("2026-03-06T09:00:00.000Z"),
       },
     ],
     games: fixtureGames,
@@ -717,6 +735,12 @@ function getProfile(userId: string) {
   return devState.profiles.find((profile) => profile.userId === userId) ?? null;
 }
 
+function listUserFavorites(userId: string) {
+  return devState.favorites
+    .filter((favorite) => favorite.userId === userId)
+    .sort((left, right) => left.createdAt.getTime() - right.createdAt.getTime());
+}
+
 function getGame(gameId: number) {
   return devState.games.find((game) => game.id === gameId) ?? null;
 }
@@ -750,6 +774,10 @@ function buildUserRecord(userId: string, playResultLimit?: number) {
   return clone({
     ...user,
     profile: getProfile(userId),
+    favorites: listUserFavorites(userId).map((favorite) => ({
+      ...favorite,
+      game: requireGame(favorite.gameId),
+    })),
     overallSummaries: devState.overallSummaries
       .filter((summary) => summary.userId === userId)
       .sort((left, right) => left.periodType.localeCompare(right.periodType)),
@@ -808,6 +836,10 @@ export function listSignInUsersFixture() {
     .map((user) => ({
       ...clone(user),
       profile: clone(getProfile(user.id)),
+      favorites: listUserFavorites(user.id).map((favorite) => ({
+        ...clone(favorite),
+        game: clone(requireGame(favorite.gameId)),
+      })),
       overallSummaries: devState.overallSummaries.filter((summary) => summary.userId === user.id && summary.periodType === "SEASON"),
       gameSummaries: devState.gameSummaries
         .filter((summary) => summary.userId === user.id)
@@ -1071,6 +1103,10 @@ export function getPlayResultByIdFixture(resultId: string) {
     user: {
       ...requireUser(result.userId),
       profile: getProfile(result.userId),
+      favorites: listUserFavorites(result.userId).map((favorite) => ({
+        ...favorite,
+        game: requireGame(favorite.gameId),
+      })),
       playResults: devState.playResults
         .filter((entry) => entry.userId === result.userId)
         .sort((left, right) => right.startedAt.getTime() - left.startedAt.getTime())
@@ -1104,7 +1140,6 @@ export function updateProfileRecordFixture(input: {
   displayName: string;
   visibilityScope: VisibilityScope;
   tagline: string;
-  favoriteGame: FavoriteGame;
   themePreference: "LIGHT" | "DARK";
 }) {
   const user = getUser(input.userId);
@@ -1121,13 +1156,11 @@ export function updateProfileRecordFixture(input: {
 
   if (existingProfile) {
     existingProfile.tagline = trimmedTagline || null;
-    existingProfile.favoriteGame = input.favoriteGame;
     existingProfile.themePreference = input.themePreference;
   } else {
     devState.profiles.push({
       userId: input.userId,
       tagline: trimmedTagline || null,
-      favoriteGame: input.favoriteGame,
       themePreference: input.themePreference,
       streakDays: 0,
       totalPlayCount: 0,
@@ -1154,6 +1187,34 @@ export function markOnboardingSeenFixture(userId: string) {
 
 export function getThemePreferenceByUserIdFixture(userId: string) {
   return getProfile(userId)?.themePreference ?? "LIGHT";
+}
+
+export function listUserFavoriteGameKeysFixture(userId: string) {
+  return listUserFavorites(userId).map((favorite) => requireGame(favorite.gameId).key.toLowerCase());
+}
+
+export function toggleUserFavoriteGameFixture(input: { userId: string; gameKey: string }) {
+  const storedGameKey = toStoredGameKey(input.gameKey);
+  const game = devState.games.find((entry) => entry.key === storedGameKey);
+
+  if (!game) {
+    throw new Response("Game not found", { status: 404 });
+  }
+
+  const existingIndex = devState.favorites.findIndex((favorite) => favorite.userId === input.userId && favorite.gameId === game.id);
+
+  if (existingIndex >= 0) {
+    devState.favorites.splice(existingIndex, 1);
+    return { gameKey: game.key.toLowerCase(), isFavorite: false };
+  }
+
+  devState.favorites.push({
+    userId: input.userId,
+    gameId: game.id,
+    createdAt: new Date(),
+  });
+
+  return { gameKey: game.key.toLowerCase(), isFavorite: true };
 }
 
 export function resetDevelopmentFixtures() {

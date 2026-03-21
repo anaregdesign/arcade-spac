@@ -1,5 +1,6 @@
-import type { ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 
+import { useGameWorkspaceRuntime } from "./game-workspace-runtime";
 import styles from "./GameWorkspaceShared.module.css";
 
 type GameWorkspaceBoardOverlayProps = {
@@ -17,6 +18,18 @@ export function GameWorkspaceBoardOverlay({
   onAction,
   title = "Ready",
 }: GameWorkspaceBoardOverlayProps) {
+  const { autoStartRequest } = useGameWorkspaceRuntime();
+  const handledAutoStartRef = useRef(0);
+
+  useEffect(() => {
+    if (!isVisible || autoStartRequest === 0 || autoStartRequest === handledAutoStartRef.current) {
+      return;
+    }
+
+    handledAutoStartRef.current = autoStartRequest;
+    onAction();
+  }, [autoStartRequest, isVisible, onAction]);
+
   if (!isVisible) {
     return null;
   }

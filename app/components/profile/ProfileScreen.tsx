@@ -9,11 +9,15 @@ type ProfileScreenProps = {
     displayName: string;
     visibilityScope: "TENANT_ONLY" | "PRIVATE";
     tagline: string;
-    favoriteGame: string;
+    favoriteGames: Array<{
+      key: string;
+      name: string;
+    }>;
+    favoriteSummary: string;
     themePreference: "LIGHT" | "DARK";
     sharePreviewName: string;
     visibilitySummary: string;
-    teamsShareSummary: string;
+    shareSummary: string;
   };
   activity: {
     streakDays: number;
@@ -30,6 +34,7 @@ type ProfileScreenProps = {
   games: Array<{
     key: string;
     name: string;
+    isFavorite: boolean;
     currentRank: number | null;
     bestCompetitivePoints: number;
     personalBestMetric: string;
@@ -88,8 +93,15 @@ export function ProfileScreen({ profile, activity, overall, games, breakdown, gr
           <article className={["feature-card", styles["profile-preview-card"]].join(" ")}>
             <p className="eyebrow">Tagline</p>
             <h3 className="card-title">{profile.tagline || "No tagline yet"}</h3>
-            <p className="compact-copy">Favorite: {profile.favoriteGame || "No preference yet"}</p>
-            <p className="compact-copy">{profile.teamsShareSummary}</p>
+            <p className="compact-copy">Favorites: {profile.favoriteSummary}</p>
+            <p className="compact-copy">{profile.shareSummary}</p>
+            {profile.favoriteGames.length > 0 ? (
+              <div className={styles["profile-favorite-list"]}>
+                {profile.favoriteGames.map((favorite) => (
+                  <span className="status-badge status-badge-neutral" key={favorite.key}>{favorite.name}</span>
+                ))}
+              </div>
+            ) : null}
           </article>
         </div>
         <details className={["disclosure-card", styles["profile-edit-disclosure"]].join(" ")}>
@@ -110,17 +122,6 @@ export function ProfileScreen({ profile, activity, overall, games, breakdown, gr
               <label className={["field-block", styles["profile-form-wide"]].join(" ")}>
                 <span className="field-label">Tagline</span>
                 <input className="field-input" name="tagline" defaultValue={profile.tagline} maxLength={120} />
-              </label>
-              <label className="field-block">
-                <span className="field-label">Favorite game</span>
-                <select className="field-select" name="favoriteGame" defaultValue={profile.favoriteGame || ""}>
-                  <option value="">No preference yet</option>
-                  {games.map((game) => (
-                    <option key={game.key} value={game.key}>
-                      {game.name}
-                    </option>
-                  ))}
-                </select>
               </label>
               <label className="field-block">
                 <span className="field-label">Theme</span>
@@ -203,7 +204,7 @@ export function ProfileScreen({ profile, activity, overall, games, breakdown, gr
             {games.map((game) => (
               <article key={game.key} className={["game-card", styles["profile-game-card"]].join(" ")}>
                 <div className={styles["game-card-top"]}>
-                  <span className="status-badge status-badge-neutral">{game.currentRank ? `Rank #${game.currentRank}` : "Unranked"}</span>
+                  <span className="status-badge status-badge-neutral">{game.isFavorite ? "Saved" : game.currentRank ? `Rank #${game.currentRank}` : "Unranked"}</span>
                   <p className={styles["game-points"]}>{game.bestCompetitivePoints} pts</p>
                 </div>
                 <h3 className="card-title">{game.name}</h3>

@@ -3,7 +3,6 @@ import { redirect, useLoaderData } from "react-router";
 import { ProfileScreen } from "../components/profile/ProfileScreen";
 import { AppShell } from "../components/shared/AppShell";
 import { buildSharedHelpSections } from "../components/shared/help-content";
-import { resolveGameKey, toStoredGameKey } from "../lib/domain/entities/game-catalog";
 import { requireCurrentUserId } from "../lib/server/infrastructure/auth/session.server";
 import { updateProfileRecord } from "../lib/server/infrastructure/repositories/rankings-profile.repository.server";
 import { getHomeDashboard } from "../lib/server/usecase/get-home-dashboard.server";
@@ -25,7 +24,6 @@ export async function action({ request }: { request: Request }) {
   const displayName = formData.get("displayName");
   const visibilityScope = formData.get("visibilityScope");
   const tagline = formData.get("tagline");
-  const favoriteGame = formData.get("favoriteGame");
   const themePreference = formData.get("themePreference");
 
   if (typeof displayName !== "string" || !displayName.trim()) {
@@ -40,14 +38,11 @@ export async function action({ request }: { request: Request }) {
     throw new Response("Theme preference is invalid", { status: 400 });
   }
 
-  const canonicalFavoriteGame = typeof favoriteGame === "string" ? resolveGameKey(favoriteGame) : null;
-
   await updateProfileRecord({
     userId,
     displayName,
     visibilityScope,
     tagline: typeof tagline === "string" ? tagline : "",
-    favoriteGame: canonicalFavoriteGame ? toStoredGameKey(canonicalFavoriteGame) : null,
     themePreference,
   });
 
@@ -66,7 +61,7 @@ export default function Profile() {
           {
             eyebrow: "5. Profile controls",
             title: "Visibility and theme apply across the app",
-            body: "Private visibility removes you from shared leaderboards and disables Teams share. Theme preference is saved here and reused on the next sign-in.",
+            body: "Private visibility removes you from shared leaderboards. Theme preference is saved here and reused on the next sign-in.",
           },
         ]),
         title: "Profile help",

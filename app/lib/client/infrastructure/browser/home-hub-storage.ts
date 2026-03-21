@@ -1,6 +1,7 @@
 const HOME_HUB_STORAGE_KEY = "arcade:home-hub-state";
 
 export type StoredHomeHubState = {
+  favoritesOnly: boolean;
   scrollY: number;
   search: string;
   sort: string;
@@ -8,6 +9,7 @@ export type StoredHomeHubState = {
 };
 
 const defaultHomeHubState: StoredHomeHubState = {
+  favoritesOnly: false,
   scrollY: 0,
   search: "",
   sort: "recommended",
@@ -29,6 +31,7 @@ export function readStoredHomeHubState() {
     const parsed = JSON.parse(raw) as Partial<StoredHomeHubState>;
 
     return {
+      favoritesOnly: parsed.favoritesOnly === true,
       scrollY: typeof parsed.scrollY === "number" ? parsed.scrollY : 0,
       search: typeof parsed.search === "string" ? parsed.search : "",
       sort: typeof parsed.sort === "string" ? parsed.sort : "recommended",

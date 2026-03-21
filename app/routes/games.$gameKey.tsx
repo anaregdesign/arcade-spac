@@ -8,6 +8,7 @@ import { GameWorkspaceScreen } from "../components/gameplay/GameWorkspaceScreen"
 import { buildSharedHelpSections } from "../components/shared/help-content";
 import { resolveGameKey } from "../lib/domain/entities/game-catalog";
 import { commitSession, getCurrentUserId, getSession, requireCurrentUserId, setPendingResultDraft } from "../lib/server/infrastructure/auth/session.server";
+import { toggleUserFavoriteGame } from "../lib/server/infrastructure/repositories/user-favorites.repository.server";
 import { getHomeDashboard, getGameWorkspace } from "../lib/server/usecase/get-home-dashboard.server";
 import { recordAbandonedRun, recordGameplayResult } from "../lib/server/usecase/gameplay/record-gameplay-result.server";
 
@@ -27,6 +28,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     dashboard,
     game: {
       ...game,
+      isFavorite: gameSummary?.isFavorite ?? false,
       standing: {
         bestCompetitivePoints: gameSummary?.bestCompetitivePoints ?? 0,
         currentRank: gameSummary?.currentRank ?? null,
@@ -50,11 +52,27 @@ export async function action({ request, params }: Route.ActionArgs) {
   const userId = await getCurrentUserId(request);
   const formData = await request.formData();
   const intent = formData.get("intent");
+  const favoriteGameKey = formData.get("gameKey");
   const difficulty = formData.get("difficulty");
   const elapsedSecondsInput = formData.get("elapsedSeconds");
   const primaryMetricInput = formData.get("primaryMetric");
   const mistakeCountInput = formData.get("mistakeCount");
   const hintCountInput = formData.get("hintCount");
+
+  if (intent === "toggleFavorite") {
+    if (!userId) {
+      throw new Response("Sign-in required", { status: 401 });
+    }
+
+    if (typeof favoriteGameKey !== "string") {
+      throw new Response("Game key is required", { status: 400 });
+    }
+
+    return toggleUserFavoriteGame({
+      userId,
+      gameKey: favoriteGameKey,
+    });
+  }
 
   if (typeof difficulty !== "string" || !["EASY", "NORMAL", "HARD", "EXPERT"].includes(difficulty)) {
     throw new Response("Difficulty is required", { status: 400 });

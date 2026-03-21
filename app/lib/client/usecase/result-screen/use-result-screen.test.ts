@@ -9,8 +9,10 @@ function createResult(overrides: Partial<ResultView> = {}): ResultView {
     canShare: true,
     competitivePoints: 1280,
     difficulty: "NORMAL",
+    gameDescription: "Drop the marker as close to center as possible.",
     gameKey: "precision-drop",
     gameName: "Precision Drop",
+    isFavorite: false,
     impact: {
       gameRank: {
         note: "Up 2 places",
@@ -27,6 +29,14 @@ function createResult(overrides: Partial<ResultView> = {}): ResultView {
     },
     primaryMetric: "7 px",
     primaryMetricLabel: "Hit offset",
+    recommendations: [
+      {
+        key: "color-sweep",
+        name: "Color Sweep",
+        recommendationText: "Fastest improving",
+        shortDescription: "Clear every matching tile before time expires.",
+      },
+    ],
     rankingsHref: "/rankings?period=season&scope=precision-drop",
     selfBestBadge: "New best",
     selfBestDeltaLabel: "-2 px",
@@ -51,7 +61,6 @@ describe("useResultScreen", () => {
     const viewModel = useResultScreen(createResult());
 
     expect(viewModel.compactStateCopy).toBeNull();
-    expect(viewModel.shareStatusLabel).toBe("Ready");
     expect(viewModel.statusBadgeClass).toBe("status-badge status-badge-success");
     expect(viewModel.impactCards).toEqual([
       { key: "game-rank", label: "Game rank", value: "#4" },
@@ -63,10 +72,19 @@ describe("useResultScreen", () => {
       { label: "Vs best", value: "-2 px" },
       { label: "Board score", value: "1280" },
     ]);
-    expect(viewModel.alternateGames.some((game) => game.key === "precision-drop")).toBe(false);
-    expect(viewModel.teamsShareHref).toBe(
-      "https://teams.microsoft.com/share?href=https%3A%2F%2Farcade.example%2Fresults%2Fprecision-drop%3Fid%3D42&msgText=Precision%20Drop%20in%207%20px",
-    );
+    expect(viewModel.recommendationCards).toEqual([
+      {
+        key: "color-sweep",
+        name: "Color Sweep",
+        recommendationText: "Fastest improving",
+        shortDescription: "Clear every matching tile before time expires.",
+      },
+    ]);
+    expect(viewModel.sharePreviewLines).toEqual([
+      "Precision Drop",
+      "Drop the marker as close to center as possible.",
+      "https://arcade.example/results/precision-drop?id=42",
+    ]);
   });
 
   it("marks pending saves as provisional and locked when sharing is disabled", () => {
@@ -76,7 +94,6 @@ describe("useResultScreen", () => {
     }));
 
     expect(viewModel.compactStateCopy).toBe("Provisional until save retry");
-    expect(viewModel.shareStatusLabel).toBe("Locked");
     expect(viewModel.statusBadgeClass).toBe("status-badge status-badge-pending");
   });
 
@@ -87,7 +104,6 @@ describe("useResultScreen", () => {
     }));
 
     expect(viewModel.compactStateCopy).toBe("History only, no ranking update");
-    expect(viewModel.shareStatusLabel).toBe("Owner only");
     expect(viewModel.statusBadgeClass).toBe("status-badge status-badge-neutral");
   });
 

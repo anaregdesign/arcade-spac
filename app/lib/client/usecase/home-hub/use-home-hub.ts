@@ -4,12 +4,13 @@ import { useNavigate, useSearchParams } from "react-router";
 import { readStoredHomeHubState, writeStoredHomeHubState } from "../../infrastructure/browser/home-hub-storage";
 import { readWindowScrollY, restoreWindowScroll, subscribeWindowScroll } from "../../infrastructure/browser/window-scroll";
 import { getGameHomeTags } from "../../../domain/entities/game-catalog";
-import { countVisibleRankedGames, countVisibleUnplayedGames, toHomeGameCards } from "./selectors";
+import { toHomeGameCards } from "./selectors";
 
 type HomeGame = {
   bestCompetitivePoints: number;
   completedCount: number;
   currentRank: number | null;
+  isFavorite: boolean;
   key: string;
   metricLabel: string;
   metricValue: string;
@@ -147,7 +148,7 @@ function compareGames(sort: string, left: HomeGame, right: HomeGame) {
   return rightFallbackScore - leftFallbackScore || left.name.localeCompare(right.name);
 }
 
-function createSearchParams(input: { search: string; sort: string; tag: string }) {
+function createSearchParams(input: { favoritesOnly: boolean; search: string; sort: string; tag: string }) {
   const next = new URLSearchParams();
 
   if (input.search) {
@@ -160,6 +161,10 @@ function createSearchParams(input: { search: string; sort: string; tag: string }
 
   if (input.sort !== "recommended") {
     next.set("sort", input.sort);
+  }
+
+  if (input.favoritesOnly) {
+    next.set("favorites", "1");
   }
 
   return next;
@@ -177,6 +182,7 @@ export function useHomeHub(games: HomeGame[]) {
   const search = searchParams.get("q") ?? "";
   const tag = searchParams.get("tag") ?? "all";
   const sort = searchParams.get("sort") ?? "recommended";
+  const favoritesOnly = searchParams.get("favorites") === "1";
   const dynamicTags = Array.from(
     new Set(
       games.flatMap((game) => getTagSetForGame(game))
@@ -198,7 +204,7 @@ export function useHomeHub(games: HomeGame[]) {
 
     setDidAttemptRestore(true);
 
-    const hasExplicitState = searchParams.has("q") || searchParams.has("tag") || searchParams.has("sort");
+    const hasExplicitState = searchParams.has("q") || searchParams.has("tag") || searchParams.has("sort") || searchParams.has("favorites");
 
     if (hasExplicitState) {
       return;
@@ -206,7 +212,7 @@ export function useHomeHub(games: HomeGame[]) {
 
     const stored = readStoredHomeHubState();
 
-    if (!stored.search && stored.tag === "all" && stored.sort === "recommended") {
+    if (!stored.search && stored.tag === "all" && stored.sort === "recommended" && !stored.favoritesOnly) {
       return;
     }
 
@@ -223,6 +229,7 @@ export function useHomeHub(games: HomeGame[]) {
       }
 
       writeStoredHomeHubState({
+        favoritesOnly,
         scrollY,
         search,
         sort,
@@ -232,7 +239,7 @@ export function useHomeHub(games: HomeGame[]) {
 
     persist();
     return subscribeWindowScroll(persist);
-  }, [search, sort, tag]);
+  }, [favoritesOnly, search, sort, tag]);
 
   useEffect(() => {
     if (didRestoreScroll) {
@@ -241,7 +248,7 @@ export function useHomeHub(games: HomeGame[]) {
 
     const stored = readStoredHomeHubState();
 
-    if (stored.search !== search || stored.sort !== sort || stored.tag !== tag || stored.scrollY <= 0) {
+    if (stored.search !== search || stored.sort !== sort || stored.tag !== tag || stored.favoritesOnly !== favoritesOnly || stored.scrollY <= 0) {
       setDidRestoreScroll(true);
       return;
     }
@@ -249,13 +256,14 @@ export function useHomeHub(games: HomeGame[]) {
     setDidRestoreScroll(true);
     setHasScrolledDown(true);
     restoreWindowScroll(stored.scrollY);
-  }, [didRestoreScroll, search, sort, tag]);
+  }, [didRestoreScroll, favoritesOnly, search, sort, tag]);
 
   useEffect(() => {
     setVisibleCount(6);
-  }, [search, sort, tag]);
+  }, [favoritesOnly, search, sort, tag]);
 
   const filteredGames = games
+    .filter((game) => !favoritesOnly || game.isFavorite)
     .filter((game) => matchesSearch(game, search))
     .filter((game) => tag === "all" || getTagSetForGame(game).includes(tag))
     .sort((left, right) => compareGames(sort, left, right));
@@ -298,8 +306,9 @@ export function useHomeHub(games: HomeGame[]) {
 
   return {
     clearFilters() {
-      setSearchParams(createSearchParams({ search: "", sort: "recommended", tag: "all" }));
+      setSearchParams(createSearchParams({ favoritesOnly: false, search: "", sort: "recommended", tag: "all" }));
     },
+    favoritesOnly,
     highlightedGame,
     hasMore,
     matchCount: filteredGames.length,
@@ -309,13 +318,16 @@ export function useHomeHub(games: HomeGame[]) {
       setVisibleCount((current) => current + 6);
     },
     setSearch(nextSearch: string) {
-      setSearchParams(createSearchParams({ search: nextSearch, sort, tag }));
+      setSearchParams(createSearchParams({ favoritesOnly, search: nextSearch, sort, tag }));
     },
     setSort(nextSort: string) {
-      setSearchParams(createSearchParams({ search, sort: nextSort, tag }));
+      setSearchParams(createSearchParams({ favoritesOnly, search, sort: nextSort, tag }));
     },
     setTag(nextTag: string) {
-      setSearchParams(createSearchParams({ search, sort, tag: nextTag }));
+      setSearchParams(createSearchParams({ favoritesOnly, search, sort, tag: nextTag }));
+    },
+    setFavoritesOnly(nextFavoritesOnly: boolean) {
+      setSearchParams(createSearchParams({ favoritesOnly: nextFavoritesOnly, search, sort, tag }));
     },
     sort,
     sortOptions: [
@@ -327,7 +339,6 @@ export function useHomeHub(games: HomeGame[]) {
     tag,
     tagOptions,
     visibleGameCards,
-    visibleRankedCount: countVisibleRankedGames(visibleGames),
-    visibleUnplayedCount: countVisibleUnplayedGames(visibleGames),
+    visibleFavoriteCount: visibleGames.filter((game) => game.isFavorite).length,
   };
 }

@@ -7,11 +7,15 @@ export type ProfileView = {
     displayName: string;
     visibilityScope: "TENANT_ONLY" | "PRIVATE";
     tagline: string;
-    favoriteGame: string;
+    favoriteGames: Array<{
+      key: string;
+      name: string;
+    }>;
+    favoriteSummary: string;
     themePreference: "LIGHT" | "DARK";
     sharePreviewName: string;
     visibilitySummary: string;
-    teamsShareSummary: string;
+    shareSummary: string;
   };
   activity: {
     streakDays: number;
@@ -28,6 +32,7 @@ export type ProfileView = {
   games: Array<{
     key: string;
     name: string;
+    isFavorite: boolean;
     currentRank: number | null;
     bestCompetitivePoints: number;
     personalBestMetric: string;
@@ -72,12 +77,18 @@ export async function getProfileView(userId: string): Promise<ProfileView> {
   }
 
   const summaryByGameId = new Map(record.gameSummaries.map((summary) => [summary.gameId, summary]));
+  const favoriteGameIds = new Set(record.favorites.map((favorite) => favorite.gameId));
+  const favoriteGames = record.favorites.map((favorite) => ({
+    key: toRouteGameKey(favorite.game.key),
+    name: favorite.game.name,
+  }));
   const gameSummaries = games.map((game) => {
     const summary = summaryByGameId.get(game.id);
 
     return {
       key: toRouteGameKey(game.key),
       name: game.name,
+      isFavorite: favoriteGameIds.has(game.id),
       currentRank: summary?.currentRank ?? null,
       bestCompetitivePoints: summary?.bestCompetitivePoints ?? 0,
       personalBestMetric: formatOptionalPrimaryMetric(game.key, summary?.personalBestMetric ?? null),
@@ -106,11 +117,12 @@ export async function getProfileView(userId: string): Promise<ProfileView> {
       displayName: record.displayName,
       visibilityScope: record.visibilityScope === "PRIVATE" ? "PRIVATE" : "TENANT_ONLY",
       tagline: record.profile?.tagline ?? "",
-      favoriteGame: record.profile?.favoriteGame ? toRouteGameKey(record.profile.favoriteGame) : "",
+      favoriteGames,
+      favoriteSummary: favoriteGames.length === 0 ? "No favorites yet" : favoriteGames.length === 1 ? favoriteGames[0]?.name ?? "No favorites yet" : `${favoriteGames.length} favorites saved`,
       themePreference: record.profile?.themePreference === "DARK" ? "DARK" : "LIGHT",
       sharePreviewName: record.displayName,
       visibilitySummary: record.visibilityScope === "PRIVATE" ? "Private profiles stay out of rankings until visibility is changed." : "Rankings and in-app views use this display name for signed-in players.",
-      teamsShareSummary: record.visibilityScope === "PRIVATE" ? "Teams shares stay disabled until the result itself is eligible, and private visibility keeps your profile out of public ranking views." : "Teams result shares use the same display name preview that appears in rankings.",
+      shareSummary: record.visibilityScope === "PRIVATE" ? "Share popups still copy game links, but private visibility keeps your scores out of shared ranking views." : "Result share popups copy game links while rankings continue to use this display name preview.",
     },
     activity: {
       streakDays: record.profile?.streakDays ?? 0,

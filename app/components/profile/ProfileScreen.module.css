@@ -76,6 +76,13 @@
   margin-top: 12px;
 }
 
+.profile-favorite-list {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
 .profile-form-actions {
   align-items: center;
 }

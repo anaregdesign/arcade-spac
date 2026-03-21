@@ -1,6 +1,8 @@
 type HomeGame = {
   currentRank: number | null;
+  isFavorite: boolean;
   key: string;
+  metricLabel: string;
   metricValue: string;
   name: string;
   playCount: number;
@@ -9,12 +11,11 @@ type HomeGame = {
 };
 
 export type HomeGameCard = HomeGame & {
+  metricSummary: string;
   previewAlt: string | null;
   previewObjectPosition?: string;
   previewSrc: string | null;
-  recordLabel: string;
   runLabel: string;
-  statusLabel: string;
 };
 
 export const previewByGameKey: Record<string, Pick<HomeGameCard, "previewAlt" | "previewObjectPosition" | "previewSrc">> = {
@@ -220,16 +221,12 @@ export const previewByGameKey: Record<string, Pick<HomeGameCard, "previewAlt" | 
   },
 };
 
-function getGameStatusLabel(game: Pick<HomeGame, "currentRank" | "playCount">) {
-  if (game.currentRank) {
-    return `Rank #${game.currentRank}`;
+function getMetricSummary(game: Pick<HomeGame, "metricLabel" | "metricValue">) {
+  if (game.metricValue === "No record yet") {
+    return game.metricValue;
   }
 
-  return game.playCount > 0 ? "Played" : "New";
-}
-
-function getGameRecordLabel(game: Pick<HomeGame, "metricValue">) {
-  return game.metricValue === "No record yet" ? "No record" : `Best ${game.metricValue}`;
+  return `${game.metricLabel}: ${game.metricValue}`;
 }
 
 export function countVisibleRankedGames(games: HomeGame[]) {
@@ -246,12 +243,11 @@ export function toHomeGameCards(games: HomeGame[]): HomeGameCard[] {
 
     return {
       ...game,
+      metricSummary: getMetricSummary(game),
       previewAlt: preview?.previewAlt ?? null,
       previewObjectPosition: preview?.previewObjectPosition,
       previewSrc: preview?.previewSrc ?? null,
-      recordLabel: getGameRecordLabel(game),
       runLabel: game.playCount > 0 ? `${game.playCount} runs` : "First run",
-      statusLabel: getGameStatusLabel(game),
     };
   });
 }

@@ -1,6 +1,7 @@
 import { Children, Fragment, isValidElement, type ReactNode } from "react";
 
 import type { GameDifficulty } from "../../../lib/client/usecase/game-workspace/use-game-workspace";
+import { useGameWorkspaceRuntime } from "./game-workspace-runtime";
 import styles from "./GameWorkspaceShared.module.css";
 
 const difficultyOptions: Array<{ label: string; value: GameDifficulty }> = [
@@ -244,6 +245,7 @@ export function GameWorkspaceControlsCard({
   statusChips,
 }: GameWorkspaceControlsCardProps) {
   const statusItems = parseStatusItems(statusChips).filter((item) => shouldDisplayStatusItem(item));
+  const runtime = useGameWorkspaceRuntime();
 
   return (
     <section className={["feature-card", styles["workspace-card"], styles["workspace-controls-card"]].join(" ")}>
@@ -266,6 +268,7 @@ export function GameWorkspaceControlsCard({
         </label>
         <div className={["hero-actions", "compact-actions", styles["workspace-primary-actions"]].join(" ")}>
           {primaryActions}
+          {runtime.toolbarActions}
         </div>
         {statusItems.length > 0 ? (
           <dl className={styles["workspace-status-grid"]} aria-label="Run status">

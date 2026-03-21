@@ -8,6 +8,7 @@ import { toRouteGameKey } from "../lib/domain/entities/game-catalog";
 import { recommendationFeedbackEventType } from "../lib/domain/services/contextual-recommendation";
 import { requireCurrentUserId } from "../lib/server/infrastructure/auth/session.server";
 import { getRuntimeConfig } from "../lib/server/infrastructure/config/runtime-config.server";
+import { toggleUserFavoriteGame } from "../lib/server/infrastructure/repositories/user-favorites.repository.server";
 import { retryPendingResult } from "../lib/server/usecase/gameplay/record-gameplay-result.server";
 import { getPlayResultById } from "../lib/server/infrastructure/repositories/gameplay.repository.server";
 import { getHomeDashboard } from "../lib/server/usecase/get-home-dashboard.server";
@@ -48,6 +49,7 @@ export async function action({ request, params }: Route.ActionArgs) {
   const userId = await requireCurrentUserId(request);
   const formData = await request.formData();
   const intent = formData.get("intent");
+  const gameKey = formData.get("gameKey");
 
   if (intent === "retryPending") {
     const resultId = await retryPendingResult(params.resultId);
@@ -60,6 +62,17 @@ export async function action({ request, params }: Route.ActionArgs) {
     throw new Response("Result not found", { status: 404 });
   }
 
+  if (intent === "toggleFavorite") {
+    if (typeof gameKey !== "string") {
+      throw new Response("Game key is required", { status: 400 });
+    }
+
+    return toggleUserFavoriteGame({
+      userId,
+      gameKey,
+    });
+  }
+
   if (intent === "replayFromResult") {
     await recordRecommendationFeedbackEvent({
       eventType: recommendationFeedbackEventType.RESULT_REPLAY_REQUESTED,
@@ -69,28 +82,6 @@ export async function action({ request, params }: Route.ActionArgs) {
 
     return redirect(`/games/${toRouteGameKey(result.game.key)}`);
   }
-
-  if (intent === "shareToTeams") {
-    const teamsShareHref = formData.get("teamsShareHref");
-    const canShare = result.status === "COMPLETED"
-      && Boolean(result.shareToken)
-      && result.user.visibilityScope === "TENANT_ONLY";
-
-    if (canShare) {
-      await recordRecommendationFeedbackEvent({
-        eventType: recommendationFeedbackEventType.SHARE_TO_TEAMS_CLICKED,
-        gameId: result.gameId,
-        userId,
-      });
-    }
-
-    if (typeof teamsShareHref === "string" && teamsShareHref.startsWith("https://teams.microsoft.com/share?")) {
-      return redirect(teamsShareHref);
-    }
-
-    return redirect(`/results/${result.id}`);
-  }
-
   throw new Response("Unsupported action", { status: 400 });
 }
 
@@ -106,7 +97,7 @@ export default function ResultRoute() {
           {
             eyebrow: "5. Result actions",
             title: "Replay, rankings, and share each solve a different next step",
-            body: "Replay is the fastest path back into the board. Rankings show the gap to close next. Teams share stays available only for completed results from share-enabled profiles.",
+            body: "Replay is the fastest path back into the board. Share copies a ready-to-send game invite, and rankings still show the gap to close next.",
           },
         ]),
         title: "Result help",

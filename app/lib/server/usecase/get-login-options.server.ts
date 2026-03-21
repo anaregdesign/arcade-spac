@@ -13,7 +13,11 @@ export async function getLoginOptions() {
       tagline: user.profile?.tagline ?? "Arcade challenger",
       totalPoints: seasonalSummary?.totalPoints ?? 0,
       rank: seasonalSummary?.currentRank ?? null,
-      favoriteGame: user.profile?.favoriteGame?.toLowerCase() ?? "unselected",
+      favoriteSummary: user.favorites.length === 0
+        ? "No favorites yet"
+        : user.favorites.length === 1
+          ? user.favorites[0]?.game.name ?? "No favorites yet"
+          : `${user.favorites.length} favorites`,
     };
   });
 }

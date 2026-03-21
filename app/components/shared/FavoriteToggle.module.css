@@ -1,0 +1,18 @@
+.favorite-toggle-form {
+  display: inline-flex;
+}
+
+.favorite-toggle {
+  min-width: 108px;
+  justify-content: center;
+}
+
+.favorite-toggle[data-favorite="true"] {
+  border-color: color-mix(in srgb, var(--surface-strong) 34%, var(--card-border));
+  background: color-mix(in srgb, var(--surface-strong) 12%, var(--card-muted));
+}
+
+.favorite-toggle[data-compact="true"] {
+  min-width: 0;
+  padding-inline: 12px;
+}

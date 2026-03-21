@@ -17,6 +17,14 @@ export async function listSignInUsers() {
       return prisma.user.findMany({
       include: {
         profile: true,
+        favorites: {
+          include: {
+            game: true,
+          },
+          orderBy: {
+            createdAt: "asc",
+          },
+        },
         overallSummaries: {
           where: { periodType: "SEASON" },
         },
@@ -41,6 +49,14 @@ export async function getHomeDashboardRecord(userId: string) {
       where: { id: userId },
       include: {
         profile: true,
+        favorites: {
+          include: {
+            game: true,
+          },
+          orderBy: {
+            createdAt: "asc",
+          },
+        },
         overallSummaries: {
           orderBy: {
             periodType: "asc",

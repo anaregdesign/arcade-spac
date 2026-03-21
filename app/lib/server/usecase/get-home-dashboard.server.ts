@@ -42,6 +42,7 @@ export async function getHomeDashboard(userId: string) {
   const seasonSummary = record.overallSummaries.find((summary) => summary.periodType === "SEASON");
   const lifetimeSummary = record.overallSummaries.find((summary) => summary.periodType === "LIFETIME");
   const summaryByGameId = new Map(record.gameSummaries.map((summary) => [summary.gameId, summary]));
+  const favoriteGameKeys = new Set(record.favorites.map((favorite) => toRouteGameKey(favorite.game.key)));
   const recommendationRanking = await rankRecommendationsWithSharedModel({
     candidates: games.map((game) => {
       const summary = summaryByGameId.get(game.id);
@@ -99,6 +100,7 @@ export async function getHomeDashboard(userId: string) {
         personalBestMetric: summary?.personalBestMetric ?? null,
         playCount: summary?.playCount ?? 0,
         completedCount: summary?.completedCount ?? 0,
+        isFavorite: favoriteGameKeys.has(toRouteGameKey(game.key)),
         recommendationText: summary?.recommendationText ?? null,
         recommendationScore: recommendationScoreByGameKey.get(toRouteGameKey(game.key)) ?? 0,
         metricLabel: getBestMetricLabel(game.key),

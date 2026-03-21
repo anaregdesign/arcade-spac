@@ -24,6 +24,7 @@ async function main() {
   await prisma.userGameSummary.deleteMany();
   await prisma.userOverallSummary.deleteMany();
   await prisma.playResult.deleteMany();
+  await prisma.userFavorite.deleteMany();
   await prisma.userProfile.deleteMany();
   await prisma.game.deleteMany();
   await prisma.user.deleteMany();
@@ -84,7 +85,6 @@ async function main() {
       {
         userId: userIds.aiko,
         tagline: "Going for top seasonal rank across every puzzle.",
-        favoriteGame: "MINESWEEPER",
         streakDays: 5,
         totalPlayCount: 18,
         lastPlayedAt: new Date("2026-03-11T20:05:00.000Z"),
@@ -92,7 +92,6 @@ async function main() {
       {
         userId: userIds.ren,
         tagline: "Sudoku specialist building overall score.",
-        favoriteGame: "SUDOKU",
         streakDays: 3,
         totalPlayCount: 11,
         lastPlayedAt: new Date("2026-03-11T19:42:00.000Z"),
@@ -100,10 +99,26 @@ async function main() {
       {
         userId: userIds.mio,
         tagline: "New challenger learning both games.",
-        favoriteGame: "SUDOKU",
         streakDays: 1,
         totalPlayCount: 4,
         lastPlayedAt: new Date("2026-03-10T18:15:00.000Z"),
+      },
+    ],
+  });
+
+  await prisma.userFavorite.createMany({
+    data: [
+      {
+        userId: userIds.aiko,
+        gameId: gameIds.minesweeper,
+      },
+      {
+        userId: userIds.ren,
+        gameId: gameIds.sudoku,
+      },
+      {
+        userId: userIds.mio,
+        gameId: gameIds.sudoku,
       },
     ],
   });

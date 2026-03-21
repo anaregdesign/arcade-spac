@@ -49,6 +49,14 @@ export type ResultViewModel = {
   stateExplanation: string | null;
   gameKey: string;
   gameName: string;
+  gameDescription: string;
+  isFavorite: boolean;
+  recommendations: Array<{
+    key: string;
+    name: string;
+    recommendationText: string;
+    shortDescription: string;
+  }>;
   shareUrl: string;
   shareText: string;
   shareAvailabilityNote: string;
@@ -233,19 +241,46 @@ function getRankShift(entries: Array<{ userId: string; rank: number; points: num
 }
 
 function getShareAvailabilityNote(result: PersistedPlayResult, canShare: boolean) {
-  if (canShare) {
-    return "Completed results from share-enabled profiles can be shared in Microsoft Teams.";
-  }
+  return canShare
+    ? `Share copies a quick invite for ${result.game.name} with the game link and summary copy.`
+    : "Only the result owner can open the share popup from this screen.";
+}
 
-  if (result.user.visibilityScope !== "TENANT_ONLY") {
-    return "Private visibility disables Microsoft Teams sharing and removes this score from shared leaderboards.";
-  }
+function computeLegacyHomeRecommendationScore(input: {
+  bestCompetitivePoints: number;
+  currentRank: number | null;
+  playCount: number;
+}) {
+  return (input.playCount === 0 ? 1_000_000 : 0)
+    + (input.currentRank ? 10_000 - input.currentRank : 0)
+    + input.bestCompetitivePoints;
+}
 
-  if (result.status === "PENDING_SAVE") {
-    return "Sharing unlocks after the pending save succeeds.";
-  }
+function buildNextGameRecommendations(input: {
+  currentGameKey: string;
+  games: Awaited<ReturnType<typeof getHomeDashboard>>["games"];
+}) {
+  return input.games
+    .filter((game) => game.key !== input.currentGameKey)
+    .slice()
+    .sort((left, right) => {
+      const recommendationDelta = right.recommendationScore - left.recommendationScore;
 
-  return "Only completed results can be shared.";
+      if (recommendationDelta !== 0) {
+        return recommendationDelta;
+      }
+
+      const fallbackDelta = computeLegacyHomeRecommendationScore(right) - computeLegacyHomeRecommendationScore(left);
+
+      return fallbackDelta !== 0 ? fallbackDelta : left.name.localeCompare(right.name);
+    })
+    .slice(0, 3)
+    .map((game) => ({
+      key: game.key,
+      name: game.name,
+      recommendationText: game.recommendationText ?? game.shortDescription,
+      shortDescription: game.shortDescription,
+    }));
 }
 
 function getExcludedBoardValue(result: PersistedPlayResult, isTenantVisible: boolean) {
@@ -311,6 +346,7 @@ export async function buildPersistedResultView(input: {
 }) {
   const ownerDashboard = await getHomeDashboard(input.result.userId);
   const gameScope = toRouteGameKey(input.result.game.key) as RankingScope;
+  const isFavorite = ownerDashboard.games.find((game) => game.key === gameScope)?.isFavorite ?? false;
   const primaryMetricText = formatPrimaryMetric(gameScope, input.result.primaryMetric);
   const supportMetric = getSupportMetric(input.result);
   const selfBest = getSelfBestSummary(input.result);
@@ -324,18 +360,12 @@ export async function buildPersistedResultView(input: {
   const gameShift = boardEligible ? getRankShift(gameEntries, input.result.userId, input.result.totalPointsDelta) : { currentRank: null, delta: null };
   const currentOverallRank = ownerDashboard.summaries.seasonRank;
   const currentOverallPoints = ownerDashboard.summaries.seasonPoints;
-  const sharePath = input.result.shareToken ? `/results/shared/${input.result.shareToken}` : null;
-  const shareUrl = sharePath ? `${input.publicBaseUrl}${sharePath}` : `${input.publicBaseUrl}/results/${input.result.id}`;
-  const canShare = input.viewerMode === "owner" && input.result.status === "COMPLETED" && isSharedVisible && Boolean(input.result.shareToken);
+  const shareUrl = `${input.publicBaseUrl}/games/${gameScope}`;
+  const canShare = input.viewerMode === "owner";
   const shareText = [
-    buildPrimaryMetricShareLine(gameScope, {
-      difficulty: input.result.difficulty,
-      gameName: input.result.game.name,
-      primaryMetricText,
-    }),
-    `${selfBest.shareLine}.`,
-    `Season total ${currentOverallPoints} pts, overall ${currentOverallRank ? formatRank(currentOverallRank) : "unranked"}.`,
-    `View result: ${shareUrl}`,
+    `${input.result.game.name}`,
+    input.result.game.shortDescription,
+    `Play here: ${shareUrl}`,
   ].join(" ");
 
   return {
@@ -381,6 +411,12 @@ export async function buildPersistedResultView(input: {
         : null,
     gameKey: gameScope,
     gameName: input.result.game.name,
+    gameDescription: input.result.game.shortDescription,
+    isFavorite,
+    recommendations: buildNextGameRecommendations({
+      currentGameKey: gameScope,
+      games: ownerDashboard.games,
+    }),
     shareUrl,
     shareText,
     shareAvailabilityNote: getShareAvailabilityNote(input.result, canShare),
@@ -465,10 +501,13 @@ export function buildPendingResultDraftView(input: {
     stateExplanation,
     gameKey,
     gameName: input.gameName,
-    shareUrl: "",
-    shareText: "",
-    shareAvailabilityNote: "Teams share stays locked until the retry succeeds and the result becomes a completed published record.",
-    canShare: false,
+    gameDescription: "Jump back into the game with a fresh run whenever you are ready.",
+    isFavorite: false,
+    recommendations: [],
+    shareUrl: `/games/${gameKey}`,
+    shareText: `${input.gameName} Jump back into the game with a fresh run whenever you are ready. Play here: /games/${gameKey}`,
+    shareAvailabilityNote: "Share copies the game link and summary copy, even while the run is still pending recovery.",
+    canShare: true,
     rankingsHref: `/rankings?period=season&scope=${gameKey}`,
   } satisfies ResultViewModel;
 }

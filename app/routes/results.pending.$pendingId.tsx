@@ -5,6 +5,7 @@ import { AppShell } from "../components/shared/AppShell";
 import { ResultScreen } from "../components/gameplay/ResultScreen";
 import { buildSharedHelpSections } from "../components/shared/help-content";
 import { clearPendingResultDraft, commitSession, getPendingResultDraft, getSession, requireCurrentUserId } from "../lib/server/infrastructure/auth/session.server";
+import { toggleUserFavoriteGame } from "../lib/server/infrastructure/repositories/user-favorites.repository.server";
 import { getHomeDashboard, getGameWorkspace } from "../lib/server/usecase/get-home-dashboard.server";
 import { buildPendingResultDraftView } from "../lib/server/usecase/gameplay/get-result-view.server";
 import { recordGameplayResult } from "../lib/server/usecase/gameplay/record-gameplay-result.server";
@@ -48,6 +49,19 @@ export async function action({ request, params }: Route.ActionArgs) {
 
   if (draft.ownerUserId && draft.ownerUserId !== userId) {
     throw new Response("Pending result is not available for this user", { status: 403 });
+  }
+
+  if (formData.get("intent") === "toggleFavorite") {
+    const gameKey = formData.get("gameKey");
+
+    if (typeof gameKey !== "string") {
+      throw new Response("Game key is required", { status: 400 });
+    }
+
+    return toggleUserFavoriteGame({
+      userId,
+      gameKey,
+    });
   }
 
   if (formData.get("intent") === "retryPending") {
