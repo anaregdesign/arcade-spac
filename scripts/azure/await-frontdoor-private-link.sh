@@ -21,8 +21,15 @@ managed_environment_name="${MANAGED_ENVIRONMENT_NAME:-$(
     "$AZURE_EXPECTED_MANAGED_ENVIRONMENT_NAME" \
     "$AZURE_LEGACY_MANAGED_ENVIRONMENT_NAME"
 )}"
-approval_retries="${FRONT_DOOR_PRIVATE_LINK_RETRIES:-30}"
 approval_delay_seconds="${FRONT_DOOR_PRIVATE_LINK_DELAY_SECONDS:-10}"
+approval_max_wait_seconds="${FRONT_DOOR_PRIVATE_LINK_MAX_WAIT_SECONDS:-3600}"
+
+[[ "${approval_delay_seconds}" =~ ^[0-9]+$ ]] || fail "FRONT_DOOR_PRIVATE_LINK_DELAY_SECONDS must be an integer."
+[[ "${approval_max_wait_seconds}" =~ ^[0-9]+$ ]] || fail "FRONT_DOOR_PRIVATE_LINK_MAX_WAIT_SECONDS must be an integer."
+(( approval_delay_seconds > 0 )) || fail "FRONT_DOOR_PRIVATE_LINK_DELAY_SECONDS must be greater than zero."
+(( approval_max_wait_seconds > 0 )) || fail "FRONT_DOOR_PRIVATE_LINK_MAX_WAIT_SECONDS must be greater than zero."
+
+deadline_epoch="$(( $(date +%s) + approval_max_wait_seconds ))"
 
 current_deployment_state() {
   az deployment group show \
@@ -53,6 +60,25 @@ assert_deployment_still_actionable() {
   fi
 }
 
+sleep_until_next_poll() {
+  local now_epoch
+  local remaining_seconds
+
+  now_epoch="$(date +%s)"
+  remaining_seconds="$(( deadline_epoch - now_epoch ))"
+
+  if (( remaining_seconds <= 0 )); then
+    return 1
+  fi
+
+  if (( remaining_seconds < approval_delay_seconds )); then
+    sleep "${remaining_seconds}"
+    return 0
+  fi
+
+  sleep "${approval_delay_seconds}"
+}
+
 approve_connection() {
   local connection_id="$1"
   local error_file=""
@@ -75,7 +101,10 @@ approve_connection() {
 }
 
 managed_environment_id=""
-for attempt in $(seq 1 "${approval_retries}"); do
+connection_ids=()
+discovered_connections=false
+
+while true; do
   assert_deployment_still_actionable
 
   managed_environment_id="$(
@@ -88,76 +117,80 @@ for attempt in $(seq 1 "${approval_retries}"); do
   )"
 
   if [[ -n "${managed_environment_id}" ]]; then
-    break
-  fi
-
-  sleep "${approval_delay_seconds}"
-done
-
-assert_deployment_still_actionable
-[[ -n "${managed_environment_id}" ]] || fail "Unable to resolve the Container Apps environment ${managed_environment_name}."
-
-connection_ids=()
-for attempt in $(seq 1 "${approval_retries}"); do
-  assert_deployment_still_actionable
-
-  mapfile -t connection_ids < <(az network private-endpoint-connection list \
-    --name "${managed_environment_name}" \
-    --resource-group "${AZURE_RESOURCE_GROUP}" \
-    --type Microsoft.App/managedEnvironments \
-    --query "[].id" \
-    --output tsv 2>/dev/null || true)
-
-  if [[ "${#connection_ids[@]}" -gt 0 ]]; then
-    break
-  fi
-
-  sleep "${approval_delay_seconds}"
-done
-
-assert_deployment_still_actionable
-[[ "${#connection_ids[@]}" -gt 0 ]] || fail "No Azure Front Door private endpoint connections were discovered for ${managed_environment_name}."
-
-pending_count=""
-for attempt in $(seq 1 "${approval_retries}"); do
-  assert_deployment_still_actionable
-
-  pending_count="0"
-  for connection_id in "${connection_ids[@]}"; do
-    connection_status="$(
-      az resource show \
-        --ids "${connection_id}" \
-        --query properties.privateLinkServiceConnectionState.status \
-        --output tsv
-    )"
-
-    if [[ "${connection_status}" == "Approved" ]]; then
-      continue
-    fi
-
-    pending_count="$((pending_count + 1))"
-    approve_connection "${connection_id}" || fail "Failed to approve Azure Front Door private endpoint connection ${connection_id}."
-  done
-
-  if [[ "${pending_count}" == "0" ]]; then
-    break
-  fi
-
-  pending_count="$(
-    az network private-endpoint-connection list \
+    mapfile -t connection_ids < <(az network private-endpoint-connection list \
       --name "${managed_environment_name}" \
       --resource-group "${AZURE_RESOURCE_GROUP}" \
       --type Microsoft.App/managedEnvironments \
-      --query "[?properties.privateLinkServiceConnectionState.status!='Approved'] | length(@)" \
-      --output tsv
-  )"
+      --query "[].id" \
+      --output tsv 2>/dev/null || true)
 
-  if [[ "${pending_count}" == "0" ]]; then
-    break
+    if [[ "${#connection_ids[@]}" -gt 0 ]]; then
+      discovered_connections=true
+      pending_count="0"
+
+      for connection_id in "${connection_ids[@]}"; do
+        connection_status="$(
+          az resource show \
+            --ids "${connection_id}" \
+            --query properties.privateLinkServiceConnectionState.status \
+            --output tsv
+        )"
+
+        if [[ "${connection_status}" == "Approved" ]]; then
+          continue
+        fi
+
+        pending_count="$((pending_count + 1))"
+        approve_connection "${connection_id}" || fail "Failed to approve Azure Front Door private endpoint connection ${connection_id}."
+      done
+
+      pending_count="$(
+        az network private-endpoint-connection list \
+          --name "${managed_environment_name}" \
+          --resource-group "${AZURE_RESOURCE_GROUP}" \
+          --type Microsoft.App/managedEnvironments \
+          --query "[?properties.privateLinkServiceConnectionState.status!='Approved'] | length(@)" \
+          --output tsv
+      )"
+
+      if [[ "${pending_count}" == "0" ]]; then
+        echo "Approved Azure Front Door private endpoint connections for ${managed_environment_name}."
+        break
+      fi
+    fi
   fi
 
-  sleep "${approval_delay_seconds}"
+  deployment_state="$(current_deployment_state)"
+  if [[ "${deployment_state}" == "Succeeded" ]]; then
+    if [[ -z "${managed_environment_id}" ]]; then
+      fail "Infrastructure deployment ${DEPLOYMENT_NAME} succeeded but the Container Apps environment ${managed_environment_name} was not found."
+    fi
+
+    if [[ "${discovered_connections}" != "true" ]]; then
+      fail "Infrastructure deployment ${DEPLOYMENT_NAME} succeeded but no Azure Front Door private endpoint connections were discovered for ${managed_environment_name}."
+    fi
+  fi
+
+  sleep_until_next_poll || break
 done
 
 assert_deployment_still_actionable
-[[ "${pending_count}" == "0" ]] || fail "Azure Front Door private endpoint connections are still pending approval."
+
+if [[ -z "${managed_environment_id}" ]]; then
+  fail "Timed out after ${approval_max_wait_seconds}s waiting for Container Apps environment ${managed_environment_name} while deployment ${DEPLOYMENT_NAME} remained in progress."
+fi
+
+if [[ "${discovered_connections}" != "true" ]]; then
+  fail "Timed out after ${approval_max_wait_seconds}s waiting for Azure Front Door private endpoint connections for ${managed_environment_name}."
+fi
+
+pending_count="$(
+  az network private-endpoint-connection list \
+    --name "${managed_environment_name}" \
+    --resource-group "${AZURE_RESOURCE_GROUP}" \
+    --type Microsoft.App/managedEnvironments \
+    --query "[?properties.privateLinkServiceConnectionState.status!='Approved'] | length(@)" \
+    --output tsv
+)"
+
+[[ "${pending_count}" == "0" ]] || fail "Timed out after ${approval_max_wait_seconds}s with Azure Front Door private endpoint connections still pending approval for ${managed_environment_name}."

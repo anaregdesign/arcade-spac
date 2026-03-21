@@ -346,6 +346,8 @@ jobs:
       - name: Approve Azure Front Door private link connections
         env:
           DEPLOYMENT_NAME: ${{ steps.deploy_infra_async.outputs.deployment_name }}
+          FRONT_DOOR_PRIVATE_LINK_MAX_WAIT_SECONDS: "3600"
+          FRONT_DOOR_PRIVATE_LINK_DELAY_SECONDS: "10"
         run: ./scripts/azure/await-frontdoor-private-link.sh
 
       - name: Wait for infrastructure deployment completion

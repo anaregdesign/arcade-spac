@@ -8,14 +8,16 @@ on:
         required: true
         type: string
       resource_group_suffix:
-        description: Resource-group suffix appended to the shared AZURE_RESOURCE_GROUP prefix
+        description: Side-by-side recovery suffix appended to the shared AZURE_RESOURCE_GROUP prefix; must differ from the routine production suffix
         required: true
-        default: green
+        default: blue
         type: choice
         options:
-          - green
           - blue
           - dev
+
+env:
+  ROUTINE_PRODUCTION_RESOURCE_GROUP_SUFFIX: green
 
 permissions:
   contents: read
@@ -25,9 +27,27 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  validate_recovery_target:
+    name: Validate Recovery Target
+    runs-on: ubuntu-latest
+    env:
+      TARGET_RESOURCE_GROUP_SUFFIX: ${{ inputs.resource_group_suffix }}
+    steps:
+      - name: Validate side-by-side recovery suffix
+        run: |
+          test -n "$TARGET_RESOURCE_GROUP_SUFFIX" || { echo "Missing workflow input resource_group_suffix"; exit 1; }
+          test -n "$ROUTINE_PRODUCTION_RESOURCE_GROUP_SUFFIX" || { echo "Missing workflow constant ROUTINE_PRODUCTION_RESOURCE_GROUP_SUFFIX"; exit 1; }
+
+          if [[ "$TARGET_RESOURCE_GROUP_SUFFIX" == "$ROUTINE_PRODUCTION_RESOURCE_GROUP_SUFFIX" ]]; then
+            echo "Bootstrap Azure Recovery must target a side-by-side replica suffix. ${ROUTINE_PRODUCTION_RESOURCE_GROUP_SUFFIX} is reserved for the routine production environment." >&2
+            exit 1
+          fi
+
   resolve_recovery_image:
     name: Resolve Recovery Image Reference
     runs-on: ubuntu-latest
+    needs:
+      - validate_recovery_target
     permissions:
       contents: read
     outputs:
@@ -46,6 +66,8 @@ jobs:
   ensure_resource_group:
     name: Ensure Azure Resource Group
     runs-on: ubuntu-latest
+    needs:
+      - validate_recovery_target
     environment: production-bootstrap
     permissions:
       contents: read
@@ -214,6 +236,8 @@ jobs:
       - name: Approve Azure Front Door private link connections
         env:
           DEPLOYMENT_NAME: ${{ steps.deploy_bootstrap_infra_async.outputs.deployment_name }}
+          FRONT_DOOR_PRIVATE_LINK_MAX_WAIT_SECONDS: "3600"
+          FRONT_DOOR_PRIVATE_LINK_DELAY_SECONDS: "10"
         run: ./scripts/azure/await-frontdoor-private-link.sh
 
       - name: Wait for bootstrap infrastructure deployment completion

@@ -4,6 +4,19 @@
 - Spec: /docs/spec/specification.md
 - Legacy reference: /docs/spec/production-rg-arcade-green-release-retarget.md
 
+## Section 9 - Recovery Replica Contract Audit
+### Subsection 9.1 - Workflow Goal Alignment
+- [x] Re-read the recovery workflow against the operator goal of building a side-by-side replica while leaving the current environment untouched
+- [x] Update the canonical spec so recovery targets a non-production suffix replica and only reuses Azure Application / Service Principal identities required for OIDC and OAuth
+- [x] Patch `Bootstrap Azure Recovery` so it rejects the routine production suffix instead of performing in-place recovery on the live production target
+- [x] Validate the updated recovery workflow YAML locally and record any remaining operator follow-up
+
+## Section 10 - Front Door Private Link Approval Reliability
+### Subsection 10.1 - Approval Pipeline Hardening
+- [x] Rework the Front Door private-link approval watcher so it uses a deployment-aligned deadline instead of a fixed five-minute retry window
+- [x] Wire release and recovery workflows to the new approval wait contract so slow Azure propagation does not produce false timeout failures
+- [x] Validate the updated approval watcher and touched workflows locally, then record the remaining hosted follow-up
+
 ## Section 8 - Front Door Asset Delivery Reliability
 ### Subsection 8.1 - Investigation
 - [x] Reproduce the deployed Front Door slowness and CSS delivery failure against the current default domain
