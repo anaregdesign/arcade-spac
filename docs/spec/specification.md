@@ -40,7 +40,9 @@ production / shared Azure delivery は GitHub Workflow を唯一の control plan
 
 ## User-Visible Behavior
 
-- `Release Azure Delivery` は routine release entry workflow として `publish -> plan_infra -> deploy_infra` までを担当し、その後 shared reusable rollout workflow を call して `sync_runtime_config -> bootstrap_sql -> migrate_database -> deploy_app -> smoke_test` を実行する
+- `Release Azure Delivery` は routine release entry workflow として `publish -> classify_release_scope -> optional plan_infra -> optional deploy_infra` までを担当し、その後 shared reusable rollout workflow を call して `sync_runtime_config -> bootstrap_sql -> migrate_database -> deploy_app -> smoke_test` を実行する
+- `Release Azure Delivery` は release tag 間の repo diff を先に分類し、`infra/` と baseline-defining Azure parameter / name resolution scripts に変更がない app-only release では `plan_infra` と `deploy_infra` を skip して shared reusable rollout workflow へ直接進む
+- infra-owned file change を含む release だけが `plan_infra` で Azure `what-if` を実行し、`what-if` が実 change を返したときだけ `deploy_infra` を実行する
 - `Bootstrap Azure Recovery` は recovery entry workflow として routine production suffix とは別の recovery suffix を validation したうえで `resolve_recovery_image -> ensure_resource_group -> deploy_bootstrap_infra -> restore_production_release_rbac` までを担当し、その後同じ shared reusable rollout workflow を call して `sync_runtime_config -> bootstrap_sql -> run_database_migration -> deploy_app -> smoke_test` を実行し、最後に `verify_runtime` を行う
 - recovery の `verify_runtime` は hosted infra, private-link, identity, runtime env, smoke-test 後の contract verification を担当し、shared Entra app registration に recovery host callback がまだ追加されていない間は `/auth/start` redirect assertion を必須にしない
 - GitHub-hosted workflow は Azure SQL に直接 login しない
@@ -61,6 +63,8 @@ production / shared Azure delivery は GitHub Workflow を唯一の control plan
 - GitHub-hosted workflow から Azure SQL `Private Endpoint` への direct data-plane dependency がない
 - Azure SQL principal bootstrap と schema migration はどちらも Azure-hosted `Container Apps Job` で実行される
 - routine release / recovery entry workflow に duplicated rollout job definition が残らず、shared rollout path は reusable workflow 1 か所で管理される
+- app-only release tag が infra-owned repo inputs を変更していない場合、routine release は Azure infra plan / deploy を起こさず shared rollout を継続する
+- infra deploy は repo diff による infra-owned change detection と Azure `what-if` の両方を通過したときだけ走る
 - `Container App` revision restart や scale-out は schema migration の成否に依存しない
 - runtime `Container App` は runtime identity のみを attach し、migration identity attachment は不要になる
 - workflow docs に required Azure RBAC, SQL grants, GitHub Environment variables/secrets, registry prerequisite, network prerequisite が列挙されている

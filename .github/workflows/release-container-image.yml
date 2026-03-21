@@ -75,11 +75,71 @@ jobs:
           subject-digest: ${{ steps.push.outputs.digest }}
           push-to-registry: true
 
+  classify_release_scope:
+    name: Classify Release Infra Scope
+    runs-on: ubuntu-latest
+    if: ${{ !github.event.release.prerelease }}
+    permissions:
+      contents: read
+    outputs:
+      requires_infra: ${{ steps.classify.outputs.requires_infra }}
+      previous_tag: ${{ steps.classify.outputs.previous_tag }}
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Classify release diff
+        id: classify
+        env:
+          CURRENT_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          git fetch --force --tags
+
+          PREVIOUS_TAG="$({
+            git tag --sort=-version:refname | grep -Fxv "$CURRENT_TAG" | head -n 1
+          } || true)"
+
+          echo "previous_tag=$PREVIOUS_TAG" >> "$GITHUB_OUTPUT"
+
+          if [[ -z "$PREVIOUS_TAG" ]]; then
+            echo "requires_infra=true" >> "$GITHUB_OUTPUT"
+            echo "No previous release tag was found. Running infra planning defensively." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
+          CHANGED_PATHS="$({
+            git diff --name-only "$PREVIOUS_TAG" "$CURRENT_TAG" -- \
+              infra \
+              scripts/azure/append-bicep-resource-parameters.sh \
+              scripts/azure/environment-resource-names.sh \
+              scripts/azure/resolve-hosted-resource-inputs.sh
+          } || true)"
+
+          if [[ -n "$CHANGED_PATHS" ]]; then
+            echo "requires_infra=true" >> "$GITHUB_OUTPUT"
+            {
+              echo "Infra-owned paths changed between $PREVIOUS_TAG and $CURRENT_TAG:"
+              echo
+              printf '%s\n' "$CHANGED_PATHS"
+            } >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
+          echo "requires_infra=false" >> "$GITHUB_OUTPUT"
+          {
+            echo "No infra-owned path changes were detected between $PREVIOUS_TAG and $CURRENT_TAG."
+            echo "Azure infrastructure planning and deployment will be skipped for this release."
+          } >> "$GITHUB_STEP_SUMMARY"
+
   plan_infra:
     name: Plan Azure Infrastructure
     runs-on: ubuntu-latest
-    needs: publish
-    if: ${{ !github.event.release.prerelease }}
+    needs:
+      - publish
+      - classify_release_scope
+    if: ${{ !github.event.release.prerelease && needs.classify_release_scope.outputs.requires_infra == 'true' }}
     environment: production
     permissions:
       contents: read
@@ -230,6 +290,14 @@ jobs:
           with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as handle:
               handle.write(f"has_changes={'true' if filtered else 'false'}\n")
           PY
+
+      - name: Summarize infra plan result
+        run: |
+          if [[ "${{ steps.plan.outputs.has_changes }}" == "true" ]]; then
+            echo "Azure what-if detected actionable infrastructure changes." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Azure what-if detected no actionable infrastructure changes. deploy_infra will be skipped." >> "$GITHUB_STEP_SUMMARY"
+          fi
 
   deploy_infra:
     name: Deploy Azure Infrastructure
@@ -384,6 +452,7 @@ jobs:
     name: Run Shared Azure Rollout
     needs:
       - publish
+      - classify_release_scope
       - plan_infra
       - deploy_infra
     if: >-
@@ -392,7 +461,8 @@ jobs:
         !cancelled() &&
         !github.event.release.prerelease &&
         needs.publish.result == 'success' &&
-        needs.plan_infra.result == 'success' &&
+        needs.classify_release_scope.result == 'success' &&
+        (needs.plan_infra.result == 'success' || needs.plan_infra.result == 'skipped') &&
         (needs.deploy_infra.result == 'success' || needs.deploy_infra.result == 'skipped')
       }}
     permissions:
