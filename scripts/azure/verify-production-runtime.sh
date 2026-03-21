@@ -157,7 +157,7 @@ print_container_app_diagnostics() {
       --name "${container_app_name}" \
       --type system \
       --tail 100 \
-      --format text || true
+      --format json || true
 
     az containerapp logs show \
       --resource-group "${AZURE_RESOURCE_GROUP}" \
@@ -174,7 +174,7 @@ print_container_app_diagnostics() {
     --name "${container_app_name}" \
     --type system \
     --tail 100 \
-    --format text || true
+    --format json || true
 
   az containerapp logs show \
     --resource-group "${AZURE_RESOURCE_GROUP}" \
