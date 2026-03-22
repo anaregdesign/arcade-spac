@@ -1,5 +1,59 @@
 # Workflow-Owned Azure Delivery Contract
 
+## Result Recommendation Refresh
+
+### Summary
+
+リザルト画面の推薦エリアは、結果の補足説明よりも次に遊ぶゲームの発見を優先し、ホーム画面と共通のサムネイル付きカードで次のゲーム候補を案内する。
+
+### User Problem
+
+現状のリザルト画面は補足テキスト量が多く、推薦リストが画面下部で見つけづらい。特に推薦カードにサムネイルがないため、ホーム画面のゲーム一覧と見た目が分断され、次に遊ぶゲームを直感的に選びにくい。
+
+### Users And Scenarios
+
+- クリア直後に次のゲームを探したいプレイヤーが、リザルト画面からそのまま別ゲームへ移動する
+- モバイル端末のプレイヤーが、長い説明文を読む前に推薦候補のゲームを視認する
+
+### Scope
+
+- リザルト画面の推薦セクションでホーム画面と共通のゲームカード表現を使う
+- 推薦カードにゲームのサムネイルを表示する
+- 推薦カードの上に並ぶ補足テキストを必要最小限まで整理して、推薦グリッドを見つけやすくする
+
+### Non-Goals
+
+- ホーム画面の検索、フィルター、並び順ロジックを変更すること
+- レコメンド順位アルゴリズム自体を変更すること
+- ゲームごとのサムネイルアセットを新規作成すること
+
+### User-Visible Behavior
+
+- リザルト画面の `Pick the next game` セクションは、ホーム画面と同系統のサムネイル付きカードを最大3件表示する
+- 各推薦カードはゲーム名、サムネイル、短い補足説明、プレイ導線を表示し、ホーム画面の一覧と視覚的に連続した体験にする
+- 推薦カードの直前にある結果補足テキストは簡潔になり、推薦グリッドがセクション内で優先的に視認できる
+
+### Acceptance Criteria
+
+- リザルト画面の推薦カードに各ゲームのサムネイルが表示される
+- ホーム画面とリザルト画面のカード表現が共通コンポーネントで構成される
+- リザルト画面で推薦カードより前に表示される補足文量が減り、推薦グリッドがより早く見つけられる
+- サムネイル未設定ゲームでも既存のフォールバック表現でカードが成立する
+
+### Edge Cases
+
+- 推薦候補にサムネイルがない場合でも、ゲーム名のフォールバック表示でカードが崩れない
+- 推薦候補が 3 件未満でもグリッドと導線が自然に表示される
+
+### Constraints And Dependencies
+
+- ホーム画面ですでに使われているプレビュー画像メタデータを再利用する
+- リザルト画面のレコメンド順と件数は既存のサーバー側ロジックを維持する
+
+### Links
+
+- Active plan: `/docs/plans/plan.md`
+
 ## Summary
 
 production / shared Azure delivery は GitHub Workflow を唯一の control plane entrypoint としつつ、`Private Endpoint` 配下の Azure SQL data-plane 操作は Azure-hosted `Container Apps Job` に限定する。`Container App runtime` は server process の起動だけを担当し、schema change は release / recovery workflow 上の dedicated migration job に分離する。migration job は `prisma migrate deploy` を直接叩かず、checked-in Prisma SQL migrations を Azure-hosted `mssql` runner で適用する。suffix-aware naming contract は維持し、`green` / `blue` / `dev` ごとに hosted environment を独立させる。`Bootstrap Azure Recovery` は routine production suffix とは別の suffix に side-by-side replica を構築し、既存環境は残したまま recovery target だけを収束させる。cross-suffix で使い回してよい shared state は GitHub Actions OIDC と OAuth contract に必要な Azure Application / Service Principal に限定する。
