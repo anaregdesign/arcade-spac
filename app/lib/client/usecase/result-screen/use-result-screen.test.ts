@@ -33,6 +33,9 @@ function createResult(overrides: Partial<ResultView> = {}): ResultView {
       {
         key: "color-sweep",
         name: "Color Sweep",
+        previewAlt: "Color Sweep board showing a target swatch and a grid of colored tiles",
+        previewObjectPosition: undefined,
+        previewSrc: "/images/games/color-sweep-preview.svg",
         recommendationText: "Fastest improving",
         shortDescription: "Clear every matching tile before time expires.",
       },
@@ -76,10 +79,14 @@ describe("useResultScreen", () => {
       {
         key: "color-sweep",
         name: "Color Sweep",
+        previewAlt: "Color Sweep board showing a target swatch and a grid of colored tiles",
+        previewObjectPosition: undefined,
+        previewSrc: "/images/games/color-sweep-preview.svg",
         recommendationText: "Fastest improving",
         shortDescription: "Clear every matching tile before time expires.",
       },
     ]);
+    expect(viewModel.recommendationSummaryLines).toEqual(["Strong run"]);
     expect(viewModel.sharePreviewLines).toEqual([
       "Precision Drop",
       "Drop the marker as close to center as possible.",
@@ -90,10 +97,12 @@ describe("useResultScreen", () => {
   it("marks pending saves as provisional and locked when sharing is disabled", () => {
     const viewModel = useResultScreen(createResult({
       canShare: false,
+      stateExplanation: "Retry once to confirm the save.",
       status: "PENDING_SAVE",
     }));
 
     expect(viewModel.compactStateCopy).toBe("Provisional until save retry");
+    expect(viewModel.recommendationSummaryLines).toEqual(["Strong run", "Retry once to confirm the save."]);
     expect(viewModel.statusBadgeClass).toBe("status-badge status-badge-pending");
   });
 

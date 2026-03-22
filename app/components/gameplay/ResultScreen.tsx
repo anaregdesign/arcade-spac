@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { Form, Link } from "react-router";
+import { Form } from "react-router";
 
 import { useResultScreen } from "../../lib/client/usecase/result-screen/use-result-screen";
 import sharedStyles from "./workspace/GameWorkspaceShared.module.css";
 import { FavoriteToggle } from "../shared/FavoriteToggle";
+import { GamePreviewCard } from "../shared/GamePreviewCard";
 import { SummaryCard } from "../shared/SummaryCard";
 import styles from "./ResultScreen.module.css";
 
@@ -46,6 +47,9 @@ type ResultScreenProps = {
     recommendations: Array<{
       key: string;
       name: string;
+      previewAlt: string | null;
+      previewObjectPosition?: string;
+      previewSrc: string | null;
       recommendationText: string;
       shortDescription: string;
     }>;
@@ -127,25 +131,29 @@ export function ResultScreen({ result }: ResultScreenProps) {
           </div>
         </div>
         <div className={styles["result-detail-copy"]}>
-          <p className="compact-copy">{result.summaryText}</p>
-          {result.stateExplanation ? <p className="compact-copy">{result.stateExplanation}</p> : null}
-          <p className="compact-copy">{result.selfBestDetail}</p>
-          <p className="compact-copy">{result.supportMetricNote}</p>
-          <p className="compact-copy">{result.shareAvailabilityNote}</p>
-        </div>
-        <div className={styles["result-recommendation-grid"]}>
-          {screen.recommendationCards.map((game) => (
-            <article className={styles["result-recommendation-card"]} key={game.key}>
-              <p className="eyebrow">Next game</p>
-              <h3 className="card-title">{game.name}</h3>
-              <p className="compact-copy">{game.recommendationText}</p>
-              <p className="compact-copy">{game.shortDescription}</p>
-              <Link className="action-link action-link-secondary" to={`/games/${game.key}`}>
-                Play {game.name}
-              </Link>
-            </article>
+          {screen.recommendationSummaryLines.map((line) => (
+            <p className="compact-copy" key={line}>{line}</p>
           ))}
         </div>
+        {screen.recommendationCards.length > 0 ? (
+          <div className={styles["result-recommendation-grid"]}>
+            {screen.recommendationCards.map((game) => (
+              <GamePreviewCard
+                actionLabel={`Play ${game.name}`}
+                className={styles["result-recommendation-card"]}
+                description={game.shortDescription}
+                gameKey={game.key}
+                key={game.key}
+                kicker="Next game"
+                name={game.name}
+                previewAlt={game.previewAlt}
+                previewObjectPosition={game.previewObjectPosition}
+                previewSrc={game.previewSrc}
+                secondaryText={game.recommendationText}
+              />
+            ))}
+          </div>
+        ) : null}
       </section>
 
       {result.status === "PENDING_SAVE" && result.viewerMode === "owner" ? (

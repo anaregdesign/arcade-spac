@@ -23,18 +23,21 @@ type ResultView = {
   primaryMetric: string;
   primaryMetricLabel: string;
   rankingsHref: string;
+  recommendations: Array<{
+    key: string;
+    name: string;
+    previewAlt: string | null;
+    previewObjectPosition?: string;
+    previewSrc: string | null;
+    recommendationText: string;
+    shortDescription: string;
+  }>;
   selfBestBadge: string;
   selfBestDeltaLabel: string;
   selfBestDetail: string;
   shareAvailabilityNote: string;
   shareText: string;
   shareUrl: string;
-  recommendations: Array<{
-    key: string;
-    name: string;
-    recommendationText: string;
-    shortDescription: string;
-  }>;
   stateExplanation: string | null;
   status: string;
   statusLabel: string;
@@ -61,6 +64,11 @@ function getCompactStateCopy(result: ResultView) {
   return null;
 }
 
+function getRecommendationSummaryLines(result: ResultView) {
+  return [result.summaryText, result.stateExplanation]
+    .filter((line): line is string => Boolean(line));
+}
+
 export function useResultScreen(result: ResultView) {
   return {
     compactStateCopy: getCompactStateCopy(result),
@@ -75,6 +83,7 @@ export function useResultScreen(result: ResultView) {
       { label: "Board score", value: String(result.competitivePoints) },
     ],
     recommendationCards: result.recommendations,
+    recommendationSummaryLines: getRecommendationSummaryLines(result),
     sharePreviewLines: [result.gameName, result.gameDescription, result.shareUrl],
     statusBadgeClass: result.status === "COMPLETED"
       ? "status-badge status-badge-success"

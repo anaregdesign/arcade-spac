@@ -4,6 +4,7 @@ import { getPlayResultById } from "../../infrastructure/repositories/gameplay.re
 import type { PendingResultDraft } from "../../infrastructure/auth/session.server";
 import type { GameKey } from "../../../domain/entities/game-catalog";
 import { getGameDefinition, getGameSuccessfulResultLabel, resolveGameKey, toRouteGameKey } from "../../../domain/entities/game-catalog";
+import { previewByGameKey } from "../../../domain/entities/game-previews";
 import {
   buildPrimaryMetricShareLine,
   comparePrimaryMetrics,
@@ -54,6 +55,9 @@ export type ResultViewModel = {
   recommendations: Array<{
     key: string;
     name: string;
+    previewAlt: string | null;
+    previewObjectPosition?: string;
+    previewSrc: string | null;
     recommendationText: string;
     shortDescription: string;
   }>;
@@ -275,12 +279,19 @@ function buildNextGameRecommendations(input: {
       return fallbackDelta !== 0 ? fallbackDelta : left.name.localeCompare(right.name);
     })
     .slice(0, 3)
-    .map((game) => ({
-      key: game.key,
-      name: game.name,
-      recommendationText: game.recommendationText ?? game.shortDescription,
-      shortDescription: game.shortDescription,
-    }));
+    .map((game) => {
+      const preview = previewByGameKey[game.key];
+
+      return {
+        key: game.key,
+        name: game.name,
+        previewAlt: preview?.previewAlt ?? null,
+        previewObjectPosition: preview?.previewObjectPosition,
+        previewSrc: preview?.previewSrc ?? null,
+        recommendationText: game.recommendationText ?? game.shortDescription,
+        shortDescription: game.shortDescription,
+      };
+    });
 }
 
 function getExcludedBoardValue(result: PersistedPlayResult, isTenantVisible: boolean) {
