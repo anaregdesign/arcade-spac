@@ -1,0 +1,208 @@
+export type GamePreview = {
+  previewAlt: string | null;
+  previewObjectPosition?: string;
+  previewSrc: string | null;
+};
+
+export const previewByGameKey: Record<string, GamePreview> = {
+  "beat-match": {
+    previewAlt: "Beat Match lane board with a center hit zone and three rhythm lanes",
+    previewSrc: "/images/games/beat-match-preview.svg",
+  },
+  "block-tessellate": {
+    previewAlt: "Block Tessellate silhouette board with a falling piece queue, ghost landing cells, and hard-drop controls",
+    previewSrc: "/images/games/block-tessellate-preview.svg",
+  },
+  "bounce-angle": {
+    previewAlt: "Bounce Angle ricochet board with a traced bank shot, target pocket, and fixed angle chooser",
+    previewSrc: "/images/games/bounce-angle-preview.svg",
+  },
+  "cascade-flip": {
+    previewAlt: "Cascade Flip stream with a target order strip above a shifting memory board",
+    previewSrc: "/images/games/cascade-flip-preview.svg",
+  },
+  "gap-rush": {
+    previewAlt: "Gap Rush corridor with a drifting runner, live wall opening, and lane target pads",
+    previewSrc: "/images/games/gap-rush-preview.svg",
+  },
+  "box-fill": {
+    previewAlt: "Box Fill tray-and-board puzzle with selected polyomino pieces and a highlighted anchor preview",
+    previewSrc: "/images/games/box-fill-preview.svg",
+  },
+  "bubble-spawn": {
+    previewAlt: "Bubble Spawn field with growing colored bubbles, dual pressure meters, and a highlighted best burst target",
+    previewSrc: "/images/games/bubble-spawn-preview.svg",
+  },
+  "cascade-clear": {
+    previewAlt: "Cascade Clear board with row and column trigger rails surrounding a color token grid",
+    previewSrc: "/images/games/cascade-clear-preview.svg",
+  },
+  "chain-trigger": {
+    previewAlt: "Chain Trigger graph board with a source node, armed helper node, and propagation links",
+    previewSrc: "/images/games/chain-trigger-preview.svg",
+  },
+  "icon-chain": {
+    previewAlt: "Icon Chain clue board with a revealed icon strip and card-like order clues",
+    previewSrc: "/images/games/icon-chain-preview.svg",
+  },
+  "line-connect": {
+    previewAlt: "Line Connect grid with labeled node pairs, an active route, and a step-by-step path build",
+    previewSrc: "/images/games/line-connect-preview.svg",
+  },
+  "merge-climb": {
+    previewAlt: "Merge Climb number board with directional controls, a goal tile, and a next spawn panel",
+    previewSrc: "/images/games/merge-climb-preview.svg",
+  },
+  "relative-pitch": {
+    previewAlt: "Relative Pitch panel with replay controls and four candidate pads around a current round prompt",
+    previewSrc: "/images/games/relative-pitch-preview.svg",
+  },
+  "color-sweep": {
+    previewAlt: "Color Sweep board showing a target swatch and a grid of colored tiles",
+    previewSrc: "/images/games/color-sweep-preview.svg",
+  },
+  "color-census": {
+    previewAlt: "Color Census mosaic with a hidden query asking which color appeared most",
+    previewSrc: "/images/games/color-census-preview.svg",
+  },
+  "flip-match": {
+    previewAlt: "Flip Match target and live card boards linked by a horizontal flip rule",
+    previewSrc: "/images/games/flip-match-preview.svg",
+  },
+  "position-lock": {
+    previewAlt: "Position Lock board with labeled tokens returning to remembered final cells",
+    previewSrc: "/images/games/position-lock-preview.svg",
+  },
+  "phase-lock": {
+    previewAlt: "Phase Lock wheel stack with rotating markers and glowing target bands",
+    previewSrc: "/images/games/phase-lock-preview.svg",
+  },
+  "sync-pulse": {
+    previewAlt: "Sync Pulse dual ring board with two pulse circles collapsing into a shared sync pad",
+    previewSrc: "/images/games/sync-pulse-preview.svg",
+  },
+  "glow-cycle": {
+    previewAlt: "Glow Cycle node grid with a highlighted target orb and a shared sync meter",
+    previewSrc: "/images/games/glow-cycle-preview.svg",
+  },
+  "tempo-hold": {
+    previewAlt: "Tempo Hold meter board with a glowing target zone and a long hold bar",
+    previewSrc: "/images/games/tempo-hold-preview.svg",
+  },
+  "tempo-weave": {
+    previewAlt: "Tempo Weave dual-lane rhythm board with independent lane markers and center hit zones",
+    previewSrc: "/images/games/tempo-weave-preview.svg",
+  },
+  "tap-safe": {
+    previewAlt: "Tap Safe wave board mixing safe targets and hazard objects with short-lived badges",
+    previewSrc: "/images/games/tap-safe-preview.svg",
+  },
+  "rotate-align": {
+    previewAlt: "Rotate Align path board with rotatable route tiles between start and end",
+    previewSrc: "/images/games/rotate-align-preview.svg",
+  },
+  "spinner-aim": {
+    previewAlt: "Spinner Aim ring with a rotating launcher, target arc, and hazard arc",
+    previewSrc: "/images/games/spinner-aim-preview.svg",
+  },
+  minesweeper: {
+    previewAlt: "Minesweeper board with opened cells and numbered hints",
+    previewSrc: "/images/games/minesweeper-preview.svg",
+  },
+  "number-chain": {
+    previewAlt: "Number Chain board with numbered tiles that must be tapped in order",
+    previewSrc: "/images/games/number-chain-preview.svg",
+  },
+  "orbit-tap": {
+    previewAlt: "Orbit Tap ring with a moving marker and a highlighted gate",
+    previewSrc: "/images/games/orbit-tap-preview.svg",
+  },
+  "path-recall": {
+    previewAlt: "Path Recall board showing a remembered route across a grid",
+    previewSrc: "/images/games/path-recall-preview.svg",
+  },
+  "pair-flip": {
+    previewAlt: "Pair Flip board with memory cards being turned over to reveal matching symbols",
+    previewSrc: "/images/games/pair-flip-preview.svg",
+  },
+  "pattern-echo": {
+    previewAlt: "Pattern Echo board with a 3x3 grid of coloured pads",
+    previewSrc: "/images/games/pattern-echo-preview.svg",
+  },
+  "sequence-point": {
+    previewAlt: "Sequence Point grid showing a fast memory sequence across lit points",
+    previewSrc: "/images/games/sequence-point-preview.svg",
+  },
+  "hue-drift": {
+    previewAlt: "Hue Drift gradient row with a missing color step and answer swatches",
+    previewSrc: "/images/games/hue-drift-preview.svg",
+  },
+  "precision-drop": {
+    previewAlt: "Falling ball above a target line in a vertical lane",
+    previewSrc: "/images/games/precision-drop-preview.svg",
+  },
+  "pulse-count": {
+    previewAlt: "Pulse Count signal orb with answer buttons beneath it",
+    previewSrc: "/images/games/pulse-count-preview.svg",
+  },
+  "quick-sum": {
+    previewAlt: "Quick Sum prompt card with arithmetic and multiple answer choices",
+    previewSrc: "/images/games/quick-sum-preview.svg",
+  },
+  "shape-morph": {
+    previewAlt: "Shape Morph prompt showing a sequence of evolving glyphs and four answer choices",
+    previewSrc: "/images/games/shape-morph-preview.svg",
+  },
+  "sum-grid": {
+    previewAlt: "Sum Grid board showing row and column targets around a number grid",
+    previewSrc: "/images/games/sum-grid-preview.svg",
+  },
+  "swap-solve": {
+    previewAlt: "Swap Solve board showing target and live grids connected by a swap arrow",
+    previewSrc: "/images/games/swap-solve-preview.svg",
+  },
+  "symbol-hunt": {
+    previewAlt: "Symbol Hunt board with a target symbol and a noisy symbol grid",
+    previewSrc: "/images/games/symbol-hunt-preview.svg",
+  },
+  "hidden-find": {
+    previewAlt: "Hidden Find scene filled with lookalike symbols and one highlighted target motif",
+    previewSrc: "/images/games/hidden-find-preview.svg",
+  },
+  "spot-change": {
+    previewAlt: "Spot Change original and changed scene boards with one highlighted difference",
+    previewSrc: "/images/games/spot-change-preview.svg",
+  },
+  sudoku: {
+    previewAlt: "Sudoku puzzle board with preset digits and empty cells",
+    previewSrc: "/images/games/sudoku-preview.svg",
+  },
+  "target-trail": {
+    previewAlt: "Target Trail grid with one highlighted tile and visited cells behind it",
+    previewSrc: "/images/games/target-trail-preview.svg",
+  },
+  "light-grid": {
+    previewAlt: "Light Grid target and live boards shown side by side",
+    previewSrc: "/images/games/light-grid-preview.svg",
+  },
+  "tile-shift": {
+    previewAlt: "Tile Shift target board and live board with row and column controls",
+    previewSrc: "/images/games/tile-shift-preview.svg",
+  },
+  "tile-instant": {
+    previewAlt: "Tile Instant target memory board next to a shuffled live reconstruction board",
+    previewSrc: "/images/games/tile-instant-preview.svg",
+  },
+  "zone-lock": {
+    previewAlt: "Zone Lock puzzle board with overlapping zone cards and lock-count targets",
+    previewSrc: "/images/games/zone-lock-preview.svg",
+  },
+  "stack-sort": {
+    previewAlt: "Stack Sort puzzle with colored token columns",
+    previewSrc: "/images/games/stack-sort-preview.svg",
+  },
+  "mirror-match": {
+    previewAlt: "Mirror Match target pattern next to an editable mirror board",
+    previewSrc: "/images/games/mirror-match-preview.svg",
+  },
+};

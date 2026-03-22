@@ -104,23 +104,19 @@
 
 .result-detail-copy {
   display: grid;
-  gap: 6px;
-  margin-top: 14px;
+  gap: 4px;
+  margin-top: 10px;
 }
 
 .result-recommendation-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
-  margin-top: 16px;
+  margin-top: 12px;
 }
 
 .result-recommendation-card {
-  display: grid;
-  gap: 10px;
-  padding: 14px;
-  border-radius: 18px;
-  background: var(--card-muted);
+  min-height: 100%;
 }
 
 .result-share-dialog {

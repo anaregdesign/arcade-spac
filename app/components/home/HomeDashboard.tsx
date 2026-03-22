@@ -1,6 +1,5 @@
-import { Link } from "react-router";
-
 import { FavoriteToggle } from "../shared/FavoriteToggle";
+import { GamePreviewCard } from "../shared/GamePreviewCard";
 import styles from "./HomeDashboard.module.css";
 
 type HomeDashboardProps = {
@@ -114,43 +113,19 @@ export function HomeDashboard({
       <div className={["game-grid", styles["home-game-grid"], styles["home-primary-grid"]].join(" ")}>
         {games.map((game) => {
           return (
-            <article key={game.key} className={["game-card", styles["home-game-card"]].join(" ")}>
-              <div className={styles["home-card-header"]}>
-                <div className={styles["home-card-heading"]}>
-                  <h3 className="card-title">{game.name}</h3>
-                  <span className={styles["home-card-kicker"]}>{game.runLabel}</span>
-                </div>
-                <FavoriteToggle compact gameKey={game.key} gameName={game.name} isFavorite={game.isFavorite} />
-              </div>
-              <Link
-                aria-label={`Open ${game.name}`}
-                className={styles["game-preview-link"]}
-                to={`/games/${game.key}`}
-              >
-                <div className={styles["game-preview-frame"]}>
-                  {game.previewSrc && game.previewAlt ? (
-                    <img
-                      alt={game.previewAlt}
-                      className={styles["game-preview-image"]}
-                      loading="lazy"
-                      src={game.previewSrc}
-                      style={{ objectPosition: game.previewObjectPosition ?? "center center" }}
-                    />
-                  ) : (
-                    <div className={styles["game-preview-fallback"]} aria-hidden="true">
-                      <span>{game.name.slice(0, 2).toUpperCase()}</span>
-                    </div>
-                  )}
-                </div>
-                <div className={styles["home-card-body"]}>
-                  <p className="compact-copy">{game.shortDescription}</p>
-                  <div className={styles["home-card-meta"]}>
-                    <span className="status-badge status-badge-neutral">{game.metricSummary}</span>
-                    {game.isFavorite ? <span className="status-badge status-badge-neutral">Saved</span> : null}
-                  </div>
-                </div>
-              </Link>
-            </article>
+            <GamePreviewCard
+              badges={[game.metricSummary, ...(game.isFavorite ? ["Saved"] : [])]}
+              className={styles["home-game-card"]}
+              description={game.shortDescription}
+              gameKey={game.key}
+              headerAction={<FavoriteToggle compact gameKey={game.key} gameName={game.name} isFavorite={game.isFavorite} />}
+              key={game.key}
+              kicker={game.runLabel}
+              name={game.name}
+              previewAlt={game.previewAlt}
+              previewObjectPosition={game.previewObjectPosition}
+              previewSrc={game.previewSrc}
+            />
           );
         })}
       </div>
