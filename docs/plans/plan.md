@@ -11,3 +11,4 @@
 - [x] Gate `shared-azure-rollout.yml` runtime-config and database jobs behind explicit workflow-call inputs while preserving the deploy and smoke path when rollout is still required
 - [x] Align the Azure delivery spec and runbooks with the new release-stage classification contract
 - [x] Validate the touched workflow files after the change
+- [x] Resolve the Vite and React Router peer dependency conflict that blocks `npm ci` during GHCR image publish, then retry the release workflow
