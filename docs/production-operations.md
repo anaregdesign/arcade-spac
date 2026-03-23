@@ -24,7 +24,7 @@ This runbook records the repository-side production contract for Arcade on Azure
   - uses the `production` OIDC identity to sync runtime config, run schema migration in an Azure-hosted job, deploy the recovery image, smoke-test the result, and verify the runtime contract
 - Routine deploy:
   - `.github/workflows/release-container-image.yml`
-  - job shape: `publish` -> `classify_release_scope` -> optional `plan_infra` -> optional `deploy_infra` -> `sync_runtime_config` -> `migrate_database` -> `deploy_app` -> `smoke_test`
+  - job shape: `publish` -> `classify_release_scope` -> optional `plan_infra` -> optional `deploy_infra` -> optional shared rollout (`sync_runtime_config` -> `bootstrap_sql` -> `migrate_database` -> `deploy_app` -> `smoke_test`)
 - Runtime verification:
   - `.github/workflows/verify-production-runtime.yml`
 
@@ -53,11 +53,12 @@ This runbook records the repository-side production contract for Arcade on Azure
 3. When redeploying into another resource group during dev, update `AZURE_RESOURCE_GROUP` and `AZURE_APP_NAME` first.
 4. Keep `PUBLIC_APP_URL` aligned to the final custom domain URL, or leave it unset so the workflow derives the current Front Door host automatically.
 5. Update the Microsoft Entra app registration redirect URI when the public host changes.
-6. Publish the release so the GitHub workflow runs `publish`, classifies whether the release touched infra-owned files, skips `plan_infra` and `deploy_infra` for app-only releases, and otherwise runs `plan_infra`, optional `deploy_infra`, `sync_runtime_config`, `migrate_database`, `deploy_app`, and `smoke_test`.
-7. Confirm the Azure-hosted migration job applied the checked-in Prisma SQL files successfully before the app rollout is treated as complete.
-8. Confirm the workflow completed successfully.
-9. Use `Verify Production Runtime` for the post-release contract check.
-10. Verify hosted sign-in, gameplay, result, rankings, and profile screens in a browser.
+6. Publish the release so the GitHub workflow runs `publish`, classifies whether the release touched infra-owned, runtime-config-owned, database-owned, or rollout-owned files, skips `plan_infra` and `deploy_infra` for non-infra releases, and skips the shared rollout entirely when the release only republishes artifacts or workflow/docs changes.
+7. When the shared rollout still runs, expect `sync_runtime_config` only for infra or runtime-config contract changes, and expect `bootstrap_sql` plus `migrate_database` only for infra or database contract changes.
+8. Confirm the Azure-hosted migration job applied the checked-in Prisma SQL files successfully before the app rollout is treated as complete when database jobs were required.
+9. Confirm the workflow completed successfully.
+10. Use `Verify Production Runtime` for the post-release contract check when the rollout path ran.
+11. Verify hosted sign-in, gameplay, result, rankings, and profile screens in a browser when the rollout path ran.
 
 ## Full Bootstrap Or Recovery Procedure
 
@@ -77,6 +78,8 @@ This runbook records the repository-side production contract for Arcade on Azure
 - `Bootstrap Azure Recovery` owns resource-group creation and initial Azure SQL principal bootstrap through GitHub Actions OIDC.
 - `Release Azure Delivery` owns routine infra convergence, runtime config sync, workflow-owned schema migration, image rollout, and smoke testing through GitHub Actions OIDC.
 - `Release Azure Delivery` only enters infra planning when the release diff touches repo-owned baseline inputs under `infra/` or the Azure scripts that shape Bicep parameters and resource-name resolution; app-only releases bypass infra convergence and continue directly to the shared rollout path.
+- `Release Azure Delivery` only enters the shared rollout path when the release diff touches rollout-owned app/runtime inputs. Workflow-only or docs-only releases now stop after GHCR publish and do not ask the `production` identity to touch Key Vault.
+- `Release Azure Delivery` only asks the `production` identity to sync App Configuration and Key Vault when the release diff touches runtime-config-owned inputs or the infra deploy path actually ran.
 - `Verify Production Runtime` owns the supported hosted contract verification path.
 - GitHub-hosted workflow jobs do not connect directly to Azure SQL `Private Endpoint`; every SQL data-plane action must stay inside Azure-hosted jobs.
 - If `sync_runtime_config` fails, treat missing resource-group scope `App Configuration Data Owner` or `Key Vault Secrets Officer` rights on the `production` OIDC identity as bootstrap drift first.

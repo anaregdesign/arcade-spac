@@ -19,6 +19,21 @@ on:
         description: GitHub Environment that owns runtime config, deployment, and smoke-test credentials for this rollout
         required: true
         type: string
+      run_runtime_config_sync:
+        description: Whether the rollout should sync App Configuration and Key Vault before deploy
+        required: false
+        default: true
+        type: boolean
+      run_sql_bootstrap:
+        description: Whether the rollout should run the Azure-hosted SQL bootstrap job before deploy
+        required: false
+        default: true
+        type: boolean
+      run_database_migration:
+        description: Whether the rollout should run the Azure-hosted schema migration job before deploy
+        required: false
+        default: true
+        type: boolean
       smoke_test_retries:
         description: Retry budget for the final smoke test
         required: false
@@ -40,6 +55,7 @@ jobs:
   sync_runtime_config:
     name: Sync Runtime Config To Azure Stores
     runs-on: ubuntu-latest
+    if: ${{ inputs.run_runtime_config_sync }}
     environment: ${{ inputs.deployment_environment }}
     permissions:
       contents: read
@@ -96,6 +112,7 @@ jobs:
     timeout-minutes: 60
     needs:
       - sync_runtime_config
+    if: ${{ always() && !cancelled() && inputs.run_sql_bootstrap && (needs.sync_runtime_config.result == 'success' || needs.sync_runtime_config.result == 'skipped') }}
     environment: ${{ inputs.bootstrap_environment }}
     permissions:
       contents: read
@@ -144,6 +161,7 @@ jobs:
     needs:
       - sync_runtime_config
       - bootstrap_sql
+    if: ${{ always() && !cancelled() && inputs.run_database_migration && (needs.sync_runtime_config.result == 'success' || needs.sync_runtime_config.result == 'skipped') && (needs.bootstrap_sql.result == 'success' || needs.bootstrap_sql.result == 'skipped') }}
     environment: ${{ inputs.deployment_environment }}
     permissions:
       contents: read
@@ -191,6 +209,7 @@ jobs:
     needs:
       - sync_runtime_config
       - migrate_database
+    if: ${{ always() && !cancelled() && (needs.sync_runtime_config.result == 'success' || needs.sync_runtime_config.result == 'skipped') && (needs.migrate_database.result == 'success' || needs.migrate_database.result == 'skipped') }}
     environment: ${{ inputs.deployment_environment }}
     permissions:
       contents: read
@@ -211,7 +230,7 @@ jobs:
       CONTAINER_REGISTRY_PASSWORD: ${{ secrets.CONTAINER_REGISTRY_PASSWORD }}
       CONTAINER_REGISTRY_SERVER: ${{ vars.CONTAINER_REGISTRY_SERVER }}
       CONTAINER_REGISTRY_USERNAME: ${{ vars.CONTAINER_REGISTRY_USERNAME }}
-      FORCE_CONTAINER_APP_UPDATE: ${{ needs.sync_runtime_config.outputs.config_changed }}
+      FORCE_CONTAINER_APP_UPDATE: ${{ needs.sync_runtime_config.outputs.config_changed == 'true' }}
     steps:
       - name: Check out the repo
         uses: actions/checkout@v5

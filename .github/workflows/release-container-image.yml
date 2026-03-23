@@ -82,7 +82,10 @@ jobs:
     permissions:
       contents: read
     outputs:
+      requires_rollout: ${{ steps.classify.outputs.requires_rollout }}
       requires_infra: ${{ steps.classify.outputs.requires_infra }}
+      requires_runtime_config_sync: ${{ steps.classify.outputs.requires_runtime_config_sync }}
+      requires_database_jobs: ${{ steps.classify.outputs.requires_database_jobs }}
       previous_tag: ${{ steps.classify.outputs.previous_tag }}
     steps:
       - name: Check out the repo
@@ -104,12 +107,19 @@ jobs:
           echo "previous_tag=$PREVIOUS_TAG" >> "$GITHUB_OUTPUT"
 
           if [[ -z "$PREVIOUS_TAG" ]]; then
+            echo "requires_rollout=true" >> "$GITHUB_OUTPUT"
             echo "requires_infra=true" >> "$GITHUB_OUTPUT"
+            echo "requires_runtime_config_sync=true" >> "$GITHUB_OUTPUT"
+            echo "requires_database_jobs=true" >> "$GITHUB_OUTPUT"
             echo "No previous release tag was found. Running infra planning defensively." >> "$GITHUB_STEP_SUMMARY"
             exit 0
           fi
 
-          CHANGED_PATHS="$({
+          ALL_CHANGED_PATHS="$({
+            git diff --name-only "$PREVIOUS_TAG" "$CURRENT_TAG"
+          } || true)"
+
+          INFRA_CHANGED_PATHS="$({
             git diff --name-only "$PREVIOUS_TAG" "$CURRENT_TAG" -- \
               infra \
               scripts/azure/append-bicep-resource-parameters.sh \
@@ -117,20 +127,116 @@ jobs:
               scripts/azure/resolve-hosted-resource-inputs.sh
           } || true)"
 
-          if [[ -n "$CHANGED_PATHS" ]]; then
+          RUNTIME_CONFIG_CHANGED_PATHS="$({
+            git diff --name-only "$PREVIOUS_TAG" "$CURRENT_TAG" -- \
+              .github/workflows/shared-azure-rollout.yml \
+              scripts/azure/sync-runtime-config.sh \
+              scripts/azure/sync-container-app-runtime-env.sh \
+              scripts/azure/verify-production-runtime.sh \
+              app/lib/server/infrastructure/config
+          } || true)"
+
+          DATABASE_CHANGED_PATHS="$({
+            git diff --name-only "$PREVIOUS_TAG" "$CURRENT_TAG" -- \
+              prisma \
+              prisma.config.ts \
+              scripts/prisma-sql-migration-runner.mjs \
+              scripts/run-migrations.mjs \
+              scripts/azure/init-sql.mjs \
+              scripts/azure/run-prisma-migration-job.sh \
+              scripts/azure/run-sql-bootstrap-job.sh
+          } || true)"
+
+          ROLLOUT_CHANGED_PATHS="$({
+            git diff --name-only "$PREVIOUS_TAG" "$CURRENT_TAG" -- \
+              Dockerfile \
+              package.json \
+              package-lock.json \
+              tsconfig.json \
+              vite.config.ts \
+              react-router.config.ts \
+              prisma.config.ts \
+              app \
+              lib \
+              public \
+              prisma \
+              scripts/start-server.mjs \
+              scripts/serve-runtime.mjs \
+              scripts/azure/deploy-container-app-image.sh \
+              scripts/azure/postprovision.sh \
+              scripts/azure/smoke-test.sh \
+              scripts/azure/sync-container-app-runtime-env.sh
+          } || true)"
+
+          if [[ -n "$INFRA_CHANGED_PATHS" ]]; then
             echo "requires_infra=true" >> "$GITHUB_OUTPUT"
-            {
-              echo "Infra-owned paths changed between $PREVIOUS_TAG and $CURRENT_TAG:"
-              echo
-              printf '%s\n' "$CHANGED_PATHS"
-            } >> "$GITHUB_STEP_SUMMARY"
-            exit 0
+          else
+            echo "requires_infra=false" >> "$GITHUB_OUTPUT"
           fi
 
-          echo "requires_infra=false" >> "$GITHUB_OUTPUT"
+          if [[ -n "$RUNTIME_CONFIG_CHANGED_PATHS" || -n "$INFRA_CHANGED_PATHS" ]]; then
+            echo "requires_runtime_config_sync=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "requires_runtime_config_sync=false" >> "$GITHUB_OUTPUT"
+          fi
+
+          if [[ -n "$DATABASE_CHANGED_PATHS" || -n "$INFRA_CHANGED_PATHS" ]]; then
+            echo "requires_database_jobs=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "requires_database_jobs=false" >> "$GITHUB_OUTPUT"
+          fi
+
+          if [[ -n "$INFRA_CHANGED_PATHS" || -n "$RUNTIME_CONFIG_CHANGED_PATHS" || -n "$DATABASE_CHANGED_PATHS" || -n "$ROLLOUT_CHANGED_PATHS" ]]; then
+            echo "requires_rollout=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "requires_rollout=false" >> "$GITHUB_OUTPUT"
+          fi
+
           {
-            echo "No infra-owned path changes were detected between $PREVIOUS_TAG and $CURRENT_TAG."
-            echo "Azure infrastructure planning and deployment will be skipped for this release."
+            echo "Release diff classification for $PREVIOUS_TAG -> $CURRENT_TAG:"
+            echo
+            if [[ -n "$ALL_CHANGED_PATHS" ]]; then
+              echo "Changed paths:"
+              printf '%s\n' "$ALL_CHANGED_PATHS"
+              echo
+            else
+              echo "No repository paths changed between the compared tags."
+              echo
+            fi
+
+            if [[ -n "$INFRA_CHANGED_PATHS" ]]; then
+              echo "Infra-owned paths changed, so infra planning remains enabled:"
+              printf '%s\n' "$INFRA_CHANGED_PATHS"
+              echo
+            else
+              echo "No infra-owned path changes were detected."
+              echo
+            fi
+
+            if [[ -n "$RUNTIME_CONFIG_CHANGED_PATHS" ]]; then
+              echo "Runtime-config-owned paths changed, so App Configuration and Key Vault sync remains enabled:"
+              printf '%s\n' "$RUNTIME_CONFIG_CHANGED_PATHS"
+              echo
+            else
+              echo "No runtime-config-owned path changes were detected."
+              echo
+            fi
+
+            if [[ -n "$DATABASE_CHANGED_PATHS" ]]; then
+              echo "Database-owned paths changed, so SQL bootstrap and migration jobs remain enabled:"
+              printf '%s\n' "$DATABASE_CHANGED_PATHS"
+              echo
+            else
+              echo "No database-owned path changes were detected."
+              echo
+            fi
+
+            if [[ -n "$ROLLOUT_CHANGED_PATHS" ]]; then
+              echo "Rollout-owned application paths changed, so app deploy remains enabled:"
+              printf '%s\n' "$ROLLOUT_CHANGED_PATHS"
+            else
+              echo "No rollout-owned application paths changed. The release will publish the image only and skip the shared Azure rollout."
+            fi
           } >> "$GITHUB_STEP_SUMMARY"
 
   plan_infra:
@@ -462,6 +568,7 @@ jobs:
         !github.event.release.prerelease &&
         needs.publish.result == 'success' &&
         needs.classify_release_scope.result == 'success' &&
+        needs.classify_release_scope.outputs.requires_rollout == 'true' &&
         (needs.plan_infra.result == 'success' || needs.plan_infra.result == 'skipped') &&
         (needs.deploy_infra.result == 'success' || needs.deploy_infra.result == 'skipped')
       }}
@@ -474,5 +581,8 @@ jobs:
       resource_group_suffix: green
       bootstrap_environment: production
       deployment_environment: production
+      run_runtime_config_sync: ${{ needs.classify_release_scope.outputs.requires_runtime_config_sync == 'true' || needs.deploy_infra.result == 'success' }}
+      run_sql_bootstrap: ${{ needs.classify_release_scope.outputs.requires_database_jobs == 'true' || needs.deploy_infra.result == 'success' }}
+      run_database_migration: ${{ needs.classify_release_scope.outputs.requires_database_jobs == 'true' || needs.deploy_infra.result == 'success' }}
       smoke_test_retries: ${{ needs.deploy_infra.result == 'success' && '90' || '18' }}
     secrets: inherit

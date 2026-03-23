@@ -21,7 +21,7 @@ This checklist captures the repository contract for Azure-hosted delivery after 
 
 - `infra/main.bicep` provisions a VNet-integrated Container Apps environment, delegated Container Apps subnet, private-endpoint subnet, Azure Front Door Premium, Azure SQL, App Configuration, Key Vault, Application Insights, Log Analytics, a SQL runtime identity, a SQL migration identity, and a SQL bootstrap identity.
 - `.github/workflows/bootstrap-azure-recovery.yml` creates the resource group, deploys the hosted baseline, restores production release RBAC, bootstraps Azure SQL principals through an Azure-hosted job, syncs runtime config, runs schema migration through an Azure-hosted job, deploys the recovery image, smoke-tests it, and verifies the runtime contract.
-- `.github/workflows/release-container-image.yml` publishes immutable release images to GHCR, runs infra `what-if`, deploys infra only when real changes exist, syncs runtime config, bootstraps Azure SQL principals through an Azure-hosted job, runs schema migration through an Azure-hosted job, deploys the app revision, and smoke-tests it.
+- `.github/workflows/release-container-image.yml` publishes immutable release images to GHCR, classifies the release diff, runs infra `what-if` only when infra-owned paths changed, skips the shared rollout entirely when no rollout-owned paths changed, and otherwise runs only the runtime-config, database, and deploy stages required by that diff.
 - `scripts/azure/init-sql.mjs` is the Azure SQL principal reconciliation implementation.
 - `scripts/azure/run-sql-bootstrap-job.sh` is the workflow helper that starts the Azure-hosted SQL bootstrap job.
 - `scripts/azure/run-prisma-migration-job.sh` is the workflow helper that starts the Azure-hosted schema migration job.
@@ -249,7 +249,7 @@ Current repository note:
 1. Confirm `Quality Gates` is green for the target commit.
 2. If the resource group or hosted baseline is missing, run `Bootstrap Azure Recovery`.
 3. Confirm `bootstrap_sql` and `run_database_migration` both succeed before trusting the recovered app rollout.
-4. For routine forward deploys, publish a GitHub Release and confirm `migrate_database` succeeds before `deploy_app`.
+4. For routine forward deploys, publish a GitHub Release and confirm the classified rollout scope matches the release intent before expecting Key Vault sync, database jobs, or app deploy to run.
 5. Keep `Verify Production Runtime` available as the recurring hosted contract check.
 
 For the live release baseline, rollback notes, and operational checks, see `docs/production-operations.md`.
