@@ -3,13 +3,16 @@ import {
   Links,
   Meta,
   Outlet,
+  redirect,
   Scripts,
   ScrollRestoration,
   useRouteLoaderData,
 } from "react-router";
 
 import type { Route } from "./+types/root";
-import { getCurrentUserId } from "./lib/server/infrastructure/auth/session.server";
+import { normalizeArcadeLocaleSelection } from "./lib/domain/entities/locale";
+import { getCurrentUserId, sanitizeReturnToPath } from "./lib/server/infrastructure/auth/session.server";
+import { getLocalePreference, serializeLocalePreference } from "./lib/server/infrastructure/locale/locale-preference.server";
 import { getThemePreferenceByUserId } from "./lib/server/infrastructure/repositories/rankings-profile.repository.server";
 import "./app.css";
 
@@ -28,16 +31,43 @@ export const links: Route.LinksFunction = () => [
 
 export async function loader({ request }: Route.LoaderArgs) {
   const userId = await getCurrentUserId(request);
+  const { localeSelection, resolvedLocale } = await getLocalePreference(request);
   const themePreference = userId ? await getThemePreferenceByUserId(userId) : "LIGHT";
 
   return {
+    locale: resolvedLocale,
+    localeSelection,
     themePreference: themePreference === "DARK" ? "dark" : "light",
   } as const;
 }
 
-function AppDocument({ children, themePreference }: { children: React.ReactNode; themePreference: "dark" | "light" }) {
+export async function action({ request }: Route.ActionArgs) {
+  const formData = await request.formData();
+  const localeValue = formData.get("locale");
+  const returnToValue = formData.get("returnTo");
+
+  if (formData.get("intent") !== "setLocale") {
+    throw new Response("Unsupported action", { status: 400 });
+  }
+
+  const localeSelection = normalizeArcadeLocaleSelection(typeof localeValue === "string" ? localeValue : null);
+
+  if (!localeSelection) {
+    throw new Response("Locale is invalid", { status: 400 });
+  }
+
+  const returnTo = sanitizeReturnToPath(typeof returnToValue === "string" ? returnToValue : null) ?? "/";
+
+  return redirect(returnTo, {
+    headers: {
+      "Set-Cookie": await serializeLocalePreference(localeSelection),
+    },
+  });
+}
+
+function AppDocument({ children, locale, themePreference }: { children: React.ReactNode; locale: "en" | "ja" | "zh" | "fr"; themePreference: "dark" | "light" }) {
   return (
-    <html lang="ja">
+    <html lang={locale}>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -55,7 +85,11 @@ function AppDocument({ children, themePreference }: { children: React.ReactNode;
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const data = useRouteLoaderData<typeof loader>("root");
-  return <AppDocument themePreference={data?.themePreference ?? "light"}>{children}</AppDocument>;
+  return (
+    <AppDocument locale={data?.locale ?? "en"} themePreference={data?.themePreference ?? "light"}>
+      {children}
+    </AppDocument>
+  );
 }
 
 export default function App() {

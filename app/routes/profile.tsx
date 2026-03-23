@@ -4,14 +4,16 @@ import { ProfileScreen } from "../components/profile/ProfileScreen";
 import { AppShell } from "../components/shared/AppShell";
 import { buildSharedHelpSections } from "../components/shared/help-content";
 import { requireCurrentUserId } from "../lib/server/infrastructure/auth/session.server";
+import { getLocalePreference } from "../lib/server/infrastructure/locale/locale-preference.server";
 import { updateProfileRecord } from "../lib/server/infrastructure/repositories/rankings-profile.repository.server";
 import { getHomeDashboard } from "../lib/server/usecase/get-home-dashboard.server";
 import { getProfileView } from "../lib/server/usecase/get-profile-view.server";
 
 export async function loader({ request }: { request: Request }) {
   const userId = await requireCurrentUserId(request);
+  const { resolvedLocale } = await getLocalePreference(request);
   const [dashboard, profile] = await Promise.all([
-    getHomeDashboard(userId),
+    getHomeDashboard(userId, resolvedLocale),
     getProfileView(userId),
   ]);
 
@@ -65,7 +67,6 @@ export default function Profile() {
           },
         ]),
         title: "Profile help",
-        triggerLabel: "Help",
       }}
       sectionLabel="Player card"
       title="Profile"

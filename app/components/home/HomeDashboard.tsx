@@ -1,3 +1,9 @@
+import { useAppLocale } from "../../lib/client/usecase/locale/use-app-locale";
+import {
+  formatHomeMatchCount,
+  formatHomeVisibleFavoriteCount,
+  getHomeHubCopy,
+} from "../../lib/client/usecase/home-hub/home-hub-copy";
 import { FavoriteToggle } from "../shared/FavoriteToggle";
 import { GamePreviewCard } from "../shared/GamePreviewCard";
 import styles from "./HomeDashboard.module.css";
@@ -58,20 +64,23 @@ export function HomeDashboard({
   tagOptions,
   visibleFavoriteCount,
 }: HomeDashboardProps) {
+  const { locale } = useAppLocale();
+  const copy = getHomeHubCopy(locale);
+
   return (
     <section className={["feature-card", styles["home-hub-card"]].join(" ")}>
-      <div className={styles["home-hub-toolbar"]} aria-label="Game discovery controls">
+      <div className={styles["home-hub-toolbar"]} aria-label={copy.discoveryControlsLabel}>
         <label className={["field-block", styles["home-hub-search"]].join(" ")}>
-          <span className="field-label">Search</span>
+          <span className="field-label">{copy.searchLabel}</span>
           <input
             className="field-input"
             onChange={(event) => setSearch(event.currentTarget.value)}
-            placeholder="Find a game or style"
+            placeholder={copy.searchPlaceholder}
             value={search}
           />
         </label>
         <label className={["field-block", styles["home-hub-filter"]].join(" ")}>
-          <span className="field-label">Filter</span>
+          <span className="field-label">{copy.filterLabel}</span>
           <select className="field-select" onChange={(event) => setTag(event.currentTarget.value)} value={tag}>
             {tagOptions.map((option) => (
               <option key={option.value} value={option.value}>
@@ -81,7 +90,7 @@ export function HomeDashboard({
           </select>
         </label>
         <label className={["field-block", styles["home-hub-filter"]].join(" ")}>
-          <span className="field-label">Sort</span>
+          <span className="field-label">{copy.sortLabel}</span>
           <select className="field-select" onChange={(event) => setSort(event.currentTarget.value)} value={sort}>
             {sortOptions.map((option) => (
               <option key={option.value} value={option.value}>
@@ -91,7 +100,7 @@ export function HomeDashboard({
           </select>
         </label>
         <label className={["field-block", styles["home-hub-filter"], styles["home-hub-toggle-block"]].join(" ")}>
-          <span className="field-label">Favorites</span>
+          <span className="field-label">{copy.favoritesLabel}</span>
           <button
             aria-pressed={favoritesOnly}
             className={[
@@ -102,19 +111,19 @@ export function HomeDashboard({
             onClick={() => setFavoritesOnly(!favoritesOnly)}
             type="button"
           >
-            Favorites only
+            {copy.favoritesOnlyLabel}
           </button>
         </label>
       </div>
       <div className={styles["home-hub-meta-row"]}>
-        <span className="status-badge status-badge-neutral">{matchCount} games</span>
-        <span className="status-badge status-badge-neutral">{visibleFavoriteCount} visible favorites</span>
+        <span className="status-badge status-badge-neutral">{formatHomeMatchCount(locale, matchCount)}</span>
+        <span className="status-badge status-badge-neutral">{formatHomeVisibleFavoriteCount(locale, visibleFavoriteCount)}</span>
       </div>
       <div className={["game-grid", styles["home-game-grid"], styles["home-primary-grid"]].join(" ")}>
         {games.map((game) => {
           return (
             <GamePreviewCard
-              badges={[game.metricSummary, ...(game.isFavorite ? ["Saved"] : [])]}
+              badges={[game.metricSummary, ...(game.isFavorite ? [copy.savedBadgeLabel] : [])]}
               className={styles["home-game-card"]}
               description={game.shortDescription}
               gameKey={game.key}
@@ -131,15 +140,15 @@ export function HomeDashboard({
       </div>
       {games.length === 0 ? (
         <article className="latest-result-card home-empty-state">
-          <strong>{favoritesOnly ? "No favorite games match this view" : "No games match this search"}</strong>
+          <strong>{favoritesOnly ? copy.emptyFavoritesTitle : copy.emptySearchTitle}</strong>
           <p className="compact-copy">
             {favoritesOnly
-              ? "Try a broader search or turn off Favorites only so the full catalog comes back into view."
-              : "Try a broader search or switch the filter so the game grid can come back into view."}
+              ? copy.emptyFavoritesBody
+              : copy.emptySearchBody}
           </p>
           <div className="hero-actions compact-action-strip">
             <button className="action-link action-link-secondary" onClick={clearFilters} type="button">
-              Reset filters
+              {copy.resetFiltersLabel}
             </button>
           </div>
         </article>
@@ -147,7 +156,7 @@ export function HomeDashboard({
       {hasMore ? (
         <div ref={loadMoreTriggerRef} className="hero-actions compact-actions">
           <button className="action-link action-link-secondary" type="button" onClick={showMore}>
-            Show more games
+            {copy.showMoreGamesLabel}
           </button>
         </div>
       ) : null}

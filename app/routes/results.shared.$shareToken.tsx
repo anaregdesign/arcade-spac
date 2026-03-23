@@ -7,6 +7,7 @@ import { buildSharedHelpSections } from "../components/shared/help-content";
 import { recommendationFeedbackEventType } from "../lib/domain/services/contextual-recommendation";
 import { requireCurrentUserId } from "../lib/server/infrastructure/auth/session.server";
 import { getRuntimeConfig } from "../lib/server/infrastructure/config/runtime-config.server";
+import { getLocalePreference } from "../lib/server/infrastructure/locale/locale-preference.server";
 import { toggleUserFavoriteGame } from "../lib/server/infrastructure/repositories/user-favorites.repository.server";
 import { getPlayResultByShareToken } from "../lib/server/infrastructure/repositories/gameplay.repository.server";
 import { getHomeDashboard } from "../lib/server/usecase/get-home-dashboard.server";
@@ -15,11 +16,12 @@ import { recordRecommendationFeedbackEvent } from "../lib/server/usecase/recomme
 
 export async function loader({ request, params }: Route.LoaderArgs) {
   const viewerUserId = await requireCurrentUserId(request);
+  const { resolvedLocale } = await getLocalePreference(request);
   const runtimeConfig = getRuntimeConfig();
   const requestUrl = new URL(request.url);
   const publicBaseUrl = runtimeConfig.publicAppUrl ?? requestUrl.origin;
   const [dashboard, result] = await Promise.all([
-    getHomeDashboard(viewerUserId),
+    getHomeDashboard(viewerUserId, resolvedLocale),
     getPlayResultByShareToken(params.shareToken),
   ]);
 
@@ -38,6 +40,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   return {
     dashboard,
     result: await buildPersistedResultView({
+      locale: resolvedLocale,
       publicBaseUrl,
       result,
       viewerMode: "shared",
@@ -83,7 +86,6 @@ export default function SharedResultRoute() {
           },
         ]),
         title: "Result help",
-        triggerLabel: "Help",
       }}
       sectionLabel="Shared result"
       title={`${result.gameName} shared result`}

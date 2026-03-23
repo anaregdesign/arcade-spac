@@ -3,17 +3,6 @@ import { useLocation } from "react-router";
 
 import { useSoundMute } from "../sound/use-sound-mute";
 
-export type AppShellNavItem = {
-  key: "rankings" | "profile";
-  label: string;
-  to: string;
-};
-
-const navItems: AppShellNavItem[] = [
-  { key: "rankings", label: "Rankings", to: "/rankings" },
-  { key: "profile", label: "Profile", to: "/profile" },
-];
-
 export function useAppShell(input: { defaultHelpOpen?: boolean }) {
   const [isHelpOpen, setHelpOpen] = useState(Boolean(input.defaultHelpOpen));
   const [isMenuOpen, setMenuOpen] = useState(false);
@@ -42,7 +31,6 @@ export function useAppShell(input: { defaultHelpOpen?: boolean }) {
     isHelpOpen,
     isMenuOpen,
     muted,
-    navItems,
     navPanelId,
     toggleMute,
   };

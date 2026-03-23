@@ -1,4 +1,5 @@
 import { useGameInstructionsDialog } from "../../../lib/client/usecase/game-instructions-dialog/use-game-instructions-dialog";
+import { useAppLocale } from "../../../lib/client/usecase/locale/use-app-locale";
 
 import styles from "./GameWorkspaceShared.module.css";
 
@@ -25,17 +26,18 @@ type GameInstructionsDialogProps = {
 
 export function GameInstructionsDialog({
   instructions,
-  triggerLabel = "How to play",
+  triggerLabel,
 }: GameInstructionsDialogProps) {
   const dialog = useGameInstructionsDialog();
+  const { copy } = useAppLocale();
 
   return (
     <>
       <button className="action-link action-link-secondary" type="button" onClick={dialog.open}>
-        {triggerLabel}
+        {triggerLabel ?? copy.howToPlayLabel}
       </button>
       {dialog.isOpen ? (
-        <section className="help-overlay" aria-label={`${instructions.title} help`}>
+        <section className="help-overlay" aria-label={`${instructions.title} ${copy.howToPlayLabel}`}>
           <div
             aria-labelledby={dialog.titleId}
             aria-modal="true"
@@ -44,11 +46,11 @@ export function GameInstructionsDialog({
           >
             <div className="section-heading">
               <div>
-                <p className="eyebrow">How to play</p>
+                <p className="eyebrow">{copy.helpEyebrow}</p>
                 <h2 className="section-title" id={dialog.titleId}>{instructions.title}</h2>
               </div>
               <button className="action-link action-link-secondary" type="button" onClick={dialog.close}>
-                Close
+                {copy.closeLabel}
               </button>
             </div>
             <p className="compact-copy">{instructions.summary}</p>

@@ -1,4 +1,6 @@
+import type { SupportedArcadeLocale } from "../../../domain/entities/locale";
 import { previewByGameKey } from "../../../domain/entities/game-previews";
+import { formatHomeRunLabel, getHomeHubCopy } from "./home-hub-copy";
 
 type HomeGame = {
   currentRank: number | null;
@@ -22,9 +24,9 @@ export type HomeGameCard = HomeGame & {
 
 export { previewByGameKey };
 
-function getMetricSummary(game: Pick<HomeGame, "metricLabel" | "metricValue">) {
+function getMetricSummary(game: Pick<HomeGame, "metricLabel" | "metricValue">, locale: SupportedArcadeLocale) {
   if (game.metricValue === "No record yet") {
-    return game.metricValue;
+    return getHomeHubCopy(locale).noRecordYetLabel;
   }
 
   return `${game.metricLabel}: ${game.metricValue}`;
@@ -38,17 +40,17 @@ export function countVisibleUnplayedGames(games: HomeGame[]) {
   return games.filter((game) => game.playCount === 0).length;
 }
 
-export function toHomeGameCards(games: HomeGame[]): HomeGameCard[] {
+export function toHomeGameCards(games: HomeGame[], locale: SupportedArcadeLocale = "en"): HomeGameCard[] {
   return games.map((game) => {
     const preview = previewByGameKey[game.key];
 
     return {
       ...game,
-      metricSummary: getMetricSummary(game),
+      metricSummary: getMetricSummary(game, locale),
       previewAlt: preview?.previewAlt ?? null,
       previewObjectPosition: preview?.previewObjectPosition,
       previewSrc: preview?.previewSrc ?? null,
-      runLabel: game.playCount > 0 ? `${game.playCount} runs` : "First run",
+      runLabel: formatHomeRunLabel(locale, game.playCount),
     };
   });
 }

@@ -3,7 +3,9 @@ import { useNavigate, useSearchParams } from "react-router";
 
 import { readStoredHomeHubState, writeStoredHomeHubState } from "../../infrastructure/browser/home-hub-storage";
 import { readWindowScrollY, restoreWindowScroll, subscribeWindowScroll } from "../../infrastructure/browser/window-scroll";
+import { useAppLocale } from "../locale/use-app-locale";
 import { getGameHomeTags } from "../../../domain/entities/game-catalog";
+import { getHomeHubCopy, getLocalizedHomeTagLabel } from "./home-hub-copy";
 import { toHomeGameCards } from "./selectors";
 
 type HomeGame = {
@@ -41,21 +43,6 @@ const preferredTagOrder = [
   "ranked",
 ] as const;
 
-const tagLabelByValue: Record<string, string> = {
-  audio: "Audio",
-  "fast-start": "Fast start",
-  logic: "Logic",
-  memory: "Memory",
-  perception: "Perception",
-  played: "Played",
-  ranked: "Ranked",
-  reflex: "Reflex",
-  rhythm: "Rhythm",
-  spatial: "Spatial",
-  timing: "Timing",
-  unplayed: "Unplayed",
-};
-
 function getTagSetForGame(game: HomeGame) {
   const tags = ["all"];
 
@@ -74,12 +61,8 @@ function getTagSetForGame(game: HomeGame) {
   return tags;
 }
 
-function formatTagLabel(tag: string) {
-  return tagLabelByValue[tag]
-    ?? tag
-      .split("-")
-      .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-      .join(" ");
+function formatTagLabel(tag: string, locale: ReturnType<typeof useAppLocale>["locale"]) {
+  return getLocalizedHomeTagLabel(locale, tag);
 }
 
 function compareTagOrder(left: string, right: string) {
@@ -101,7 +84,7 @@ function compareTagOrder(left: string, right: string) {
   return leftIndex - rightIndex;
 }
 
-function matchesSearch(game: HomeGame, search: string) {
+function matchesSearch(game: HomeGame, search: string, locale: ReturnType<typeof useAppLocale>["locale"]) {
   if (!search) {
     return true;
   }
@@ -111,6 +94,7 @@ function matchesSearch(game: HomeGame, search: string) {
     game.shortDescription,
     game.recommendationText ?? "",
     ...getTagSetForGame(game),
+    ...getTagSetForGame(game).map((tag) => formatTagLabel(tag, locale)),
   ].join(" ").toLowerCase();
 
   return haystack.includes(search.toLowerCase());
@@ -171,6 +155,8 @@ function createSearchParams(input: { favoritesOnly: boolean; search: string; sor
 }
 
 export function useHomeHub(games: HomeGame[]) {
+  const { locale } = useAppLocale();
+  const copy = getHomeHubCopy(locale);
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const [didAttemptRestore, setDidAttemptRestore] = useState(false);
@@ -190,9 +176,9 @@ export function useHomeHub(games: HomeGame[]) {
     ),
   ).sort(compareTagOrder);
   const tagOptions: HomeTagOption[] = [
-    { label: "All games", value: "all" },
+    { label: copy.allGamesLabel, value: "all" },
     ...dynamicTags.map((candidate) => ({
-      label: formatTagLabel(candidate),
+      label: formatTagLabel(candidate, locale),
       value: candidate,
     })),
   ];
@@ -264,7 +250,7 @@ export function useHomeHub(games: HomeGame[]) {
 
   const filteredGames = games
     .filter((game) => !favoritesOnly || game.isFavorite)
-    .filter((game) => matchesSearch(game, search))
+    .filter((game) => matchesSearch(game, search, locale))
     .filter((game) => tag === "all" || getTagSetForGame(game).includes(tag))
     .sort((left, right) => compareGames(sort, left, right));
   const visibleGames = filteredGames.slice(0, visibleCount);
@@ -302,7 +288,7 @@ export function useHomeHub(games: HomeGame[]) {
  
 
   const highlightedGame = visibleGames[0] ?? null;
-  const visibleGameCards = toHomeGameCards(visibleGames);
+  const visibleGameCards = toHomeGameCards(visibleGames, locale);
 
   return {
     clearFilters() {
@@ -331,10 +317,10 @@ export function useHomeHub(games: HomeGame[]) {
     },
     sort,
     sortOptions: [
-      { label: "Recommended", value: "recommended" },
-      { label: "Name", value: "name" },
-      { label: "Recently played", value: "recent" },
-      { label: "Best rank", value: "rank" },
+      { label: copy.recommendedSortLabel, value: "recommended" },
+      { label: copy.nameSortLabel, value: "name" },
+      { label: copy.recentSortLabel, value: "recent" },
+      { label: copy.rankSortLabel, value: "rank" },
     ],
     tag,
     tagOptions,

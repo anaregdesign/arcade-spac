@@ -8,6 +8,7 @@ import { GameWorkspaceScreen } from "../components/gameplay/GameWorkspaceScreen"
 import { buildSharedHelpSections } from "../components/shared/help-content";
 import { resolveGameKey } from "../lib/domain/entities/game-catalog";
 import { commitSession, getCurrentUserId, getSession, requireCurrentUserId, setPendingResultDraft } from "../lib/server/infrastructure/auth/session.server";
+import { getLocalePreference } from "../lib/server/infrastructure/locale/locale-preference.server";
 import { toggleUserFavoriteGame } from "../lib/server/infrastructure/repositories/user-favorites.repository.server";
 import { getHomeDashboard, getGameWorkspace } from "../lib/server/usecase/get-home-dashboard.server";
 import { recordAbandonedRun, recordGameplayResult } from "../lib/server/usecase/gameplay/record-gameplay-result.server";
@@ -20,8 +21,9 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   }
 
   const userId = await requireCurrentUserId(request);
-  const dashboard = await getHomeDashboard(userId);
-  const game = await getGameWorkspace(canonicalGameKey ?? params.gameKey);
+  const { resolvedLocale } = await getLocalePreference(request);
+  const dashboard = await getHomeDashboard(userId, resolvedLocale);
+  const game = await getGameWorkspace(canonicalGameKey ?? params.gameKey, resolvedLocale);
   const gameSummary = dashboard.games.find((entry) => entry.key === game.key);
 
   return {
@@ -196,7 +198,6 @@ export default function GameWorkspace() {
           },
         ]),
         title: "Game help",
-        triggerLabel: "Help",
       }}
       sectionLabel="Game room"
       title={`${game.name}`}

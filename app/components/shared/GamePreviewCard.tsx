@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Link } from "react-router";
 
+import { useAppLocale } from "../../lib/client/usecase/locale/use-app-locale";
 import styles from "./GamePreviewCard.module.css";
 
 type GamePreviewCardProps = {
@@ -32,8 +33,16 @@ export function GamePreviewCard({
   previewSrc,
   secondaryText,
 }: GamePreviewCardProps) {
+  const { locale } = useAppLocale();
   const href = `/games/${gameKey}`;
   const showSecondaryText = secondaryText && secondaryText !== description;
+  const openLabel = locale === "ja"
+    ? `${name} を開く`
+    : locale === "zh"
+      ? `打开 ${name}`
+      : locale === "fr"
+        ? `Ouvrir ${name}`
+        : `Open ${name}`;
 
   return (
     <article className={["game-card", styles["game-preview-card"], className].filter(Boolean).join(" ")}>
@@ -44,7 +53,7 @@ export function GamePreviewCard({
         </div>
         {headerAction}
       </div>
-      <Link aria-label={`Open ${name}`} className={styles["game-preview-link"]} to={href}>
+      <Link aria-label={openLabel} className={styles["game-preview-link"]} to={href}>
         <div className={styles["game-preview-frame"]}>
           {previewSrc && previewAlt ? (
             <img

@@ -1,6 +1,7 @@
 import { Link } from "react-router";
 
 import { getGameInstructions, getGameWorkspaceComponent } from "../games/game-workspace-registry";
+import { useAppLocale } from "../../lib/client/usecase/locale/use-app-locale";
 import { FavoriteToggle } from "../shared/FavoriteToggle";
 import { useGameWorkspace } from "../../lib/client/usecase/game-workspace/use-game-workspace";
 import { GameWorkspaceRuntimeProvider } from "./workspace/game-workspace-runtime";
@@ -26,9 +27,10 @@ type GameWorkspaceScreenProps = {
 };
 
 export function GameWorkspaceScreen({ game }: GameWorkspaceScreenProps) {
+  const { locale } = useAppLocale();
   const workspace = useGameWorkspace();
   const GameWorkspaceComponent = getGameWorkspaceComponent(game.key);
-  const instructions = getGameInstructions(game.key);
+  const instructions = getGameInstructions(game.key, locale);
   const toolbarActions = (
     <>
       <FavoriteToggle compact gameKey={game.key} gameName={game.name} isFavorite={game.isFavorite} />

@@ -1,3 +1,6 @@
+import type { SupportedArcadeLocale } from "./locale";
+import { gameCatalogTranslations } from "./game-catalog.translations";
+
 type CountSupportMetricSource = "hintCount" | "mistakeCount";
 
 type CountSupportMetricDefinition = {
@@ -1493,6 +1496,26 @@ export function listPersistedGames() {
     accentColor: game.accentColor,
     rulesSummary: game.rulesSummary,
   }));
+}
+
+export function getLocalizedGameShortDescription(gameKey: string, locale: SupportedArcadeLocale) {
+  const definition = getGameDefinition(gameKey);
+
+  if (!definition) {
+    return gameKey;
+  }
+
+  return gameCatalogTranslations[definition.key]?.[locale]?.shortDescription ?? definition.shortDescription;
+}
+
+export function getLocalizedGameRulesSummary(gameKey: string, locale: SupportedArcadeLocale) {
+  const definition = getGameDefinition(gameKey);
+
+  if (!definition) {
+    return gameKey;
+  }
+
+  return gameCatalogTranslations[definition.key]?.[locale]?.rulesSummary ?? definition.rulesSummary;
 }
 
 export type GameKey = (typeof supportedGames)[number]["key"];

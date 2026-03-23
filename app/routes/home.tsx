@@ -4,8 +4,11 @@ import type { Route } from "./+types/home";
 import { HomeDashboard } from "../components/home/HomeDashboard";
 import { AppShell } from "../components/shared/AppShell";
 import { buildSharedHelpSections } from "../components/shared/help-content";
+import { formatHomeStartWithLabel, getHomeHubCopy } from "../lib/client/usecase/home-hub/home-hub-copy";
 import { useHomeHub } from "../lib/client/usecase/home-hub/use-home-hub";
+import { useAppLocale } from "../lib/client/usecase/locale/use-app-locale";
 import { requireCurrentUserId } from "../lib/server/infrastructure/auth/session.server";
+import { getLocalePreference } from "../lib/server/infrastructure/locale/locale-preference.server";
 import { toggleUserFavoriteGame } from "../lib/server/infrastructure/repositories/user-favorites.repository.server";
 import { getHomeDashboard } from "../lib/server/usecase/get-home-dashboard.server";
 
@@ -18,7 +21,8 @@ export function meta({}: Route.MetaArgs) {
 
 export async function loader({ request }: Route.LoaderArgs) {
   const userId = await requireCurrentUserId(request);
-  return getHomeDashboard(userId);
+  const { resolvedLocale } = await getLocalePreference(request);
+  return getHomeDashboard(userId, resolvedLocale);
 }
 
 export async function action({ request }: Route.ActionArgs) {
@@ -38,33 +42,33 @@ export async function action({ request }: Route.ActionArgs) {
 }
 
 export default function Home() {
+  const { locale } = useAppLocale();
+  const copy = getHomeHubCopy(locale);
   const dashboard = useLoaderData<typeof loader>();
   const hub = useHomeHub(dashboard.games);
 
   return (
     <AppShell
       currentPath="home"
-      sectionLabel="Play hub"
+      sectionLabel={copy.sectionLabel}
       help={{
         footer: (
           <>
             {hub.highlightedGame ? (
               <Link className="action-link action-link-primary" to={`/games/${hub.highlightedGame.key}`}>
-                Start with {hub.highlightedGame.name}
+                {formatHomeStartWithLabel(locale, hub.highlightedGame.name)}
               </Link>
             ) : null}
             <Link className="action-link action-link-secondary" to="/rankings">
-              Open rankings
+              {copy.openRankingsLabel}
             </Link>
           </>
         ),
-        intro: "Open help when you need a reminder about game choice, total points, rankings, or run states.",
+        intro: copy.helpIntro,
         sections: buildSharedHelpSections(),
-        title: "Arcade help",
-        titleEyebrow: "Help",
-        triggerLabel: "Help",
+        title: copy.helpTitle,
       }}
-      title="Choose your next game"
+      title={copy.title}
       user={dashboard.user}
     >
       <HomeDashboard

@@ -1,6 +1,7 @@
-import { Link } from "react-router";
+import { Link, useLocation } from "react-router";
 
 import { useAppShell } from "../../lib/client/usecase/app-shell/use-app-shell";
+import { useAppLocale } from "../../lib/client/usecase/locale/use-app-locale";
 import { AppHelpDialog } from "./AppHelpDialog";
 import type { AppHelpSection } from "./help-content";
 
@@ -26,6 +27,14 @@ type AppShellProps = {
 
 export function AppShell({ children, currentPath, sectionLabel, title, user, help }: AppShellProps) {
   const shell = useAppShell({ defaultHelpOpen: help?.defaultOpen });
+  const location = useLocation();
+  const { copy, localeSelection } = useAppLocale();
+  const returnTo = `${location.pathname}${location.search}`;
+  const navItems = [
+    { key: "home", label: copy.navHomeLabel, to: "/home" },
+    { key: "rankings", label: copy.navRankingsLabel, to: "/rankings" },
+    { key: "profile", label: copy.navProfileLabel, to: "/profile" },
+  ] as const;
 
   return (
     <div className="page-shell">
@@ -42,7 +51,7 @@ export function AppShell({ children, currentPath, sectionLabel, title, user, hel
             </p>
           </div>
           <button
-            aria-label={shell.muted ? "Unmute sounds" : "Mute sounds"}
+            aria-label={shell.muted ? copy.unmuteLabel : copy.muteLabel}
             aria-pressed={shell.muted}
             className="mute-toggle"
             type="button"
@@ -57,7 +66,7 @@ export function AppShell({ children, currentPath, sectionLabel, title, user, hel
             type="button"
             onClick={shell.handleMenuToggle}
           >
-            <span className="menu-toggle-label">{shell.isMenuOpen ? "Close menu" : "Open menu"}</span>
+            <span className="menu-toggle-label">{shell.isMenuOpen ? copy.menuCloseLabel : copy.menuOpenLabel}</span>
             <span className="menu-toggle-icon" aria-hidden="true">
               <span className="menu-toggle-bar" />
               <span className="menu-toggle-bar" />
@@ -66,8 +75,8 @@ export function AppShell({ children, currentPath, sectionLabel, title, user, hel
           </button>
         </div>
         <div className={shell.isMenuOpen ? "app-shell-panel app-shell-panel-open" : "app-shell-panel"} id={shell.navPanelId}>
-          <nav className="app-shell-nav" aria-label="Primary">
-            {shell.navItems.map((item) => (
+          <nav className="app-shell-nav" aria-label={copy.menuAriaLabel}>
+            {navItems.map((item) => (
               <Link
                 key={item.key}
                 className={item.key === currentPath ? "nav-pill nav-pill-active" : "nav-pill"}
@@ -78,6 +87,25 @@ export function AppShell({ children, currentPath, sectionLabel, title, user, hel
               </Link>
             ))}
           </nav>
+          <form action="/" className="locale-preference-form" method="post">
+            <input type="hidden" name="intent" value="setLocale" />
+            <input type="hidden" name="returnTo" value={returnTo} />
+            <label className="locale-preference-label">
+              <span>{copy.languageLabel}</span>
+              <select
+                className="locale-preference-select"
+                name="locale"
+                value={localeSelection}
+                onChange={(event) => event.currentTarget.form?.requestSubmit()}
+              >
+                <option value="auto">{copy.browserDefaultLabel}</option>
+                <option value="ja">日本語</option>
+                <option value="zh">中文</option>
+                <option value="en">English</option>
+                <option value="fr">Français</option>
+              </select>
+            </label>
+          </form>
           <div className="user-chip">
             <span className="avatar-chip" aria-hidden="true">
               {user.displayName.slice(0, 1).toUpperCase()}
@@ -85,18 +113,9 @@ export function AppShell({ children, currentPath, sectionLabel, title, user, hel
             <span>{user.displayName}</span>
           </div>
           <div className="app-shell-actions">
-            {help ? (
-              <button
-                className="action-link action-link-secondary"
-                type="button"
-                onClick={shell.handleHelpClick}
-              >
-                {help.triggerLabel ?? "Help"}
-              </button>
-            ) : null}
             <form method="post" action="/logout">
               <button className="action-link action-link-secondary" type="submit">
-                Sign out
+                {copy.signOutLabel}
               </button>
             </form>
           </div>

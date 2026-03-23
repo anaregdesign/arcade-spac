@@ -181,6 +181,35 @@ a {
   flex: 0 0 auto;
 }
 
+.locale-preference-form {
+  display: flex;
+  align-items: center;
+}
+
+.locale-preference-label {
+  display: grid;
+  gap: 4px;
+  min-width: 138px;
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.locale-preference-label > span {
+  white-space: nowrap;
+}
+
+.locale-preference-select {
+  min-height: 34px;
+  padding: 0 10px;
+  border: none;
+  border-radius: 10px;
+  background: var(--card-muted);
+  color: var(--text-primary);
+}
+
 .page-title {
   margin: 0;
   font-size: clamp(1.35rem, 2.1vw, 1.75rem);
@@ -800,6 +829,12 @@ a {
   .app-shell-actions {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .locale-preference-form,
+  .locale-preference-label,
+  .locale-preference-select {
+    width: 100%;
   }
 
   .app-shell-actions .action-link,

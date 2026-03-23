@@ -8,6 +8,7 @@ import { toRouteGameKey } from "../lib/domain/entities/game-catalog";
 import { recommendationFeedbackEventType } from "../lib/domain/services/contextual-recommendation";
 import { requireCurrentUserId } from "../lib/server/infrastructure/auth/session.server";
 import { getRuntimeConfig } from "../lib/server/infrastructure/config/runtime-config.server";
+import { getLocalePreference } from "../lib/server/infrastructure/locale/locale-preference.server";
 import { toggleUserFavoriteGame } from "../lib/server/infrastructure/repositories/user-favorites.repository.server";
 import { retryPendingResult } from "../lib/server/usecase/gameplay/record-gameplay-result.server";
 import { getPlayResultById } from "../lib/server/infrastructure/repositories/gameplay.repository.server";
@@ -17,11 +18,12 @@ import { recordRecommendationFeedbackEvent } from "../lib/server/usecase/recomme
 
 export async function loader({ request, params }: Route.LoaderArgs) {
   const userId = await requireCurrentUserId(request);
+  const { resolvedLocale } = await getLocalePreference(request);
   const runtimeConfig = getRuntimeConfig();
   const requestUrl = new URL(request.url);
   const publicBaseUrl = runtimeConfig.publicAppUrl ?? requestUrl.origin;
   const [dashboard, result] = await Promise.all([
-    getHomeDashboard(userId),
+    getHomeDashboard(userId, resolvedLocale),
     getPlayResultById(params.resultId),
   ]);
 
@@ -38,6 +40,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   return {
     dashboard,
     result: await buildPersistedResultView({
+      locale: resolvedLocale,
       publicBaseUrl,
       result,
       viewerMode: "owner",
@@ -101,7 +104,6 @@ export default function ResultRoute() {
           },
         ]),
         title: "Result help",
-        triggerLabel: "Help",
       }}
       sectionLabel="Run result"
       title={`${result.gameName} result`}

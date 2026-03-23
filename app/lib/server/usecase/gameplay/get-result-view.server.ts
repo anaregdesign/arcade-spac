@@ -3,7 +3,14 @@ import { getHomeDashboard } from "../get-home-dashboard.server";
 import { getPlayResultById } from "../../infrastructure/repositories/gameplay.repository.server";
 import type { PendingResultDraft } from "../../infrastructure/auth/session.server";
 import type { GameKey } from "../../../domain/entities/game-catalog";
-import { getGameDefinition, getGameSuccessfulResultLabel, resolveGameKey, toRouteGameKey } from "../../../domain/entities/game-catalog";
+import type { SupportedArcadeLocale } from "../../../domain/entities/locale";
+import {
+  getGameDefinition,
+  getGameSuccessfulResultLabel,
+  getLocalizedGameShortDescription,
+  resolveGameKey,
+  toRouteGameKey,
+} from "../../../domain/entities/game-catalog";
 import { previewByGameKey } from "../../../domain/entities/game-previews";
 import {
   buildPrimaryMetricShareLine,
@@ -351,11 +358,12 @@ function getExcludedOverallValue(result: PersistedPlayResult, currentOverallRank
   }
 
 export async function buildPersistedResultView(input: {
+  locale: SupportedArcadeLocale;
   publicBaseUrl: string;
   result: PersistedPlayResult;
   viewerMode: ResultViewerMode;
 }) {
-  const ownerDashboard = await getHomeDashboard(input.result.userId);
+  const ownerDashboard = await getHomeDashboard(input.result.userId, input.locale);
   const gameScope = toRouteGameKey(input.result.game.key) as RankingScope;
   const isFavorite = ownerDashboard.games.find((game) => game.key === gameScope)?.isFavorite ?? false;
   const primaryMetricText = formatPrimaryMetric(gameScope, input.result.primaryMetric);
@@ -373,9 +381,10 @@ export async function buildPersistedResultView(input: {
   const currentOverallPoints = ownerDashboard.summaries.seasonPoints;
   const shareUrl = `${input.publicBaseUrl}/games/${gameScope}`;
   const canShare = input.viewerMode === "owner";
+  const localizedGameDescription = getLocalizedGameShortDescription(gameScope, input.locale);
   const shareText = [
     `${input.result.game.name}`,
-    input.result.game.shortDescription,
+    localizedGameDescription,
     `Play here: ${shareUrl}`,
   ].join(" ");
 
@@ -422,7 +431,7 @@ export async function buildPersistedResultView(input: {
         : null,
     gameKey: gameScope,
     gameName: input.result.game.name,
-    gameDescription: input.result.game.shortDescription,
+    gameDescription: localizedGameDescription,
     isFavorite,
     recommendations: buildNextGameRecommendations({
       currentGameKey: gameScope,
@@ -439,9 +448,11 @@ export async function buildPersistedResultView(input: {
 export function buildPendingResultDraftView(input: {
   draft: PendingResultDraft;
   gameName: string;
+  locale: SupportedArcadeLocale;
 }) {
   const gameKey = resolveGameKey(input.draft.gameKey) ?? input.draft.gameKey as GameKey;
   const definition = getGameDefinition(gameKey);
+  const localizedGameDescription = getLocalizedGameShortDescription(gameKey, input.locale);
   const primaryMetricText = formatPrimaryMetric(gameKey, input.draft.actualMetrics.primaryMetric);
   const supportMetric = !definition || definition.supportMetric.kind === "count"
     ? (() => {
@@ -512,11 +523,11 @@ export function buildPendingResultDraftView(input: {
     stateExplanation,
     gameKey,
     gameName: input.gameName,
-    gameDescription: "Jump back into the game with a fresh run whenever you are ready.",
+    gameDescription: localizedGameDescription,
     isFavorite: false,
     recommendations: [],
     shareUrl: `/games/${gameKey}`,
-    shareText: `${input.gameName} Jump back into the game with a fresh run whenever you are ready. Play here: /games/${gameKey}`,
+    shareText: `${input.gameName} ${localizedGameDescription} Play here: /games/${gameKey}`,
     shareAvailabilityNote: "Share copies the game link and summary copy, even while the run is still pending recovery.",
     canShare: true,
     rankingsHref: `/rankings?period=season&scope=${gameKey}`,

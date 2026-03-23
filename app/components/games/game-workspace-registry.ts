@@ -51,6 +51,8 @@ import { StackSortGameWorkspace } from "./stack-sort/StackSortGameWorkspace";
 import { TargetTrailGameWorkspace } from "./target-trail/TargetTrailGameWorkspace";
 import { TileShiftGameWorkspace } from "./tile-shift/TileShiftGameWorkspace";
 import { MirrorMatchGameWorkspace } from "./mirror-match/MirrorMatchGameWorkspace";
+import type { SupportedArcadeLocale } from "../../lib/domain/entities/locale";
+import { gameInstructionsTranslations } from "./game-workspace-registry.translations";
 import type { GameWorkspaceComponentProps } from "../gameplay/workspace/game-workspace-types";
 
 type GamePresentation = {
@@ -1527,6 +1529,14 @@ export function getGamePresentation(gameKey: string) {
   return gameDefinitionByKey[gameKey]?.presentation ?? null;
 }
 
-export function getGameInstructions(gameKey: string) {
-  return gameDefinitionByKey[gameKey]?.instructions ?? null;
+export function getGameInstructions(gameKey: string, locale: SupportedArcadeLocale = "en") {
+  const definition = gameDefinitionByKey[gameKey];
+
+  if (!definition) {
+    return null;
+  }
+
+  const localizedInstructions = (gameInstructionsTranslations as Partial<Record<string, Partial<Record<SupportedArcadeLocale, GameInstructions>>>>)[gameKey]?.[locale];
+
+  return localizedInstructions ?? definition.instructions;
 }

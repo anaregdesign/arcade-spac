@@ -5,17 +5,19 @@ import { AppShell } from "../components/shared/AppShell";
 import { buildSharedHelpSections } from "../components/shared/help-content";
 import { resolveGameKey } from "../lib/domain/entities/game-catalog";
 import { requireCurrentUserId } from "../lib/server/infrastructure/auth/session.server";
+import { getLocalePreference } from "../lib/server/infrastructure/locale/locale-preference.server";
 import { getHomeDashboard } from "../lib/server/usecase/get-home-dashboard.server";
 import { getRankingsView } from "../lib/server/usecase/get-rankings-view.server";
 
 export async function loader({ request }: { request: Request }) {
   const userId = await requireCurrentUserId(request);
+  const { resolvedLocale } = await getLocalePreference(request);
   const url = new URL(request.url);
   const period = url.searchParams.get("period") === "lifetime" ? "LIFETIME" : "SEASON";
   const scopeParam = url.searchParams.get("scope");
   const scope = scopeParam ? resolveGameKey(scopeParam) ?? "overall" : "overall";
   const [dashboard, rankings] = await Promise.all([
-    getHomeDashboard(userId),
+    getHomeDashboard(userId, resolvedLocale),
     getRankingsView(userId, { period, scope }),
   ]);
 
@@ -38,7 +40,6 @@ export default function Rankings() {
           },
         ]),
         title: "Rankings help",
-        triggerLabel: "Help",
       }}
       sectionLabel="Leaderboard"
       title="Rankings"

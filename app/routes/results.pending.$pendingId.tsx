@@ -5,6 +5,7 @@ import { AppShell } from "../components/shared/AppShell";
 import { ResultScreen } from "../components/gameplay/ResultScreen";
 import { buildSharedHelpSections } from "../components/shared/help-content";
 import { clearPendingResultDraft, commitSession, getPendingResultDraft, getSession, requireCurrentUserId } from "../lib/server/infrastructure/auth/session.server";
+import { getLocalePreference } from "../lib/server/infrastructure/locale/locale-preference.server";
 import { toggleUserFavoriteGame } from "../lib/server/infrastructure/repositories/user-favorites.repository.server";
 import { getHomeDashboard, getGameWorkspace } from "../lib/server/usecase/get-home-dashboard.server";
 import { buildPendingResultDraftView } from "../lib/server/usecase/gameplay/get-result-view.server";
@@ -12,6 +13,7 @@ import { recordGameplayResult } from "../lib/server/usecase/gameplay/record-game
 
 export async function loader({ request, params }: Route.LoaderArgs) {
   const userId = await requireCurrentUserId(request);
+  const { resolvedLocale } = await getLocalePreference(request);
   const session = await getSession(request);
   const draft = getPendingResultDraft(session);
 
@@ -24,8 +26,8 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   }
 
   const [dashboard, game] = await Promise.all([
-    getHomeDashboard(userId),
-    getGameWorkspace(draft.gameKey),
+    getHomeDashboard(userId, resolvedLocale),
+    getGameWorkspace(draft.gameKey, resolvedLocale),
   ]);
 
   return {
@@ -33,6 +35,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     result: buildPendingResultDraftView({
       draft,
       gameName: game.name,
+      locale: resolvedLocale,
     }),
   };
 }
@@ -111,7 +114,6 @@ export default function PendingResultRoute() {
           },
         ]),
         title: "Pending result help",
-        triggerLabel: "Help",
       }}
       sectionLabel="Pending result"
       title={`${result.gameName} pending result`}

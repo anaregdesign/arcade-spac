@@ -1,4 +1,9 @@
-import { toRouteGameKey } from "../../domain/entities/game-catalog";
+import type { SupportedArcadeLocale } from "../../domain/entities/locale";
+import {
+  getLocalizedGameRulesSummary,
+  getLocalizedGameShortDescription,
+  toRouteGameKey,
+} from "../../domain/entities/game-catalog";
 import {
   buildHomeRecommendationContext,
   toRecommendationScoreMap,
@@ -29,7 +34,7 @@ function computeLegacyHomeRecommendationScore(input: {
     + input.bestCompetitivePoints;
 }
 
-export async function getHomeDashboard(userId: string) {
+export async function getHomeDashboard(userId: string, locale: SupportedArcadeLocale = "en") {
   const [record, games] = await Promise.all([
     getHomeDashboardRecord(userId),
     listGameRecords(),
@@ -89,20 +94,21 @@ export async function getHomeDashboard(userId: string) {
     },
     games: games.map((game) => {
       const summary = summaryByGameId.get(game.id);
+      const gameKey = toRouteGameKey(game.key);
 
       return {
-        key: toRouteGameKey(game.key),
+        key: gameKey,
         name: game.name,
-        shortDescription: game.shortDescription,
+        shortDescription: getLocalizedGameShortDescription(gameKey, locale),
         accentColor: game.accentColor,
         currentRank: summary?.currentRank ?? null,
         bestCompetitivePoints: summary?.bestCompetitivePoints ?? 0,
         personalBestMetric: summary?.personalBestMetric ?? null,
         playCount: summary?.playCount ?? 0,
         completedCount: summary?.completedCount ?? 0,
-        isFavorite: favoriteGameKeys.has(toRouteGameKey(game.key)),
+        isFavorite: favoriteGameKeys.has(gameKey),
         recommendationText: summary?.recommendationText ?? null,
-        recommendationScore: recommendationScoreByGameKey.get(toRouteGameKey(game.key)) ?? 0,
+        recommendationScore: recommendationScoreByGameKey.get(gameKey) ?? 0,
         metricLabel: getBestMetricLabel(game.key),
         metricValue: formatOptionalPrimaryMetric(game.key, summary?.personalBestMetric ?? null),
       };
@@ -119,7 +125,7 @@ export async function getHomeDashboard(userId: string) {
   };
 }
 
-export async function getGameWorkspace(gameKey: string) {
+export async function getGameWorkspace(gameKey: string, locale: SupportedArcadeLocale = "en") {
   const game = await getGameRecord(gameKey);
 
   if (!game) {
@@ -129,8 +135,8 @@ export async function getGameWorkspace(gameKey: string) {
   return {
     key: toRouteGameKey(game.key),
     name: game.name,
-    shortDescription: game.shortDescription,
-    rulesSummary: game.rulesSummary,
+    shortDescription: getLocalizedGameShortDescription(game.key, locale),
+    rulesSummary: getLocalizedGameRulesSummary(game.key, locale),
     accentColor: game.accentColor,
   };
 }
