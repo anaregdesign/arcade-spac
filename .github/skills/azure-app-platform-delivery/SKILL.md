@@ -76,7 +76,7 @@ When the task is primarily GitHub Copilot coding agent Azure access, load [`../c
 - GitHub Copilot coding agent `copilot` Environment, Azure MCP, and read-scoped cloud access:
   [`../copilot-azure-cloud-access/SKILL.md`](../copilot-azure-cloud-access/SKILL.md)
 - spec-first planning:
-  [`../../../planning/spec-driven-workflow/SKILL.md`](../../../planning/spec-driven-workflow/SKILL.md)
+   [`../spec-driven-workflow/SKILL.md`](../spec-driven-workflow/SKILL.md)
 
 ## Non-Negotiable Rules
 

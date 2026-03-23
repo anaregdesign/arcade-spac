@@ -617,7 +617,8 @@ resource sqlServer 'Microsoft.Sql/servers@2021-11-01-preview' = if (empty(existi
 }
 
 resource sqlDatabase 'Microsoft.Sql/servers/databases@2021-11-01-preview' = {
-  name: '${resolvedSqlServerName}/${sqlDatabaseName}'
+  name: sqlDatabaseName
+  parent: sqlServer
   location: location
   sku: {
     name: sqlDatabaseSkuName
