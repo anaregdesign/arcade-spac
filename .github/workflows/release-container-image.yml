@@ -104,13 +104,18 @@ jobs:
             git tag --sort=-version:refname | grep -Fxv "$CURRENT_TAG" | head -n 1
           } || true)"
 
-          echo "previous_tag=$PREVIOUS_TAG" >> "$GITHUB_OUTPUT"
+          {
+            echo "previous_tag=$PREVIOUS_TAG"
+
+            if [[ -z "$PREVIOUS_TAG" ]]; then
+              echo "requires_rollout=true"
+              echo "requires_infra=true"
+              echo "requires_runtime_config_sync=true"
+              echo "requires_database_jobs=true"
+            fi
+          } >> "$GITHUB_OUTPUT"
 
           if [[ -z "$PREVIOUS_TAG" ]]; then
-            echo "requires_rollout=true" >> "$GITHUB_OUTPUT"
-            echo "requires_infra=true" >> "$GITHUB_OUTPUT"
-            echo "requires_runtime_config_sync=true" >> "$GITHUB_OUTPUT"
-            echo "requires_database_jobs=true" >> "$GITHUB_OUTPUT"
             echo "No previous release tag was found. Running infra planning defensively." >> "$GITHUB_STEP_SUMMARY"
             exit 0
           fi
@@ -168,29 +173,33 @@ jobs:
               scripts/azure/sync-container-app-runtime-env.sh
           } || true)"
 
+          requires_infra=false
+          requires_runtime_config_sync=false
+          requires_database_jobs=false
+          requires_rollout=false
+
           if [[ -n "$INFRA_CHANGED_PATHS" ]]; then
-            echo "requires_infra=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "requires_infra=false" >> "$GITHUB_OUTPUT"
+            requires_infra=true
           fi
 
           if [[ -n "$RUNTIME_CONFIG_CHANGED_PATHS" || -n "$INFRA_CHANGED_PATHS" ]]; then
-            echo "requires_runtime_config_sync=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "requires_runtime_config_sync=false" >> "$GITHUB_OUTPUT"
+            requires_runtime_config_sync=true
           fi
 
           if [[ -n "$DATABASE_CHANGED_PATHS" || -n "$INFRA_CHANGED_PATHS" ]]; then
-            echo "requires_database_jobs=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "requires_database_jobs=false" >> "$GITHUB_OUTPUT"
+            requires_database_jobs=true
           fi
 
           if [[ -n "$INFRA_CHANGED_PATHS" || -n "$RUNTIME_CONFIG_CHANGED_PATHS" || -n "$DATABASE_CHANGED_PATHS" || -n "$ROLLOUT_CHANGED_PATHS" ]]; then
-            echo "requires_rollout=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "requires_rollout=false" >> "$GITHUB_OUTPUT"
+            requires_rollout=true
           fi
+
+          {
+            echo "requires_infra=$requires_infra"
+            echo "requires_runtime_config_sync=$requires_runtime_config_sync"
+            echo "requires_database_jobs=$requires_database_jobs"
+            echo "requires_rollout=$requires_rollout"
+          } >> "$GITHUB_OUTPUT"
 
           {
             echo "Release diff classification for $PREVIOUS_TAG -> $CURRENT_TAG:"
