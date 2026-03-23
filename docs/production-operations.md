@@ -24,7 +24,8 @@ This runbook records the repository-side production contract for Arcade on Azure
   - uses the `production` OIDC identity to sync runtime config, run schema migration in an Azure-hosted job, deploy the recovery image, smoke-test the result, and verify the runtime contract
 - Routine deploy:
   - `.github/workflows/release-container-image.yml`
-  - job shape: `publish` -> `classify_release_scope` -> optional `plan_infra` -> optional `deploy_infra` -> `sync_runtime_config` -> `migrate_database` -> `deploy_app` -> `smoke_test`
+  - job shape: `publish` -> `classify_release_scope` -> optional `plan_infra` -> optional `deploy_infra` -> `bootstrap_sql` -> `migrate_database` -> `deploy_app` -> `smoke_test`
+  - routine release reuses the current hosted runtime config contract instead of syncing App Configuration / Key Vault on every deploy
 - Runtime verification:
   - `.github/workflows/verify-production-runtime.yml`
 
@@ -53,7 +54,7 @@ This runbook records the repository-side production contract for Arcade on Azure
 3. When redeploying into another resource group during dev, update `AZURE_RESOURCE_GROUP` and `AZURE_APP_NAME` first.
 4. Keep `PUBLIC_APP_URL` aligned to the final custom domain URL, or leave it unset so the workflow derives the current Front Door host automatically.
 5. Update the Microsoft Entra app registration redirect URI when the public host changes.
-6. Publish the release so the GitHub workflow runs `publish`, classifies whether the release touched infra-owned files, skips `plan_infra` and `deploy_infra` for app-only releases, and otherwise runs `plan_infra`, optional `deploy_infra`, `sync_runtime_config`, `migrate_database`, `deploy_app`, and `smoke_test`.
+6. Publish the release so the GitHub workflow runs `publish`, classifies whether the release touched infra-owned files, skips `plan_infra` and `deploy_infra` for app-only releases, and otherwise runs `plan_infra`, optional `deploy_infra`, `bootstrap_sql`, `migrate_database`, `deploy_app`, and `smoke_test`.
 7. Confirm the Azure-hosted migration job applied the checked-in Prisma SQL files successfully before the app rollout is treated as complete.
 8. Confirm the workflow completed successfully.
 9. Use `Verify Production Runtime` for the post-release contract check.
@@ -75,10 +76,10 @@ This runbook records the repository-side production contract for Arcade on Azure
 - The repository contract no longer keeps a supported local Azure CLI bootstrap or recovery path.
 - GitHub Environment owns the canonical app identity through `AZURE_APP_NAME`; the Container App target is always derived as `ca-${AZURE_APP_NAME}` across bootstrap, release, verification, and workflow-owned helper scripts.
 - `Bootstrap Azure Recovery` owns resource-group creation and initial Azure SQL principal bootstrap through GitHub Actions OIDC.
-- `Release Azure Delivery` owns routine infra convergence, runtime config sync, workflow-owned schema migration, image rollout, and smoke testing through GitHub Actions OIDC.
+- `Release Azure Delivery` owns routine infra convergence, Azure-hosted SQL bootstrap, workflow-owned schema migration, image rollout, and smoke testing through GitHub Actions OIDC.
 - `Release Azure Delivery` only enters infra planning when the release diff touches repo-owned baseline inputs under `infra/` or the Azure scripts that shape Bicep parameters and resource-name resolution; app-only releases bypass infra convergence and continue directly to the shared rollout path.
 - `Verify Production Runtime` owns the supported hosted contract verification path.
 - GitHub-hosted workflow jobs do not connect directly to Azure SQL `Private Endpoint`; every SQL data-plane action must stay inside Azure-hosted jobs.
-- If `sync_runtime_config` fails, treat missing resource-group scope `App Configuration Data Owner` or `Key Vault Secrets Officer` rights on the `production` OIDC identity as bootstrap drift first.
+- If recovery-side `sync_runtime_config` fails, treat missing resource-group scope `App Configuration Data Owner` or `Key Vault Secrets Officer` rights on the `production` OIDC identity as bootstrap drift first.
 - If bootstrap infra convergence fails while `manageRuntimeRoleAssignments=true`, treat missing `Role Based Access Control Administrator` or `User Access Administrator` on the `production-bootstrap` OIDC identity as bootstrap drift.
 - If the hosted rollout has not happened yet, treat any live public SQL dependency or direct Container App public-host dependency as configuration drift that still needs to be remediated through the GitHub workflow path.

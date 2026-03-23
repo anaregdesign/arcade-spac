@@ -94,8 +94,9 @@ production / shared Azure delivery は GitHub Workflow を唯一の control plan
 
 ## User-Visible Behavior
 
-- `Release Azure Delivery` は routine release entry workflow として `publish -> classify_release_scope -> optional plan_infra -> optional deploy_infra` までを担当し、その後 shared reusable rollout workflow を call して `sync_runtime_config -> bootstrap_sql -> migrate_database -> deploy_app -> smoke_test` を実行する
+- `Release Azure Delivery` は routine release entry workflow として `publish -> classify_release_scope -> optional plan_infra -> optional deploy_infra` までを担当し、その後 shared reusable rollout workflow を call して `bootstrap_sql -> migrate_database -> deploy_app -> smoke_test` を実行する
 - `Release Azure Delivery` は release tag 間の repo diff を先に分類し、`infra/` と baseline-defining Azure parameter / name resolution scripts に変更がない app-only release では `plan_infra` と `deploy_infra` を skip して shared reusable rollout workflow へ直接進む
+- routine release は既存の hosted runtime config / secret contract を前提にし、毎回の release で `sync_runtime_config` を必須 step にしない
 - infra-owned file change を含む release だけが `plan_infra` で Azure `what-if` を実行し、`what-if` が実 change を返したときだけ `deploy_infra` を実行する
 - `Bootstrap Azure Recovery` は recovery entry workflow として routine production suffix とは別の recovery suffix を validation したうえで `resolve_recovery_image -> ensure_resource_group -> deploy_bootstrap_infra -> restore_production_release_rbac` までを担当し、その後同じ shared reusable rollout workflow を call して `sync_runtime_config -> bootstrap_sql -> run_database_migration -> deploy_app -> smoke_test` を実行し、最後に `verify_runtime` を行う
 - recovery の `verify_runtime` は hosted infra, private-link, identity, runtime env, smoke-test 後の contract verification を担当し、shared Entra app registration に recovery host callback がまだ追加されていない間は `/auth/start` redirect assertion を必須にしない

@@ -47,7 +47,7 @@ These assets establish the repository-side contract for the hosted data path. Th
 
 1. `Bootstrap Azure Recovery` creates or updates the resource group and deploys the hosted baseline from `infra/main.bicep`.
 2. `Release Azure Delivery` and `Bootstrap Azure Recovery` both run an Azure-hosted `Container Apps Job` under the SQL bootstrap identity to create or reconcile the database principals and least-privilege role memberships for the runtime and migration identities.
-3. `Release Azure Delivery` and `Bootstrap Azure Recovery` both sync runtime config into App Configuration and Key Vault.
+3. `Bootstrap Azure Recovery` syncs runtime config into App Configuration and Key Vault when the hosted baseline is rebuilt or recovered.
 4. `Release Azure Delivery` and `Bootstrap Azure Recovery` both run an Azure-hosted `Container Apps Job` under the migration identity to execute the repo-owned `mssql` runner over checked-in Prisma SQL migration files.
 5. The workflow deploys the chosen immutable image to the runtime `Container App`.
 6. Runtime server startup begins immediately and does not wait for migration.

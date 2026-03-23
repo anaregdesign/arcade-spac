@@ -474,5 +474,6 @@ jobs:
       resource_group_suffix: green
       bootstrap_environment: production
       deployment_environment: production
+      sync_runtime_config: false
       smoke_test_retries: ${{ needs.deploy_infra.result == 'success' && '90' || '18' }}
     secrets: inherit
