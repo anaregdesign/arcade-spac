@@ -1,0 +1,17 @@
+.primer-board-card {
+  min-height: 37rem;
+}
+
+.primer-shell {
+  min-height: 34rem;
+}
+
+@media (max-width: 640px) {
+  .primer-board-card {
+    min-height: 0;
+  }
+
+  .primer-shell {
+    min-height: 31rem;
+  }
+}

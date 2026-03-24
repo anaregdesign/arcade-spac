@@ -7,6 +7,7 @@ This repository vendors local skills under `.github/skills/`:
 - `entra-user-auth-registration`
 - `copilot-azure-cloud-access`
 - `spec-driven-workflow`
+- `learning-content-authoring`
 
 Use them deliberately and combine them by concern.
 
@@ -17,6 +18,7 @@ Use them deliberately and combine them by concern.
 - Treat `entra-user-auth-registration` as the auth-specific extension for end-user Microsoft Entra ID auth contract design, redirect URIs, callback paths, and app-registration changes; add it only when the task changes end-user auth contract or app registration.
 - Treat `copilot-azure-cloud-access` as the Copilot cloud-access extension for GitHub Copilot coding agent Azure access, Copilot Environment setup, Azure MCP wiring, and Copilot OIDC access; add it only when the task changes the Copilot Environment, Azure MCP, or Copilot OIDC access.
 - Treat `spec-driven-workflow` as an independent spec and planning skill.
+- Treat `learning-content-authoring` as the preferred content-authoring skill for source-backed study material, quiz generation, answerability review, ambiguity reduction, and paired study and quiz section design.
 
 ## Default Invocation Order
 
@@ -41,6 +43,7 @@ Use them deliberately and combine them by concern.
 - Entra auth extension skill: `.github/skills/entra-user-auth-registration/`
 - Copilot cloud-access extension skill: `.github/skills/copilot-azure-cloud-access/`
 - Independent spec and planning skill: `.github/skills/spec-driven-workflow/`
+- Learning content authoring skill: `.github/skills/learning-content-authoring/`
 
 Keep sibling skill directories stable so relative links (e.g. `../react-router-prisma-app-architecture/`) remain valid.
 

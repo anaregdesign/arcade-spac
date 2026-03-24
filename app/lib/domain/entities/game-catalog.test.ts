@@ -42,7 +42,9 @@ describe("game-catalog", () => {
     expect(resolveGameKey("GAP_RUSH")).toBe("gap-rush");
     expect(resolveGameKey("COLOR_SWEEP")).toBe("color-sweep");
     expect(resolveGameKey("ICON_CHAIN")).toBe("icon-chain");
+    expect(resolveGameKey("IR_PRIMER")).toBe("ir-primer");
     expect(resolveGameKey("LINE_CONNECT")).toBe("line-connect");
+    expect(resolveGameKey("MCP_PRIMER")).toBe("mcp-primer");
     expect(resolveGameKey("MERGE_CLIMB")).toBe("merge-climb");
     expect(resolveGameKey("RELATIVE_PITCH")).toBe("relative-pitch");
     expect(resolveGameKey("drop-ball")).toBe("precision-drop");
@@ -77,7 +79,9 @@ describe("game-catalog", () => {
     expect(toStoredGameKey("gap-rush")).toBe("GAP_RUSH");
     expect(toStoredGameKey("color-sweep")).toBe("COLOR_SWEEP");
     expect(toStoredGameKey("icon-chain")).toBe("ICON_CHAIN");
+    expect(toStoredGameKey("ir-primer")).toBe("IR_PRIMER");
     expect(toStoredGameKey("line-connect")).toBe("LINE_CONNECT");
+    expect(toStoredGameKey("mcp-primer")).toBe("MCP_PRIMER");
     expect(toStoredGameKey("merge-climb")).toBe("MERGE_CLIMB");
     expect(toStoredGameKey("relative-pitch")).toBe("RELATIVE_PITCH");
     expect(toStoredGameKey("color-census")).toBe("COLOR_CENSUS");
@@ -111,7 +115,9 @@ describe("game-catalog", () => {
     expect(toRouteGameKey("GAP_RUSH")).toBe("gap-rush");
     expect(toRouteGameKey("COLOR_SWEEP")).toBe("color-sweep");
     expect(toRouteGameKey("ICON_CHAIN")).toBe("icon-chain");
+    expect(toRouteGameKey("IR_PRIMER")).toBe("ir-primer");
     expect(toRouteGameKey("LINE_CONNECT")).toBe("line-connect");
+    expect(toRouteGameKey("MCP_PRIMER")).toBe("mcp-primer");
     expect(toRouteGameKey("MERGE_CLIMB")).toBe("merge-climb");
     expect(toRouteGameKey("RELATIVE_PITCH")).toBe("relative-pitch");
     expect(toRouteGameKey("drop_ball")).toBe("precision-drop");
@@ -147,7 +153,9 @@ describe("game-catalog", () => {
     expect(getGameDefinition("GAP_RUSH")?.name).toBe("Gap Rush");
     expect(getGameDefinition("DROP_LINE")?.name).toBe("Precision Drop");
     expect(getGameDefinition("ICON_CHAIN")?.name).toBe("Icon Chain");
+    expect(getGameDefinition("IR_PRIMER")?.name).toBe("IR Primer");
     expect(getGameDefinition("LINE_CONNECT")?.name).toBe("Line Connect");
+    expect(getGameDefinition("MCP_PRIMER")?.name).toBe("MCP Primer");
     expect(getGameDefinition("MERGE_CLIMB")?.name).toBe("Merge Climb");
     expect(getGameDefinition("RELATIVE_PITCH")?.name).toBe("Relative Pitch");
     expect(getGameDefinition("ORBIT_TAP")?.name).toBe("Orbit Tap");
@@ -183,7 +191,9 @@ describe("game-catalog", () => {
     expect(getGameHomeTags("GAP_RUSH")).toEqual(["reflex", "timing"]);
     expect(getGameHomeTags("DROP_LINE")).toEqual(["timing", "fast-start"]);
     expect(getGameHomeTags("ICON_CHAIN")).toEqual(["logic", "memory"]);
+    expect(getGameHomeTags("IR_PRIMER")).toEqual(["learning", "logic"]);
     expect(getGameHomeTags("LINE_CONNECT")).toEqual(["logic", "spatial"]);
+    expect(getGameHomeTags("MCP_PRIMER")).toEqual(["learning", "logic"]);
     expect(getGameHomeTags("MERGE_CLIMB")).toEqual(["logic", "spatial"]);
     expect(getGameHomeTags("RELATIVE_PITCH")).toEqual(["audio", "memory"]);
     expect(getGameHomeTags("ORBIT_TAP")).toEqual(["timing", "fast-start"]);
@@ -217,6 +227,7 @@ describe("game-catalog", () => {
     expect(getGameSuccessfulResultLabel("DROP_LINE")).toBe("hit");
     expect(getGameSuccessfulResultLabel("ICON_CHAIN")).toBe("clear");
     expect(getGameSuccessfulResultLabel("LINE_CONNECT")).toBe("clear");
+    expect(getGameSuccessfulResultLabel("MCP_PRIMER")).toBe("clear");
     expect(getGameSuccessfulResultLabel("MERGE_CLIMB")).toBe("clear");
     expect(getGameSuccessfulResultLabel("RELATIVE_PITCH")).toBe("clear");
     expect(getGameSuccessfulResultLabel("COLOR_CENSUS")).toBe("clear");

@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-labelledby="title desc">
+  <title id="title">MCP Primer preview</title>
+  <desc id="desc">Study card on the left and quiz cards on the right for the MCP Primer learning game.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#1d4ed8"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="360" rx="28" fill="url(#bg)"/>
+  <rect x="30" y="32" width="250" height="296" rx="22" fill="#e0f2fe" fill-opacity="0.12" stroke="#bfdbfe" stroke-opacity="0.35"/>
+  <rect x="304" y="32" width="306" height="296" rx="22" fill="#f8fafc" fill-opacity="0.08" stroke="#bfdbfe" stroke-opacity="0.3"/>
+  <text x="56" y="66" fill="#bae6fd" font-family="ui-sans-serif, system-ui" font-size="18" font-weight="700">Study 2/4</text>
+  <text x="56" y="104" fill="#f8fafc" font-family="ui-sans-serif, system-ui" font-size="26" font-weight="800">Host, client, server</text>
+  <rect x="56" y="126" width="182" height="10" rx="5" fill="#e2e8f0" fill-opacity="0.65"/>
+  <rect x="56" y="146" width="156" height="10" rx="5" fill="#e2e8f0" fill-opacity="0.45"/>
+  <rect x="56" y="180" width="190" height="62" rx="16" fill="#0f172a" fill-opacity="0.55"/>
+  <text x="72" y="207" fill="#bfdbfe" font-family="ui-monospace, SFMono-Regular" font-size="14">initialize</text>
+  <text x="72" y="228" fill="#dbeafe" font-family="ui-monospace, SFMono-Regular" font-size="14">notifications/initialized</text>
+  <rect x="56" y="274" width="88" height="30" rx="15" fill="#1d4ed8"/>
+  <text x="80" y="294" fill="#f8fafc" font-family="ui-sans-serif, system-ui" font-size="14" font-weight="700">Next</text>
+  <text x="330" y="66" fill="#bfdbfe" font-family="ui-sans-serif, system-ui" font-size="18" font-weight="700">Question 9/20</text>
+  <text x="330" y="104" fill="#f8fafc" font-family="ui-sans-serif, system-ui" font-size="26" font-weight="800">Which request lists tools?</text>
+  <g transform="translate(330 138)">
+    <rect width="248" height="46" rx="18" fill="#0f172a" fill-opacity="0.44" stroke="#93c5fd" stroke-opacity="0.3"/>
+    <text x="20" y="29" fill="#f8fafc" font-family="ui-sans-serif, system-ui" font-size="16" font-weight="700">A</text>
+    <text x="52" y="29" fill="#e2e8f0" font-family="ui-sans-serif, system-ui" font-size="16">tools/list</text>
+  </g>
+  <g transform="translate(330 194)">
+    <rect width="248" height="46" rx="18" fill="#0f172a" fill-opacity="0.44" stroke="#93c5fd" stroke-opacity="0.3"/>
+    <text x="20" y="29" fill="#f8fafc" font-family="ui-sans-serif, system-ui" font-size="16" font-weight="700">B</text>
+    <text x="52" y="29" fill="#e2e8f0" font-family="ui-sans-serif, system-ui" font-size="16">tools/get</text>
+  </g>
+  <g transform="translate(330 250)">
+    <rect width="248" height="46" rx="18" fill="#1d4ed8" fill-opacity="0.75" stroke="#dbeafe" stroke-opacity="0.5"/>
+    <text x="20" y="29" fill="#f8fafc" font-family="ui-sans-serif, system-ui" font-size="16" font-weight="700">Check</text>
+    <text x="88" y="29" fill="#eff6ff" font-family="ui-sans-serif, system-ui" font-size="16">answer</text>
+  </g>
+</svg>

@@ -31,6 +31,7 @@ type HomeTagOption = {
 const preferredTagOrder = [
   "fast-start",
   "audio",
+  "learning",
   "logic",
   "timing",
   "memory",

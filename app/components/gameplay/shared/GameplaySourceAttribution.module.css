@@ -1,0 +1,69 @@
+.source-block {
+  display: grid;
+  gap: 0.7rem;
+  padding-top: 0.35rem;
+  border-top: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+.source-heading {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.source-heading-label,
+.source-label {
+  color: var(--text-tertiary);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.source-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.7rem;
+}
+
+.source-item {
+  min-width: 0;
+}
+
+.source-copy {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.source-link {
+  color: var(--text-primary);
+  font-size: 0.98rem;
+  font-weight: 700;
+  line-height: 1.4;
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--surface-strong) 44%, transparent);
+  text-underline-offset: 0.16em;
+  word-break: break-word;
+}
+
+.source-link:hover,
+.source-link:focus-visible {
+  color: color-mix(in srgb, var(--text-primary) 82%, var(--surface-strong));
+}
+
+.source-note {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+@media (max-width: 640px) {
+  .source-link {
+    font-size: 0.92rem;
+  }
+
+  .source-note {
+    font-size: 0.84rem;
+  }
+}

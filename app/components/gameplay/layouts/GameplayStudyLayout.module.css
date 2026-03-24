@@ -1,0 +1,87 @@
+.study-layout {
+  --gameplay-layout-inline-size: min(100%, 48rem);
+}
+
+.study-panel {
+  display: grid;
+  gap: 0.95rem;
+  padding: clamp(1rem, 1.2vw + 0.9rem, 1.35rem);
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  border-radius: 1.35rem;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0)),
+    color-mix(in srgb, var(--card-muted) 92%, rgba(15, 23, 42, 0.18));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.study-section-heading {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.study-section-label {
+  color: var(--text-tertiary);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.study-action-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.9rem;
+  flex-wrap: wrap;
+  padding-top: 0.15rem;
+}
+
+.study-footer-column {
+  display: grid;
+  gap: 0.3rem;
+}
+
+.study-progress,
+.study-footer {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.study-progress {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.study-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-left: auto;
+  flex-wrap: wrap;
+}
+
+.study-actions :global(.action-link) {
+  justify-content: center;
+}
+
+@media (max-width: 640px) {
+  .study-panel {
+    gap: 0.85rem;
+    padding: 0.88rem;
+    border-radius: 1.08rem;
+  }
+
+  .study-action-row {
+    display: grid;
+  }
+
+  .study-progress,
+  .study-footer {
+    font-size: 0.84rem;
+  }
+
+  .study-actions {
+    margin-left: 0;
+  }
+}

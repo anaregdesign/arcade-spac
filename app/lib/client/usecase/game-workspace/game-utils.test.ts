@@ -5,6 +5,7 @@ import {
   createBooleanGrid,
   pickDistinctIndices,
   rotateValues,
+  shuffleValues,
   toggleCellWithOrthogonalNeighbors,
 } from "./game-utils";
 
@@ -36,5 +37,18 @@ describe("game-workspace game-utils", () => {
     expect(indices).toHaveLength(4);
     expect(new Set(indices).size).toBe(4);
     expect(indices.every((index) => index >= 0 && index < 8)).toBe(true);
+  });
+
+  it("shuffles arrays without losing or duplicating values", () => {
+    const originalRandom = Math.random;
+
+    Math.random = () => 0;
+
+    try {
+      expect(shuffleValues(["a", "b", "c", "d"])).toEqual(["b", "c", "d", "a"]);
+      expect(shuffleValues([1, 2, 3, 4, 5]).sort((left, right) => left - right)).toEqual([1, 2, 3, 4, 5]);
+    } finally {
+      Math.random = originalRandom;
+    }
   });
 });
