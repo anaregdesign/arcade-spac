@@ -19,7 +19,7 @@ type LocaleUiCopy = {
 
 const localeUiCopyByLocale: Record<SupportedArcadeLocale, LocaleUiCopy> = {
   en: {
-    browserDefaultLabel: "Browser default",
+    browserDefaultLabel: "Use browser language",
     closeLabel: "Close",
     helpEyebrow: "How to play",
     howToPlayLabel: "How to play",
@@ -35,11 +35,11 @@ const localeUiCopyByLocale: Record<SupportedArcadeLocale, LocaleUiCopy> = {
     unmuteLabel: "Unmute sounds",
   },
   ja: {
-    browserDefaultLabel: "ブラウザ設定",
+    browserDefaultLabel: "ブラウザに合わせる",
     closeLabel: "閉じる",
     helpEyebrow: "遊び方",
     howToPlayLabel: "遊び方",
-    languageLabel: "言語",
+    languageLabel: "表示言語",
     menuAriaLabel: "主要メニュー",
     menuCloseLabel: "メニューを閉じる",
     menuOpenLabel: "メニューを開く",
@@ -51,11 +51,11 @@ const localeUiCopyByLocale: Record<SupportedArcadeLocale, LocaleUiCopy> = {
     unmuteLabel: "サウンドをオン",
   },
   zh: {
-    browserDefaultLabel: "浏览器默认",
+    browserDefaultLabel: "跟随浏览器",
     closeLabel: "关闭",
     helpEyebrow: "玩法说明",
     howToPlayLabel: "玩法说明",
-    languageLabel: "语言",
+    languageLabel: "显示语言",
     menuAriaLabel: "主导航",
     menuCloseLabel: "关闭菜单",
     menuOpenLabel: "打开菜单",
@@ -67,7 +67,7 @@ const localeUiCopyByLocale: Record<SupportedArcadeLocale, LocaleUiCopy> = {
     unmuteLabel: "取消静音",
   },
   fr: {
-    browserDefaultLabel: "Langue du navigateur",
+    browserDefaultLabel: "Suivre le navigateur",
     closeLabel: "Fermer",
     helpEyebrow: "Comment jouer",
     howToPlayLabel: "Comment jouer",

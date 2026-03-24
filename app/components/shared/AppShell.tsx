@@ -90,21 +90,21 @@ export function AppShell({ children, currentPath, sectionLabel, title, user, hel
           <form action="/" className="locale-preference-form" method="post">
             <input type="hidden" name="intent" value="setLocale" />
             <input type="hidden" name="returnTo" value={returnTo} />
-            <label className="locale-preference-label">
-              <span>{copy.languageLabel}</span>
-              <select
-                className="locale-preference-select"
-                name="locale"
-                value={localeSelection}
-                onChange={(event) => event.currentTarget.form?.requestSubmit()}
-              >
-                <option value="auto">{copy.browserDefaultLabel}</option>
-                <option value="ja">日本語</option>
-                <option value="zh">中文</option>
-                <option value="en">English</option>
-                <option value="fr">Français</option>
-              </select>
-            </label>
+            <label className="locale-preference-label" htmlFor="locale-preference-select">{copy.languageLabel}</label>
+            <select
+              aria-label={copy.languageLabel}
+              className="locale-preference-select"
+              id="locale-preference-select"
+              name="locale"
+              value={localeSelection}
+              onChange={(event) => event.currentTarget.form?.requestSubmit()}
+            >
+              <option value="auto">{copy.browserDefaultLabel}</option>
+              <option value="ja">日本語</option>
+              <option value="zh">中文</option>
+              <option value="en">English</option>
+              <option value="fr">Français</option>
+            </select>
           </form>
           <div className="user-chip">
             <span className="avatar-chip" aria-hidden="true">

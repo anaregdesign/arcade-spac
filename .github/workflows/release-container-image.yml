@@ -17,8 +17,46 @@ env:
   AZURE_RESOURCE_GROUP_SUFFIX: green
 
 jobs:
+  validate_release_target:
+    name: Validate Release Targets Main Head
+    runs-on: ubuntu-latest
+    if: ${{ !github.event.release.prerelease }}
+    permissions:
+      contents: read
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Validate release tag commit matches origin/main
+        env:
+          CURRENT_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          git fetch --force origin main --tags
+
+          RELEASE_COMMIT="$({
+            git rev-list -n 1 "$CURRENT_TAG"
+          } || true)"
+          MAIN_HEAD="$({
+            git rev-parse origin/main
+          } || true)"
+
+          test -n "$RELEASE_COMMIT" || { echo "Could not resolve release tag commit for $CURRENT_TAG"; exit 1; }
+          test -n "$MAIN_HEAD" || { echo "Could not resolve origin/main"; exit 1; }
+
+          if [[ "$RELEASE_COMMIT" != "$MAIN_HEAD" ]]; then
+            echo "Production releases must target the current origin/main HEAD."
+            echo "release tag: $CURRENT_TAG"
+            echo "release commit: $RELEASE_COMMIT"
+            echo "origin/main: $MAIN_HEAD"
+            exit 1
+          fi
+
   publish:
     name: Build And Publish To GHCR
+    needs:
+      - validate_release_target
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -79,6 +117,8 @@ jobs:
     name: Classify Release Infra Scope
     runs-on: ubuntu-latest
     if: ${{ !github.event.release.prerelease }}
+    needs:
+      - validate_release_target
     permissions:
       contents: read
     outputs:
@@ -176,7 +216,7 @@ jobs:
           requires_infra=false
           requires_runtime_config_sync=false
           requires_database_jobs=false
-          requires_rollout=false
+          requires_rollout=true
 
           if [[ -n "$INFRA_CHANGED_PATHS" ]]; then
             requires_infra=true
@@ -188,10 +228,6 @@ jobs:
 
           if [[ -n "$DATABASE_CHANGED_PATHS" || -n "$INFRA_CHANGED_PATHS" ]]; then
             requires_database_jobs=true
-          fi
-
-          if [[ -n "$INFRA_CHANGED_PATHS" || -n "$RUNTIME_CONFIG_CHANGED_PATHS" || -n "$DATABASE_CHANGED_PATHS" || -n "$ROLLOUT_CHANGED_PATHS" ]]; then
-            requires_rollout=true
           fi
 
           {
@@ -244,7 +280,7 @@ jobs:
               echo "Rollout-owned application paths changed, so app deploy remains enabled:"
               printf '%s\n' "$ROLLOUT_CHANGED_PATHS"
             else
-              echo "No rollout-owned application paths changed. The release will publish the image only and skip the shared Azure rollout."
+              echo "No rollout-owned application paths changed. The release will still deploy the published immutable app image during the shared Azure rollout."
             fi
           } >> "$GITHUB_STEP_SUMMARY"
 
@@ -566,6 +602,7 @@ jobs:
   rollout_release:
     name: Run Shared Azure Rollout
     needs:
+      - validate_release_target
       - publish
       - classify_release_scope
       - plan_infra
@@ -575,6 +612,7 @@ jobs:
         always() &&
         !cancelled() &&
         !github.event.release.prerelease &&
+        needs.validate_release_target.result == 'success' &&
         needs.publish.result == 'success' &&
         needs.classify_release_scope.result == 'success' &&
         needs.classify_release_scope.outputs.requires_rollout == 'true' &&

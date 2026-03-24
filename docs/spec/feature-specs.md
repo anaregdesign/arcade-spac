@@ -260,3 +260,47 @@ Shipped game は、古い catalog 状態から始まった環境でも Home、Pr
 - source が複数 chapter にまたがっても、page 本文や source block が過密にならない
 - phrase query や wildcard query のような technical term を含んでも、選択肢が複数解釈にならない
 - study page の本文が長い場合でも narrow screen で横スクロール必須にならない
+
+## Locale Selector And Release Rollout Reliability
+
+### Summary
+
+`Arcade` の共通 shell で locale selector を短い inline control として自然に表示し、production release は current `main` HEAD の新ゲーム追加を確実に shared Azure rollout へ反映する。
+
+### User Problem
+
+- 現在の locale selector は label と select が縦積みで、`ブラウザ設定` の表現も含めて header 内で不自然に見える
+- release tag の比較差分しだいで app rollout が skip されると、新しく追加したゲームが production で見えないまま残ることがある
+- feature branch 側の release を誤って production に流せると、main に取り込まれた状態と release 対象がずれる
+
+### Scope
+
+- app shell の locale selector を inline row へ整え、label と default option copy を自然な表現へ更新する
+- production release workflow で、published release が current `main` HEAD を対象にしていることを検証する
+- non-prerelease release では app rollout を常に実行し、infra・runtime-config・database job だけを差分条件で絞る
+
+### Non-Goals
+
+- locale preference 自体の保存方式や supported locale を変えること
+- release workflow を release event 以外の trigger に作り直すこと
+- game catalog の domain model や recommendation ロジックを変更すること
+
+### User-Visible Behavior
+
+- shell の locale selector は narrow header でも label と selector が 1 行で自然に読める
+- 日本語 locale では browser-default option が機械的な `ブラウザ設定` ではなく、表示言語の意味に沿った自然な文言で表示される
+- 新ゲームを含む app change が main へ取り込まれて release されると、その release は shared Azure rollout で production app image まで更新される
+- current `main` HEAD と一致しない commit を指す release は production rollout の前に弾かれる
+
+### Acceptance Criteria
+
+- locale selector が desktop と mobile で縦積みラベルではなく inline row として読める
+- locale selector の default option copy が locale ごとに自然で、少なくとも日本語では `ブラウザに合わせる` 相当の意味になる
+- release workflow は non-prerelease release ごとに app rollout を実行する
+- infra planning、runtime config sync、database job は従来どおり差分ベースで skip できる
+- release workflow は current release tag の commit が `main` に含まれない場合に失敗する
+
+### Edge Cases
+
+- docs-only release でも app rollout 自体は走るが、infra と database job は不要なとき skip できる
+- feature branch commit や stale main commit に release tag が付いても production rollout まで進まない

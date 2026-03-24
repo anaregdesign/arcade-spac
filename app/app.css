@@ -184,26 +184,23 @@ a {
 .locale-preference-form {
   display: flex;
   align-items: center;
+  gap: 0.55rem;
 }
 
 .locale-preference-label {
-  display: grid;
-  gap: 4px;
-  min-width: 138px;
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
   color: var(--text-secondary);
-  font-size: 0.78rem;
+  font-size: 0.82rem;
   font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.locale-preference-label > span {
   white-space: nowrap;
 }
 
 .locale-preference-select {
   min-height: 34px;
-  padding: 0 10px;
+  min-width: 10.5rem;
+  padding: 0 12px;
   border: none;
   border-radius: 10px;
   background: var(--card-muted);
