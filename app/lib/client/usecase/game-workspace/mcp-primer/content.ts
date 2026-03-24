@@ -1,4 +1,6 @@
+import type { SupportedArcadeLocale } from "../../../../domain/entities/locale";
 import type { GameplaySourceAttributionItem } from "../../../../../components/gameplay/shared/GameplaySourceAttribution";
+import { mcpPrimerLocalizedContentByLocale } from "./content-translations";
 
 export type McpPrimerStudyPage = {
   body: string;
@@ -22,6 +24,11 @@ export type McpPrimerQuestion = {
   prompt: string;
   selectionMode: "multiple" | "single";
   sources: GameplaySourceAttributionItem[];
+};
+
+export type McpPrimerLocalizedContent = {
+  questions: McpPrimerQuestion[];
+  studyPages: McpPrimerStudyPage[];
 };
 
 const introSource: GameplaySourceAttributionItem = {
@@ -471,6 +478,15 @@ export const mcpPrimerQuestions: McpPrimerQuestion[] = [
 export const mcpPrimerQuestionCount = mcpPrimerQuestions.length;
 
 export const mcpPrimerStudyPageCount = mcpPrimerStudyPages.length;
+
+export function getMcpPrimerContent(locale: SupportedArcadeLocale): McpPrimerLocalizedContent {
+  const localizedContent = mcpPrimerLocalizedContentByLocale[locale];
+
+  return {
+    questions: localizedContent?.questions ?? mcpPrimerQuestions,
+    studyPages: localizedContent?.studyPages ?? mcpPrimerStudyPages,
+  };
+}
 
 export const mcpPrimerTimeLimitByDifficulty = {
   EASY: 900,

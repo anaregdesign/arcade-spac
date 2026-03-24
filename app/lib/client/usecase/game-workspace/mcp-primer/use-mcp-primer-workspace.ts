@@ -1,17 +1,19 @@
 import { useEffect, useMemo, useState } from "react";
 
 import { playRunClear, playRunFail, playRunStart, playTapCorrect, playTapWrong } from "../../../infrastructure/browser/sound-effects";
+import type { SupportedArcadeLocale } from "../../../../domain/entities/locale";
 import { formatDuration } from "../display";
+import { useShuffledQuizChoices } from "../use-shuffled-quiz-choices";
 import { useTerminalResultSubmission } from "../use-terminal-result-submission";
 import { useWorkspacePlayingSync } from "../use-workspace-playing-sync";
 import type { GameWorkspaceController } from "../use-game-workspace";
 import {
+  getMcpPrimerContent,
   mcpPrimerQuestionCount,
-  mcpPrimerQuestions,
   mcpPrimerStudyPageCount,
-  mcpPrimerStudyPages,
   mcpPrimerTimeLimitByDifficulty,
 } from "./content";
+import { getMcpPrimerUiCopy } from "./copy";
 
 type PrimerState = "cleared" | "failed" | "idle" | "quiz" | "study";
 
@@ -27,7 +29,7 @@ function areSelectionsCorrect(expectedKeys: string[], selectedKeys: string[]) {
   return expectedKeys.every((key) => selectedKeys.includes(key));
 }
 
-export function useMcpPrimerWorkspace(workspace: GameWorkspaceController) {
+export function useMcpPrimerWorkspace(workspace: GameWorkspaceController, locale: SupportedArcadeLocale) {
   const [state, setState] = useState<PrimerState>("idle");
   const [studyPageIndex, setStudyPageIndex] = useState(0);
   const [questionIndex, setQuestionIndex] = useState(0);
@@ -35,7 +37,10 @@ export function useMcpPrimerWorkspace(workspace: GameWorkspaceController) {
   const [reviewState, setReviewState] = useState<ReviewState | null>(null);
   const [mistakeCount, setMistakeCount] = useState(0);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const [runInstance, setRunInstance] = useState(0);
 
+  const content = useMemo(() => getMcpPrimerContent(locale), [locale]);
+  const copy = useMemo(() => getMcpPrimerUiCopy(locale), [locale]);
   const timeLimitSeconds = mcpPrimerTimeLimitByDifficulty[workspace.difficulty];
   const isRunIdle = state === "idle";
   const isStudyPhase = state === "study";
@@ -43,8 +48,12 @@ export function useMcpPrimerWorkspace(workspace: GameWorkspaceController) {
   const isRunCleared = state === "cleared";
   const isRunFailed = state === "failed";
   const isLiveRun = isStudyPhase || isQuizPhase;
-  const currentStudyPage = mcpPrimerStudyPages[studyPageIndex] ?? mcpPrimerStudyPages[0];
-  const currentQuestion = mcpPrimerQuestions[questionIndex] ?? mcpPrimerQuestions[0];
+  const currentStudyPage = content.studyPages[studyPageIndex] ?? content.studyPages[0];
+  const currentQuestion = content.questions[questionIndex] ?? content.questions[0];
+  const currentQuestionChoices = useShuffledQuizChoices(
+    currentQuestion.choices,
+    `${locale}:${runInstance}:${currentQuestion.key}`,
+  );
 
   const correctChoiceKeys = useMemo(
     () => currentQuestion.choices.filter((choice) => choice.isCorrect).map((choice) => choice.key),
@@ -106,6 +115,7 @@ export function useMcpPrimerWorkspace(workspace: GameWorkspaceController) {
     setQuestionIndex(0);
     setSelectedChoiceKeys([]);
     setReviewState(null);
+    setRunInstance((current) => current + 1);
     setState("study");
   }
 
@@ -174,22 +184,22 @@ export function useMcpPrimerWorkspace(workspace: GameWorkspaceController) {
   }
 
   const runStatusLabel = isRunCleared
-    ? "Cleared"
+    ? copy.runStatusCleared
     : isRunFailed
-      ? "Timed out"
+      ? copy.runStatusTimedOut
       : isQuizPhase
-        ? "Quiz"
+        ? copy.runStatusQuiz
         : isStudyPhase
-          ? "Study"
-          : "Preview";
+          ? copy.runStatusStudy
+          : copy.runStatusPreview;
 
   const finishDetail = isRunCleared
-    ? "All study pages and quiz questions were completed. The Result screen opens automatically."
+    ? copy.finishDetailCleared
     : isRunFailed
-      ? "The timer expired before the MCP primer run finished."
+      ? copy.finishDetailFailed
       : isStudyPhase
-        ? "Read the current page, then continue into the quiz when you are ready."
-        : "Answer the full quiz after the study pages. Mistakes are recorded, but the run continues.";
+        ? copy.finishDetailStudy
+        : copy.finishDetailQuiz;
 
   return {
     advanceAfterReview,
@@ -197,6 +207,7 @@ export function useMcpPrimerWorkspace(workspace: GameWorkspaceController) {
     canMoveBackward: studyPageIndex > 0,
     canSubmitAnswer: isQuizPhase && selectedChoiceKeys.length > 0 && !reviewState,
     currentQuestion,
+    currentQuestionChoices,
     currentStudyPage,
     elapsedSecondsLabel: formatDuration(elapsedSeconds),
     finishDetail,
@@ -214,25 +225,26 @@ export function useMcpPrimerWorkspace(workspace: GameWorkspaceController) {
     reviewState,
     reviewSummary: reviewState
       ? reviewState.correct
-        ? "Correct. Move to the next question."
-        : `${currentQuestion.explanation} Mistake recorded.`
+        ? copy.reviewSummaryCorrect
+        : copy.reviewSummaryIncorrect(currentQuestion.explanation)
       : null,
     runStatusLabel,
     saveStatusLabel: submitter.isSubmitting
-      ? "Opening result"
+      ? copy.openingResultLabel
       : isRunCleared || isRunFailed
-        ? "Opening result"
+        ? copy.openingResultLabel
         : reviewState
-          ? "Review the answer and continue"
+          ? copy.reviewContinueLabel
           : isStudyPhase
-            ? "Read and continue"
-            : "Answer the current question",
+            ? copy.nextPageLabel
+            : copy.checkAnswerLabel,
     selectedChoiceKeys,
-    startActionLabel: isRunIdle ? "Start lesson" : isRunCleared || isRunFailed ? "Start another run" : "Resume run",
+    startActionLabel: isRunIdle ? copy.startLessonLabel : isRunCleared || isRunFailed ? copy.startAnotherRunLabel : copy.reviewContinueLabel,
     studyPageCount: mcpPrimerStudyPageCount,
     studyPageIndex,
     submitCurrentAnswer,
     timeLeftLabel: formatDuration(Math.max(0, timeLimitSeconds - elapsedSeconds)),
     toggleChoice,
+    uiCopy: copy,
   };
 }

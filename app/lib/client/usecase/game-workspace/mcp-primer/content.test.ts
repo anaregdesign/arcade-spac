@@ -1,12 +1,14 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  getMcpPrimerContent,
   mcpPrimerQuestionCount,
   mcpPrimerQuestions,
   mcpPrimerStudyPageCount,
   mcpPrimerStudyPages,
   mcpPrimerTimeLimitByDifficulty,
 } from "./content";
+import { supportedArcadeLocales } from "../../../../domain/entities/locale";
 
 describe("mcp-primer content", () => {
   it("keeps the published study pages and count in sync", () => {
@@ -37,5 +39,26 @@ describe("mcp-primer content", () => {
     expect(mcpPrimerTimeLimitByDifficulty.EASY).toBeGreaterThan(mcpPrimerTimeLimitByDifficulty.NORMAL);
     expect(mcpPrimerTimeLimitByDifficulty.NORMAL).toBeGreaterThan(mcpPrimerTimeLimitByDifficulty.HARD);
     expect(mcpPrimerTimeLimitByDifficulty.HARD).toBeGreaterThan(mcpPrimerTimeLimitByDifficulty.EXPERT);
+  });
+
+  it("provides localized study and quiz content for every supported locale", () => {
+    for (const locale of supportedArcadeLocales) {
+      const localizedContent = getMcpPrimerContent(locale);
+
+      expect(localizedContent.studyPages).toHaveLength(mcpPrimerStudyPageCount);
+      expect(localizedContent.questions).toHaveLength(mcpPrimerQuestionCount);
+      expect(localizedContent.studyPages.every((page) => page.sources.length > 0)).toBe(true);
+      expect(localizedContent.questions.every((question) => question.sources.length > 0)).toBe(true);
+      expect(localizedContent.questions[8]?.choices[0]?.content).toBe("`tools/list`");
+    }
+  });
+
+  it("keeps MCP canonical terms untranslated in localized quiz choices", () => {
+    for (const locale of ["ja", "zh", "fr"] as const) {
+      const localizedContent = getMcpPrimerContent(locale);
+      const primitiveChoices = localizedContent.questions[3]?.choices.slice(0, 3).map((choice) => choice.content);
+
+      expect(primitiveChoices).toEqual(["Tools", "Resources", "Prompts"]);
+    }
   });
 });

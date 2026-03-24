@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { redirect } from "react-router";
 
+import { useShuffledQuizChoices } from "../lib/client/usecase/game-workspace/use-shuffled-quiz-choices";
 import { GameplayQuizLayout } from "../components/gameplay/layouts/GameplayQuizLayout";
 import sharedStyles from "../components/gameplay/workspace/GameWorkspaceShared.module.css";
 
@@ -44,6 +45,61 @@ export default function QuizLayoutPreviewRoute() {
   const [singleSelection, setSingleSelection] = useState("choice-b");
   const [multipleSelection, setMultipleSelection] = useState<string[]>(["choice-a", "choice-d"]);
 
+  const singleChoices = useShuffledQuizChoices([
+    {
+      content: "`6`",
+      key: "choice-a",
+      label: "Option A",
+      onSelect: () => setSingleSelection("choice-a"),
+      selected: singleSelection === "choice-a",
+    },
+    {
+      content: "`12`",
+      key: "choice-b",
+      label: "Option B",
+      onSelect: () => setSingleSelection("choice-b"),
+      selected: singleSelection === "choice-b",
+    },
+    {
+      content: "`18`",
+      key: "choice-c",
+      label: "Option C",
+      onSelect: () => setSingleSelection("choice-c"),
+      selected: singleSelection === "choice-c",
+    },
+  ], "quiz-layout-preview-single");
+
+  const multipleChoices = useShuffledQuizChoices([
+    {
+      content: "![Quick Sum preview](/images/games/quick-sum-preview.svg)",
+      key: "choice-a",
+      label: "Image",
+      onSelect: () => toggleMultipleSelection("choice-a"),
+      selected: multipleSelection.includes("choice-a"),
+    },
+    {
+      content: "```ts\nconst answer = choices.filter(Boolean);\n```",
+      key: "choice-b",
+      label: "Code block",
+      onSelect: () => toggleMultipleSelection("choice-b"),
+      selected: multipleSelection.includes("choice-b"),
+    },
+    {
+      content: "<script>alert('xss')</script>",
+      key: "choice-c",
+      label: "Raw HTML",
+      onSelect: () => toggleMultipleSelection("choice-c"),
+      selected: multipleSelection.includes("choice-c"),
+    },
+    {
+      content: "- Accessible labels\n- Visible selected states",
+      key: "choice-d",
+      label: "Checklist",
+      onSelect: () => toggleMultipleSelection("choice-d"),
+      selected: multipleSelection.includes("choice-d"),
+    },
+  ], "quiz-layout-preview-multiple");
+
   function toggleMultipleSelection(choiceKey: string) {
     setMultipleSelection((current) =>
       current.includes(choiceKey) ? current.filter((value) => value !== choiceKey) : [...current, choiceKey],
@@ -63,29 +119,7 @@ export default function QuizLayoutPreviewRoute() {
 
       <section className={["feature-card", sharedStyles["workspace-card"], sharedStyles["board-card"]].join(" ")}>
         <GameplayQuizLayout
-          choices={[
-            {
-              content: "`6`",
-              key: "choice-a",
-              label: "Option A",
-              onSelect: () => setSingleSelection("choice-a"),
-              selected: singleSelection === "choice-a",
-            },
-            {
-              content: "`12`",
-              key: "choice-b",
-              label: "Option B",
-              onSelect: () => setSingleSelection("choice-b"),
-              selected: singleSelection === "choice-b",
-            },
-            {
-              content: "`18`",
-              key: "choice-c",
-              label: "Option C",
-              onSelect: () => setSingleSelection("choice-c"),
-              selected: singleSelection === "choice-c",
-            },
-          ]}
+          choices={singleChoices}
           detail="Markdown prompt content stays readable above reusable answer cards."
           phase="Single select"
           prompt={singlePrompt}
@@ -105,36 +139,7 @@ export default function QuizLayoutPreviewRoute() {
 
       <section className={["feature-card", sharedStyles["workspace-card"], sharedStyles["board-card"]].join(" ")}>
         <GameplayQuizLayout
-          choices={[
-            {
-              content: "![Quick Sum preview](/images/games/quick-sum-preview.svg)",
-              key: "choice-a",
-              label: "Image",
-              onSelect: () => toggleMultipleSelection("choice-a"),
-              selected: multipleSelection.includes("choice-a"),
-            },
-            {
-              content: "```ts\nconst answer = choices.filter(Boolean);\n```",
-              key: "choice-b",
-              label: "Code block",
-              onSelect: () => toggleMultipleSelection("choice-b"),
-              selected: multipleSelection.includes("choice-b"),
-            },
-            {
-              content: "<script>alert('xss')</script>",
-              key: "choice-c",
-              label: "Raw HTML",
-              onSelect: () => toggleMultipleSelection("choice-c"),
-              selected: multipleSelection.includes("choice-c"),
-            },
-            {
-              content: "- Accessible labels\n- Visible selected states",
-              key: "choice-d",
-              label: "Checklist",
-              onSelect: () => toggleMultipleSelection("choice-d"),
-              selected: multipleSelection.includes("choice-d"),
-            },
-          ]}
+          choices={multipleChoices}
           detail="Multiple selections can stay active until the game-specific submit action runs."
           footer={`Selected ${multipleSelection.length} choices`}
           phase="Multiple select"

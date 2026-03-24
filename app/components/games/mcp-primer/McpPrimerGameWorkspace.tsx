@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 
 import { useMcpPrimerWorkspace } from "../../../lib/client/usecase/game-workspace/mcp-primer/use-mcp-primer-workspace";
+import { useAppLocale } from "../../../lib/client/usecase/locale/use-app-locale";
 import { GameplayQuizLayout } from "../../gameplay/layouts/GameplayQuizLayout";
 import { GameplayStudyLayout } from "../../gameplay/layouts/GameplayStudyLayout";
 import sharedStyles from "../../gameplay/workspace/GameWorkspaceShared.module.css";
@@ -11,20 +12,22 @@ import type { GameWorkspaceComponentProps } from "../../gameplay/workspace/game-
 import styles from "./McpPrimerGameWorkspace.module.css";
 
 export function McpPrimerGameWorkspace({ instructions, workspace }: GameWorkspaceComponentProps) {
-  const screen = useMcpPrimerWorkspace(workspace);
+  const { locale } = useAppLocale();
+  const screen = useMcpPrimerWorkspace(workspace, locale);
+  const copy = screen.uiCopy;
   const progressStatusLabel = screen.isRunIdle
-    ? `Page 1/${screen.studyPageCount}`
+    ? copy.progressPage(1, screen.studyPageCount)
     : screen.isStudyPhase
-      ? `Page ${screen.studyPageIndex + 1}/${screen.studyPageCount}`
+      ? copy.progressPage(screen.studyPageIndex + 1, screen.studyPageCount)
       : screen.isQuizPhase
-        ? `Question ${screen.questionIndex + 1}/${screen.questionCount}`
+        ? copy.progressQuestion(screen.questionIndex + 1, screen.questionCount)
         : screen.isRunCleared
-          ? `Completed ${screen.questionCount}/${screen.questionCount}`
-          : `Timed out at ${screen.timeLeftLabel}`;
+          ? copy.progressCompleted(screen.questionCount)
+          : copy.progressTimedOut(screen.timeLeftLabel);
 
   const questionChoices = useMemo(
     () =>
-      screen.currentQuestion.choices.map((choice) => {
+      screen.currentQuestionChoices.map((choice) => {
         const isSelected = screen.selectedChoiceKeys.includes(choice.key);
         const tone = screen.reviewState
           ? choice.isCorrect
@@ -44,7 +47,7 @@ export function McpPrimerGameWorkspace({ instructions, workspace }: GameWorkspac
           tone,
         } as const;
       }),
-    [screen.currentQuestion, screen.reviewState, screen.selectedChoiceKeys, screen.toggleChoice],
+    [screen.currentQuestionChoices, screen.reviewState, screen.selectedChoiceKeys, screen.toggleChoice],
   );
 
   return (
@@ -58,28 +61,28 @@ export function McpPrimerGameWorkspace({ instructions, workspace }: GameWorkspac
           <>
             <span className="status-badge status-badge-neutral">{screen.runStatusLabel}</span>
             <span className="status-badge status-badge-neutral">{progressStatusLabel}</span>
-            <span className="status-badge status-badge-neutral">Mistakes {screen.mistakeCount}</span>
-            <span className="status-badge status-badge-neutral">Left {screen.timeLeftLabel}</span>
+            <span className="status-badge status-badge-neutral">{copy.mistakesLabel(screen.mistakeCount)}</span>
+            <span className="status-badge status-badge-neutral">{copy.timeLeftLabel(screen.timeLeftLabel)}</span>
           </>
         )}
       />
 
-      <section className={["feature-card", sharedStyles["workspace-card"], sharedStyles["board-card"], styles["primer-board-card"]].join(" ")} aria-label="MCP Primer board">
+      <section className={["feature-card", sharedStyles["workspace-card"], sharedStyles["board-card"], styles["primer-board-card"]].join(" ")} aria-label={copy.boardAriaLabel}>
         <div className={[styles["primer-shell"], sharedStyles["game-board-overlay-shell"]].join(" ")}>
           {screen.isRunIdle ? (
             <GameplayStudyLayout
               actions={(
                 <button className="action-link action-link-primary" onClick={screen.beginRun} type="button">
-                  Start lesson
+                  {copy.startLessonLabel}
                 </button>
               )}
               body={screen.currentStudyPage.body}
-              detail="Preview the lesson structure before the timer starts."
-              footer="You will review four study pages before the timed quiz begins."
-              phase="Lesson preview"
-              progressLabel={`${screen.studyPageCount} study pages, ${screen.questionCount} questions`}
+              detail={copy.lessonPreviewDetail}
+              footer={copy.lessonPreviewFooter}
+              phase={copy.lessonPreviewPhase}
+              progressLabel={copy.readyProgressLabel(screen.studyPageCount, screen.questionCount)}
               sources={screen.currentStudyPage.sources}
-              title="MCP primer ready"
+              title={copy.lessonPreviewTitle}
               tone="review"
             />
           ) : null}
@@ -94,18 +97,18 @@ export function McpPrimerGameWorkspace({ instructions, workspace }: GameWorkspac
                     onClick={screen.goToPreviousStudyPage}
                     type="button"
                   >
-                    Back
+                    {copy.backLabel}
                   </button>
                   <button className="action-link action-link-primary" onClick={screen.goToNextStudyStep} type="button">
-                    {screen.studyPageIndex === screen.studyPageCount - 1 ? "Start quiz" : "Next page"}
+                    {screen.studyPageIndex === screen.studyPageCount - 1 ? copy.startQuizLabel : copy.nextPageLabel}
                   </button>
                 </>
               )}
               body={screen.currentStudyPage.body}
               detail={screen.currentStudyPage.detail}
-              footer="Read the study notes before moving to the quiz."
-              phase={`Study ${screen.studyPageIndex + 1}`}
-              progressLabel={`Page ${screen.studyPageIndex + 1} of ${screen.studyPageCount}`}
+              footer={copy.studyFooter}
+              phase={copy.studyPhase(screen.studyPageIndex + 1)}
+              progressLabel={copy.studyProgress(screen.studyPageIndex + 1, screen.studyPageCount)}
               sources={screen.currentStudyPage.sources}
               title={screen.currentStudyPage.title}
               tone="review"
@@ -115,16 +118,16 @@ export function McpPrimerGameWorkspace({ instructions, workspace }: GameWorkspac
           {screen.isQuizPhase ? (
             <GameplayQuizLayout
               choices={questionChoices}
-              detail="Answer the current question from the study material you just reviewed."
-              footer={screen.reviewState ? screen.reviewSummary : `Question ${screen.questionIndex + 1} of ${screen.questionCount}`}
+              detail={copy.quizDetail}
+              footer={screen.reviewState ? screen.reviewSummary : copy.quizFooter(screen.questionIndex + 1, screen.questionCount)}
               helperText={
                 screen.reviewState
                   ? screen.reviewState.correct
-                    ? "Correct answer confirmed."
-                    : "Correct answers stay highlighted before you continue."
+                    ? copy.helperCorrect
+                    : copy.helperIncorrect
                   : undefined
               }
-              phase={`Question ${screen.questionIndex + 1}`}
+              phase={copy.quizPhase(screen.questionIndex + 1)}
               prompt={screen.currentQuestion.prompt}
               selectionMode={screen.currentQuestion.selectionMode}
               sources={screen.currentQuestion.sources}
@@ -137,12 +140,12 @@ export function McpPrimerGameWorkspace({ instructions, workspace }: GameWorkspac
                 >
                   {screen.reviewState
                     ? screen.questionIndex === screen.questionCount - 1
-                      ? "Finish run"
-                      : "Next question"
-                    : "Check answer"}
+                      ? copy.finishRunLabel
+                      : copy.nextQuestionLabel
+                    : copy.checkAnswerLabel}
                 </button>
               )}
-              title="MCP comprehension check"
+              title={copy.quizTitle}
               tone="logic"
             />
           ) : null}

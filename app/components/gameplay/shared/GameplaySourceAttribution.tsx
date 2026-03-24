@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 
+import { useAppLocale } from "../../../lib/client/usecase/locale/use-app-locale";
 import { joinClassNames } from "../../../lib/client/ui/gameplay-layout";
 import styles from "./GameplaySourceAttribution.module.css";
 
@@ -18,17 +19,21 @@ type GameplaySourceAttributionProps = {
 
 export function GameplaySourceAttribution({
   className,
-  label = "Sources",
+  label,
   sources,
 }: GameplaySourceAttributionProps) {
+  const { locale } = useAppLocale();
+
   if (sources.length === 0) {
     return null;
   }
 
+  const resolvedLabel = label ?? (locale === "ja" ? "出典" : locale === "zh" ? "来源" : locale === "fr" ? "Sources" : "Sources");
+
   return (
-    <section aria-label={label} className={joinClassNames(styles["source-block"], className)}>
+    <section aria-label={resolvedLabel} className={joinClassNames(styles["source-block"], className)}>
       <div className={styles["source-heading"]}>
-        <span className={styles["source-heading-label"]}>{label}</span>
+        <span className={styles["source-heading-label"]}>{resolvedLabel}</span>
       </div>
 
       <ul className={styles["source-list"]}>

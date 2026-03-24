@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 
+import { useAppLocale } from "../../../lib/client/usecase/locale/use-app-locale";
 import { joinClassNames } from "../../../lib/client/ui/gameplay-layout";
 import { GameplayContextCue, type GameplayContextCueTone } from "../GameplayContextCue";
 import { GameplayMarkdown } from "../shared/GameplayMarkdown";
@@ -25,7 +26,7 @@ type GameplayStudyLayoutProps = {
 export function GameplayStudyLayout({
   actions,
   body,
-  bodyLabel = "Study notes",
+  bodyLabel,
   className,
   detail,
   footer,
@@ -36,13 +37,16 @@ export function GameplayStudyLayout({
   title,
   tone = "review",
 }: GameplayStudyLayoutProps) {
+  const { locale } = useAppLocale();
+  const resolvedBodyLabel = bodyLabel ?? (locale === "ja" ? "学習ノート" : locale === "zh" ? "学习笔记" : locale === "fr" ? "Notes d'etude" : "Study notes");
+
   return (
     <GameplaySequenceStageLayout className={joinClassNames(styles["study-layout"], className)}>
       <GameplayContextCue detail={detail} phase={phase} showDetailOnMobile title={title} tone={tone} />
 
-      <section aria-label={bodyLabel} className={styles["study-panel"]}>
+      <section aria-label={resolvedBodyLabel} className={styles["study-panel"]}>
         <div className={styles["study-section-heading"]}>
-          <span className={styles["study-section-label"]}>{bodyLabel}</span>
+          <span className={styles["study-section-label"]}>{resolvedBodyLabel}</span>
         </div>
 
         <GameplayMarkdown content={body} />

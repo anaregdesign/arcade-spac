@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 
+import { useAppLocale } from "../../../lib/client/usecase/locale/use-app-locale";
 import { joinClassNames } from "../../../lib/client/ui/gameplay-layout";
 import { GameplayContextCue, type GameplayContextCueTone } from "../GameplayContextCue";
 import { GameplaySourceAttribution, type GameplaySourceAttributionItem } from "../shared/GameplaySourceAttribution";
@@ -47,14 +48,42 @@ function getChoiceMarker(index: number) {
   return /[A-Z]/.test(letter) ? letter : String(index + 1);
 }
 
-function getSelectionModeCopy(selectionMode: GameplayQuizSelectionMode) {
-  return selectionMode === "multiple" ? "Select all that apply, then submit." : "Select one answer.";
+function getSelectionModeCopy(locale: "en" | "fr" | "ja" | "zh", selectionMode: GameplayQuizSelectionMode) {
+  if (selectionMode === "multiple") {
+    if (locale === "ja") {
+      return "当てはまるものをすべて選んでから回答を確認します。";
+    }
+
+    if (locale === "zh") {
+      return "先选择所有适用项，再检查答案。";
+    }
+
+    if (locale === "fr") {
+      return "Sélectionnez toutes les réponses pertinentes, puis validez.";
+    }
+
+    return "Select all that apply, then submit.";
+  }
+
+  if (locale === "ja") {
+    return "正解だと思う回答を 1 つ選びます。";
+  }
+
+  if (locale === "zh") {
+    return "请选择一个答案。";
+  }
+
+  if (locale === "fr") {
+    return "Sélectionnez une seule réponse.";
+  }
+
+  return "Select one answer.";
 }
 
 export function GameplayQuizLayout({
   choiceColumns,
   choices,
-  choicesLabel = "Answer choices",
+  choicesLabel,
   className,
   detail,
   footer,
@@ -62,41 +91,45 @@ export function GameplayQuizLayout({
   mobileChoiceColumns = 1,
   phase,
   prompt,
-  promptLabel = "Question",
+  promptLabel,
   selectionMode = "single",
   sources,
-  sourcesLabel = "Sources",
+  sourcesLabel,
   submitAction,
   title,
   tone = "logic",
 }: GameplayQuizLayoutProps) {
+  const { locale } = useAppLocale();
   const resolvedColumns = choiceColumns ?? (choices.length <= 2 ? 1 : 2);
-  const resolvedHelperText = helperText ?? getSelectionModeCopy(selectionMode);
+  const resolvedPromptLabel = promptLabel ?? (locale === "ja" ? "問題" : locale === "zh" ? "题目" : locale === "fr" ? "Question" : "Question");
+  const resolvedChoicesLabel = choicesLabel ?? (locale === "ja" ? "選択肢" : locale === "zh" ? "选项" : locale === "fr" ? "Choix de reponse" : "Answer choices");
+  const resolvedSourcesLabel = sourcesLabel ?? (locale === "ja" ? "出典" : locale === "zh" ? "来源" : locale === "fr" ? "Sources" : "Sources");
+  const resolvedHelperText = helperText ?? getSelectionModeCopy(locale, selectionMode);
 
   return (
     <GameplaySequenceStageLayout className={joinClassNames(styles["quiz-layout"], className)}>
       <GameplayContextCue detail={detail} phase={phase} showDetailOnMobile title={title} tone={tone} />
 
-      <section className={styles["quiz-panel"]} aria-label={promptLabel}>
+      <section className={styles["quiz-panel"]} aria-label={resolvedPromptLabel}>
         <div className={styles["quiz-section-heading"]}>
-          <span className={styles["quiz-section-label"]}>{promptLabel}</span>
+          <span className={styles["quiz-section-label"]}>{resolvedPromptLabel}</span>
         </div>
         <GameplayMarkdown content={prompt} />
 
-        {sources?.length ? <GameplaySourceAttribution label={sourcesLabel} sources={sources} /> : null}
+        {sources?.length ? <GameplaySourceAttribution label={resolvedSourcesLabel} sources={sources} /> : null}
       </section>
 
-      <section className={styles["quiz-panel"]} aria-label={choicesLabel}>
+      <section className={styles["quiz-panel"]} aria-label={resolvedChoicesLabel}>
         <div className={styles["quiz-section-heading"]}>
-          <span className={styles["quiz-section-label"]}>{choicesLabel}</span>
+          <span className={styles["quiz-section-label"]}>{resolvedChoicesLabel}</span>
           <p className={styles["quiz-helper-copy"]}>{resolvedHelperText}</p>
         </div>
 
-        <div aria-label={choicesLabel} className={styles["quiz-choice-region"]} role={selectionMode === "single" ? "radiogroup" : "group"}>
+        <div aria-label={resolvedChoicesLabel} className={styles["quiz-choice-region"]} role={selectionMode === "single" ? "radiogroup" : "group"}>
           <GameplayChoiceGrid className={styles["quiz-choice-grid"]} columns={resolvedColumns} mobileColumns={mobileChoiceColumns}>
             {choices.map((choice, index) => {
               const marker = getChoiceMarker(index);
-              const label = choice.label ?? `Option ${marker}`;
+              const label = choice.label ?? marker;
 
               return (
                 <button

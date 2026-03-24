@@ -86,6 +86,9 @@
 - sign-in 済み利用者は Game 画面からも現在のゲームをお気に入りへ追加または解除できる
 - Touch device でも desktop と同じ完了条件まで到達できる
 - プレイ終了時は、そのまま Result へ遷移する
+- Quiz または study を含むゲームでは、プレイヤーに見える本文、進行ラベル、解説、出典補足を対応 locale ごとに用意する
+- Quiz または study の文言では、MCP 仕様で canonical term として扱われる固有名詞、primitive 名、interaction model 名、method 名だけを未翻訳で維持し、周辺の説明文や一般語は各 locale で自然な表現へ翻訳する
+- quiz または study 向け翻訳データが欠けている場合は英語へフォールバックし、画面や進行を壊さない
 
 ### Result
 

@@ -179,6 +179,8 @@ Shipped game は、古い catalog 状態から始まった環境でも Home、Pr
 - 各 study page と quiz prompt には、参照した公開ドキュメントの出典が表示される
 - single-select は即時 1 件選択、multi-select は複数選択後に submit する流れで進む
 - run clear 時は clear time と mistakes が result に反映される
+- `MCP Primer` の study page、quiz prompt、choice copy、explanation、source note、進行ラベルは locale ごとに表示される
+- `Tools`、`Resources`、`Prompts`、`Host`、`Client`、`Server`、`Application-driven`、`Model-controlled`、`User-controlled`、`notifications/initialized`、`tools/list` のような MCP canonical term は各 locale でも表記を変えず、説明文や一般語は locale ごとに自然な文章へ翻訳される
 
 ### Acceptance Criteria
 
@@ -186,6 +188,8 @@ Shipped game は、古い catalog 状態から始まった環境でも Home、Pr
 - quiz は約 20 問で、single-select と multi-select の両方を含む
 - すべての study page と quiz prompt で source attribution を確認できる
 - clear と fail の両方が既存 result flow で動作する
+- locale を `en` `ja` `zh` `fr` に切り替えると `MCP Primer` の学習本文と quiz 文言が切り替わる
+- MCP canonical term と method 名は翻訳された文章の中でも表記が変わらず、それ以外の語句は locale ごとに自然に読める
 
 ### Edge Cases
 
