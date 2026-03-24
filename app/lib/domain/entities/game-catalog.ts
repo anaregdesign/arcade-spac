@@ -1012,7 +1012,7 @@ export const supportedGames = [
   },
   {
     accentColor: "#38bdf8",
-    homeTags: ["logic", "memory"],
+    homeTags: ["learning", "logic"],
     id: "game-mcp-primer",
     key: "mcp-primer",
     name: "MCP Primer",

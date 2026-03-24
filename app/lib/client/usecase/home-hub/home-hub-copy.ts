@@ -148,6 +148,7 @@ const tagLabelsByLocale: Record<SupportedArcadeLocale, Record<string, string>> =
   en: {
     audio: "Audio",
     "fast-start": "Fast start",
+    learning: "Learning",
     logic: "Logic",
     memory: "Memory",
     perception: "Perception",
@@ -162,6 +163,7 @@ const tagLabelsByLocale: Record<SupportedArcadeLocale, Record<string, string>> =
   ja: {
     audio: "音声",
     "fast-start": "すぐ始める",
+    learning: "学習",
     logic: "ロジック",
     memory: "記憶",
     perception: "認識",
@@ -176,6 +178,7 @@ const tagLabelsByLocale: Record<SupportedArcadeLocale, Record<string, string>> =
   zh: {
     audio: "音频",
     "fast-start": "快速上手",
+    learning: "学习",
     logic: "逻辑",
     memory: "记忆",
     perception: "观察",
@@ -190,6 +193,7 @@ const tagLabelsByLocale: Record<SupportedArcadeLocale, Record<string, string>> =
   fr: {
     audio: "Audio",
     "fast-start": "Démarrage rapide",
+    learning: "Apprentissage",
     logic: "Logique",
     memory: "Mémoire",
     perception: "Perception",

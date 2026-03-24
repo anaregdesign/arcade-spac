@@ -188,7 +188,7 @@ describe("game-catalog", () => {
     expect(getGameHomeTags("DROP_LINE")).toEqual(["timing", "fast-start"]);
     expect(getGameHomeTags("ICON_CHAIN")).toEqual(["logic", "memory"]);
     expect(getGameHomeTags("LINE_CONNECT")).toEqual(["logic", "spatial"]);
-    expect(getGameHomeTags("MCP_PRIMER")).toEqual(["logic", "memory"]);
+    expect(getGameHomeTags("MCP_PRIMER")).toEqual(["learning", "logic"]);
     expect(getGameHomeTags("MERGE_CLIMB")).toEqual(["logic", "spatial"]);
     expect(getGameHomeTags("RELATIVE_PITCH")).toEqual(["audio", "memory"]);
     expect(getGameHomeTags("ORBIT_TAP")).toEqual(["timing", "fast-start"]);

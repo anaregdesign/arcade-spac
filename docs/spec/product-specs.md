@@ -71,6 +71,7 @@
 - Home はゲーム探索と起動に集中した画面とする
 - ゲームカードは screenshot または thumbnail を主役にし、ゲーム名とお気に入り操作のような最小限の要素だけで比較できる
 - 検索、カテゴリまたはタグ、お気に入り状態、並び替え、追加読込を組み合わせて大量のゲームを探索できる
+- Home の tag filter には、timing や logic と同じ探索軸として learning 系ゲームを含められる
 - ダッシュボード的な補助情報は主役にせず、ゲーム一覧を最初の視野で見せる
 - `NEW` や `NO RECORD` のような汎用 status bubble は Home card に常設しない
 - Home search 下の summary badge から `VISIBLE UNPLAYED` と `VISIBLE RANKED` は外す
