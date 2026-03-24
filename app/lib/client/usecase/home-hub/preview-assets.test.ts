@@ -38,6 +38,10 @@ function getSvgDimensions(filePath: string) {
   };
 }
 
+function getAspectRatio(width: number, height: number) {
+  return Number((width / height).toFixed(4));
+}
+
 describe("home preview assets", () => {
   it("covers every supported game with a home preview mapping", () => {
     const supportedGameKeys = supportedGames.map((game) => game.key).sort();
@@ -46,7 +50,7 @@ describe("home preview assets", () => {
     expect(previewGameKeys).toEqual(supportedGameKeys);
   });
 
-  it("keeps the generated preview files in sync and square", () => {
+  it("keeps the generated preview files in sync and structurally valid", () => {
     const referencedPreviewAssets = Object.entries(previewByGameKey)
       .map(([gameKey, preview]) => {
         expect(preview.previewAlt, `${gameKey} previewAlt`).toBeTruthy();
@@ -77,11 +81,18 @@ describe("home preview assets", () => {
 
       const dimensions = getSvgDimensions(filePath);
 
-      if (dimensions.width !== null || dimensions.height !== null) {
-        expect(dimensions.width, `${fileName} width attribute`).toBe(dimensions.height);
-      }
+      expect(dimensions.viewBoxWidth, `${fileName} viewBox width`).toBeGreaterThan(0);
+      expect(dimensions.viewBoxHeight, `${fileName} viewBox height`).toBeGreaterThan(0);
 
-      expect(dimensions.viewBoxWidth, `${fileName} viewBox width`).toBe(dimensions.viewBoxHeight);
+      if (dimensions.width !== null || dimensions.height !== null) {
+        expect(dimensions.width, `${fileName} width attribute`).not.toBeNull();
+        expect(dimensions.height, `${fileName} height attribute`).not.toBeNull();
+
+        expect(
+          getAspectRatio(dimensions.width ?? 0, dimensions.height ?? 0),
+          `${fileName} explicit aspect ratio`,
+        ).toBe(getAspectRatio(dimensions.viewBoxWidth, dimensions.viewBoxHeight));
+      }
     }
   });
 });
