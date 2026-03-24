@@ -304,3 +304,45 @@ Shipped game は、古い catalog 状態から始まった環境でも Home、Pr
 
 - docs-only release でも app rollout 自体は走るが、infra と database job は不要なとき skip できる
 - feature branch commit や stale main commit に release tag が付いても production rollout まで進まない
+
+## Gameplay Share Action
+
+### Summary
+
+`Arcade` の gameplay screen では、`How to play` の横から現在のゲームをすぐ共有でき、その共有操作は recommendation に対するポジティブ feedback として扱われる。
+
+### User Problem
+
+- gameplay 中にゲーム自体を共有したいとき、result screen まで進まないと share affordance が見つからない
+- ルール確認と共有が離れていると、友人や同僚へその場で誘う導線が弱い
+- gameplay 中の share を recommendation が positive signal として拾えないと、興味の強いゲームを学習しづらい
+
+### Scope
+
+- gameplay controls の primary actions に `How to play` と並ぶ share action を追加する
+- share action は current gameplay route の game link と summary copy を clipboard へコピーする
+- gameplay route action から share 実行を positive recommendation feedback として記録する
+
+### Non-Goals
+
+- result screen の share popup を作り直すこと
+- 外部 SNS ごとの個別 share integration を追加すること
+- recommendation reward weight 自体を変更すること
+
+### User-Visible Behavior
+
+- 各ゲームの gameplay screen では、`How to play` の横に share button が表示される
+- share button を押すと、そのゲームの短い紹介文と current game link を含む share text が clipboard にコピーされる
+- copy 成功時と失敗時は gameplay screen 上で短い status が分かる
+
+### Acceptance Criteria
+
+- gameplay screen の primary actions に `How to play` と share が並んで表示される
+- share action は current game route を指す share text を clipboard へ書き込む
+- clipboard copy が成功したとき、server 側で positive recommendation feedback event が best-effort で記録される
+- 既存の result share flow、favorite toggle、restart 導線は壊れない
+
+### Edge Cases
+
+- clipboard API が失敗する環境でも gameplay screen 自体は継続利用できる
+- feedback logging や recommendation model 更新が失敗しても share copy の成功を妨げない

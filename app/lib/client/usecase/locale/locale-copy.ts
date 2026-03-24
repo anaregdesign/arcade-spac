@@ -13,6 +13,9 @@ type LocaleUiCopy = {
   navHomeLabel: string;
   navProfileLabel: string;
   navRankingsLabel: string;
+  shareCopyFailedLabel: string;
+  shareCopiedLabel: string;
+  shareLabel: string;
   signOutLabel: string;
   unmuteLabel: string;
 };
@@ -31,6 +34,9 @@ const localeUiCopyByLocale: Record<SupportedArcadeLocale, LocaleUiCopy> = {
     navHomeLabel: "Home",
     navProfileLabel: "Profile",
     navRankingsLabel: "Rankings",
+    shareCopyFailedLabel: "Clipboard copy failed. Try again.",
+    shareCopiedLabel: "Share text copied.",
+    shareLabel: "Share",
     signOutLabel: "Sign out",
     unmuteLabel: "Unmute sounds",
   },
@@ -47,6 +53,9 @@ const localeUiCopyByLocale: Record<SupportedArcadeLocale, LocaleUiCopy> = {
     navHomeLabel: "ホーム",
     navProfileLabel: "プロフィール",
     navRankingsLabel: "ランキング",
+    shareCopyFailedLabel: "クリップボードへのコピーに失敗しました。もう一度お試しください。",
+    shareCopiedLabel: "共有テキストをコピーしました。",
+    shareLabel: "共有",
     signOutLabel: "サインアウト",
     unmuteLabel: "サウンドをオン",
   },
@@ -63,6 +72,9 @@ const localeUiCopyByLocale: Record<SupportedArcadeLocale, LocaleUiCopy> = {
     navHomeLabel: "主页",
     navProfileLabel: "个人资料",
     navRankingsLabel: "排行榜",
+    shareCopyFailedLabel: "复制到剪贴板失败，请重试。",
+    shareCopiedLabel: "分享文本已复制。",
+    shareLabel: "分享",
     signOutLabel: "退出登录",
     unmuteLabel: "取消静音",
   },
@@ -79,6 +91,9 @@ const localeUiCopyByLocale: Record<SupportedArcadeLocale, LocaleUiCopy> = {
     navHomeLabel: "Accueil",
     navProfileLabel: "Profil",
     navRankingsLabel: "Classements",
+    shareCopyFailedLabel: "La copie dans le presse-papiers a echoue. Reessayez.",
+    shareCopiedLabel: "Le texte de partage a ete copie.",
+    shareLabel: "Partager",
     signOutLabel: "Se déconnecter",
     unmuteLabel: "Réactiver le son",
   },

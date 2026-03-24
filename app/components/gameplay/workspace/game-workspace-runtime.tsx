@@ -2,11 +2,13 @@ import { createContext, useContext, type ReactNode } from "react";
 
 type GameWorkspaceRuntimeValue = {
   autoStartRequest: number;
+  instructionsActions: ReactNode;
   toolbarActions: ReactNode;
 };
 
 const gameWorkspaceRuntimeContext = createContext<GameWorkspaceRuntimeValue>({
   autoStartRequest: 0,
+  instructionsActions: null,
   toolbarActions: null,
 });
 

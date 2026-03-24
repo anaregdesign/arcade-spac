@@ -7,11 +7,14 @@ import { AppShell } from "../components/shared/AppShell";
 import { GameWorkspaceScreen } from "../components/gameplay/GameWorkspaceScreen";
 import { buildSharedHelpSections } from "../components/shared/help-content";
 import { resolveGameKey } from "../lib/domain/entities/game-catalog";
+import { recommendationFeedbackEventType } from "../lib/domain/services/recommendation/recommendation-feedback-events";
 import { commitSession, getCurrentUserId, getSession, requireCurrentUserId, setPendingResultDraft } from "../lib/server/infrastructure/auth/session.server";
 import { getLocalePreference } from "../lib/server/infrastructure/locale/locale-preference.server";
+import { getGameRecord } from "../lib/server/infrastructure/repositories/arcade-dashboard.repository.server";
 import { toggleUserFavoriteGame } from "../lib/server/infrastructure/repositories/user-favorites.repository.server";
 import { getHomeDashboard, getGameWorkspace } from "../lib/server/usecase/get-home-dashboard.server";
 import { recordAbandonedRun, recordGameplayResult } from "../lib/server/usecase/gameplay/record-gameplay-result.server";
+import { recordRecommendationFeedbackEvent } from "../lib/server/usecase/recommendation/record-recommendation-feedback.server";
 
 export async function loader({ request, params }: Route.LoaderArgs) {
   const canonicalGameKey = resolveGameKey(params.gameKey);
@@ -74,6 +77,26 @@ export async function action({ request, params }: Route.ActionArgs) {
       userId,
       gameKey: favoriteGameKey,
     });
+  }
+
+  if (intent === "shareGameLink") {
+    if (!userId) {
+      throw new Response("Sign-in required", { status: 401 });
+    }
+
+    const game = await getGameRecord(canonicalGameKey);
+
+    if (!game) {
+      throw new Response("Game not found", { status: 404 });
+    }
+
+    await recordRecommendationFeedbackEvent({
+      eventType: recommendationFeedbackEventType.SHARE_LINK_GENERATED,
+      gameId: game.id,
+      userId,
+    });
+
+    return { ok: true };
   }
 
   if (typeof difficulty !== "string" || !["EASY", "NORMAL", "HARD", "EXPERT"].includes(difficulty)) {

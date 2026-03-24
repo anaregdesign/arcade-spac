@@ -1,5 +1,6 @@
 import { useGameInstructionsDialog } from "../../../lib/client/usecase/game-instructions-dialog/use-game-instructions-dialog";
 import { useAppLocale } from "../../../lib/client/usecase/locale/use-app-locale";
+import { useGameWorkspaceRuntime } from "./game-workspace-runtime";
 
 import styles from "./GameWorkspaceShared.module.css";
 
@@ -30,12 +31,14 @@ export function GameInstructionsDialog({
 }: GameInstructionsDialogProps) {
   const dialog = useGameInstructionsDialog();
   const { copy } = useAppLocale();
+  const runtime = useGameWorkspaceRuntime();
 
   return (
     <>
       <button className="action-link action-link-secondary" type="button" onClick={dialog.open}>
         {triggerLabel ?? copy.howToPlayLabel}
       </button>
+      {runtime.instructionsActions}
       {dialog.isOpen ? (
         <section className="help-overlay" aria-label={`${instructions.title} ${copy.howToPlayLabel}`}>
           <div

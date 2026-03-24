@@ -4,6 +4,7 @@ import { getGameInstructions, getGameWorkspaceComponent } from "../games/game-wo
 import { useAppLocale } from "../../lib/client/usecase/locale/use-app-locale";
 import { FavoriteToggle } from "../shared/FavoriteToggle";
 import { useGameWorkspace } from "../../lib/client/usecase/game-workspace/use-game-workspace";
+import { GameplayShareAction } from "./workspace/GameplayShareAction";
 import { GameWorkspaceRuntimeProvider } from "./workspace/game-workspace-runtime";
 import styles from "./workspace/GameWorkspaceShared.module.css";
 
@@ -31,6 +32,12 @@ export function GameWorkspaceScreen({ game }: GameWorkspaceScreenProps) {
   const workspace = useGameWorkspace();
   const GameWorkspaceComponent = getGameWorkspaceComponent(game.key);
   const instructions = getGameInstructions(game.key, locale);
+  const instructionsActions = (
+    <GameplayShareAction
+      gameDescription={game.shortDescription}
+      gameName={game.name}
+    />
+  );
   const toolbarActions = (
     <>
       <FavoriteToggle compact gameKey={game.key} gameName={game.name} isFavorite={game.isFavorite} />
@@ -53,6 +60,7 @@ export function GameWorkspaceScreen({ game }: GameWorkspaceScreenProps) {
     <GameWorkspaceRuntimeProvider
       value={{
         autoStartRequest: workspace.autoStartRequest,
+        instructionsActions,
         toolbarActions,
       }}
     >
