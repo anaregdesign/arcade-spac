@@ -125,7 +125,7 @@
 
 ## Authentication And Access
 
-- 認証対象は組織アカウントに限定する
+- 認証対象は home tenant と他 organization を含む組織アカウントに限定する
 - Sign-in 後の主要導線は Home を起点に統一する
 - ランキング詳細、共有結果、プロフィール閲覧は認証済み利用者の体験として扱う
 

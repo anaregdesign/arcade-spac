@@ -84,4 +84,27 @@ describe("runtime-config.server", () => {
       entraAuthority: "https://login.microsoftonline.com/organizations/v2.0",
     });
   });
+
+  it("defaults the Entra authority tenant to organizations when the explicit setting is omitted", async () => {
+    process.env.AZURE_APP_NAME = "arcade";
+    process.env.AZURE_APPCONFIG_ENDPOINT = "https://example.azconfig.io";
+    process.env.AZURE_KEY_VAULT_URI = "https://example.vault.azure.net/";
+    process.env.ARCADE_AUTH_MODE = "entra";
+    process.env.PUBLIC_APP_URL = "https://example.com";
+    process.env.ARCADE_SESSION_SECRET = "session-secret";
+    process.env.DATABASE_URL = "sqlserver://localhost:1433;database=arcade;user=sa;password=Passw0rd!;encrypt=false;trustServerCertificate=true";
+    process.env.ENTRA_TENANT_ID = "tenant-id";
+    delete process.env.ENTRA_AUTHORITY_TENANT;
+    process.env.ENTRA_CLIENT_ID = "client-id";
+    process.env.ENTRA_CLIENT_SECRET = "client-secret";
+
+    const { getRuntimeConfig } = await import("./runtime-config.server");
+
+    expect(loadMock).not.toHaveBeenCalled();
+    expect(getRuntimeConfig()).toMatchObject({
+      entraTenantId: "tenant-id",
+      entraAuthorityTenant: "organizations",
+      entraAuthority: "https://login.microsoftonline.com/organizations/v2.0",
+    });
+  });
 });

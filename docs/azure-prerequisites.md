@@ -46,7 +46,7 @@ This checklist captures the repository contract for Azure-hosted delivery after 
   - Azure Key Vault
   - Application Insights
   - Log Analytics workspace
-- A Microsoft Entra ID tenant for the production `web` app registration.
+- A Microsoft Entra ID tenant that owns the production multi-tenant `web` app registration.
 - Permission to create workload identity federation between GitHub Actions and Azure.
 - Network ownership or approval for:
   - the delegated Container Apps infrastructure subnet
@@ -233,6 +233,7 @@ Current repository note:
 - `DATABASE_URL` remains `DefaultAzureCredential` based at rest in Key Vault / App Configuration.
 - runtime and migration entrypoints preserve that URL and scope `AZURE_CLIENT_ID` to the intended user-assigned managed identity inside the Azure-hosted process.
 - keep `AZURE_RESOURCE_GROUP` as the shared prefix and select `green` / `blue` / `dev` through the workflow-managed suffix contract instead of editing resource names per run.
+- keep the app sign-in registration on the `web` platform with `signInAudience=AzureADMultipleOrgs`, and keep hosted runtime authority on `ENTRA_AUTHORITY_TENANT=organizations` so users from other organizations can complete workforce sign-in without enabling personal Microsoft accounts.
 
 ## Workflow Entry Points
 

@@ -198,7 +198,7 @@ if [[ "${ARCADE_AUTH_MODE}" == "entra" ]]; then
   require_env ENTRA_CLIENT_SECRET
 fi
 
-ENTRA_AUTHORITY_TENANT="${ENTRA_AUTHORITY_TENANT:-${ENTRA_TENANT_ID:-}}"
+ENTRA_AUTHORITY_TENANT="${ENTRA_AUTHORITY_TENANT:-organizations}"
 vault_host="${AZURE_KEY_VAULT_URI#https://}"
 vault_host="${vault_host%%/*}"
 vault_name="${vault_host%%.*}"

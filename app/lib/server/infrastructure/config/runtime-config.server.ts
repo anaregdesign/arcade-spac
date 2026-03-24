@@ -28,6 +28,7 @@ type RuntimeSettingName =
   | "PUBLIC_APP_URL";
 
 const APP_CONFIGURATION_KEY_PREFIX = "Arcade:";
+const DEFAULT_ENTRA_AUTHORITY_TENANT = "organizations";
 const STORE_BACKED_SETTING_NAMES: RuntimeSettingName[] = [
   "ARCADE_AUTH_MODE",
   "ARCADE_SESSION_SECRET",
@@ -70,7 +71,6 @@ function canBootstrapAzureRuntimeConfigFromProcessEnv() {
         "DATABASE_URL",
         "PUBLIC_APP_URL",
         "ENTRA_TENANT_ID",
-        "ENTRA_AUTHORITY_TENANT",
         "ENTRA_CLIENT_ID",
         "ENTRA_CLIENT_SECRET",
       ]
@@ -184,7 +184,8 @@ async function resolveRuntimeConfig() {
     : getResolvedSetting("DATABASE_URL", storeBackedSettings, true) ?? DEFAULT_DEV_DATABASE_URL;
   const publicAppUrl = getResolvedSetting("PUBLIC_APP_URL", storeBackedSettings, allowEnvironmentFallback) ?? null;
   const entraTenantId = getResolvedSetting("ENTRA_TENANT_ID", storeBackedSettings, allowEnvironmentFallback) ?? process.env.AZURE_TENANT_ID ?? null;
-  const entraAuthorityTenant = getResolvedSetting("ENTRA_AUTHORITY_TENANT", storeBackedSettings, allowEnvironmentFallback) ?? entraTenantId;
+  const entraAuthorityTenant = getResolvedSetting("ENTRA_AUTHORITY_TENANT", storeBackedSettings, allowEnvironmentFallback)
+    ?? DEFAULT_ENTRA_AUTHORITY_TENANT;
   const entraClientId = getResolvedSetting("ENTRA_CLIENT_ID", storeBackedSettings, allowEnvironmentFallback) ?? null;
   const entraClientSecret = getResolvedSetting("ENTRA_CLIENT_SECRET", storeBackedSettings, allowEnvironmentFallback) ?? null;
   const azureAppConfigurationEndpoint = process.env.AZURE_APPCONFIG_ENDPOINT ?? null;

@@ -1,6 +1,6 @@
 # Arcade
 
-Arcade is a React Router server-rendered web app for two competitive puzzle games: Minesweeper and Sudoku. It keeps a shared home dashboard, per-game play history, result summaries, rankings, and a profile surface in one tenant-scoped experience.
+Arcade is a React Router server-rendered web app for two competitive puzzle games: Minesweeper and Sudoku. It keeps a shared home dashboard, per-game play history, result summaries, rankings, and a profile surface in one organization-account experience across the home tenant and other Microsoft Entra organizations.
 
 ## Current State
 
@@ -135,8 +135,8 @@ For this repo, the human-side setup is mostly these 3 buckets.
 
 3. Create the app sign-in Entra app registration.
    This is separate from the GitHub Actions OIDC identity.
-   The app itself needs a `web` app registration for end-user sign-in.
-   Store `ENTRA_CLIENT_ID` and `ENTRA_CLIENT_SECRET` in GitHub Environments, and set the redirect URI to `https://<public-host>/auth/callback`.
+   The app itself needs a multi-tenant `web` app registration for end-user sign-in.
+   Keep the app registration `signInAudience` at `AzureADMultipleOrgs`, keep runtime authority on `organizations`, store `ENTRA_CLIENT_ID` and `ENTRA_CLIENT_SECRET` in GitHub Environments, and set the redirect URI to `https://<public-host>/auth/callback`.
 
 For a dev-phase resource-group switch, usually changing `AZURE_RESOURCE_GROUP`, `AZURE_APP_NAME`, and `AZURE_LOCATION` is enough before rerunning the workflows.
 

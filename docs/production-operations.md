@@ -52,7 +52,7 @@ This runbook records the repository-side production contract for Arcade on Azure
 2. Keep the GitHub `production` Environment runtime values and secrets current.
 3. When redeploying into another resource group during dev, update `AZURE_RESOURCE_GROUP` and `AZURE_APP_NAME` first.
 4. Keep `PUBLIC_APP_URL` aligned to the final custom domain URL, or leave it unset so the workflow derives the current Front Door host automatically.
-5. Update the Microsoft Entra app registration redirect URI when the public host changes.
+5. Keep the Microsoft Entra app registration and runtime auth authority aligned to the hosted public host and cross-tenant workforce contract: update redirect URIs when the public host changes, keep `signInAudience=AzureADMultipleOrgs`, and keep `ENTRA_AUTHORITY_TENANT=organizations`.
 6. Publish the release so the GitHub workflow runs `publish`, classifies whether the release touched infra-owned, runtime-config-owned, database-owned, or rollout-owned files, skips `plan_infra` and `deploy_infra` for non-infra releases, and skips the shared rollout entirely when the release only republishes artifacts or workflow/docs changes.
 7. When the shared rollout still runs, expect `sync_runtime_config` only for infra or runtime-config contract changes, and expect `bootstrap_sql` plus `migrate_database` only for infra or database contract changes.
 8. Confirm the Azure-hosted migration job applied the checked-in Prisma SQL files successfully before the app rollout is treated as complete when database jobs were required.
@@ -73,6 +73,7 @@ This runbook records the repository-side production contract for Arcade on Azure
 ## Operational Notes
 
 - The repository contract now treats Azure Front Door as the canonical public entrypoint. Keep `PUBLIC_APP_URL`, browser smoke checks, and Entra redirect URIs aligned to that host.
+- Cross-tenant workforce sign-in depends on both sides of the contract staying aligned: the Entra app registration must remain `AzureADMultipleOrgs`, and the workflow-synced runtime authority tenant must remain `organizations`.
 - The repository contract no longer keeps a supported local Azure CLI bootstrap or recovery path.
 - GitHub Environment owns the canonical app identity through `AZURE_APP_NAME`; the Container App target is always derived as `ca-${AZURE_APP_NAME}` across bootstrap, release, verification, and workflow-owned helper scripts.
 - `Bootstrap Azure Recovery` owns resource-group creation and initial Azure SQL principal bootstrap through GitHub Actions OIDC.
