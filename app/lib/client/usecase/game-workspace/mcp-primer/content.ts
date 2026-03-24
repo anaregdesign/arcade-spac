@@ -31,6 +31,18 @@ export type McpPrimerLocalizedContent = {
   studyPages: McpPrimerStudyPage[];
 };
 
+export type McpPrimerSection = {
+  key: string;
+  questionKeys: string[];
+  studyPageKeys: string[];
+};
+
+export type McpPrimerResolvedSection = {
+  key: string;
+  questions: McpPrimerQuestion[];
+  studyPages: McpPrimerStudyPage[];
+};
+
 const introSource: GameplaySourceAttributionItem = {
   href: "https://modelcontextprotocol.io/introduction",
   label: "Public documentation",
@@ -100,8 +112,8 @@ export const mcpPrimerStudyPages: McpPrimerStudyPage[] = [
   },
   {
     key: "architecture",
-    title: "Participants, layers, and lifecycle",
-    detail: "MCP is stateful, and the connection roles matter.",
+    title: "Participants, lifecycle, and client features",
+    detail: "Understand the roles, negotiation flow, and client-side primitives before using server features.",
     body: [
       "## Participants",
       "",
@@ -116,18 +128,22 @@ export const mcpPrimerStudyPages: McpPrimerStudyPage[] = [
       "- **Data layer**: JSON-RPC 2.0 messages, lifecycle, tools, resources, prompts, notifications",
       "- **Transport layer**: communication channel, framing, auth, connection handling",
       "",
-      "## Initialization sequence",
+      "## Client-side primitives",
       "",
-      "```json",
-      "{",
-      "  \"method\": \"initialize\",",
-      "  \"params\": {",
-      "    \"protocolVersion\": \"2025-06-18\",",
-      "    \"capabilities\": {},",
-      "    \"clientInfo\": { \"name\": \"example-client\" }",
-      "  }",
-      "}",
-      "```",
+      "MCP also defines primitives that clients expose to servers:",
+      "",
+      "- **Sampling** lets a server ask the client to obtain an LLM completion",
+      "- **Elicitation** lets a server ask the client for more user input or confirmation",
+      "- **Logging** lets a server send log messages to the client",
+      "",
+      "## Initialization exchange",
+      "",
+      "The initialization handshake highlights four ideas:",
+      "",
+      "- `protocolVersion` negotiates a compatible protocol version",
+      "- `capabilities` declares which features each side supports",
+      "- `clientInfo` identifies the client",
+      "- `serverInfo` identifies the server in the initialize response",
       "",
       "After successful negotiation, the client sends `notifications/initialized`.",
     ].join("\n"),
@@ -140,8 +156,8 @@ export const mcpPrimerStudyPages: McpPrimerStudyPage[] = [
   },
   {
     key: "primitives",
-    title: "Tools, resources, and prompts",
-    detail: "The three server primitives solve different problems.",
+    title: "Server primitives and discovery flow",
+    detail: "Tools, resources, and prompts solve different problems and are discovered with different methods.",
     body: [
       "## Server primitives",
       "",
@@ -155,26 +171,101 @@ export const mcpPrimerStudyPages: McpPrimerStudyPage[] = [
       "- `resources/list` then `resources/read`",
       "- `prompts/list` then `prompts/get`",
       "",
-      "## Important details",
-      "",
-      "- tool definitions include `name`, `description`, `inputSchema`, and optionally `outputSchema`",
-      "- resources can expose `subscribe` and `listChanged` features",
-      "- prompt messages can contain text, image, audio, or embedded resources",
-      "",
       "Tools are model-controlled, resources are application-driven, and prompts are user-controlled.",
     ].join("\n"),
     sources: [
       {
+        ...architectureSource,
+        note: "The architecture overview defines the three server primitives and their discovery-first usage pattern.",
+      },
+      {
         ...toolsSource,
-        note: "Tool discovery, invocation, result content, and error handling come from the tools spec.",
+        note: "The tools spec provides the discovery and invocation pair `tools/list` and `tools/call`.",
       },
       {
         ...resourcesSource,
-        note: "Resources add URI-based context, templates, annotations, and optional subscriptions.",
+        note: "The resources spec provides the discovery and retrieval pair `resources/list` and `resources/read`.",
       },
       {
         ...promptsSource,
-        note: "Prompts are exposed for explicit user selection and can return structured messages.",
+        note: "The prompts spec provides the discovery and retrieval pair `prompts/list` and `prompts/get`.",
+      },
+    ],
+  },
+  {
+    key: "tools-details",
+    title: "Tool definitions, results, and errors",
+    detail: "The tools spec adds schema fields, richer result content, and a separate execution-error path.",
+    body: [
+      "## Tool definition fields",
+      "",
+      "A tool definition includes:",
+      "",
+      "- `name` as the unique identifier",
+      "- optional `title` for display",
+      "- `description` for human-readable behavior",
+      "- `inputSchema` for arguments",
+      "- optional `outputSchema` for structured output validation",
+      "- optional `annotations` for behavior hints",
+      "",
+      "## Tool results",
+      "",
+      "Tool results can return:",
+      "",
+      "- text content",
+      "- image content",
+      "- audio content",
+      "- resource links",
+      "- embedded resources",
+      "- optional `structuredContent` alongside the content array",
+      "",
+      "## Error handling",
+      "",
+      "- protocol problems use standard JSON-RPC error objects",
+      "- tool execution failures still return a tool result, but mark it with `isError: true`",
+    ].join("\n"),
+    sources: [
+      {
+        ...toolsSource,
+        note: "The tools spec defines tool fields, result content types, structuredContent, and the split between JSON-RPC errors and `isError: true` tool failures.",
+      },
+    ],
+  },
+  {
+    key: "resources-prompts",
+    title: "Resources, prompt arguments, and annotations",
+    detail: "Resources and prompts add retrieval patterns, optional capabilities, and metadata hints for clients.",
+    body: [
+      "## Resources",
+      "",
+      "- `resources/list` discovers available resources",
+      "- `resources/read` retrieves the contents of one URI",
+      "- the `resources` capability may advertise `subscribe` and `listChanged`",
+      "- `resources/templates/list` exposes parameterized resource templates",
+      "",
+      "Resources, resource templates, and related content blocks can carry optional annotations:",
+      "",
+      "- `audience`",
+      "- `priority`",
+      "- `lastModified`",
+      "",
+      "## Prompts",
+      "",
+      "- `prompts/list` discovers prompts",
+      "- `prompts/get` retrieves one prompt and may accept arguments for customization",
+      "- prompt messages include a `role` plus typed content",
+      "- prompt content can be text, image, audio, or embedded resources",
+      "",
+      "Prompts remain user-controlled even when the server exposes them.",
+    ].join("\n"),
+    sources: [
+      {
+        ...resourcesSource,
+        note: "The resources spec defines capability flags, URI reads, templates, and annotations such as `audience`, `priority`, and `lastModified`.",
+      },
+      {
+        ...promptsSource,
+        note: "The prompts spec defines prompt discovery, `prompts/get` arguments, `role`, and typed prompt message content including embedded resources.",
       },
     ],
   },
@@ -478,6 +569,60 @@ export const mcpPrimerQuestions: McpPrimerQuestion[] = [
 export const mcpPrimerQuestionCount = mcpPrimerQuestions.length;
 
 export const mcpPrimerStudyPageCount = mcpPrimerStudyPages.length;
+
+export const mcpPrimerSections: McpPrimerSection[] = [
+  {
+    key: "purpose",
+    questionKeys: ["q1", "q2"],
+    studyPageKeys: ["intro"],
+  },
+  {
+    key: "architecture",
+    questionKeys: ["q3", "q5", "q6", "q7", "q8"],
+    studyPageKeys: ["architecture"],
+  },
+  {
+    key: "primitives",
+    questionKeys: ["q4", "q9", "q13", "q17"],
+    studyPageKeys: ["primitives"],
+  },
+  {
+    key: "tools",
+    questionKeys: ["q10", "q11", "q12"],
+    studyPageKeys: ["tools-details"],
+  },
+  {
+    key: "resources-prompts",
+    questionKeys: ["q14", "q15", "q16", "q18"],
+    studyPageKeys: ["resources-prompts"],
+  },
+  {
+    key: "transports",
+    questionKeys: ["q19", "q20"],
+    studyPageKeys: ["transports"],
+  },
+];
+
+export const mcpPrimerSectionCount = mcpPrimerSections.length;
+
+export function getMcpPrimerSections(content: McpPrimerLocalizedContent): McpPrimerResolvedSection[] {
+  const pagesByKey = new Map(content.studyPages.map((page) => [page.key, page]));
+  const questionsByKey = new Map(content.questions.map((question) => [question.key, question]));
+
+  return mcpPrimerSections.map((section) => ({
+    key: section.key,
+    questions: section.questionKeys.flatMap((key) => {
+      const question = questionsByKey.get(key);
+
+      return question ? [question] : [];
+    }),
+    studyPages: section.studyPageKeys.flatMap((key) => {
+      const page = pagesByKey.get(key);
+
+      return page ? [page] : [];
+    }),
+  }));
+}
 
 export function getMcpPrimerContent(locale: SupportedArcadeLocale): McpPrimerLocalizedContent {
   const localizedContent = mcpPrimerLocalizedContentByLocale[locale];

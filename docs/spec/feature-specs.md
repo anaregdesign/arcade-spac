@@ -162,7 +162,7 @@ Shipped game は、古い catalog 状態から始まった環境でも Home、Pr
 ### Scope
 
 - MCP の公開ドキュメントをもとにした multi-page study flow を追加する
-- study flow の後に約 20 問の quiz flow を同じ run 内で続ける
+- study flow を複数 section に分け、対応する quiz flow を同じ run 内で交互に進める
 - clear time と mistakes を既存 result model に沿って保存する
 - game catalog、preview、workspace registry に新ゲームを追加する
 
@@ -175,21 +175,24 @@ Shipped game は、古い catalog 状態から始まった環境でも Home、Pr
 ### User-Visible Behavior
 
 - 新ゲームから MCP の学習型 run を開始できる
-- run は study pages を順に進めた後、約 20 問の quiz に切り替わる
-- 各 study page と quiz prompt には、参照した公開ドキュメントの出典が表示される
+- run は topic ごとの study section と対応 quiz section を往復しながら進む
+- 各 study page と quiz prompt には、参照した公開ドキュメントの出典が表示され、quiz の正答に必要な事実を section 内の study content から確認できる
 - single-select は即時 1 件選択、multi-select は複数選択後に submit する流れで進む
 - run clear 時は clear time と mistakes が result に反映される
 - `MCP Primer` の study page、quiz prompt、choice copy、explanation、source note、進行ラベルは locale ごとに表示される
 - `Tools`、`Resources`、`Prompts`、`Host`、`Client`、`Server`、`Application-driven`、`Model-controlled`、`User-controlled`、`notifications/initialized`、`tools/list` のような MCP canonical term は各 locale でも表記を変えず、説明文や一般語は locale ごとに自然な文章へ翻訳される
+- `MCP Primer` の問題文、選択肢、解説は、対応 source に照らして曖昧さや不正確さがない状態に保たれる
 
 ### Acceptance Criteria
 
-- study content が複数ページで表示され、next/back で移動できる
+- study content が複数 section に分かれ、各 section 内で next/back により学習ページを移動できる
 - quiz は約 20 問で、single-select と multi-select の両方を含む
 - すべての study page と quiz prompt で source attribution を確認できる
+- 少なくとも各 quiz section の直前 study content だけで、その section の設問に必要な主要事実を確認できる
 - clear と fail の両方が既存 result flow で動作する
 - locale を `en` `ja` `zh` `fr` に切り替えると `MCP Primer` の学習本文と quiz 文言が切り替わる
 - MCP canonical term と method 名は翻訳された文章の中でも表記が変わらず、それ以外の語句は locale ごとに自然に読める
+- source に反する設問や、複数解釈が成立しうる曖昧な choice が残らない
 
 ### Edge Cases
 

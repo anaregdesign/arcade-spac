@@ -8,9 +8,8 @@ import { useTerminalResultSubmission } from "../use-terminal-result-submission";
 import { useWorkspacePlayingSync } from "../use-workspace-playing-sync";
 import type { GameWorkspaceController } from "../use-game-workspace";
 import {
+  getMcpPrimerSections,
   getMcpPrimerContent,
-  mcpPrimerQuestionCount,
-  mcpPrimerStudyPageCount,
   mcpPrimerTimeLimitByDifficulty,
 } from "./content";
 import { getMcpPrimerUiCopy } from "./copy";
@@ -31,8 +30,9 @@ function areSelectionsCorrect(expectedKeys: string[], selectedKeys: string[]) {
 
 export function useMcpPrimerWorkspace(workspace: GameWorkspaceController, locale: SupportedArcadeLocale) {
   const [state, setState] = useState<PrimerState>("idle");
-  const [studyPageIndex, setStudyPageIndex] = useState(0);
-  const [questionIndex, setQuestionIndex] = useState(0);
+  const [sectionIndex, setSectionIndex] = useState(0);
+  const [sectionStudyPageIndex, setSectionStudyPageIndex] = useState(0);
+  const [sectionQuestionIndex, setSectionQuestionIndex] = useState(0);
   const [selectedChoiceKeys, setSelectedChoiceKeys] = useState<string[]>([]);
   const [reviewState, setReviewState] = useState<ReviewState | null>(null);
   const [mistakeCount, setMistakeCount] = useState(0);
@@ -40,6 +40,7 @@ export function useMcpPrimerWorkspace(workspace: GameWorkspaceController, locale
   const [runInstance, setRunInstance] = useState(0);
 
   const content = useMemo(() => getMcpPrimerContent(locale), [locale]);
+  const sections = useMemo(() => getMcpPrimerSections(content), [content]);
   const copy = useMemo(() => getMcpPrimerUiCopy(locale), [locale]);
   const timeLimitSeconds = mcpPrimerTimeLimitByDifficulty[workspace.difficulty];
   const isRunIdle = state === "idle";
@@ -48,12 +49,26 @@ export function useMcpPrimerWorkspace(workspace: GameWorkspaceController, locale
   const isRunCleared = state === "cleared";
   const isRunFailed = state === "failed";
   const isLiveRun = isStudyPhase || isQuizPhase;
-  const currentStudyPage = content.studyPages[studyPageIndex] ?? content.studyPages[0];
-  const currentQuestion = content.questions[questionIndex] ?? content.questions[0];
+  const currentSection = sections[sectionIndex] ?? sections[0];
+  const currentStudyPage = currentSection?.studyPages[sectionStudyPageIndex] ?? content.studyPages[0];
+  const currentQuestion = currentSection?.questions[sectionQuestionIndex] ?? content.questions[0];
   const currentQuestionChoices = useShuffledQuizChoices(
     currentQuestion.choices,
     `${locale}:${runInstance}:${currentQuestion.key}`,
   );
+  const studyPageIndex = useMemo(
+    () =>
+      sections.slice(0, sectionIndex).reduce((total, section) => total + section.studyPages.length, 0) + sectionStudyPageIndex,
+    [sectionIndex, sectionStudyPageIndex, sections],
+  );
+  const questionIndex = useMemo(
+    () =>
+      sections.slice(0, sectionIndex).reduce((total, section) => total + section.questions.length, 0) + sectionQuestionIndex,
+    [sectionIndex, sectionQuestionIndex, sections],
+  );
+  const questionCount = content.questions.length;
+  const studyPageCount = content.studyPages.length;
+  const isLastStudyPageInSection = sectionStudyPageIndex === (currentSection?.studyPages.length ?? 1) - 1;
 
   const correctChoiceKeys = useMemo(
     () => currentQuestion.choices.filter((choice) => choice.isCorrect).map((choice) => choice.key),
@@ -111,8 +126,9 @@ export function useMcpPrimerWorkspace(workspace: GameWorkspaceController, locale
     workspace.beginRun();
     setElapsedSeconds(0);
     setMistakeCount(0);
-    setStudyPageIndex(0);
-    setQuestionIndex(0);
+    setSectionIndex(0);
+    setSectionStudyPageIndex(0);
+    setSectionQuestionIndex(0);
     setSelectedChoiceKeys([]);
     setReviewState(null);
     setRunInstance((current) => current + 1);
@@ -120,18 +136,18 @@ export function useMcpPrimerWorkspace(workspace: GameWorkspaceController, locale
   }
 
   function goToPreviousStudyPage() {
-    setStudyPageIndex((current) => Math.max(0, current - 1));
+    setSectionStudyPageIndex((current) => Math.max(0, current - 1));
   }
 
   function goToNextStudyStep() {
-    if (studyPageIndex < mcpPrimerStudyPageCount - 1) {
-      setStudyPageIndex((current) => Math.min(mcpPrimerStudyPageCount - 1, current + 1));
+    if (sectionStudyPageIndex < (currentSection?.studyPages.length ?? 1) - 1) {
+      setSectionStudyPageIndex((current) => Math.min((currentSection?.studyPages.length ?? 1) - 1, current + 1));
       return;
     }
 
     setSelectedChoiceKeys([]);
     setReviewState(null);
-    setQuestionIndex(0);
+    setSectionQuestionIndex(0);
     setState("quiz");
   }
 
@@ -173,12 +189,22 @@ export function useMcpPrimerWorkspace(workspace: GameWorkspaceController, locale
       return;
     }
 
-    if (questionIndex === mcpPrimerQuestionCount - 1) {
-      setState("cleared");
+    if (sectionQuestionIndex === (currentSection?.questions.length ?? 1) - 1) {
+      if (sectionIndex === sections.length - 1) {
+        setState("cleared");
+        return;
+      }
+
+      setSectionIndex((current) => current + 1);
+      setSectionStudyPageIndex(0);
+      setSectionQuestionIndex(0);
+      setSelectedChoiceKeys([]);
+      setReviewState(null);
+      setState("study");
       return;
     }
 
-    setQuestionIndex((current) => current + 1);
+    setSectionQuestionIndex((current) => current + 1);
     setSelectedChoiceKeys([]);
     setReviewState(null);
   }
@@ -204,7 +230,7 @@ export function useMcpPrimerWorkspace(workspace: GameWorkspaceController, locale
   return {
     advanceAfterReview,
     beginRun,
-    canMoveBackward: studyPageIndex > 0,
+    canMoveBackward: sectionStudyPageIndex > 0,
     canSubmitAnswer: isQuizPhase && selectedChoiceKeys.length > 0 && !reviewState,
     currentQuestion,
     currentQuestionChoices,
@@ -213,6 +239,7 @@ export function useMcpPrimerWorkspace(workspace: GameWorkspaceController, locale
     finishDetail,
     goToNextStudyStep,
     goToPreviousStudyPage,
+    isLastStudyPageInSection,
     isLiveRun,
     isQuizPhase,
     isRunCleared,
@@ -220,7 +247,7 @@ export function useMcpPrimerWorkspace(workspace: GameWorkspaceController, locale
     isRunIdle,
     isStudyPhase,
     mistakeCount,
-    questionCount: mcpPrimerQuestionCount,
+    questionCount,
     questionIndex,
     reviewState,
     reviewSummary: reviewState
@@ -240,7 +267,7 @@ export function useMcpPrimerWorkspace(workspace: GameWorkspaceController, locale
             : copy.checkAnswerLabel,
     selectedChoiceKeys,
     startActionLabel: isRunIdle ? copy.startLessonLabel : isRunCleared || isRunFailed ? copy.startAnotherRunLabel : copy.reviewContinueLabel,
-    studyPageCount: mcpPrimerStudyPageCount,
+    studyPageCount,
     studyPageIndex,
     submitCurrentAnswer,
     timeLeftLabel: formatDuration(Math.max(0, timeLimitSeconds - elapsedSeconds)),

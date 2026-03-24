@@ -100,7 +100,7 @@ export function McpPrimerGameWorkspace({ instructions, workspace }: GameWorkspac
                     {copy.backLabel}
                   </button>
                   <button className="action-link action-link-primary" onClick={screen.goToNextStudyStep} type="button">
-                    {screen.studyPageIndex === screen.studyPageCount - 1 ? copy.startQuizLabel : copy.nextPageLabel}
+                    {screen.isLastStudyPageInSection ? copy.startQuizLabel : copy.nextPageLabel}
                   </button>
                 </>
               )}
