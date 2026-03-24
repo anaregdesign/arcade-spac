@@ -145,6 +145,10 @@ export const previewByGameKey: Record<string, GamePreview> = {
     previewAlt: "Pulse Count signal orb with answer buttons beneath it",
     previewSrc: "/images/games/pulse-count-preview.svg",
   },
+  "mcp-primer": {
+    previewAlt: "MCP Primer study card on the left and quiz answer cards on the right",
+    previewSrc: "/images/games/mcp-primer-preview.svg",
+  },
   "quick-sum": {
     previewAlt: "Quick Sum prompt card with arithmetic and multiple answer choices",
     previewSrc: "/images/games/quick-sum-preview.svg",

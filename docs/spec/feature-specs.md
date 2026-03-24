@@ -140,3 +140,55 @@ Shipped game は、古い catalog 状態から始まった環境でも Home、Pr
 
 - 初回操作まで音が始まらない環境でも、最初の入力以降は自然に使える
 - 短時間に同系統の音が続いても、状態変化の判別を妨げない
+
+## MCP Primer Learning Quiz
+
+### Summary
+
+`Arcade` に、公開 MCP ドキュメントを読み進めてから約 20 問の確認クイズを解く学習型ゲームを追加する。
+
+### User Problem
+
+- 公開ドキュメントを読むだけでは、重要概念をどこまで理解できたかを確認しづらい
+- 学習コンテンツと確認問題が別体験だと、読んだ内容を直後に思い出して使う流れが切れやすい
+- MCP の概念は participants、primitives、transport、notifications など論点が広く、短時間で復習しにくい
+
+### Users and Scenarios
+
+- プレイヤーは MCP の公開ドキュメントを数ページで読み、その内容をすぐクイズで確認したい
+- プレイヤーは study page でも quiz page でも出典を確認しながら進みたい
+- プレイヤーは single-select と multi-select が混在していても、同じ game workspace で迷わず進めたい
+
+### Scope
+
+- MCP の公開ドキュメントをもとにした multi-page study flow を追加する
+- study flow の後に約 20 問の quiz flow を同じ run 内で続ける
+- clear time と mistakes を既存 result model に沿って保存する
+- game catalog、preview、workspace registry に新ゲームを追加する
+
+### Non-Goals
+
+- 外部 CMS や remote content fetch を runtime に持ち込むこと
+- 問題の自動生成
+- クイズ結果に応じた adaptive branching
+
+### User-Visible Behavior
+
+- 新ゲームから MCP の学習型 run を開始できる
+- run は study pages を順に進めた後、約 20 問の quiz に切り替わる
+- 各 study page と quiz prompt には、参照した公開ドキュメントの出典が表示される
+- single-select は即時 1 件選択、multi-select は複数選択後に submit する流れで進む
+- run clear 時は clear time と mistakes が result に反映される
+
+### Acceptance Criteria
+
+- study content が複数ページで表示され、next/back で移動できる
+- quiz は約 20 問で、single-select と multi-select の両方を含む
+- すべての study page と quiz prompt で source attribution を確認できる
+- clear と fail の両方が既存 result flow で動作する
+
+### Edge Cases
+
+- source が複数あっても page 本文や question action が過密にならない
+- study page の本文が長い場合でも narrow screen で横スクロール必須にならない
+- multi-select 問題で正答数が複数でも、選択状態と submit affordance が曖昧にならない

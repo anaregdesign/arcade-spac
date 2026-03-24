@@ -54,7 +54,114 @@
 
 - 長い game 名や status badge があっても、score の視認性を損なわない
 - Teams share が使えない状態でも、action の並びが崩れない
+
+## Quiz Gameplay Shared Layout
+
+### Summary
+
+`Quiz` 形式のゲームは、Markdown で記述された問題文と選択肢を共通レイアウトで表示し、択一と複数選択の両方を同じ操作体系で扱えるようにする。
+
+### User Problem
+
+- 問題文と選択肢ごとに個別レイアウトを作ると、ゲーム間で見た目と操作がぶれやすい
+- コードブロックや画像を含む問題を既存の短文向け UI に載せると、読みやすさと選びやすさが両立しにくい
+- 択一と複数選択で UI が大きく変わると、プレイヤーが操作ルールを毎回学び直す必要がある
+
+### Users and Scenarios
+
+- プレイヤーは、コードや画像を含む問題でも同じ位置関係で問題文と選択肢を読みたい
+- プレイヤーは、択一問題では 1 つだけ、複数選択問題では必要数を選んだうえで回答を確定したい
+- 今後 `Quiz` 形式の新ゲームを追加する開発者は、問題コンテンツだけ差し替えて共通 UI を再利用したい
+
+### Scope
+
+- `Game` 画面内で使える `Quiz` 共通レイアウトを追加する
+- 問題文と選択肢の本文は Markdown をレンダリングできるようにする
+- 学習コンテンツや問題文が公開ドキュメントを参照する場合、出典情報を同じレイアウト内で明記できるようにする
+- コードブロック、インラインコード、画像、箇条書きなどを読みやすく表示する
+- 択一と複数選択の両方で使える選択 UI とアクション領域を用意する
+- desktop と mobile の両方で、問題文と選択肢が横スクロールに頼らず読めるようにする
+
+### Non-Goals
+
+- 実際の `Quiz` ゲームロジック、採点ロジック、出題データモデルの追加
+- Markdown の任意 HTML を許可すること
+- 問題作成用 CMS や authoring workflow の追加
+
+### User-Visible Behavior
+
+- `Quiz` 形式のゲームでは、既存の gameplay card に馴染む共通レイアウトで問題文と選択肢が表示される
+- 問題文と選択肢の本文は Markdown として描画され、コードブロックや画像を含んでも読みやすい
+- 公開ドキュメントを参照した学習コンテンツや問題では、本文の近くに出典ラベル、文書名、リンク、補足情報をまとめて表示できる
+- 選択肢カードは single-select と multi-select の両方に対応し、現在の選択状態が視覚的に分かる
+- multi-select の場合は複数選択後に回答を確定する action を同じレイアウト内に置ける
+- mobile では問題文、選択肢、アクションが縦方向に自然に再配置される
+
+### Acceptance Criteria
+
+- 共通レイアウトだけで、Markdown 問題文と Markdown 選択肢を表示できる
+- コードブロック、画像、箇条書き、強調がレイアウト崩れなく表示される
+- 出典ありのコンテンツでは、少なくとも source 名とリンク先を同じレイアウト内で確認できる
+- single-select と multi-select の両方で選択状態を同じ見た目の系統で表現できる
+- 将来のゲームごとの workspace は、共通レイアウトへ問題文、選択肢、選択状態、アクションを渡すだけで組み込める
+- narrow screen でも選択肢カードが読み切れずに横スクロール必須にならない
+
+### Edge Cases
+
+- 長いコード行はカード全体を壊さず、読み取り可能な形で表示される
+- 画像を含む選択肢でもカードサイズが極端に崩れない
+- 問題文や選択肢が短文でも空きすぎず、長文でも密集しすぎない
+- 出典が複数ある場合でも、本文や回答 action の視認性を優先して過密にならない
+- 選択肢数が 2 件から 6 件程度まで増減しても、グリッドの見た目が破綻しない
 - recommendation 学習が浅い場合でも、安定した fallback 順で 3 件を表示できる
+
+## Study Gameplay Shared Layout
+
+### Summary
+
+学習型ゲームでは、Markdown 本文、ページ移動、進行状況、出典表示をまとめた共通 study レイアウトを使う。
+
+### User Problem
+
+- 学習ページがゲームごとに別レイアウトだと、読み進め方と quiz への切り替わりが一貫しない
+- study page に出典がないと、公開ドキュメント由来の記述かどうかを後から確認しづらい
+- 長文の study content を既存の短い instruction card に載せると、余白と視線誘導が崩れやすい
+
+### Users and Scenarios
+
+- プレイヤーは study pages を順に読みながら、今どこまで読んだかを把握したい
+- プレイヤーは学習内容の近くで source attribution を確認したい
+- 開発者は study content と action だけ差し替えて再利用したい
+
+### Scope
+
+- `Game` 画面内で使える study 共通レイアウトを追加する
+- Markdown 本文、ページ progress、前後移動 action、source attribution を同じレイアウトで扱えるようにする
+- desktop と mobile の両方で本文と action が自然に reflow するようにする
+
+### Non-Goals
+
+- 外部ドキュメントの live fetch
+- 学習進捗の永続保存
+- quiz ロジックそのものの定義
+
+### User-Visible Behavior
+
+- study pages は gameplay card に馴染む本文カードとして表示される
+- ページ progress と次へ進む action が常に読み取りやすい位置にある
+- 公開ドキュメントを参照した本文では、source attribution を prompt/本文の近くで確認できる
+- mobile では本文、source、action が縦に詰まりすぎず再配置される
+
+### Acceptance Criteria
+
+- 共通レイアウトだけで multi-page study content を表示できる
+- source 名、リンク、補足が本文の近くに収まり、quiz と同系統の見た目で使える
+- narrow screen でも本文カードの横スクロールが必須にならない
+
+### Edge Cases
+
+- 本文が短いページでも action row が間延びしすぎない
+- source が 2 件以上あるページでも本文と progress の視認性を保てる
 
 ## Result Next-Game Recommendations
 
