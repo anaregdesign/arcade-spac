@@ -129,11 +129,10 @@ export function GameplayQuizLayout({
           <GameplayChoiceGrid className={styles["quiz-choice-grid"]} columns={resolvedColumns} mobileColumns={mobileChoiceColumns}>
             {choices.map((choice, index) => {
               const marker = getChoiceMarker(index);
-              const label = choice.label ?? marker;
 
               return (
                 <button
-                  aria-label={choice.accessibilityLabel ?? label}
+                  aria-label={choice.accessibilityLabel}
                   aria-pressed={choice.selected ? "true" : "false"}
                   className={styles["quiz-choice-card"]}
                   data-selected={choice.selected ? "true" : "false"}
@@ -147,7 +146,6 @@ export function GameplayQuizLayout({
                     {marker}
                   </span>
                   <div className={styles["quiz-choice-copy"]}>
-                    <span className={styles["quiz-choice-label"]}>{label}</span>
                     <GameplayMarkdown content={choice.content} />
                   </div>
                 </button>
@@ -158,7 +156,7 @@ export function GameplayQuizLayout({
 
         {submitAction || footer ? (
           <div className={styles["quiz-action-row"]}>
-            {footer ? <div className={styles["quiz-footer"]}>{footer}</div> : <span />}
+            {footer ? <div className={styles["quiz-footer"]}>{typeof footer === "string" ? <GameplayMarkdown content={footer} /> : footer}</div> : <span />}
             {submitAction ? <div className={styles["quiz-submit-action"]}>{submitAction}</div> : null}
           </div>
         ) : null}

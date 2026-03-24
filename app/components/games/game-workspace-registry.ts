@@ -16,6 +16,7 @@ import { GlowCycleGameWorkspace } from "./glow-cycle/GlowCycleGameWorkspace";
 import { HiddenFindGameWorkspace } from "./hidden-find/HiddenFindGameWorkspace";
 import { HueDriftGameWorkspace } from "./hue-drift/HueDriftGameWorkspace";
 import { IconChainGameWorkspace } from "./icon-chain/IconChainGameWorkspace";
+import { IrPrimerGameWorkspace } from "./ir-primer/IrPrimerGameWorkspace";
 import { LineConnectGameWorkspace } from "./line-connect/LineConnectGameWorkspace";
 import { MergeClimbGameWorkspace } from "./merge-climb/MergeClimbGameWorkspace";
 import { MinesweeperGameWorkspace } from "./minesweeper/MinesweeperGameWorkspace";
@@ -1170,6 +1171,35 @@ const gameDefinitionByKey: Record<string, GameDefinition> = {
       previewSrc: "/images/games/mcp-primer-preview.svg",
     },
     workspace: McpPrimerGameWorkspace,
+  },
+  "ir-primer": {
+    instructions: {
+      summary: "Read the Stanford IR study pages, then answer the comprehension quiz before the timer expires. Mistakes are recorded, but the run continues until all questions are finished or time runs out.",
+      sections: [
+        {
+          title: "Run flow",
+          items: [
+            { label: "Start lesson", detail: "Choose a difficulty and press Start lesson to begin the study pages." },
+            { label: "Read then quiz", detail: "Move through each IR study section first. The quiz begins from the last study page action." },
+            { label: "Clear or fail", detail: "Finish all quiz questions before the timer reaches zero. Wrong answers add mistakes, but they do not end the run immediately." },
+          ],
+        },
+        {
+          title: "Study and quiz controls",
+          items: [
+            { label: "Read the sources", detail: "Every study page and quiz prompt shows the Stanford IR book chapter or subsection that supports the fact." },
+            { label: "Use the answer mode", detail: "Single-select questions let you choose one answer. Multi-select questions require the full set before you check the answer." },
+            { label: "Review then continue", detail: "After checking an answer, the correct choices stay highlighted so you can move on with the idea still visible." },
+          ],
+        },
+      ],
+      title: "IR Primer controls",
+    },
+    presentation: {
+      previewAlt: "IR Primer study card on the left and quiz answer cards on the right",
+      previewSrc: "/images/games/ir-primer-preview.svg",
+    },
+    workspace: IrPrimerGameWorkspace,
   },
   "shape-morph": {
     instructions: {

@@ -109,6 +109,30 @@
   overflow-x: auto;
 }
 
+.markdown :global(mjx-container[jax="SVG"]) {
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.markdown :global(mjx-container[jax="SVG"][display="true"]) {
+  margin: 0.95rem 0 0;
+}
+
+.markdown :global(mjx-container[jax="SVG"] > svg) {
+  max-width: 100%;
+  height: auto;
+}
+
+.markdown :global(mjx-container[jax="SVG"][display="true"] > svg) {
+  display: block;
+}
+
+.markdown :global(mjx-container[jax="SVG"]:not([display="true"]) > svg) {
+  display: inline-block;
+  vertical-align: -0.12em;
+}
+
 .markdown :where(table) {
   width: 100%;
   min-width: max-content;

@@ -57,7 +57,7 @@ export function GameplayStudyLayout({
           <div className={styles["study-action-row"]}>
             <div className={styles["study-footer-column"]}>
               {progressLabel ? <div className={styles["study-progress"]}>{progressLabel}</div> : null}
-              {footer ? <div className={styles["study-footer"]}>{footer}</div> : null}
+              {footer ? <div className={styles["study-footer"]}>{typeof footer === "string" ? <GameplayMarkdown content={footer} /> : footer}</div> : null}
             </div>
             {actions ? <div className={styles["study-actions"]}>{actions}</div> : null}
           </div>

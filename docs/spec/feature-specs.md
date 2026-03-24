@@ -199,3 +199,64 @@ Shipped game は、古い catalog 状態から始まった環境でも Home、Pr
 - source が複数あっても page 本文や question action が過密にならない
 - study page の本文が長い場合でも narrow screen で横スクロール必須にならない
 - multi-select 問題で正答数が複数でも、選択状態と submit affordance が曖昧にならない
+
+## IR Primer Learning Quiz
+
+### Summary
+
+`Arcade` に、Stanford の `Introduction to Information Retrieval` を題材にした study-first learning game を追加し、全文検索の基礎概念を読んでから確認クイズで復習できるようにする。
+
+### User Problem
+
+- 全文検索や情報検索の基礎は topic が広く、読むだけでは inverted index、ranking、evaluation の関係を整理しづらい
+- Boolean retrieval、postings、tolerant retrieval、tf-idf、MAP などの基礎概念を短時間で往復復習できる場が少ない
+- source と quiz が離れていると、どの章のどの説明を根拠に答えるべきかが分かりにくい
+
+### Users and Scenarios
+
+- プレイヤーは Stanford IR book の代表的な章を数ページで読み、その直後に comprehension quiz で理解を確認したい
+- プレイヤーは study page と quiz prompt の両方で source attribution を見ながら進みたい
+- プレイヤーは全文検索の基礎を、短い run の中で section ごとに段階的に学びたい
+
+### Scope
+
+- `Introduction to Information Retrieval` の HTML edition を source にした multi-page study flow を追加する
+- 初回リリースでは全文検索の基礎に絞り、Boolean retrieval、term vocabulary と postings、tolerant retrieval、index construction、ranking、evaluation を section 化する
+- section ごとに study page と対応 quiz を同一 run 内で交互に進める
+- game catalog、preview、workspace registry、result 保存導線に新ゲームを追加する
+
+### Non-Goals
+
+- IR book 全 21 章を一度に網羅すること
+- runtime で外部サイトから本文を取得すること
+- adaptive difficulty や理解度に応じた分岐を追加すること
+
+### User-Visible Behavior
+
+- 新ゲーム `IR Primer` から全文検索基礎の学習 run を開始できる
+- run は各 topic の study section を読んでから、その section 専用の quiz section へ進む流れで進行する
+- 各 study page と quiz prompt には、参照した Stanford IR book HTML edition の出典が表示される
+- study page、quiz prompt、choice、review explanation に含まれる数式は、inline `$...$` と block `$$...$$` の記法で入力すると MathJax により読める形で表示される
+- quiz では single-select と multi-select が混在しても、既存の learning game layout のまま迷わず進める
+- run clear 時は clear time と mistakes が既存 result model に沿って保存される
+- `IR Primer` の学習本文、設問、選択肢、解説は、各 section の直前 study content から答えられる範囲に保たれる
+- `IR Primer` の study page、quiz prompt、choice copy、explanation、source note は locale ごとに表示される
+- `Boolean retrieval`、`inverted index`、`postings list`、`phrase query`、`permuterm index`、`k-gram index`、`BSBI`、`SPIMI`、`tf`、`idf`、`tf-idf`、`Precision at k`、`MAP` のような IR canonical term は各 locale でも表記を変えず、説明文や一般語は locale ごとに自然な文章へ翻訳される
+
+### Acceptance Criteria
+
+- `IR Primer` が Home、direct game route、Result、Profile、Rankings の共通導線に載る
+- study content が複数 section に分かれ、各 section 内で next/back により学習ページを移動できる
+- quiz は全文検索基礎の主要論点をカバーし、single-select と multi-select の両方を含む
+- すべての study page と quiz prompt で source attribution を確認できる
+- 少なくとも各 quiz section の直前 study content だけで、その section の設問に必要な主要事実を確認できる
+- 数式を含む学習本文や設問を追加した場合、Markdown 中の inline `$...$` と block `$$...$$` がそのまま raw text ではなく MathJax の数式として表示される
+- locale を `en` `ja` `zh` `fr` に切り替えると `IR Primer` の学習本文と quiz 文言が切り替わる
+- IR canonical term と式の記法は翻訳された文章の中でも表記が崩れず、それ以外の語句は locale ごとに自然に読める
+- clear と fail の両方が既存 result flow で動作する
+
+### Edge Cases
+
+- source が複数 chapter にまたがっても、page 本文や source block が過密にならない
+- phrase query や wildcard query のような technical term を含んでも、選択肢が複数解釈にならない
+- study page の本文が長い場合でも narrow screen で横スクロール必須にならない

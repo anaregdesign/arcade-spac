@@ -1,10 +1,22 @@
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { GameplayStudyLayout } from "../../../components/gameplay/layouts/GameplayStudyLayout";
 
+vi.mock("../usecase/locale/use-app-locale", () => ({
+  useAppLocale: () => ({
+    copy: null,
+    locale: "en",
+    localeSelection: "auto",
+  }),
+}));
+
 describe("GameplayStudyLayout", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it("renders markdown study content, source attribution, and actions", () => {
     const html = renderToStaticMarkup(
       createElement(GameplayStudyLayout, {
@@ -13,6 +25,12 @@ describe("GameplayStudyLayout", () => {
           "## Study section",
           "",
           "Read the architecture summary before continuing.",
+          "",
+          "Inline math stays readable as $idf_t = log(N / df_t)$.",
+          "",
+          "$$",
+          "tf-idf_{t,d} = tf_{t,d} * idf_t",
+          "$$",
           "",
           "```json",
           '{ "method": "initialize" }',
@@ -35,6 +53,9 @@ describe("GameplayStudyLayout", () => {
 
     expect(html).toContain("Study notes");
     expect(html).toContain("Study section");
+    expect(html).toContain("\\(idf_t = log(N / df_t)\\)");
+    expect(html).toContain("\\[tf-idf_{t,d} = tf_{t,d} * idf_t\\]");
+    expect(html).not.toContain("$$tf-idf_{t,d}");
     expect(html).toContain("<pre>");
     expect(html).toContain("Page 2 of 4");
     expect(html).toContain("Sources");

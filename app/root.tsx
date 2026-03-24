@@ -77,6 +77,27 @@ function AppDocument({ children, locale, themePreference }: { children: React.Re
       <body data-theme={themePreference}>
         {children}
         <ScrollRestoration />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `window.MathJax = {
+  tex: {
+    inlineMath: [['\\\\(', '\\\\)']],
+    displayMath: [['\\\\[', '\\\\]']]
+  },
+  svg: {
+    fontCache: 'global'
+  },
+  startup: {
+    typeset: false,
+    ready() {
+      MathJax.startup.defaultReady();
+      document.dispatchEvent(new Event('mathjax-ready'));
+    }
+  }
+};`,
+          }}
+        />
+        <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" />
         <Scripts />
       </body>
     </html>
