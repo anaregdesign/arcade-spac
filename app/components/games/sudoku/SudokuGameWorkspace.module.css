@@ -10,7 +10,15 @@
   max-width: 100%;
 }
 
+.sudoku-board-frame {
+  position: relative;
+  width: 100%;
+  overflow: visible;
+}
+
 .sudoku-board {
+  position: relative;
+  z-index: 0;
   display: grid;
   grid-template-columns: repeat(9, minmax(0, 1fr));
   width: 100%;
@@ -21,6 +29,9 @@
 }
 
 .sudoku-cell {
+  position: relative;
+  display: grid;
+  place-items: center;
   aspect-ratio: 1;
   border: none;
   border-top: 1px solid var(--border-strong);
@@ -31,6 +42,32 @@
   font-size: 1.25rem;
   font-weight: 800;
   cursor: pointer;
+  touch-action: none;
+  transition:
+    background-color 140ms ease,
+    color 140ms ease,
+    box-shadow 140ms ease,
+    transform 140ms ease;
+}
+
+.sudoku-cell::after {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border-radius: 10px;
+  box-shadow: 0 0 0 0 transparent;
+  pointer-events: none;
+  transition: box-shadow 140ms ease;
+}
+
+.sudoku-cell:focus-visible {
+  outline: none;
+}
+
+.sudoku-cell:focus-visible::after {
+  box-shadow:
+    0 0 0 2px color-mix(in srgb, var(--surface-card) 88%, transparent),
+    0 0 0 5px color-mix(in srgb, var(--brand-primary, #215c93) 42%, transparent);
 }
 
 .sudoku-cell:disabled,
@@ -43,14 +80,34 @@
   background: color-mix(in srgb, var(--surface-strong) 12%, transparent);
 }
 
+.sudoku-cell-peer {
+  background: color-mix(in srgb, var(--brand-primary, #215c93) 5%, var(--surface-elevated));
+}
+
 .sudoku-cell-selected {
-  background: rgba(91, 139, 188, 0.18);
-  color: #214b73;
+  z-index: 4;
+  background: color-mix(in srgb, var(--brand-primary, #215c93) 24%, var(--surface-card));
+  color: #173a5b;
+  transform: translateZ(0);
+}
+
+.sudoku-cell-selected::after {
+  box-shadow:
+    inset 0 0 0 2px rgba(23, 58, 91, 0.88),
+    0 0 0 2px rgba(255, 255, 255, 0.96),
+    0 0 0 6px rgba(33, 92, 147, 0.24);
 }
 
 .sudoku-cell-wrong {
+  z-index: 3;
   background: rgba(194, 63, 52, 0.88);
   color: #fff7f5;
+}
+
+.sudoku-cell-wrong::after {
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 247, 245, 0.68),
+    0 0 0 5px rgba(194, 63, 52, 0.18);
 }
 
 .sudoku-cell-top-heavy {
@@ -74,6 +131,14 @@
   gap: 10px;
 }
 
+.sudoku-selection-summary {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
 .sudoku-keypad {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 72px));
@@ -90,6 +155,69 @@
   cursor: pointer;
 }
 
+.sudoku-touch-hint {
+  display: none;
+  margin: 0;
+  color: var(--text-tertiary);
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.sudoku-flick-overlay {
+  position: absolute;
+  z-index: 5;
+  display: grid;
+  gap: 8px;
+  justify-items: center;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.sudoku-flick-title {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--surface-card) 92%, rgba(16, 24, 40, 0.08));
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.14);
+  color: var(--text-secondary);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.sudoku-flick-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 46px));
+  gap: 8px;
+  padding: 10px;
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--surface-card) 94%, rgba(16, 24, 40, 0.08));
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.18);
+  backdrop-filter: blur(12px);
+}
+
+.sudoku-flick-digit {
+  display: grid;
+  place-items: center;
+  min-width: 46px;
+  min-height: 46px;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--surface-strong) 12%, transparent);
+  color: var(--text-secondary);
+  font-size: 1rem;
+  font-weight: 800;
+  transition:
+    background-color 120ms ease,
+    color 120ms ease,
+    transform 120ms ease;
+}
+
+.sudoku-flick-digit-active {
+  background: color-mix(in srgb, var(--brand-primary, #215c93) 88%, white 6%);
+  color: #f6fbff;
+  transform: scale(1.06);
+}
+
 @media (max-width: 640px) {
   .sudoku-copy {
     max-width: 16rem;
@@ -101,5 +229,22 @@
 
   .sudoku-keypad {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .sudoku-flick-grid {
+    grid-template-columns: repeat(3, minmax(0, 42px));
+    gap: 6px;
+    padding: 8px;
+  }
+
+  .sudoku-flick-digit {
+    min-width: 42px;
+    min-height: 42px;
+  }
+}
+
+@media (pointer: coarse) {
+  .sudoku-touch-hint {
+    display: block;
   }
 }

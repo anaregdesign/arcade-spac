@@ -10,7 +10,6 @@ type SessionState = "idle" | "playing" | "cleared";
 type SudokuCell = {
   colIndex: number;
   isFixed: boolean;
-  isSelected: boolean;
   isWrong: boolean;
   rowIndex: number;
   solutionValue: number;
@@ -47,12 +46,10 @@ function buildBoard(puzzle: PuzzleDefinition, selectedCell: { colIndex: number; 
       const index = rowIndex * 9 + colIndex;
       const givenValue = Number(puzzle.givens[index] ?? "0");
       const solutionValue = Number(puzzle.solution[index] ?? "0");
-      const isSelected = selectedCell?.rowIndex === rowIndex && selectedCell?.colIndex === colIndex;
 
       return {
         colIndex,
         isFixed: givenValue > 0,
-        isSelected,
         isWrong: wrongCellKey === `${rowIndex}:${colIndex}`,
         rowIndex,
         solutionValue,
